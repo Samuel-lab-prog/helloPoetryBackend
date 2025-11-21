@@ -4,9 +4,6 @@ import { generateToken, verifyToken, type Payload } from '../utils/jwt';
 import type { NewUser, User } from './userTypes';
 import bcrypt from 'bcryptjs';
 
-/**
- * REGISTER USER
- */
 export async function registerUser(body: NewUser): Promise<Pick<User, 'id'>> {
   const passwordHash = await bcrypt.hash(
     body.password,

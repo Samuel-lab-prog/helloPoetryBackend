@@ -6,6 +6,7 @@ import { handleError } from './middlewares/handleError';
 import { xssClean } from './middlewares/xssClean';
 import { userRoutes } from './users/userRoute';
 import { avatarRoutes } from './avatars/avatarRoute';
+import { personalityRoutes } from './personalities/personalityRoute';
 
 new Elysia()
   .onError(async ({ error, set }) => handleError(set, error))
@@ -14,6 +15,7 @@ new Elysia()
   .use(staticPlugin())
   .use(userRoutes)
   .use(avatarRoutes)
+  .use(personalityRoutes)
   .use(
     openapi({
       path: '/docs',

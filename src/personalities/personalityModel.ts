@@ -1,18 +1,18 @@
 import { pool } from '../db/connection.ts';
 import { AppError } from '../utils/AppError.ts';
-import type { Avatar, AvatarRow } from './avatarTypes.ts';
+import type { Personality, PersonalityRow } from './personalityTypes.ts';
 const isProd = process.env.NODE_ENV === 'production';
 
-export async function selectAvatars(): Promise<Avatar[]> {
+export async function selectPersonalities(): Promise<Personality[]> {
   const query = `
-    SELECT * FROM avatars
+    SELECT * FROM personalities
   `;
   try{
-    const { rows } = await pool.query<AvatarRow>(query);
+    const { rows } = await pool.query<PersonalityRow>(query);
     if (rows.length === 0) {
       throw new AppError({
         statusCode: 500,
-        errorMessages: ['No avatars found in database'],
+        errorMessages: ['No personalities found in database'],
       });
     }
     return rows;
@@ -22,7 +22,7 @@ export async function selectAvatars(): Promise<Avatar[]> {
     }
     throw new AppError({
       statusCode: 500,
-      errorMessages: ['Failed to retrieve avatars from database'],
+      errorMessages: ['Failed to retrieve personalities from database'],
       originalError: isProd ? undefined : error as Error,
     });
   }
