@@ -61,7 +61,6 @@ export async function insertUser(userData: NewUser): Promise<Pick<User, 'id'>> {
 
     if (error instanceof AppError) throw error;
 
-    console.error('Database error while inserting user:', error);
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating user'],
