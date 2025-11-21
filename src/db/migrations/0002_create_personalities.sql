@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS personalities (
+    id SERIAL PRIMARY KEY,
+    trait VARCHAR(50) NOT NULL UNIQUE
+);
