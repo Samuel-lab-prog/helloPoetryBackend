@@ -197,3 +197,30 @@ export async function updateUser(userId: number, updates: UpdateUser): Promise<F
     });
   }
 }
+
+export async function updateUserStatus(userId: number, status: string): Promise<null | FullUser> {
+
+  const deleteQuery = status === 'deleted' ? ', deleted_at = NOW()' : ', deleted_at = NULL';
+
+  const query = `
+    UPDATE users
+    SET
+    status = $1,
+    updated_at = NOW()
+    ${deleteQuery}
+    WHERE id = $2
+  `;
+  try {
+    const { rows } = await pool.query(query, [status, userId]);
+    if (rows.length === 0) {
+      return null;
+    }
+    return mapFullUserRowToFullUser(rows[0]);
+  } catch (error) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Database internal error while updating user status'],
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}

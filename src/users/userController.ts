@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullUserToUser } from './userTypes';
 import { generateToken, verifyToken, type Payload } from '../utils/jwt';
-import { insertUser, selectUser, updateUserLastLogin, updateUser } from './userModel';
+import { insertUser, selectUser, updateUserLastLogin, updateUser, updateUserStatus } from './userModel';
 import type { NewUser, UpdateUser, User } from './userTypes';
 
 export async function registerUser(body: NewUser): Promise<Pick<User, 'id'>> {
@@ -43,7 +43,7 @@ export async function loginUser(body: {
   }
   return { token, user: mapFullUserToUser(newUser) };
 }
-export async function updateUserInfo(userId: number, updateData: UpdateUser): Promise<User> {
+export async function setUserInfo(userId: number, updateData: UpdateUser): Promise<User> {
   const updatedUser = await updateUser(userId, updateData);
   if (!updatedUser) {
     throw new AppError({
@@ -66,4 +66,16 @@ export async function authenticateUser(token: string): Promise<User> {
   }
 
   return mapFullUserToUser(user);
+}
+export async function setUserStatus(userId: number, status: string): Promise<User> {
+  const updatedUser = await updateUserStatus(userId, status);
+
+  if (!updatedUser) {
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['User not found'],
+    });
+  }
+
+  return mapFullUserToUser(updatedUser);
 }

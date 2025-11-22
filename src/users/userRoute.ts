@@ -1,12 +1,15 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import { registerUser, loginUser, updateUserInfo, authenticateUser } from './userController';
+import {
+  registerUser,
+  loginUser,
+  setUserInfo,
+} from './userController';
 import {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
   userSchema,
-  tokenSchema,
 } from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
@@ -63,14 +66,10 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
-      .guard({
-        cookie: tokenSchema, // All routes below require authentication
-      })
       .patch(
         '/:id',
-        async ({ params, body, cookie }) => {
-          await authenticateUser(cookie.token.value);
-          return await updateUserInfo(params.id, body);
+        async ({ params, body }) => {
+          return await setUserInfo(params.id, body);
         },
         {
           body: updateUserSchema,
@@ -89,4 +88,19 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
+      .delete('/:id', () => {
+        // To be implemented
+      }, {
+        params: t.Object({ id: t.Number() }),
+        detail: {
+          summary: 'Delete',
+          description: 'Deletes the user with the specified ID. (Not yet implemented)',
+          tags: ['User'],
+        },
+        responses: {
+          204: t.Void(),
+          404: errorSchema,
+          500: errorSchema
+        }
+      })
   );

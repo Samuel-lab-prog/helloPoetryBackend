@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { pool } from '../db/connection.ts';
-import { insertUser, selectUser, updateUser, updateUserLastLogin } from './userModel';
+import { insertUser, selectUser, updateUser, updateUserLastLogin, updateUserStatus } from './userModel';
 import type { NewUser } from './userTypes.ts';
 import { AppError } from '../utils/AppError.ts';
 
@@ -132,5 +132,35 @@ describe('User Model Tests', () => {
     const updated = await selectUser(TEST_USER_1.email);
     expect(updated?.lastLogin).not.toBeNull();
     expect(updated?.lastLogin).not.toEqual(previous);
+  });
+  it('updateUserStatus → Should update status correctly', async () => {
+    const user = await selectUser(TEST_USER_1.email);
+    expect(user).not.toBeNull();
+    const newStatus = 'suspended';
+    await updateUserStatus(user!.id, newStatus);
+    const newUserCheck = await selectUser(TEST_USER_1.email);
+    expect(newUserCheck?.status).toBe(newStatus);
+  });
+  it('updateUserStatus → Should return null for nonexistent user', async () => {
+    const updated = await updateUserStatus(9999, 'active');
+    expect(updated).toBeNull();
+  });
+  it('updateUserStatus → Should set deleted_at correctly when status is deleted', async () => {
+    const user = await selectUser(TEST_USER_1.email);
+    expect(user).not.toBeNull();
+    await updateUserStatus(user!.id, 'deleted');
+    const deletedUser = await selectUser(TEST_USER_1.email);
+    expect(deletedUser?.status).toBe('deleted');
+    expect(deletedUser?.deletedAt).not.toBeNull();
+  });
+  it('updateUserStatus → Should clear deleted_at when status is not deleted', async () => {
+    const user = await selectUser(TEST_USER_1.email);
+    expect(user).not.toBeNull();
+    await updateUserStatus(user!.id, 'deleted');
+    let deletedUser = await selectUser(TEST_USER_1.email);
+    expect(deletedUser?.deletedAt).not.toBeNull();
+    await updateUserStatus(user!.id, 'active');
+    deletedUser = await selectUser(TEST_USER_1.email);
+    expect(deletedUser?.deletedAt).toBeNull();
   });
 });
