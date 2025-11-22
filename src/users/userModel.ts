@@ -1,8 +1,9 @@
-import { pool } from '../db/connection.ts';
 import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
-import type { User, NewUser, FullUser, FullUserRow, UpdateUser } from './userTypes.ts';
+import { pool } from '../db/connection.ts';
 import { mapFullUserRowToFullUser } from './userTypes.ts';
+import type { User, NewUser, FullUser, FullUserRow, UpdateUser } from './userTypes.ts';
+
 const isProd = process.env.NODE_ENV === 'production';
 
 export async function insertUser(userData: NewUser): Promise<Pick<User, 'id'>> {
@@ -11,15 +12,15 @@ export async function insertUser(userData: NewUser): Promise<Pick<User, 'id'>> {
   const fields = ['nickname', 'full_name', 'email', 'password_hash'];
   const values: (string | number)[] = [nickname, fullName, email, password];
 
-  if (bio !== undefined) {
+  if (bio) {
     fields.push('bio');
     values.push(bio);
   }
-  if (avatarId !== undefined) {
+  if (avatarId) {
     fields.push('avatar_id');
     values.push(avatarId);
   }
-  if (personalityId !== undefined) {
+  if (personalityId) {
     fields.push('personality_id');
     values.push(personalityId);
   }
@@ -74,6 +75,13 @@ export async function selectUser(
   id?: number,
   nickname?: string
 ): Promise<FullUser | null> {
+
+  if (!email && !id && !nickname) {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['At least one identifier (email, id, nickname) must be provided to select a user'],
+    });
+  }
 
   let query = '';
   let value: string | number | undefined;
@@ -136,20 +144,17 @@ export async function updateUserLastLogin(userId: number): Promise<FullUser | nu
     });
   }
 }
-export async function updateUser(userId: number, updates: Partial<UpdateUser>): Promise<FullUser | null> {
+export async function updateUser(userId: number, updates: UpdateUser): Promise<FullUser | null> {
   const fields: string[] = [];
   const values: (string | number)[] = [];
   let index = 1;
-  for (const [key, value] of Object.entries(updates)) { // Manually build these ones because of snake_case conversion
-    if (key === 'fullName') {
+  for (const [key, value] of Object.entries(updates)) {
+    if (key === 'fullName') { 
       fields.push(`full_name = $${index}`);
     } else if (key === 'avatarId') {
       fields.push(`avatar_id = $${index}`);
     } else if (key === 'personalityId') {
       fields.push(`personality_id = $${index}`);
-    }
-    else if(key === 'password'){
-      fields.push(`password_hash = $${index}`);
     } else {
       fields.push(`${key} = $${index}`);
     }

@@ -1,14 +1,14 @@
+import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
+import { mapFullUserToUser } from './userTypes';
+import { generateToken, verifyToken, type Payload } from '../utils/jwt';
 import {
   insertUser,
   selectUser,
   updateUserLastLogin,
   updateUser
 } from './userModel';
-import { generateToken, verifyToken, type Payload } from '../utils/jwt';
-import type { NewUser, User } from './userTypes';
-import { mapFullUserToUser } from './userTypes';
-import bcrypt from 'bcryptjs';
+import type { NewUser, UpdateUser, User } from './userTypes';
 
 export async function registerUser(body: NewUser): Promise<Pick<User, 'id'>> {
   const passwordHash = await bcrypt.hash(
@@ -39,7 +39,6 @@ export async function loginUser(body: {
   const token = generateToken({
     id: user.id,
     email: user.email,
-    role: user.role,
   } as Payload);
   const newUser = await updateUserLastLogin(user.id);
   if (!newUser) {
@@ -52,7 +51,7 @@ export async function loginUser(body: {
 }
 export async function updateUserInfo(
   userId: number,
-  updateData: Partial<NewUser>): Promise<User> {
+  updateData: UpdateUser): Promise<User> {
   const updatedUser = await updateUser(userId, updateData);
   if (!updatedUser) {
     throw new AppError({
@@ -61,7 +60,7 @@ export async function updateUserInfo(
     });
   }
 
-  return updatedUser;
+  return mapFullUserToUser(updatedUser);
 }
 export async function authenticateUser(token: string): Promise<User> {
   const payload = verifyToken(token) as Payload;
