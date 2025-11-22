@@ -1,0 +1,23 @@
+------------------
+What I did so far
+------------------
+--> Set up the project structure and environment
+--> Created user registration and login functionality
+--> Designed the database schema for users, avatars and personalities
+--> Implemented user profile management (view and edit)
+------------------
+To do now
+------------------
+--> Create the poems table in the database
+--> Implement CRUD operations for poems
+--> Set up user authentication and authorization
+--> Implement routes for admins to manage users and poems
+-----------------
+To do later
+-----------------
+--> Implement the logic for liking and commenting on poems
+--> Add search functionality for poems
+--> Implement friend/follower system for users
+--> Create a notification system for user interactions
+--> Optimize database queries for better performance
+--> Maybe a private message system between users
