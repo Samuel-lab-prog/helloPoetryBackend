@@ -1,7 +1,18 @@
 import { Elysia, t } from 'elysia';
-import { registerUser, loginUser, updateUserInfo } from './userController';
 import { errorSchema } from '../utils/AppError.ts';
-import { createUserSchema, loginUserSchema, updateUserSchema, userSchema } from './userSchemas';
+import {
+  registerUser,
+  loginUser,
+  updateUserInfo,
+  authenticateUser
+} from './userController';
+import {
+  createUserSchema,
+  loginUserSchema,
+  updateUserSchema,
+  userSchema,
+  tokenSchema
+} from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
   app.group('/users', (app) =>
@@ -58,8 +69,12 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
+      .guard({
+        cookie: tokenSchema, // All routes below require authentication
+      })
       .patch('/:id',
-        async ({ params, body }) => {
+        async ({ params, body, cookie }) => {
+          await authenticateUser(cookie.token.value);
           return await updateUserInfo(params.id, body);
         },
         {

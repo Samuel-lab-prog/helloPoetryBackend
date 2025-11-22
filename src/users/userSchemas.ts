@@ -148,3 +148,15 @@ export const loginUserSchema = t.Object({
   email: emailField,
   password: passwordField,
 });
+
+export const tokenSchema = t.Object({
+  token: t.String({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN',
+    error() {
+      throw new AppError({
+        statusCode: 400,
+        errorMessages: ['Valid token is required'],
+      });
+    }
+  }),
+});

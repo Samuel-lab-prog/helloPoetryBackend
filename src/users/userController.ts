@@ -5,7 +5,7 @@ import {
   updateUserLastLogin,
   updateUser
 } from './userModel';
-import { generateToken, type Payload } from '../utils/jwt';
+import { generateToken, verifyToken, type Payload } from '../utils/jwt';
 import type { NewUser, User } from './userTypes';
 import { mapFullUserToUser } from './userTypes';
 import bcrypt from 'bcryptjs';
@@ -50,7 +50,6 @@ export async function loginUser(body: {
   }
   return { token, user: mapFullUserToUser(newUser) };
 }
-
 export async function updateUserInfo(
   userId: number,
   updateData: Partial<NewUser>): Promise<User> {
@@ -63,4 +62,17 @@ export async function updateUserInfo(
   }
 
   return updatedUser;
+}
+export async function authenticateUser(token: string): Promise<User> {
+  const payload = verifyToken(token) as Payload;
+  const user = await selectUser(undefined, payload.id);
+
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      errorMessages: ['Invalid token: user not found'],
+    });
+  }
+
+  return mapFullUserToUser(user);
 }
