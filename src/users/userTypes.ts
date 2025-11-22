@@ -1,4 +1,4 @@
-import { userSchema, createUserSchema, updateUserSchema, loginUserSchema } from "./userSchemas";
+import { userSchema, createUserSchema, updateUserSchema, loginUserSchema } from './userSchemas';
 
 export type FullUserRow = {
   id: number;
@@ -27,15 +27,20 @@ export type FullUserRow = {
   email_verification_expires: Date | null;
 };
 
-export type UserRow = Omit<FullUserRow,
-'deleted_at' | 'reset_token' | 'reset_token_expires' |
-'email_verification_token' | 'email_verification_expires' | 
-'password_hash'>;
+export type UserRow = Omit<
+  FullUserRow,
+  | 'deleted_at'
+  | 'reset_token'
+  | 'reset_token_expires'
+  | 'email_verification_token'
+  | 'email_verification_expires'
+  | 'password_hash'
+>;
 
-export type User = typeof userSchema['static'];
-export type NewUser = typeof createUserSchema['static'];
-export type LoginUser = typeof loginUserSchema['static'];
-export type UpdateUser = typeof updateUserSchema['static'];
+export type User = (typeof userSchema)['static'];
+export type NewUser = (typeof createUserSchema)['static'];
+export type LoginUser = (typeof loginUserSchema)['static'];
+export type UpdateUser = (typeof updateUserSchema)['static'];
 
 export type FullUser = User & {
   deletedAt: Date | null;

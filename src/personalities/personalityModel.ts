@@ -7,7 +7,7 @@ export async function selectPersonalities(): Promise<Personality[]> {
   const query = `
     SELECT * FROM personalities
   `;
-  try{
+  try {
     const { rows } = await pool.query<PersonalityRow>(query);
     if (rows.length === 0) {
       throw new AppError({
@@ -16,14 +16,14 @@ export async function selectPersonalities(): Promise<Personality[]> {
       });
     }
     return rows;
-  }catch(error){
+  } catch (error) {
     if (error instanceof AppError) {
       throw error;
     }
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Failed to retrieve personalities from database'],
-      originalError: isProd ? undefined : error as Error,
+      originalError: isProd ? undefined : (error as Error),
     });
   }
 }

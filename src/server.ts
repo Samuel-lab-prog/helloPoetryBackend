@@ -1,4 +1,4 @@
-import {Elysia,  redirect} from 'elysia';
+import { Elysia, redirect } from 'elysia';
 import { staticPlugin } from '@elysiajs/static';
 import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';

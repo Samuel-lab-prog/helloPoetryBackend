@@ -1,17 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import {
-  registerUser,
-  loginUser,
-  updateUserInfo,
-  authenticateUser
-} from './userController';
+import { registerUser, loginUser, updateUserInfo, authenticateUser } from './userController';
 import {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
   userSchema,
-  tokenSchema
+  tokenSchema,
 } from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
@@ -27,9 +22,7 @@ export const userRoutes = (app: Elysia) =>
         {
           body: createUserSchema,
           response: {
-            201: t.Object(
-              { id: t.Number() },
-            ),
+            201: t.Object({ id: t.Number() }),
             400: errorSchema,
             409: errorSchema,
             500: errorSchema,
@@ -64,7 +57,8 @@ export const userRoutes = (app: Elysia) =>
           },
           detail: {
             summary: 'Login',
-            description: 'Authenticates the user, returns it\'s info and sets a JWT token in a cookie.',
+            description:
+              "Authenticates the user, returns it's info and sets a JWT token in a cookie.",
             tags: ['User'],
           },
         }
@@ -72,7 +66,8 @@ export const userRoutes = (app: Elysia) =>
       .guard({
         cookie: tokenSchema, // All routes below require authentication
       })
-      .patch('/:id',
+      .patch(
+        '/:id',
         async ({ params, body, cookie }) => {
           await authenticateUser(cookie.token.value);
           return await updateUserInfo(params.id, body);
@@ -88,7 +83,8 @@ export const userRoutes = (app: Elysia) =>
           },
           detail: {
             summary: 'Update',
-            description: 'Updates user details for the specified user ID. Returns the updated user object.',
+            description:
+              'Updates user details for the specified user ID. Returns the updated user object.',
             tags: ['User'],
           },
         }

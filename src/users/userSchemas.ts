@@ -49,17 +49,16 @@ export const passwordField = t.String({
   },
 });
 
-export const bioField =
-  t.String({
-    maxLength: 500,
-    example: 'I love chaos and mischief!',
-    error() {
-      throw new AppError({
-        statusCode: 400,
-        errorMessages: ['Bio must have at most 500 characters'],
-      });
-    },
-  });
+export const bioField = t.String({
+  maxLength: 500,
+  example: 'I love chaos and mischief!',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['Bio must have at most 500 characters'],
+    });
+  },
+});
 
 export const roleField = t.String({
   enum: ['user', 'admin', 'collaborator'],
@@ -85,29 +84,27 @@ export const userStatusField = t.String({
 
 export const dateFormat = t.Date({ coerce: true });
 
-export const avatarIdField =
-  t.Number({
-    minimum: 1,
-    example: 3,
-    error() {
-      throw new AppError({
-        statusCode: 400,
-        errorMessages: ['avatarId must be a valid number'],
-      });
-    },
-  });
+export const avatarIdField = t.Number({
+  minimum: 1,
+  example: 3,
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['avatarId must be a valid number'],
+    });
+  },
+});
 
-export const personalityIdField =
-  t.Number({
-    minimum: 1,
-    example: 1,
-    error() {
-      throw new AppError({
-        statusCode: 400,
-        errorMessages: ['personalityId must be a valid number'],
-      });
-    },
-  });
+export const personalityIdField = t.Number({
+  minimum: 1,
+  example: 1,
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['personalityId must be a valid number'],
+    });
+  },
+});
 
 export const userSchema = t.Object({
   id: t.Number(),
@@ -142,7 +139,8 @@ export const updateUserSchema = t.Partial(
     bio: bioField,
     avatarId: avatarIdField,
     personalityId: personalityIdField,
-  }));
+  })
+);
 
 export const loginUserSchema = t.Object({
   email: emailField,
@@ -157,6 +155,6 @@ export const tokenSchema = t.Object({
         statusCode: 400,
         errorMessages: ['Valid token is required'],
       });
-    }
+    },
   }),
 });

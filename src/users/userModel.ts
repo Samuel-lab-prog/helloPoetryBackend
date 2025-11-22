@@ -75,11 +75,12 @@ export async function selectUser(
   id?: number,
   nickname?: string
 ): Promise<FullUser | null> {
-
   if (!email && !id && !nickname) {
     throw new AppError({
       statusCode: 400,
-      errorMessages: ['At least one identifier (email, id, nickname) must be provided to select a user'],
+      errorMessages: [
+        'At least one identifier (email, id, nickname) must be provided to select a user',
+      ],
     });
   }
 
@@ -149,7 +150,7 @@ export async function updateUser(userId: number, updates: UpdateUser): Promise<F
   const values: (string | number)[] = [];
   let index = 1;
   for (const [key, value] of Object.entries(updates)) {
-    if (key === 'fullName') { 
+    if (key === 'fullName') {
       fields.push(`full_name = $${index}`);
     } else if (key === 'avatarId') {
       fields.push(`avatar_id = $${index}`);
@@ -196,8 +197,3 @@ export async function updateUser(userId: number, updates: UpdateUser): Promise<F
     });
   }
 }
-
-
-
-
-

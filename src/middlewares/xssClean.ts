@@ -15,7 +15,7 @@ function sanitize(value: any): any {
   return value;
 }
 
-export function xssClean(ctx: Context){
+export function xssClean(ctx: Context) {
   if (ctx.body) ctx.body = sanitize(ctx.body);
   if (ctx.query) ctx.query = sanitize(ctx.query);
   if (ctx.params) ctx.params = sanitize(ctx.params);

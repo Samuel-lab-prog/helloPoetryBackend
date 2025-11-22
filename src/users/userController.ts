@@ -2,12 +2,7 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullUserToUser } from './userTypes';
 import { generateToken, verifyToken, type Payload } from '../utils/jwt';
-import {
-  insertUser,
-  selectUser,
-  updateUserLastLogin,
-  updateUser
-} from './userModel';
+import { insertUser, selectUser, updateUserLastLogin, updateUser } from './userModel';
 import type { NewUser, UpdateUser, User } from './userTypes';
 
 export async function registerUser(body: NewUser): Promise<Pick<User, 'id'>> {
@@ -26,7 +21,6 @@ export async function loginUser(body: {
   email: string;
   password: string;
 }): Promise<{ token: string; user: User }> {
-
   const user = await selectUser(body.email);
 
   if (!user || !(await bcrypt.compare(body.password, user.passwordHash))) {
@@ -49,9 +43,7 @@ export async function loginUser(body: {
   }
   return { token, user: mapFullUserToUser(newUser) };
 }
-export async function updateUserInfo(
-  userId: number,
-  updateData: UpdateUser): Promise<User> {
+export async function updateUserInfo(userId: number, updateData: UpdateUser): Promise<User> {
   const updatedUser = await updateUser(userId, updateData);
   if (!updatedUser) {
     throw new AppError({

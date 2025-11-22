@@ -7,7 +7,7 @@ export async function selectAvatars(): Promise<Avatar[]> {
   const query = `
     SELECT * FROM avatars
   `;
-  try{
+  try {
     const { rows } = await pool.query<AvatarRow>(query);
     if (rows.length === 0) {
       throw new AppError({
@@ -16,14 +16,14 @@ export async function selectAvatars(): Promise<Avatar[]> {
       });
     }
     return rows;
-  }catch(error){
+  } catch (error) {
     if (error instanceof AppError) {
       throw error;
     }
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Failed to retrieve avatars from database'],
-      originalError: isProd ? undefined : error as Error,
+      originalError: isProd ? undefined : (error as Error),
     });
   }
 }
