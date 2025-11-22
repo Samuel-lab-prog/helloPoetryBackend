@@ -2,7 +2,7 @@
 // Missing test in updateUser --> Should troeow AppError when updating
 // to an existing nickname
 
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach, afterAll } from 'bun:test';
 import { pool } from '../db/connection.ts';
 import { insertUser, selectUser, updateUser, updateUserLastLogin, updateUserStatus } from './userModel';
 import type { NewUser } from './userTypes.ts';
@@ -31,6 +31,9 @@ const TEST_USER_2: NewUser = {
 beforeEach(async () => {
   await pool.query('TRUNCATE TABLE users RESTART IDENTITY;');
   await insertUser(TEST_USER_1);
+});
+afterAll(async () => {
+  await pool.query('TRUNCATE TABLE users RESTART IDENTITY;');
 });
 
 describe('User Model Tests', () => {

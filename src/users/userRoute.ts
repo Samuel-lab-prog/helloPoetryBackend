@@ -4,12 +4,15 @@ import {
   registerUser,
   loginUser,
   setUserInfo,
+  authenticateUser,
+  setUserStatus,
 } from './userController';
 import {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
   userSchema,
+  tokenSchema
 } from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
@@ -66,10 +69,15 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
+      .guard({ // All routes below require authentication
+        cookie: tokenSchema,
+      })
       .patch(
         '/:id',
-        async ({ params, body }) => {
-          return await setUserInfo(params.id, body);
+        async ({ params, body, cookie }) => {
+          await authenticateUser(cookie.token.value);
+          const updatedUser = await setUserInfo(params.id, body);
+          return updatedUser;
         },
         {
           body: updateUserSchema,
@@ -88,13 +96,15 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
-      .delete('/:id', () => {
-        // To be implemented
+      .delete('/:id', async ({ params, cookie }) => {
+        await authenticateUser(cookie.token.value);
+        await setUserStatus(params.id, 'deleted');
+        return null;
       }, {
         params: t.Object({ id: t.Number() }),
         detail: {
           summary: 'Delete',
-          description: 'Deletes the user with the specified ID. (Not yet implemented)',
+          description: 'Deletes the user with the specified ID. Returns no content.',
           tags: ['User'],
         },
         responses: {

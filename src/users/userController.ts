@@ -67,6 +67,29 @@ export async function authenticateUser(token: string): Promise<User> {
 
   return mapFullUserToUser(user);
 }
+
+export async function isAdminUser(userId: number): Promise<boolean> {
+  const user = await selectUser(undefined, userId);
+  if (!user){
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['User not found'],
+    });
+  }
+  return user.role === 'admin';
+}
+
+export async function isCollaboratorUser(userId: number): Promise<boolean> {
+  const user = await selectUser(undefined, userId);
+  if (!user){
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['User not found'],
+    });
+  }
+  return user.role === 'collaborator' || user.role === 'admin';
+}
+
 export async function setUserStatus(userId: number, status: string): Promise<User> {
   const updatedUser = await updateUserStatus(userId, status);
 

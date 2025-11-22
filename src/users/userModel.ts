@@ -209,6 +209,7 @@ export async function updateUserStatus(userId: number, status: string): Promise<
     updated_at = NOW()
     ${deleteQuery}
     WHERE id = $2
+    RETURNING id
   `;
   try {
     const { rows } = await pool.query(query, [status, userId]);
