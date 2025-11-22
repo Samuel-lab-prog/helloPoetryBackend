@@ -23,7 +23,7 @@ export async function loginUser(body: {
 }): Promise<{ token: string; user: User }> {
   const user = await selectUser(body.email);
 
-  if (!user || !(await bcrypt.compare(body.password, user.passwordHash))) {
+  if (!user || !(await bcrypt.compare(body.password, user.passwordHash)) || user.status === 'deleted') {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid credentials'],
@@ -35,7 +35,7 @@ export async function loginUser(body: {
     email: user.email,
   } as Payload);
   const newUser = await updateUserLastLogin(user.id);
-  if (!newUser) {
+  if (!newUser || newUser.status === 'deleted') {
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Failed to update last login'],
@@ -45,7 +45,7 @@ export async function loginUser(body: {
 }
 export async function setUserInfo(userId: number, updateData: UpdateUser): Promise<User> {
   const updatedUser = await updateUser(userId, updateData);
-  if (!updatedUser) {
+  if (!updatedUser || updatedUser.status === 'deleted') {
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Failed to update user'],
@@ -70,7 +70,7 @@ export async function authenticateUser(token: string): Promise<User> {
 
 export async function isAdminUser(userId: number): Promise<boolean> {
   const user = await selectUser(undefined, userId);
-  if (!user){
+  if (!user || user.status === 'deleted'){
     throw new AppError({
       statusCode: 404,
       errorMessages: ['User not found'],
@@ -81,7 +81,7 @@ export async function isAdminUser(userId: number): Promise<boolean> {
 
 export async function isCollaboratorUser(userId: number): Promise<boolean> {
   const user = await selectUser(undefined, userId);
-  if (!user){
+  if (!user || user.status === 'deleted'){
     throw new AppError({
       statusCode: 404,
       errorMessages: ['User not found'],
@@ -93,7 +93,7 @@ export async function isCollaboratorUser(userId: number): Promise<boolean> {
 export async function setUserStatus(userId: number, status: string): Promise<User> {
   const updatedUser = await updateUserStatus(userId, status);
 
-  if (!updatedUser) {
+  if (!updatedUser || updatedUser.status === 'deleted') {
     throw new AppError({
       statusCode: 404,
       errorMessages: ['User not found'],
