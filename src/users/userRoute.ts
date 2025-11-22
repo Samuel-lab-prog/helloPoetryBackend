@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
-import { registerUser, loginUser } from './userController';
+import { registerUser, loginUser, updateUserInfo } from './userController';
 import { errorSchema } from '../utils/AppError.ts';
-import { createUserSchema, loginUserSchema, userSchema } from './userSchemas';
+import { createUserSchema, loginUserSchema, updateUserSchema, userSchema } from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
   app.group('/users', (app) =>
@@ -24,7 +24,7 @@ export const userRoutes = (app: Elysia) =>
             500: errorSchema,
           },
           detail: {
-            summary: 'Register a new user',
+            summary: 'Register',
             description: 'Creates a new user. Returns an object with the new user ID.',
             tags: ['User'],
           },
@@ -52,8 +52,28 @@ export const userRoutes = (app: Elysia) =>
             500: errorSchema,
           },
           detail: {
-            summary: 'Login a user',
+            summary: 'Login',
             description: 'Authenticates the user, returns it\'s info and sets a JWT token in a cookie.',
+            tags: ['User'],
+          },
+        }
+      )
+      .patch('/:id',
+        async ({ params, body }) => {
+          return await updateUserInfo(params.id, body);
+        },
+        {
+          body: updateUserSchema,
+          params: t.Object({ id: t.Number() }),
+          response: {
+            200: userSchema,
+            400: errorSchema,
+            409: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Update',
+            description: 'Updates user details for the specified user ID. Returns the updated user object.',
             tags: ['User'],
           },
         }

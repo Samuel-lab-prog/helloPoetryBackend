@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
 import { pool } from "../db/connection.ts";
-import { insertUser, selectUser } from "./userModel";
+import {
+  insertUser,
+  selectUser,
+  updateUser,
+  updateUserLastLogin
+} from "./userModel";
 import type { NewUser } from "./userTypes.ts";
 import { AppError } from "../utils/AppError.ts";
 
@@ -44,7 +49,7 @@ describe("User Model Tests", () => {
   it("Should select user by nickname correctly", async () => {
     const user = await selectUser(undefined, undefined, 'testuser');
     expect(user).not.toBeNull();
-    expect(user?.nickname).toBe(TEST_USER_1 .nickname);
+    expect(user?.nickname).toBe(TEST_USER_1.nickname);
   });
   it("Should select user by id correctly", async () => {
     const inserted = await insertUser({
@@ -84,5 +89,32 @@ describe("User Model Tests", () => {
       email: "newemail@example.com",
     };
     expect(insertUser(userWithSameNickname)).rejects.toThrow(AppError);
+  });
+  it("Should update user last login", async () => {
+    const user = await selectUser(TEST_USER_1.email);
+    expect(user).not.toBeNull();
+    const previous = user!.lastLogin;
+    await updateUserLastLogin(user!.id);
+    const updatedUser = await selectUser(TEST_USER_1.email);
+    expect(updatedUser?.lastLogin).not.toBeNull();
+    expect(updatedUser?.lastLogin).not.toEqual(previous);
+  });
+  it("Should update user details", async () => {
+    const user = await selectUser(TEST_USER_1.email);
+    expect(user).not.toBeNull();
+    const updates = {
+      fullName: "Updated Name",
+      bio: "Updated bio",
+    };
+    const updatedUser = await updateUser(user!.id, updates);
+    expect(updatedUser).not.toBeNull();
+    expect(updatedUser?.fullName).toBe("Updated Name");
+    expect(updatedUser?.bio).toBe("Updated bio");
+    expect(updatedUser?.email).toBe(user!.email);
+    expect(updatedUser?.id).toBe(user!.id);
+  });
+  it("Should return null when updating nonexistent user", async () => {
+    const updatedUser = await updateUser(9999, { fullName: "No User" });
+    expect(updatedUser).toBeNull();
   });
 });

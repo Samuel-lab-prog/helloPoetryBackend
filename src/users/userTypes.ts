@@ -73,3 +73,21 @@ export function mapFullUserRowToFullUser(row: FullUserRow): FullUser {
       : null,
   };
 }
+
+export function mapFullUserToUser(user: FullUser): User {
+  return {
+    id: user.id,
+    nickname: user.nickname,
+    fullName: user.fullName,
+    email: user.email,
+    status: user.status,
+    bio: user.bio,
+    role: user.role,
+    avatarId: user.avatarId,
+    personalityId: user.personalityId,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    lastLogin: user.lastLogin,
+    emailVerified: user.emailVerified,
+  };
+}

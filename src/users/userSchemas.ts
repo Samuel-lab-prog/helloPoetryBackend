@@ -85,8 +85,6 @@ export const userStatusField = t.String({
 
 export const dateFormat = t.Date({ coerce: true });
 
-// --- FOREIGN KEYS ---
-
 export const avatarIdField =
   t.Number({
     minimum: 1,
