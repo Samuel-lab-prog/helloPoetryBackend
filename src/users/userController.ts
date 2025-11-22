@@ -58,7 +58,7 @@ export async function authenticateUser(token: string): Promise<User> {
   const payload = verifyToken(token) as Payload;
   const user = await selectUser(undefined, payload.id);
 
-  if (!user) {
+  if (!user || user.status === 'deleted') {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid token: user not found'],

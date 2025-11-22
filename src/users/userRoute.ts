@@ -96,9 +96,10 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
-      .delete('/:id', async ({ params, cookie }) => {
+      .delete('/:id', async ({ params, cookie, set }) => {
         await authenticateUser(cookie.token.value);
         await setUserStatus(params.id, 'deleted');
+        set.status = 204;
         return null;
       }, {
         params: t.Object({ id: t.Number() }),
