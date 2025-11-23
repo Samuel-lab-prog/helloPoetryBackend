@@ -28,7 +28,7 @@
     "test": "bun test",
     "migrate": "bun run src/db/scripts/runMigration.ts",
     "seed": "bun run src/db/scripts/runSeeds.ts",
-    "reset-db": "bun run src/db/scripts/resetDb.ts",
+    "reset-db": "bun run src/db/scripts/clearDb.ts",
     "restart": "bun run reset-db && bun run migrate && bun run seed"
   },
   "dependencies": {

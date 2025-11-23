@@ -27,6 +27,8 @@ const DEFAULT_USER: NewUser = {
   personalityId: 1,
 };
 
+let DEFAULT_USER_ID: number;
+
 const NEW_USER: NewUser = {
   nickname: 'testuser2',
   fullName: 'Test User 2',
@@ -38,8 +40,9 @@ const NEW_USER: NewUser = {
 };
 
 beforeEach(async () => {
-  await pool.query('TRUNCATE TABLE users RESTART IDENTITY;');
-  await insertUser(DEFAULT_USER);
+  await pool.query('DELETE FROM users;');
+  await pool.query('ALTER SEQUENCE users_id_seq RESTART WITH 1;');
+  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
 });
 
 describe('User Model Tests', () => {
@@ -49,7 +52,7 @@ describe('User Model Tests', () => {
     expect(typeof result.id).toBe('number');
   });
   it('insertUser → Should throw AppError for duplicated email', async () => {
-    await expect(
+   expect(
       insertUser({
         nickname: 'unique',
         fullName: 'Unique',
@@ -59,7 +62,7 @@ describe('User Model Tests', () => {
     ).rejects.toThrow(AppError);
   });
   it('insertUser → Should throw AppError for duplicated nickname', async () => {
-    await expect(
+   expect(
       insertUser({
         nickname: DEFAULT_USER.nickname,
         fullName: 'Another',
@@ -84,10 +87,9 @@ describe('User Model Tests', () => {
     expect(user?.nickname).toBe(DEFAULT_USER.nickname);
   });
   it('selectUserById → Should select by id', async () => {
-    const inserted = await insertUser(NEW_USER);
-    const user = await selectUserById(inserted.id);
+    const user = await selectUserById(DEFAULT_USER_ID);
     expect(user).not.toBeNull();
-    expect(user?.id).toBe(inserted.id);
+    expect(user?.id).toBe(DEFAULT_USER_ID);
   });
   it('selectUserByEmail → Should select by email', async () => {
     const user = await selectUserByEmail(DEFAULT_USER.email);

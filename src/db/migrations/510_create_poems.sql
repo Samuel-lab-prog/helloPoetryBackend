@@ -14,7 +14,7 @@ CREATE TABLE poems (
             'unlisted'
         )
     ),
-    status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (
         status IN ('draft', 'published')
     ),
     likes_count INT NOT NULL DEFAULT 0,

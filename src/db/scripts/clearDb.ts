@@ -1,6 +1,6 @@
 import { pool } from '../connection';
 
-async function resetDb() {
+async function clearDb() {
   await pool.query(`
     DROP TABLE IF EXISTS poem_tags;
     DROP TABLE IF EXISTS poems;
@@ -15,4 +15,4 @@ async function resetDb() {
   process.exit(0);
 }
 
-resetDb();
+clearDb();

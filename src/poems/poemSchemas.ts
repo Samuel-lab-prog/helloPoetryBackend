@@ -158,7 +158,4 @@ export const insertPoemSchema = t.Object({
   content: poemContentField,
   userId: idField,
   slug: poemSlugField,
-  moderationStatus: t.Optional(poemModerationStatusField),
-  visibility: t.Optional(poemVisibilityField),
-  status: t.Optional(poemStatusField)
 });
