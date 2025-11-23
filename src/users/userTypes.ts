@@ -3,12 +3,12 @@ import { userSchema, createUserSchema, updateUserSchema, loginUserSchema } from 
 export type FullUserRow = {
   id: number;
   nickname: string;
-  full_name: string;
   email: string;
   password_hash: string;
 
-  status: 'active' | 'suspended' | 'banned' | 'deleted';
-  bio: string;
+  full_name: string | null;
+  bio: string | null;
+  status: 'active' | 'suspended' | 'banned';
   role: 'user' | 'admin' | 'collaborator';
 
   avatar_id: number;
@@ -26,16 +26,6 @@ export type FullUserRow = {
   email_verification_token: string | null;
   email_verification_expires: Date | null;
 };
-
-export type UserRow = Omit<
-  FullUserRow,
-  | 'deleted_at'
-  | 'reset_token'
-  | 'reset_token_expires'
-  | 'email_verification_token'
-  | 'email_verification_expires'
-  | 'password_hash'
->;
 
 export type User = (typeof userSchema)['static'];
 export type NewUser = (typeof createUserSchema)['static'];
@@ -55,12 +45,12 @@ export function mapFullUserRowToFullUser(row: FullUserRow): FullUser {
   return {
     id: row.id,
     nickname: row.nickname,
-    fullName: row.full_name,
     email: row.email,
     status: row.status,
-    bio: row.bio,
     role: row.role,
 
+    bio: row.bio ? row.bio : null,
+    fullName: row.full_name ? row.full_name : null,
     avatarId: row.avatar_id,
     personalityId: row.personality_id,
 

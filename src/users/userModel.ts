@@ -5,13 +5,58 @@ import { mapFullUserRowToFullUser } from './userTypes.ts';
 import type { User, NewUser, FullUser, FullUserRow, UpdateUser } from './userTypes.ts';
 
 const isProd = process.env.NODE_ENV === 'production';
+// Internal helper to select user by a specific field
+async function selectUserInternal(
+  field: 'email' | 'id' | 'nickname',
+  value: string | number
+): Promise<FullUser | null> {
+  const query = `SELECT * FROM users WHERE ${field} = $1 LIMIT 2`;
+
+  try {
+    const { rows } = await pool.query<FullUserRow>(query, [value]);
+
+    if (!rows[0]) return null;
+
+    if (rows.length > 1) {
+      throw new AppError({
+        statusCode: 500,
+        errorMessages: [`Duplicate users detected for ${field}: ${value}`],
+      });
+    }
+
+    return mapFullUserRowToFullUser(rows[0]);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Database internal error while fetching user'],
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+export async function selectUserByEmail(email: string): Promise<FullUser | null> {
+  return await selectUserInternal('email', email);
+}
+
+export async function selectUserById(id: number): Promise<FullUser | null> {
+  return await selectUserInternal('id', id);
+}
+
+export async function selectUserByNickname(nickname: string): Promise<FullUser | null> {
+  return await selectUserInternal('nickname', nickname);
+}
 
 export async function insertUser(userData: NewUser): Promise<Pick<User, 'id'>> {
   const { nickname, fullName, email, password, bio, avatarId, personalityId } = userData;
 
-  const fields = ['nickname', 'full_name', 'email', 'password_hash'];
-  const values: (string | number)[] = [nickname, fullName, email, password];
+  const fields = ['nickname', 'email', 'password_hash'];
+  const values: (string | number)[] = [nickname, email, password];
 
+  if (fullName) {
+    fields.push('full_name');
+    values.push(fullName);
+  }
   if (bio) {
     fields.push('bio');
     values.push(bio);
@@ -65,60 +110,6 @@ export async function insertUser(userData: NewUser): Promise<Pick<User, 'id'>> {
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating user'],
-      originalError: isProd ? undefined : (error as Error),
-    });
-  }
-}
-
-export async function selectUser(
-  email?: string,
-  id?: number,
-  nickname?: string
-): Promise<FullUser | null> {
-  if (!email && !id && !nickname) {
-    throw new AppError({
-      statusCode: 400,
-      errorMessages: [
-        'At least one identifier (email, id, nickname) must be provided to select a user',
-      ],
-    });
-  }
-
-  let query = '';
-  let value: string | number | undefined;
-
-  if (email !== undefined) {
-    query = 'SELECT * FROM users WHERE email = $1 LIMIT 2';
-    value = email;
-  } else if (id !== undefined) {
-    query = 'SELECT * FROM users WHERE id = $1 LIMIT 2';
-    value = id;
-  } else if (nickname !== undefined) {
-    query = 'SELECT * FROM users WHERE nickname = $1 LIMIT 2';
-    value = nickname;
-  }
-
-  try {
-    const { rows } = await pool.query<FullUserRow>(query, [value]);
-
-    if (!rows[0]) return null;
-
-    if (rows.length > 1) {
-      throw new AppError({
-        statusCode: 500,
-        errorMessages: [`Duplicate users detected for ${value}`],
-      });
-    }
-
-    const row = rows[0];
-
-    return mapFullUserRowToFullUser(row);
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: ['Database internal error while fetching user'],
       originalError: isProd ? undefined : (error as Error),
     });
   }
@@ -199,15 +190,11 @@ export async function updateUser(userId: number, updates: UpdateUser): Promise<F
 }
 
 export async function updateUserStatus(userId: number, status: string): Promise<null | FullUser> {
-
-  const deleteQuery = status === 'deleted' ? ', deleted_at = NOW()' : ', deleted_at = NULL';
-
   const query = `
     UPDATE users
     SET
     status = $1,
     updated_at = NOW()
-    ${deleteQuery}
     WHERE id = $2
     RETURNING id
   `;
@@ -221,6 +208,30 @@ export async function updateUserStatus(userId: number, status: string): Promise<
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while updating user status'],
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function deleteUser(userId: number): Promise<FullUser | null> {
+  const query = `
+    UPDATE users
+    SET
+    deleted_at = NOW(),
+    updated_at = NOW()
+    WHERE id = $1
+    RETURNING id
+  `;
+  try {
+    const { rows } = await pool.query(query, [userId]);
+    if (rows.length === 0) {
+      return null;
+    }
+    return mapFullUserRowToFullUser(rows[0]);
+  } catch (error) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Database internal error while deleting user'],
       originalError: isProd ? undefined : (error as Error),
     });
   }

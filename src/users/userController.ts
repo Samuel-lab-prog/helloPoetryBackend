@@ -2,8 +2,34 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullUserToUser } from './userTypes';
 import { generateToken, verifyToken, type Payload } from '../utils/jwt';
-import { insertUser, selectUser, updateUserLastLogin, updateUser, updateUserStatus } from './userModel';
-import type { NewUser, UpdateUser, User } from './userTypes';
+import {
+  insertUser,
+  selectUserByEmail,
+  selectUserById,
+  updateUserLastLogin,
+  updateUser,
+  updateUserStatus,
+  deleteUser,
+} from './userModel';
+import type { FullUser, NewUser, UpdateUser, User } from './userTypes';
+
+function ensureUserExists(user: FullUser | null): void {
+  if (!user) {
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['User not found'],
+    });
+  }
+}
+
+function ensureUserNotDeleted(user: FullUser | null): void {
+  if (user?.deletedAt) {
+    throw new AppError({
+      statusCode: 410,
+      errorMessages: ['User has been deleted'],
+    });
+  }
+}
 
 export async function registerUser(body: NewUser): Promise<Pick<User, 'id'>> {
   const passwordHash = await bcrypt.hash(
@@ -21,9 +47,11 @@ export async function loginUser(body: {
   email: string;
   password: string;
 }): Promise<{ token: string; user: User }> {
-  const user = await selectUser(body.email);
+  const user = await selectUserByEmail(body.email);
+  ensureUserExists(user);
+  ensureUserNotDeleted(user);
 
-  if (!user || !(await bcrypt.compare(body.password, user.passwordHash)) || user.status === 'deleted') {
+  if (!(await bcrypt.compare(body.password, user!.passwordHash))) {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid credentials'],
@@ -31,74 +59,36 @@ export async function loginUser(body: {
   }
 
   const token = generateToken({
-    id: user.id,
-    email: user.email,
+    id: user!.id,
+    email: user!.email,
   } as Payload);
-  const newUser = await updateUserLastLogin(user.id);
-  if (!newUser || newUser.status === 'deleted') {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: ['Failed to update last login'],
-    });
-  }
-  return { token, user: mapFullUserToUser(newUser) };
+  const newUser = await updateUserLastLogin(user!.id);
+  ensureUserExists(newUser);
+  return { token, user: mapFullUserToUser(newUser!) };
 }
 export async function setUserInfo(userId: number, updateData: UpdateUser): Promise<User> {
   const updatedUser = await updateUser(userId, updateData);
-  if (!updatedUser || updatedUser.status === 'deleted') {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: ['Failed to update user'],
-    });
-  }
-
-  return mapFullUserToUser(updatedUser);
+  ensureUserExists(updatedUser);
+  ensureUserNotDeleted(updatedUser);
+  return mapFullUserToUser(updatedUser!);
 }
 export async function authenticateUser(token: string): Promise<User> {
   const payload = verifyToken(token) as Payload;
-  const user = await selectUser(undefined, payload.id);
-
-  if (!user || user.status === 'deleted') {
-    throw new AppError({
-      statusCode: 401,
-      errorMessages: ['Invalid token: user not found'],
-    });
-  }
-
-  return mapFullUserToUser(user);
-}
-
-export async function isAdminUser(userId: number): Promise<boolean> {
-  const user = await selectUser(undefined, userId);
-  if (!user || user.status === 'deleted'){
-    throw new AppError({
-      statusCode: 404,
-      errorMessages: ['User not found'],
-    });
-  }
-  return user.role === 'admin';
-}
-
-export async function isCollaboratorUser(userId: number): Promise<boolean> {
-  const user = await selectUser(undefined, userId);
-  if (!user || user.status === 'deleted'){
-    throw new AppError({
-      statusCode: 404,
-      errorMessages: ['User not found'],
-    });
-  }
-  return user.role === 'collaborator' || user.role === 'admin';
+  const user = await selectUserById(payload.id);
+  ensureUserExists(user);
+  ensureUserNotDeleted(user);
+  return mapFullUserToUser(user!);
 }
 
 export async function setUserStatus(userId: number, status: string): Promise<User> {
   const updatedUser = await updateUserStatus(userId, status);
+  ensureUserExists(updatedUser);
+  ensureUserNotDeleted(updatedUser);
+  return mapFullUserToUser(updatedUser!);
+}
 
-  if (!updatedUser || updatedUser.status === 'deleted') {
-    throw new AppError({
-      statusCode: 404,
-      errorMessages: ['User not found'],
-    });
-  }
-
-  return mapFullUserToUser(updatedUser);
+export async function removeUser(userId: number): Promise<User> {
+  const deletedUser = await deleteUser(userId);
+  ensureUserExists(deletedUser);
+  return mapFullUserToUser(deletedUser!);
 }

@@ -72,7 +72,7 @@ export const roleField = t.String({
 });
 
 export const userStatusField = t.String({
-  enum: ['active', 'suspended', 'banned', 'deleted'],
+  enum: ['active', 'suspended', 'banned'],
   example: 'active',
   error() {
     throw new AppError({
@@ -109,14 +109,14 @@ export const personalityIdField = t.Number({
 export const userSchema = t.Object({
   id: t.Number(),
   nickname: nicknameField,
-  fullName: fullNameField,
   email: emailField,
   role: roleField,
-  bio: bioField,
-  avatarId: avatarIdField,
-  personalityId: personalityIdField,
   status: userStatusField,
   createdAt: dateFormat,
+  avatarId: t.Nullable(avatarIdField),
+  personalityId: t.Nullable(personalityIdField),
+  fullName: t.Nullable(fullNameField),
+  bio: t.Nullable(bioField),
   updatedAt: t.Nullable(dateFormat),
   lastLogin: t.Nullable(dateFormat),
   emailVerified: t.Boolean(),
@@ -124,9 +124,9 @@ export const userSchema = t.Object({
 
 export const createUserSchema = t.Object({
   nickname: nicknameField,
-  fullName: fullNameField,
   email: emailField,
   password: passwordField,
+  fullName: t.Optional(fullNameField),
   bio: t.Optional(bioField),
   avatarId: t.Optional(avatarIdField),
   personalityId: t.Optional(personalityIdField),

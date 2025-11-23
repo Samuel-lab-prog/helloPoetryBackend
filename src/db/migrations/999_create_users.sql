@@ -2,13 +2,13 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
 
     nickname VARCHAR(30) NOT NULL UNIQUE,
-    full_name VARCHAR(50) NOT NULL,
+    full_name VARCHAR(50) DEFAULT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
 
-    status VARCHAR(20) NOT NULL DEFAULT 'active',
-    bio VARCHAR(500) NOT NULL DEFAULT 'A normal cute user.',
-    role VARCHAR(20) NOT NULL DEFAULT 'user',
+    status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'banned')),
+    bio VARCHAR(500) DEFAULT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin', 'collaborator')),
 
     avatar_id INT DEFAULT NULL,
     personality_id INT DEFAULT NULL,

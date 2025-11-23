@@ -5,14 +5,14 @@ import {
   loginUser,
   setUserInfo,
   authenticateUser,
-  setUserStatus,
+  removeUser,
 } from './userController';
 import {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
   userSchema,
-  tokenSchema
+  tokenSchema,
 } from './userSchemas';
 
 export const userRoutes = (app: Elysia) =>
@@ -31,6 +31,7 @@ export const userRoutes = (app: Elysia) =>
             201: t.Object({ id: t.Number() }),
             400: errorSchema,
             409: errorSchema,
+            410: errorSchema,
             500: errorSchema,
           },
           detail: {
@@ -59,6 +60,7 @@ export const userRoutes = (app: Elysia) =>
             200: userSchema,
             400: errorSchema,
             401: errorSchema,
+            410: errorSchema,
             500: errorSchema,
           },
           detail: {
@@ -69,7 +71,8 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
-      .guard({ // All routes below require authentication
+      .guard({
+        // All routes below require authentication
         cookie: tokenSchema,
       })
       .patch(
@@ -86,6 +89,7 @@ export const userRoutes = (app: Elysia) =>
             200: userSchema,
             400: errorSchema,
             409: errorSchema,
+            410: errorSchema,
             500: errorSchema,
           },
           detail: {
@@ -96,22 +100,25 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
-      .delete('/:id', async ({ params, cookie, set }) => {
-        await authenticateUser(cookie.token.value);
-        await setUserStatus(params.id, 'deleted');
-        set.status = 204;
-        return null;
-      }, {
-        params: t.Object({ id: t.Number() }),
-        detail: {
-          summary: 'Delete',
-          description: 'Deletes the user with the specified ID. Returns no content.',
-          tags: ['User'],
+      .delete(
+        '/:id',
+        async ({ params, cookie }) => {
+          await authenticateUser(cookie.token.value);
+          return await removeUser(params.id);
         },
-        responses: {
-          204: t.Void(),
-          404: errorSchema,
-          500: errorSchema
+        {
+          params: t.Object({ id: t.Number() }),
+          detail: {
+            summary: 'Delete',
+            description: 'Deletes the user with the specified ID. Returns the deleted user object.',
+            tags: ['User'],
+          },
+          responses: {
+            200: userSchema,
+            404: errorSchema,
+            410: errorSchema,
+            500: errorSchema,
+          },
         }
-      })
+      )
   );
