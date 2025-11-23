@@ -13,8 +13,13 @@ import {
 } from './userModel';
 import type { FullUser, NewUser, UpdateUser, User } from './userTypes';
 // Additional import for poem retrieval
-import { selectPoemsByUserId } from '../poems/poemModel';
-import { type Poem, mapFullPoemToPoem } from '../poems/poemTypes';
+import {
+  selectPoemsByUserId,
+  selectPoemById,
+  updatePoemVisibility,
+  deletePoem
+} from '../poems/poemModel';
+import { type Poem, type FullPoem, mapFullPoemToPoem } from '../poems/poemTypes';
 
 function ensureUserExists(user: FullUser | null): void {
   if (!user) {
@@ -110,7 +115,67 @@ export async function isCollaborator(userId: number): Promise<User> {
   return mapFullUserToUser(user!);
 }
 
-export async function getUserPoems(userId: number) : Promise<Poem[]> {
+// All functions below relate to retrieving user poems
+// Since the user must be authenticated to call these functions, we can assume the user exists and is not deleted.
+function ensurePoemExists(poem: FullPoem | null): void {
+  if (!poem) {
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['Poem not found'],
+    });
+  }
+}
+function ensurePoemIsNotDeleted(poem: FullPoem | null): void {
+  if (poem?.deletedAt) {
+    throw new AppError({
+      statusCode: 410,
+      errorMessages: ['Poem has been deleted'],
+    });
+  }
+}
+
+function ensurePoemBelongsToUser(poem: FullPoem, userId: number): void {
+  if (poem.userId !== userId) {
+    throw new AppError({
+      statusCode: 403,
+      errorMessages: ['Poem does not belong to user'],
+    });
+  }
+}
+
+export async function getUserPoems(userId: number): Promise<Poem[]> {
   const poems = await selectPoemsByUserId(userId);
-  return poems.map(mapFullPoemToPoem);
+  const filteredPoems = poems.filter(poem => !poem.deletedAt);
+  return filteredPoems.map(mapFullPoemToPoem);
+}
+
+export async function getUserPoemById(userId: number, poemId: number): Promise<Poem> {
+  const poem = await selectPoemById(poemId);
+  ensurePoemExists(poem);
+  ensurePoemIsNotDeleted(poem);
+  ensurePoemBelongsToUser(poem!, userId);
+  return mapFullPoemToPoem(poem!);
+}
+
+export async function setUserPoemVisibility(
+  userId: number,
+  poemId: number,
+  visibility: 'public' | 'private' | 'unlisted'
+): Promise<Poem> {
+  const poem = await selectPoemById(poemId);
+  ensurePoemExists(poem);
+  ensurePoemIsNotDeleted(poem);
+  ensurePoemBelongsToUser(poem!, userId);
+
+  const updatedPoem = await updatePoemVisibility(poemId, visibility);
+  return mapFullPoemToPoem(updatedPoem!);
+}
+
+export async function deleteUserPoem(userId: number, poemId: number): Promise<Poem> {
+  const poem = await selectPoemById(poemId);
+  ensurePoemExists(poem);
+  ensurePoemIsNotDeleted(poem);
+  ensurePoemBelongsToUser(poem!, userId);
+  const deletedPoem = await deletePoem(poemId);
+  return mapFullPoemToPoem(deletedPoem!);
 }

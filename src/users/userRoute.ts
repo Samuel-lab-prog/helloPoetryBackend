@@ -7,7 +7,10 @@ import {
   authenticateUser,
   removeUser,
   isCollaborator,
-  getUserPoems
+  getUserPoems,
+  getUserPoemById,
+  setUserPoemVisibility,
+  deleteUserPoem
 } from './userController';
 import {
   createUserSchema,
@@ -18,7 +21,7 @@ import {
 } from './userSchemas';
 
 import { poemSchema } from '../poems/poemSchemas.ts'
- 
+
 export const userRoutes = (app: Elysia) =>
   app.group('/users', (app) =>
     app
@@ -85,15 +88,13 @@ export const userRoutes = (app: Elysia) =>
       }
       )
       .patch(
-        '/:id',
-        async ({ params, body, cookie }) => {
-          await authenticateUser(cookie.token.value);
-          const updatedUser = await setUserInfo(params.id, body);
+        '/',
+        async ({ body, store }) => {
+          const updatedUser = await setUserInfo(store.userId, body);
           return updatedUser;
         },
         {
           body: updateUserSchema,
-          params: t.Object({ id: t.Number() }),
           response: {
             200: userSchema,
             400: errorSchema,
@@ -110,19 +111,17 @@ export const userRoutes = (app: Elysia) =>
         }
       )
       .delete(
-        '/:id',
-        async ({ params, cookie }) => {
-          await authenticateUser(cookie.token.value);
-          return await removeUser(params.id);
+        '/',
+        async ({ store }) => {
+          return await removeUser(store.userId);
         },
         {
-          params: t.Object({ id: t.Number() }),
           detail: {
             summary: 'Delete',
             description: 'Deletes the user with the specified ID. Returns the deleted user object.',
             tags: ['User'],
           },
-          responses: {
+          response: {
             200: userSchema,
             404: errorSchema,
             410: errorSchema,
@@ -142,17 +141,74 @@ export const userRoutes = (app: Elysia) =>
       .get('/poems', async ({ store }) => {
         return await getUserPoems(store.userId);
       },
-      {
-        response: {
-          200: t.Array(poemSchema),
-          403: errorSchema,
-          500: errorSchema,
-        },
-        detail: {
-          summary: 'Get User Poems',
-          description: 'Retrieves all poems created by the authenticated user.',
-          tags: ['User', 'Poem'],
-        },
-      }
+        {
+          response: {
+            200: t.Array(poemSchema),
+            403: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get User Poems',
+            description: 'Retrieves all poems created by the authenticated user.',
+            tags: ['User', 'Poem'],
+          },
+        }
+      )
+      .get('/poems/:poemId', async ({ params, store }) => {
+        return await getUserPoemById(store.userId, params.poemId);
+      },
+        {
+          params: t.Object({ poemId: t.Number() }),
+          response: {
+            200: poemSchema,
+            403: errorSchema,
+            410: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get User Poem By ID',
+            description: 'Retrieves a specific poem created by the authenticated user.',
+            tags: ['User', 'Poem'],
+          },
+        }
+      )
+      .patch('/poems/:poemId/visibility', async ({ params, body, store }) => {
+        return await setUserPoemVisibility(store.userId, params.poemId, body.visibility);
+      },
+        {
+          params: t.Object({ poemId: t.Number() }),
+          body: t.Object({ visibility: t.UnionEnum(['public', 'private', 'unlisted']) }),
+          response: {
+            200: poemSchema,
+            403: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Set User Poem Visibility',
+            description: 'Sets the visibility of a specific poem created by the authenticated user.',
+            tags: ['User', 'Poem'],
+          },
+        }
+      )
+      .delete('/poems/:poemId', async ({ params, store }) => {
+        return await deleteUserPoem(store.userId, params.poemId);
+      },
+        {
+          params: t.Object({ poemId: t.Number() }),
+          response: {
+            200: poemSchema,
+            403: errorSchema,
+            410: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Delete User Poem',
+            description: 'Deletes a specific poem created by the authenticated user.',
+            tags: ['User', 'Poem'],
+          },
+        }
       )
   );
