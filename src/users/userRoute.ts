@@ -6,6 +6,8 @@ import {
   setUserInfo,
   authenticateUser,
   removeUser,
+  isCollaborator,
+  getUserPoems
 } from './userController';
 import {
   createUserSchema,
@@ -15,6 +17,8 @@ import {
   tokenSchema,
 } from './userSchemas';
 
+import { poemSchema } from '../poems/poemSchemas.ts'
+ 
 export const userRoutes = (app: Elysia) =>
   app.group('/users', (app) =>
     app
@@ -71,10 +75,15 @@ export const userRoutes = (app: Elysia) =>
           },
         }
       )
+      .state('userId', 0)
       .guard({
-        // All routes below require authentication
+        // All routes below require login authentication
         cookie: tokenSchema,
-      })
+        beforeHandle: async ({ cookie, store }) => {
+          store.userId = (await authenticateUser(cookie.token.value)).id;
+        }
+      }
+      )
       .patch(
         '/:id',
         async ({ params, body, cookie }) => {
@@ -120,5 +129,30 @@ export const userRoutes = (app: Elysia) =>
             500: errorSchema,
           },
         }
+      )
+      // All routes below require collaborator authoization
+      .guard({
+        cookie: tokenSchema,
+        beforeHandle: async ({ cookie }) => {
+          const user = await authenticateUser(cookie.token.value);
+          await isCollaborator(user.id);
+        }
+      }
+      )
+      .get('/poems', async ({ store }) => {
+        return await getUserPoems(store.userId);
+      },
+      {
+        response: {
+          200: t.Array(poemSchema),
+          403: errorSchema,
+          500: errorSchema,
+        },
+        detail: {
+          summary: 'Get User Poems',
+          description: 'Retrieves all poems created by the authenticated user.',
+          tags: ['User', 'Poem'],
+        },
+      }
       )
   );

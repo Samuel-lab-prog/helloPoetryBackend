@@ -12,6 +12,9 @@ import {
   deleteUser,
 } from './userModel';
 import type { FullUser, NewUser, UpdateUser, User } from './userTypes';
+// Additional import for poem retrieval
+import { selectPoemsByUserId } from '../poems/poemModel';
+import { type Poem, mapFullPoemToPoem } from '../poems/poemTypes';
 
 function ensureUserExists(user: FullUser | null): void {
   if (!user) {
@@ -91,4 +94,23 @@ export async function removeUser(userId: number): Promise<User> {
   const deletedUser = await deleteUser(userId);
   ensureUserExists(deletedUser);
   return mapFullUserToUser(deletedUser!);
+}
+
+export async function isCollaborator(userId: number): Promise<User> {
+  const user = await selectUserById(userId);
+  ensureUserExists(user);
+  ensureUserNotDeleted(user);
+  const isCollaborator = user!.role === 'collaborator' || user!.role === 'admin';
+  if (!isCollaborator) {
+    throw new AppError({
+      statusCode: 403,
+      errorMessages: ['User is not a collaborator'],
+    });
+  }
+  return mapFullUserToUser(user!);
+}
+
+export async function getUserPoems(userId: number) : Promise<Poem[]> {
+  const poems = await selectPoemsByUserId(userId);
+  return poems.map(mapFullPoemToPoem);
 }
