@@ -8,7 +8,7 @@ import { insertUser, selectUser, updateUser, updateUserLastLogin, updateUserStat
 import type { NewUser } from './userTypes.ts';
 import { AppError } from '../utils/AppError.ts';
 
-const TEST_USER_1: NewUser = {
+const DEFAULT_USER: NewUser = {
   nickname: 'testuser',
   fullName: 'Test User',
   email: 'testuser@example.com',
@@ -18,7 +18,7 @@ const TEST_USER_1: NewUser = {
   personalityId: 1,
 };
 
-const TEST_USER_2: NewUser = {
+const NEW_USER: NewUser = {
   nickname: 'testuser2',
   fullName: 'Test User 2',
   email: 'testuser2@example.com',
@@ -30,12 +30,12 @@ const TEST_USER_2: NewUser = {
 
 beforeEach(async () => {
   await pool.query('TRUNCATE TABLE users RESTART IDENTITY;');
-  await insertUser(TEST_USER_1);
+  await insertUser(DEFAULT_USER);
 });
 
 describe('User Model Tests', () => {
   it('insertUser → Should insert and return an id', async () => {
-    const result = await insertUser(TEST_USER_2);
+    const result = await insertUser(NEW_USER);
     expect(result).toHaveProperty('id');
     expect(typeof result.id).toBe('number');
   });
@@ -44,7 +44,7 @@ describe('User Model Tests', () => {
       insertUser({
         nickname: 'unique',
         fullName: 'Unique',
-        email: TEST_USER_1.email,
+        email: DEFAULT_USER.email,
         password: 'pass',
       })
     ).rejects.toThrow(AppError);
@@ -52,7 +52,7 @@ describe('User Model Tests', () => {
   it('insertUser → Should throw AppError for duplicated nickname', async () => {
     await expect(
       insertUser({
-        nickname: TEST_USER_1.nickname,
+        nickname: DEFAULT_USER.nickname,
         fullName: 'Another',
         email: 'uniqueemail@example.com',
         password: 'pass',
@@ -70,20 +70,20 @@ describe('User Model Tests', () => {
     expect(created).toHaveProperty('id');
   });
   it('selectUser → Should select by nickname', async () => {
-    const user = await selectUser(undefined, undefined, TEST_USER_1.nickname);
+    const user = await selectUser(undefined, undefined, DEFAULT_USER.nickname);
     expect(user).not.toBeNull();
-    expect(user?.nickname).toBe(TEST_USER_1.nickname);
+    expect(user?.nickname).toBe(DEFAULT_USER.nickname);
   });
   it('selectUser → Should select by id', async () => {
-    const inserted = await insertUser(TEST_USER_2);
+    const inserted = await insertUser(NEW_USER);
     const user = await selectUser(undefined, inserted.id);
     expect(user).not.toBeNull();
     expect(user?.id).toBe(inserted.id);
   });
   it('selectUser → Should select by email', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     expect(user).not.toBeNull();
-    expect(user?.email).toBe(TEST_USER_1.email);
+    expect(user?.email).toBe(DEFAULT_USER.email);
   });
   it('selectUser → Should throw AppError when no parameters provided', async () => {
     await expect(selectUser()).rejects.toThrow(AppError);
@@ -101,7 +101,7 @@ describe('User Model Tests', () => {
     expect(user).toBeNull();
   });
   it('updateUser → Should update fields correctly', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     expect(user).not.toBeNull();
     const updates = {
       fullName: 'Updated Name',
@@ -119,26 +119,26 @@ describe('User Model Tests', () => {
     expect(updated).toBeNull();
   });
   it('updateUser → Should handle partial updates', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     const updated = await updateUser(user!.id, { bio: 'Partial Bio' });
 
     expect(updated?.bio).toBe('Partial Bio');
-    expect(updated?.fullName).toBe(TEST_USER_1.fullName);
+    expect(updated?.fullName).toBe(DEFAULT_USER.fullName);
   });
   it('updateUserLastLogin → Should update lastLogin', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     const previous = user!.lastLogin;
     await updateUserLastLogin(user!.id);
-    const updated = await selectUser(TEST_USER_1.email);
+    const updated = await selectUser(DEFAULT_USER.email);
     expect(updated?.lastLogin).not.toBeNull();
     expect(updated?.lastLogin).not.toEqual(previous);
   });
   it('updateUserStatus → Should update status correctly', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     expect(user).not.toBeNull();
     const newStatus = 'suspended';
     await updateUserStatus(user!.id, newStatus);
-    const newUserCheck = await selectUser(TEST_USER_1.email);
+    const newUserCheck = await selectUser(DEFAULT_USER.email);
     expect(newUserCheck?.status).toBe(newStatus);
   });
   it('updateUserStatus → Should return null for nonexistent user', async () => {
@@ -146,21 +146,21 @@ describe('User Model Tests', () => {
     expect(updated).toBeNull();
   });
   it('updateUserStatus → Should set deleted_at correctly when status is deleted', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     expect(user).not.toBeNull();
     await updateUserStatus(user!.id, 'deleted');
-    const deletedUser = await selectUser(TEST_USER_1.email);
+    const deletedUser = await selectUser(DEFAULT_USER.email);
     expect(deletedUser?.status).toBe('deleted');
     expect(deletedUser?.deletedAt).not.toBeNull();
   });
   it('updateUserStatus → Should clear deleted_at when status is not deleted', async () => {
-    const user = await selectUser(TEST_USER_1.email);
+    const user = await selectUser(DEFAULT_USER.email);
     expect(user).not.toBeNull();
     await updateUserStatus(user!.id, 'deleted');
-    let deletedUser = await selectUser(TEST_USER_1.email);
+    let deletedUser = await selectUser(DEFAULT_USER.email);
     expect(deletedUser?.deletedAt).not.toBeNull();
     await updateUserStatus(user!.id, 'active');
-    deletedUser = await selectUser(TEST_USER_1.email);
+    deletedUser = await selectUser(DEFAULT_USER.email);
     expect(deletedUser?.deletedAt).toBeNull();
   });
 });
