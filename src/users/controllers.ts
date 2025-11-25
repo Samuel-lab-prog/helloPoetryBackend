@@ -6,23 +6,17 @@ import {
   setUserInfo,
   authenticateUser,
   removeUser,
-  isCollaborator,
-  getUserPoems,
-  getUserPoemById,
-  setUserPoemVisibility,
-  deleteUserPoem
-} from './userController';
+} from './services.ts';
 import {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
   userSchema,
   tokenSchema,
-} from './userSchemas';
+} from './schemas.ts';
 
-import { poemSchema } from '../poems/poemSchemas.ts'
 
-export const userRoutes = (app: Elysia) =>
+export const userRouter = (app: Elysia) =>
   app.group('/users', (app) =>
     app
       .post(
@@ -126,88 +120,6 @@ export const userRoutes = (app: Elysia) =>
             404: errorSchema,
             410: errorSchema,
             500: errorSchema,
-          },
-        }
-      )
-      // All routes below require collaborator authoization
-      .guard({
-        cookie: tokenSchema,
-        beforeHandle: async ({ cookie }) => {
-          const user = await authenticateUser(cookie.token.value);
-          await isCollaborator(user.id);
-        }
-      }
-      )
-      .get('/poems', async ({ store }) => {
-        return await getUserPoems(store.userId);
-      },
-        {
-          response: {
-            200: t.Array(poemSchema),
-            403: errorSchema,
-            500: errorSchema,
-          },
-          detail: {
-            summary: 'Get User Poems',
-            description: 'Retrieves all poems created by the authenticated user.',
-            tags: ['User', 'Poem'],
-          },
-        }
-      )
-      .get('/poems/:poemId', async ({ params, store }) => {
-        return await getUserPoemById(store.userId, params.poemId);
-      },
-        {
-          params: t.Object({ poemId: t.Number() }),
-          response: {
-            200: poemSchema,
-            403: errorSchema,
-            410: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
-          },
-          detail: {
-            summary: 'Get User Poem By ID',
-            description: 'Retrieves a specific poem created by the authenticated user.',
-            tags: ['User', 'Poem'],
-          },
-        }
-      )
-      .patch('/poems/:poemId/visibility', async ({ params, body, store }) => {
-        return await setUserPoemVisibility(store.userId, params.poemId, body.visibility);
-      },
-        {
-          params: t.Object({ poemId: t.Number() }),
-          body: t.Object({ visibility: t.UnionEnum(['public', 'private', 'unlisted']) }),
-          response: {
-            200: poemSchema,
-            403: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
-          },
-          detail: {
-            summary: 'Set User Poem Visibility',
-            description: 'Sets the visibility of a specific poem created by the authenticated user.',
-            tags: ['User', 'Poem'],
-          },
-        }
-      )
-      .delete('/poems/:poemId', async ({ params, store }) => {
-        return await deleteUserPoem(store.userId, params.poemId);
-      },
-        {
-          params: t.Object({ poemId: t.Number() }),
-          response: {
-            200: poemSchema,
-            403: errorSchema,
-            410: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
-          },
-          detail: {
-            summary: 'Delete User Poem',
-            description: 'Deletes a specific poem created by the authenticated user.',
-            tags: ['User', 'Poem'],
           },
         }
       )

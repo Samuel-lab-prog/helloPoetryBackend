@@ -148,7 +148,6 @@ export const poemSchema = t.Object({
 export const postPoemSchema = t.Object({
   title: poemTitleField,
   content: poemContentField,
-  userId: idField,
   tags: t.Optional(tagsArrayField),
   visibility: t.Optional(poemVisibilityField)
 });

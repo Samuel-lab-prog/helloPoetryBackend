@@ -13,8 +13,8 @@ import {
   updateUserLastLogin,
   updateUserStatus,
   deleteUser,
-} from './userModel';
-import type { NewUser } from './userTypes.ts';
+} from './models.ts';
+import type { NewUser } from './types.ts';
 import { AppError } from '../utils/AppError.ts';
 
 const DEFAULT_USER: NewUser = {

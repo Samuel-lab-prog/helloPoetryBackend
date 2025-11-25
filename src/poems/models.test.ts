@@ -7,12 +7,12 @@ import {
   updatePoemStatus,
   deletePoem,
   updatePoemVisibility,
-  updatePoemModerationStatus
-} from './poemModel.ts';
+  updatePoemModerationStatus,
+} from './models.ts';
 
-import type { InsertPoem } from './poemTypes.ts';
+import type { InsertPoem } from './types.ts';
 import { AppError } from '../utils/AppError.ts';
-import { insertUser } from '../users/userModel.ts';
+import { insertUser } from '../users/models.ts';
 
 
 const DEFAULT_USER = {

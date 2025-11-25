@@ -1,8 +1,8 @@
 import {
   poemSchema,
   postPoemSchema,
-  insertPoemSchema,
-} from './poemSchemas';
+  insertPoemSchema
+} from './schemas';
 
 export type FullPoemRow = {
   id: number;

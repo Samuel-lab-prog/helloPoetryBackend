@@ -1,4 +1,4 @@
-import { userSchema, createUserSchema, updateUserSchema, loginUserSchema } from './userSchemas';
+import { userSchema, createUserSchema, updateUserSchema, loginUserSchema } from './schemas';
 
 export type FullUserRow = {
   id: number;

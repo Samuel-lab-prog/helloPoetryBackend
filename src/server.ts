@@ -4,7 +4,8 @@ import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
 import { handleError } from './middlewares/handleError';
 import { xssClean } from './middlewares/xssClean';
-import { userRoutes } from './users/userRoute';
+import { userRouter } from './users/controllers';
+import { poemRouter } from './poems/conrollers';
 import { avatarRoutes } from './avatars/avatarRoute';
 import { personalityRoutes } from './personalities/personalityRoute';
 
@@ -13,7 +14,8 @@ new Elysia()
   .use(cors())
   .onBeforeHandle((ctx) => xssClean(ctx))
   .use(staticPlugin())
-  .use(userRoutes)
+  .use(userRouter)
+  .use(poemRouter)
   .use(avatarRoutes)
   .use(personalityRoutes)
   .use(

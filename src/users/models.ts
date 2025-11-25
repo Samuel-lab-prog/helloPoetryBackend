@@ -1,8 +1,8 @@
 import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
 import { pool } from '../db/connection.ts';
-import { mapFullUserRowToFullUser } from './userTypes.ts';
-import type { User, NewUser, FullUser, FullUserRow, UpdateUser } from './userTypes.ts';
+import { mapFullUserRowToFullUser } from './types.ts';
+import type { User, NewUser, FullUser, FullUserRow, UpdateUser } from './types.ts';
 
 const isProd = process.env.NODE_ENV === 'production';
 // Internal helper to select user by a specific field

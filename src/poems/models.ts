@@ -4,8 +4,8 @@ import type {
   FullPoem,
   FullPoemRow,
   InsertPoem,
-} from './poemTypes.ts';
-import { mapFullPoemRowToFullPoem } from './poemTypes.ts';
+} from './types.ts';
+import { mapFullPoemRowToFullPoem } from './types.ts';
 import { DatabaseError } from 'pg';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -206,3 +206,6 @@ export async function updatePoemModerationStatus(
     });
   }
 }
+
+
+
