@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client"
+  output   = "generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
+  passwordHash String
+  name         String
+  nickname     String  @unique
+  bio          String?
+  avatarUrl    String?
+
+  role   userRole   @default(user)
+  status userStatus @default(active)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  emailVerifiedAt DateTime?
+
+  poems           Poem[]
+  comments        Comment[]
+  commentLikes    CommentLike[]
+  poemLikes       PoemLike[]
+  friendshipsFrom Friendship[]  @relation("FriendshipUserA")
+  friendshipsTo   Friendship[]  @relation("FriendshipUserB")
+
+  fromPoemDedications Poem[] @relation("PoemToUserDedications")
+}
+
+enum userRole {
+  moderator
+  autor
+  user
+}
+
+enum userStatus {
+  active
+  banned
+  suspended
+}
+
+model Friendship {
+  id        Int              @id @default(autoincrement())
+  userAId   Int
+  userBId   Int
+  status    friendshipStatus
+  createdAt DateTime         @default(now())
+
+  userA User @relation("FriendshipUserA", fields: [userAId], references: [id])
+  userB User @relation("FriendshipUserB", fields: [userBId], references: [id])
+
+  @@unique([userAId, userBId])
+  @@index([userAId, status])
+  @@index([userBId, status])
+}
+
+enum friendshipStatus {
+  pending
+  accepted
+  rejected
+  blocked
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  createdAt DateTime      @default(now())
+  status    commentStatus @default(visible)
+
+  authorId Int
+  author   User      @relation(fields: [authorId], references: [id])
+  PoemId   Int
+  Poem     Poem      @relation(fields: [PoemId], references: [id])
+  parentId Int?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+
+  likesRelation CommentLike[]
+}
+
+enum commentStatus {
+  visible
+  deletedByAuthor
+  deletedByModerator
+}
+
+model CommentLike {
+  userId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  comment Comment @relation(fields: [commentId], references: [id])
+
+  @@id([userId, commentId])
+}
+
+model PoemLike {
+  userId    Int
+  PoemId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  Poem Poem @relation(fields: [PoemId], references: [id])
+
+  @@id([userId, PoemId])
+}
+
+model Poem {
+  id            Int     @id @default(autoincrement())
+  title         String
+  slug          String
+  excerpt       String?
+  content       String
+  isCommentable Boolean @default(true)
+
+  toUserId Int?
+  toUser   User? @relation("PoemToUserDedications", fields: [toUserId], references: [id])
+
+  toPoemId    Int?
+  toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])
+  dedications Poem[] @relation("PoemToPoemDedications")
+
+  status           poemStatus           @default(published)
+  visibility       poemVisibility       @default(public)
+  moderationStatus poemModerationStatus @default(approved)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  authorId  Int
+  tags      Tag[]
+  author    User       @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+  poemLikes PoemLike[]
+
+  @@unique([authorId, slug])
+  @@index([createdAt])
+  @@index([authorId])
+  @@index([status, visibility])
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  poems Poem[]
+}
+
+enum poemStatus {
+  draft
+  published
+  scheduled
+}
+
+enum poemVisibility {
+  public
+  private
+  unlisted
+  friends
+}
+
+enum poemModerationStatus {
+  pending
+  approved
+  rejected
+  removed
+}
