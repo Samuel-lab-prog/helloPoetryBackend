@@ -10,6 +10,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
+      NODE_ENV: test
+      PORT: 5000
+      BCRYPT_SALT_ROUNDS: 5
+      JWT_SECRET: 123456789supersecretkey987654321
+
     services:
       postgres:
         image: postgres:16
@@ -24,86 +31,31 @@ jobs:
           --health-timeout=5s --health-retries=5
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies
-        run: bun install
+      - run: bun install
+      - run: bunx prisma generate
+      - run: bun run reset
+      - run: bun run seed
+      - run: bun test --coverage
 
-      - name: Generate Prisma Client
-        run: bunx prisma generate
-
-      - name: Wait for Postgres to be ready
-        run: |
-          for i in {1..20}; do
-            nc -z localhost 5432 && echo "Postgres is ready" && exit 0
-            echo "Waiting for Postgres..."
-            sleep 2
-          done
-          exit 1
-
-      - name: Reset database
-        env:
-          TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
-          NODE_ENV: test
-        run: bun run reset
-
-      - name: Seed database
-        env:
-          TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
-          NODE_ENV: test
-        run: bun run seed
-
-      - name: Run tests
-        env:
-          PORT: 5000
-          BCRYPT_SALT_ROUNDS: 5
-          JWT_SECRET: 123456789supersecretkey987654321
-          TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
-          NODE_ENV: test
-
-        run: bun test --coverage
-
-  format:
+  quality:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Run lint and format check
-        run: bun run format
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Run linter
-        run: bun run lint
+      - run: bun install
+      - run: bun run lint
+      - run: bun run format
 
   build:
     runs-on: ubuntu-latest
-
+    needs: [test, quality]
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Generate Prisma Client
-        run: bunx prisma generate
-
-      - name: Build project
-        run: bun run build
+      - run: bun install
+      - run: bunx prisma generate
+      - run: bun run build
