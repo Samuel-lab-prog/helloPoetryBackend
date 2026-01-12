@@ -13,8 +13,8 @@ model User {
   passwordHash String
   name         String
   nickname     String  @unique
-  bio          String?
-  avatarUrl    String?
+  bio          String
+  avatarUrl    String
 
   role   userRole   @default(user)
   status userStatus @default(active)
@@ -62,10 +62,11 @@ model Friendship {
 }
 
 enum friendshipStatus {
+  rejected
   pending
   accepted
-  rejected
   blocked
+  none
 }
 
 model Comment {

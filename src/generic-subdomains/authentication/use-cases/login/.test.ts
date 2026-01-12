@@ -54,7 +54,7 @@ describe('makeLoginClient', () => {
 				role: 'user',
 				email: 'test@email.com',
 			},
-			60 * 60 * 1000,
+			3600,
 		);
 
 		expect(result).toEqual({

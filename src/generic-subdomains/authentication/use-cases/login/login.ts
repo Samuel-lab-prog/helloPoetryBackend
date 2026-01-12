@@ -47,7 +47,7 @@ export function makeLoginClient(dependencies: Dependencies) {
 			email: client.email,
 		};
 
-		const token = tokenService.generateToken(tokenPayload, 60 * 60 * 1000);
+		const token = tokenService.generateToken(tokenPayload, 3600);
 		return {
 			token,
 			client: {

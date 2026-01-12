@@ -23,6 +23,10 @@ export default defineConfig([
 			'no-unmodified-loop-condition': 'error',
 			'no-useless-assignment': 'error',
 			'no-eval': 'error',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+			],
 
 			'default-case': 'error',
 			eqeqeq: ['error', 'always'],

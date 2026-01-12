@@ -9,6 +9,7 @@ import { LoggerPlugin } from '@utils/plugins/loggerPlugin';
 import { sanitize } from '@utils/xssClean';
 
 import { authRouter } from './generic-subdomains/authentication/adapters/http/AuthRouter';
+import { readUsersRouter } from './domains/users-management/adapters/http/UsersReadRouter';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
@@ -51,4 +52,5 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	)
 	.use(openapi(OPEN_API_SETTINGS))
 	.use(authRouter)
+	.use(readUsersRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });
