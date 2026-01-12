@@ -95,8 +95,7 @@ function convertElysiaError(code: string, error: unknown): AppError {
 			return new AppError({
 				statusCode: 400,
 				errorMessages: [
-					'Bad request: failed to parse request body',
-					originalErrorMessage,
+					'Bad request: Failed to parse request body. Please ensure it is valid JSON and all required fields are present.',
 				],
 			});
 		case 'VALIDATION':

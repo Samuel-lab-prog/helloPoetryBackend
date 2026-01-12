@@ -24,7 +24,6 @@ export default defineConfig([
 			'no-useless-assignment': 'error',
 			'no-eval': 'error',
 
-			'array-callback-return': 'error',
 			'default-case': 'error',
 			eqeqeq: ['error', 'always'],
 

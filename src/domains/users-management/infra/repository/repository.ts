@@ -1,13 +1,13 @@
-import { prisma } from '@prisma/client';
+import { prisma } from '../../../../prisma/myClient';
 import { withPrismaErrorHandling } from '@AppError';
 
 import type {
 	UserCommandsRepository,
 	UserQueriesRepository,
 	UserAuthReadRepository,
-} from '../ports/repository';
-import type { InsertUser, UpdateUserData } from '../commands/commandsModels';
-import type { FullUser, ClientAuthCredentials } from '../queries/ReadModels';
+} from '../../ports/repository';
+import type { InsertUser, UpdateUserData } from '../../commands/commandsModels';
+import type { FullUser, ClientAuthCredentials } from '../../queries/ReadModels';
 
 const fullUserSelect = {
 	id: true,

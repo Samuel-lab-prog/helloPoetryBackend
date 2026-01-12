@@ -19,7 +19,7 @@ const OPEN_API_SETTINGS = {
 	path: '/docs',
 	documentation: {
 		info: {
-			title: 'Blog API',
+			title: 'Social Media API',
 			description: 'API documentation for HelloPoetry API',
 			version: '1.0.0',
 		},

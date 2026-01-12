@@ -21,7 +21,7 @@ interface AuthControllerServices {
 	login: (email: string, password: string) => Promise<LoginResponse>;
 }
 
-export function createAuthController(services: AuthControllerServices) {
+export function createAuthRouter(services: AuthControllerServices) {
 	const { login } = services;
 
 	return new Elysia().group('/auth', (app) =>
@@ -43,7 +43,6 @@ export function createAuthController(services: AuthControllerServices) {
 				body: loginSchema,
 				response: {
 					204: t.Void(),
-					400: appErrorSchema,
 					401: appErrorSchema,
 					422: appErrorSchema,
 					500: appErrorSchema,
@@ -59,4 +58,4 @@ export function createAuthController(services: AuthControllerServices) {
 	);
 }
 
-export const authRouter = createAuthController({ login });
+export const authRouter = createAuthRouter({ login });

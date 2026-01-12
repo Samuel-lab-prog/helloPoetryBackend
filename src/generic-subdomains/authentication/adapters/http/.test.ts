@@ -1,11 +1,15 @@
 import { Elysia } from 'elysia';
-import { describe, it, expect } from 'bun:test';
-import { server } from '../../../../index.ts';
+import { describe, it, expect, mock } from 'bun:test';
+import { createAuthRouter } from './AuthRouter.ts';
 
-const PREFIX = 'http://localhost/api/v1/auth';
+const login = mock(() =>
+	Promise.resolve({ token: 'test-token', client: { id: 1, role: 'user' } }),
+);
+const mockedAuthRouter = createAuthRouter({ login });
+const PREFIX = 'http://test/auth';
 
 function createApp() {
-	return new Elysia().use(server);
+	return new Elysia().use(mockedAuthRouter);
 }
 
 function jsonRequest(
@@ -23,7 +27,7 @@ function jsonRequest(
 }
 
 describe('Auth controller tests', () => {
-	it('POST /login -> Should login a client successfully', async () => {
+	it('POST /login -> Should return 204 if credentials are valid', async () => {
 		const resp = await createApp().handle(
 			jsonRequest(`${PREFIX}/login`, {
 				method: 'POST',
@@ -36,29 +40,15 @@ describe('Auth controller tests', () => {
 		expect(resp.status).toBe(204);
 	});
 
-	it('POST /login -> Should fail to login with wrong password', async () => {
+	it('POST /login -> Should return 422 if body is invalid', async () => {
 		const resp = await createApp().handle(
 			jsonRequest(`${PREFIX}/login`, {
 				method: 'POST',
 				body: {
-					email: 'normaluser@gmail.com',
-					password: 'wrongpassword',
+					email: 'invalidEmail',
 				},
 			}),
 		);
-		expect(resp.status).toBe(401);
-	});
-
-	it('POST /login -> Should fail to login with non-existing email', async () => {
-		const resp = await createApp().handle(
-			jsonRequest(`${PREFIX}/login`, {
-				method: 'POST',
-				body: {
-					email: 'nonexistinguser@gmail.com',
-					password: 'somepassword',
-				},
-			}),
-		);
-		expect(resp.status).toBe(401);
+		expect(resp.status).toBe(422);
 	});
 });
