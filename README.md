@@ -1,13 +1,16 @@
 # Social Media Application — Backend
 
-This repository contains the **backend application** of a poetry related social media project.  
+This repository contains the **backend application** of a poetry related social
+media project.  
 It is responsible for handling data storage, user authentication, API endpoints,
 and business logic.
 
-This project is built using a Domain Driven Design (DDD) approach, ensuring a clear separation of concerns
-and scalability. The backend is developed with **TypeScript**, **Bun** as the runtime, and **Elysia** as the web framework.
+This project is built using a Domain Driven Design (DDD) approach, ensuring a
+clear separation of concerns and scalability. The backend is developed with
+**TypeScript**, **Bun** as the runtime, and **Elysia** as the web framework.
 
-The choosen architecture is a **modular monolith**, allowing for easy maintenance and future growth to microservices if needed.
+The choosen architecture is a **modular monolith**, allowing for easy
+maintenance and future growth to microservices if needed.
 
 ---
 
@@ -117,8 +120,7 @@ Use a prefix for every commit:
 
 3. **Write meaningful commit messages**
 
-   **❌ Bad** fix stuff
-   **✅ Good** fix: resolve issue with user login on Safari
+   **❌ Bad** fix stuff **✅ Good** fix: resolve issue with user login on Safari
 
 ---
 
@@ -126,8 +128,10 @@ Use a prefix for every commit:
 
 - This repository contains **only the backend** of the application.
 - The entire project is managed by myself as a solo developer.
-- The frontend is maintained in a **separate repository**. The link below will redirect you to it:
-  - [helloPoetry Frontend Repository](https://github.com/Samuel-lab-prog/helloPoetryFrontend)
-- Contributions, suggestions, and improvements are welcome! Feel free to open issues or pull requests.
+- The frontend is maintained in a **separate repository**. The link below will
+  redirect you to it:
+- [helloPoetry Frontend Repository](https://github.com/Samuel-lab-prog/helloPoetryFrontend)
+- Contributions, suggestions, and improvements are welcome! Feel free to open
+  issues or pull requests.
 
 ---

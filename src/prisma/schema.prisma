@@ -35,9 +35,9 @@ model User {
 }
 
 enum userRole {
-  moderator
-  autor
   user
+  author
+  moderator
 }
 
 enum userStatus {

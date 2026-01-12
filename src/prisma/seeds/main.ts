@@ -1,14 +1,14 @@
+import { seedUsers } from './users';
 
-async function seedAll() {
-	console.log('🟢 Starting seeds...');
+async function main() {
+	console.log('Starting database seeding...');
+	try {
+		await seedUsers();
+		console.log('Database seeding completed! ✅');
+	} catch (error) {
+		console.error('Error during database seeding:', error);
+		process.exit(1);
+	}
 }
 
-seedAll()
-	.then(() => {
-		console.log('🎉 All seeds completed');
-		process.exit(0);
-	})
-	.catch((e) => {
-		console.error('❌ Seed failed', e);
-		process.exit(1);
-	});
+main();

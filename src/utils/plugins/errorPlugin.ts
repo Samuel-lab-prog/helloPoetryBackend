@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Elysia from 'elysia';
 import { AppError } from '../AppError.ts';
+import { DomainError } from '../DomainError.ts';
 import { log } from '../logger.ts';
 import { SetupPlugin, type SetupPluginType } from './setupPlugin.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) {
 		return error;
+	}
+
+	if (error instanceof DomainError) {
+		return convertDomainError(error);
 	}
 
 	const normalizedCode = typeof code === 'string' ? code : 'UNKNOWN';
@@ -121,6 +126,31 @@ function convertElysiaError(code: string, error: unknown): AppError {
 			return new AppError({
 				statusCode: 500,
 				errorMessages: ['Internal server error', originalErrorMessage],
+			});
+	}
+}
+
+function convertDomainError(error: DomainError): AppError {
+	const message = error.message;
+	const type = error.type;
+
+	switch (type) {
+		case 'NOT_FOUND':
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 404,
+			});
+		case 'INVALID_CREDENTIALS':
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 401,
+			});
+		case 'INVALID_OPERATION':
+		case 'VALIDATION_FAILED':
+		default:
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 400,
 			});
 	}
 }

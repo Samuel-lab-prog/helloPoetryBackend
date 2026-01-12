@@ -26,9 +26,9 @@ export default defineConfig([
 
 			'array-callback-return': 'error',
 			'default-case': 'error',
-			'eqeqeq': ['error', 'always'],
+			eqeqeq: ['error', 'always'],
 
-			'max-classes-per-file': ['error', 1],
+			'max-classes-per-file': ['error', 3],
 			'max-depth': ['error', 4],
 			'max-lines': ['warn', 300],
 			'max-lines-per-function': ['error', { max: 80, skipComments: true }],

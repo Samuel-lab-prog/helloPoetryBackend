@@ -39,7 +39,7 @@ export class AppError extends Error {
 	}
 }
 
-function createAppError(
+export function createAppError(
 	statusCode: number,
 	prefix: string,
 	message: string,

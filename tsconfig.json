@@ -9,10 +9,16 @@
 		"allowJs": true,
 		"baseUrl": "./src",
 		"paths": {
-			"@root": ["./"],
+			"@root/*": ["./*"],
 			"@utils/*": ["./utils/*"],
 			"@domains/*": ["./domains/*"],
-			"@prisma/*": ["./prisma/*"]
+			"@prisma/*": ["./prisma/*"],
+			"@DomainError": ["./utils/DomainError.ts"],
+			"@AppError": ["./utils/AppError.ts"],
+			"@GeneralSchemas": ["./utils/generalSchemas.ts"],
+			"@SetupPlugin": ["./utils/plugins/setupPlugin.ts"],
+			"@GenericSubdomains/*": ["./generic-subdomains/*"],
+			"@Server/": ["./index"]
 		},
 
 		// Bundler mode

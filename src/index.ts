@@ -8,6 +8,8 @@ import { ErrorPlugin } from '@utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@utils/plugins/loggerPlugin';
 import { sanitize } from '@utils/xssClean';
 
+import { authRouter } from './generic-subdomains/authentication/adapters/http/AuthRouter';
+
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
 const HOST_NAME = '0.0.0.0';
@@ -48,4 +50,5 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 		}),
 	)
 	.use(openapi(OPEN_API_SETTINGS))
+	.use(authRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });
