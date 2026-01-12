@@ -51,12 +51,6 @@ jobs:
           NODE_ENV: test
         run: bun run reset
 
-      - name: Migrate database
-        env:
-          TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
-          NODE_ENV: test
-        run: bun run migratedev
-
       - name: Seed database
         env:
           TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
