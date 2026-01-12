@@ -1,8 +1,8 @@
-import type { TokenService, TokenPayload } from '../ports/TokenService';
-import type { HashService } from '../ports/HashService';
-import type { AuthRepository } from '../ports/AuthRepository';
+import type { TokenService, TokenPayload } from '../../ports/TokenService';
+import type { HashService } from '../../ports/HashService';
+import type { AuthRepository } from '../../ports/AuthRepository';
 
-import { InvalidCredentialsError } from './errors';
+import { InvalidCredentialsError } from '../errors';
 
 interface Dependencies {
 	tokenService: TokenService;

@@ -1,10 +1,9 @@
-import { it, expect, describe, beforeEach } from 'bun:test';
+import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
 import { QueriesRepository, CommandsRepository } from './repository';
 import type { InsertUser } from '../../commands/commandsModels';
 import { prisma } from '../../../../prisma/myClient';
 
 const { insertUser, softDeleteUser, updateUser } = CommandsRepository;
-
 const { selectUserByEmail, selectUserById, selectUserByNickname } =
 	QueriesRepository;
 
@@ -51,17 +50,23 @@ beforeEach(async () => {
 	});
 });
 
+afterAll(async () => {
+	await prisma.$disconnect();
+});
+
 describe('Users Repository (Integration)', () => {
 	describe('Queries', () => {
 		describe('selectUserByEmail', () => {
-			it('returns a full user when email exists', async () => {
+			it('returns a user when email exists', async () => {
 				const email = DEFAULT_USERS[0]!.email;
 
 				const user = await selectUserByEmail(email);
 
-				expect(user).not.toBeNull();
-				expect(user?.email).toBe(email);
-				expect(user?.nickname).toBe(DEFAULT_USERS[0]!.nickname);
+				expect(user).toMatchObject({
+					email,
+					nickname: DEFAULT_USERS[0]!.nickname,
+					name: DEFAULT_USERS[0]!.name,
+				});
 			});
 
 			it('returns null when email does not exist', async () => {
@@ -71,13 +76,15 @@ describe('Users Repository (Integration)', () => {
 		});
 
 		describe('selectUserByNickname', () => {
-			it('returns a full user when nickname exists', async () => {
+			it('returns a user when nickname exists', async () => {
 				const nickname = DEFAULT_USERS[1]!.nickname;
 
 				const user = await selectUserByNickname(nickname);
 
-				expect(user).not.toBeNull();
-				expect(user?.nickname).toBe(nickname);
+				expect(user).toMatchObject({
+					nickname,
+					email: DEFAULT_USERS[1]!.email,
+				});
 			});
 
 			it('returns null when nickname does not exist', async () => {
@@ -87,13 +94,15 @@ describe('Users Repository (Integration)', () => {
 		});
 
 		describe('selectUserById', () => {
-			it('returns a full user when id exists', async () => {
+			it('returns a user when id exists', async () => {
 				const inserted = await insertUser(EXOTIC_USER);
 
 				const user = await selectUserById(inserted!.id);
 
-				expect(user).not.toBeNull();
-				expect(user?.id).toBe(inserted!.id);
+				expect(user).toMatchObject({
+					id: inserted!.id,
+					email: EXOTIC_USER.email,
+				});
 			});
 
 			it('returns null when id does not exist', async () => {
@@ -105,12 +114,14 @@ describe('Users Repository (Integration)', () => {
 
 	describe('Commands', () => {
 		describe('insertUser', () => {
-			it('inserts a user and returns the persisted entity', async () => {
+			it('persists and returns the created user', async () => {
 				const user = await insertUser(EXOTIC_USER);
 
-				expect(user).not.toBeNull();
-				expect(user?.email).toBe(EXOTIC_USER.email);
-				expect(user?.nickname).toBe(EXOTIC_USER.nickname);
+				expect(user).toMatchObject({
+					email: EXOTIC_USER.email,
+					nickname: EXOTIC_USER.nickname,
+					name: EXOTIC_USER.name,
+				});
 			});
 
 			it('throws when nickname already exists', async () => {
@@ -133,12 +144,11 @@ describe('Users Repository (Integration)', () => {
 		});
 
 		describe('softDeleteUser', () => {
-			it('soft deletes an existing user', async () => {
+			it('marks user as deleted', async () => {
 				const inserted = await insertUser(EXOTIC_USER);
 
 				const deletedUser = await softDeleteUser(inserted!.id);
 
-				expect(deletedUser).not.toBeNull();
 				expect(deletedUser?.deletedAt).toBeInstanceOf(Date);
 			});
 
@@ -146,25 +156,25 @@ describe('Users Repository (Integration)', () => {
 				await expect(softDeleteUser(-1)).rejects.toThrow();
 			});
 		});
-		describe('updateUser', () => {
-			it('updates an existing user', async () => {
-				const inserted = await insertUser(EXOTIC_USER);
-				const updatedData = {
-					bio: 'Updated bio for exotic user.',
-					name: 'Updated Exotic User',
-				};
-				const updatedUser = await updateUser(inserted!.id, updatedData);
 
-				expect(updatedUser).not.toBeNull();
-				expect(updatedUser?.bio).toBe(updatedData.bio);
-				expect(updatedUser?.name).toBe(updatedData.name);
+		describe('updateUser', () => {
+			it('updates mutable fields of an existing user', async () => {
+				const inserted = await insertUser(EXOTIC_USER);
+
+				const updatedUser = await updateUser(inserted!.id, {
+					bio: 'Updated bio',
+					name: 'Updated Name',
+				});
+
+				expect(updatedUser).toMatchObject({
+					id: inserted!.id,
+					bio: 'Updated bio',
+					name: 'Updated Name',
+				});
 			});
 
 			it('throws when user does not exist', async () => {
-				const updatedData = {
-					bio: 'This update should fail.',
-				};
-				await expect(updateUser(-1, updatedData)).rejects.toThrow();
+				await expect(updateUser(-1, { bio: 'Should fail' })).rejects.toThrow();
 			});
 		});
 	});

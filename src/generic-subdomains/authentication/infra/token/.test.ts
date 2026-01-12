@@ -9,17 +9,18 @@ const payload: TokenPayload = {
 	role: 'admin',
 	email: 'admin@example.com',
 };
-const expiresIn = 3600 * 1000;
+const expiresIn = 3600;
 
 describe('JwtTokenService', () => {
 	beforeAll(() => {
 		token = JwtTokenService.generateToken(payload, expiresIn);
 	});
 
-	it('Should generate a valid JWT token', () => {
-		expect(token).toBeDefined();
-		expect(typeof token).toBe('string');
-		expect(token.split('.').length).toBe(3);
+	it('Should generate a token that can be verified', () => {
+		const token = JwtTokenService.generateToken(payload, expiresIn);
+		const decoded = JwtTokenService.verifyToken(token);
+
+		expect(decoded).toMatchObject(payload);
 	});
 
 	it('Should verify and decode the JWT token correctly', () => {
@@ -32,6 +33,15 @@ describe('JwtTokenService', () => {
 
 	it('Should return null for an invalid JWT token', () => {
 		const decoded = JwtTokenService.verifyToken('invalid.token.here');
+		expect(decoded).toBeNull();
+	});
+
+	it('Should return null for an expired token', async () => {
+		const shortToken = JwtTokenService.generateToken(payload, 1);
+
+		await new Promise((r) => setTimeout(r, 1100));
+
+		const decoded = JwtTokenService.verifyToken(shortToken);
 		expect(decoded).toBeNull();
 	});
 });
