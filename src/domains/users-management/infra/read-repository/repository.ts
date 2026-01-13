@@ -1,17 +1,25 @@
 import { prisma } from '../../../../prisma/myClient';
+import type { UserWhereInput } from '@prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@AppError';
 
-import type { UserReadRepository } from '../../queries/ports/ReadRepository';
-import type { FullUser } from '../../queries/read-models/FullUser';
-import type { PublicProfile } from '../../queries/read-models/PublicProfile';
-import type { ClientAuthCredentials } from '../../queries/read-models/ClientAuth';
+import type {
+	UserReadRepository,
+	SelectUsersParams,
+} from '../../queries/ports/ReadRepository';
+import type {
+	FullUser,
+	PublicProfile,
+	PrivateProfile,
+	ClientAuthCredentials,
+	SelectUsersPage,
+} from '../../queries/read-models/index';
 import {
 	authUserSelect,
 	fullUserSelect,
 	publicProfileSelect,
 	privateProfileSelect,
+	previewUserSelect,
 } from './helpers';
-import type { PrivateProfile } from '../../queries/read-models/PrivateProfile';
 
 function selectUserById(id: number): Promise<FullUser | null> {
 	return withPrismaErrorHandling(() => {
@@ -168,6 +176,55 @@ export function selectPrivateProfile(
 	});
 }
 
+export function selectUsers(
+	params: SelectUsersParams,
+): Promise<SelectUsersPage> {
+	return withPrismaErrorHandling(async () => {
+		const { navigationOptions, filterOptions, sortOptions } = params;
+		const { cursor, limit } = navigationOptions;
+		const { searchNickname, status } = filterOptions;
+		const { orderBy, orderDirection } = sortOptions;
+
+		const where: UserWhereInput = {};
+
+		if (searchNickname) {
+			where.nickname = {
+				contains: searchNickname,
+				mode: 'insensitive',
+			};
+		}
+
+		if (status) {
+			where.status = status;
+		}
+
+		const users = await prisma.user.findMany({
+			where,
+			take: limit + 1,
+			...(cursor && {
+				cursor: cursor ? { id: cursor } : undefined,
+				skip: 1,
+			}),
+			orderBy: {
+				[orderBy]: orderDirection,
+			},
+			select: previewUserSelect,
+		});
+
+		const hasMore = users.length > limit;
+		const items = hasMore ? users.slice(0, limit) : users;
+
+		const nextCursor =
+			items.length > 0 ? items[items.length - 1]!.id : undefined;
+
+		return {
+			users: items,
+			nextCursor,
+			hasMore,
+		};
+	});
+}
+
 export const QueriesRepository: UserReadRepository = {
 	selectUserById,
 	selectUserByNickname,
@@ -175,4 +232,5 @@ export const QueriesRepository: UserReadRepository = {
 	selectAuthUserByEmail,
 	selectPublicProfile,
 	selectPrivateProfile,
+	selectUsers,
 };

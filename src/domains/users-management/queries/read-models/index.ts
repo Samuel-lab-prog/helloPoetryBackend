@@ -8,3 +8,4 @@ export * from './FullUser';
 export * from './Preview';
 export * from './PrivateProfile';
 export * from './PublicProfile';
+export * from './UsersPage';

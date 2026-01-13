@@ -93,3 +93,10 @@ export const authUserSelect = {
 	passwordHash: true,
 	role: true,
 } as const satisfies Record<keyof ClientAuthCredentials, boolean>;
+
+export const previewUserSelect = {
+	id: true,
+	nickname: true,
+	avatarUrl: true,
+	role: true,
+} as const;

@@ -1,8 +1,8 @@
 import type { userRole } from './Enums';
 
 export type UserPreview = {
-	id: string;
+	id: number;
 	nickname: string;
-	avatarUrl: string | null;
+	avatarUrl: string;
 	role: userRole;
 };

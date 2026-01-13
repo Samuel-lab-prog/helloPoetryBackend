@@ -17,8 +17,7 @@
 			"@AppError": ["./utils/AppError.ts"],
 			"@GeneralSchemas": ["./utils/generalSchemas.ts"],
 			"@SetupPlugin": ["./utils/plugins/setupPlugin.ts"],
-			"@GenericSubdomains/*": ["./generic-subdomains/*"],
-			"@Server/": ["./index"]
+			"@GenericSubdomains/*": ["./generic-subdomains/*"]
 		},
 
 		// Bundler mode

@@ -7,6 +7,10 @@ import {
 	UserPublicProfileSchema,
 	UserPrivateProfileSchema,
 	idSchema,
+	UsersPageSchema,
+	orderDirectionSchema,
+	orderUsersBySchema,
+	paginationLimitSchema,
 } from '../schemas/index';
 
 import { QueriesRepository } from '../../infra/read-repository/repository';
@@ -15,6 +19,7 @@ import {
 	fetchUserFactory,
 	getPublicProfileFactory,
 	getPrivateProfileFactory,
+	getUsersFactory,
 } from '../../queries/use-cases/index';
 
 import type {
@@ -22,6 +27,7 @@ import type {
 	PrivateProfile,
 	PublicProfile,
 	userRole,
+	SelectUsersPage,
 } from '../../queries/read-models/index';
 
 interface UsersReadRouterServices {
@@ -35,9 +41,56 @@ interface UsersReadRouterServices {
 		requesterId?: number,
 	) => Promise<PublicProfile>;
 	getPrivateProfile: (id: number) => Promise<PrivateProfile>;
+	getUsers: (params: {
+		navigationOptions: {
+			limit: number;
+			cursor?: number;
+		};
+		sortOptions: {
+			orderBy: 'createdAt' | 'nickname' | 'id';
+			orderDirection: 'asc' | 'desc';
+		};
+		nicknameSearch?: string;
+	}) => Promise<SelectUsersPage>;
 }
+
 export function createUsersReadRouter(services: UsersReadRouterServices) {
 	return new Elysia({ prefix: '/users' })
+		.get(
+			'/',
+			({ query }) => {
+				const { limit, cursor, orderBy, orderDirection, searchNickname } =
+					query;
+				return services.getUsers({
+					navigationOptions: {
+						limit,
+						cursor,
+					},
+					sortOptions: {
+						orderBy,
+						orderDirection,
+					},
+					nicknameSearch: searchNickname,
+				});
+			},
+			{
+				response: {
+					200: UsersPageSchema,
+				},
+				query: t.Object({
+					limit: paginationLimitSchema,
+					cursor: t.Optional(t.Number()),
+					orderBy: orderUsersBySchema,
+					orderDirection: orderDirectionSchema,
+					searchNickname: t.Optional(t.String()),
+				}),
+				detail: {
+					summary: 'Get Users',
+					description: 'Returns a paginated list of users.',
+					tags: ['Users Management'],
+				},
+			},
+		)
 		.get(
 			'/:id/profile',
 			({ params, query }) => {
@@ -113,6 +166,9 @@ const services: UsersReadRouterServices = {
 		userReadRepository: QueriesRepository,
 	}),
 	getPrivateProfile: getPrivateProfileFactory({
+		userReadRepository: QueriesRepository,
+	}),
+	getUsers: getUsersFactory({
 		userReadRepository: QueriesRepository,
 	}),
 };
