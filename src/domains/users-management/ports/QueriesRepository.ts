@@ -1,11 +1,11 @@
-import type { ClientAuthCredentials } from '../read-models/ClientAuth';
-import type { FullUser } from '../read-models/FullUser';
 import type {
 	PrivateProfile,
 	PublicProfile,
 	userStatus,
 	SelectUsersPage,
-} from '../read-models/index';
+	ClientAuthCredentials,
+	FullUser,
+} from '../use-cases/queries/read-models/index';
 
 export interface UserReadRepository {
 	selectUserById(id: number): Promise<FullUser | null>;

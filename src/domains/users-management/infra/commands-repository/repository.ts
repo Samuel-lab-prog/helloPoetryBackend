@@ -1,9 +1,9 @@
 import { prisma } from '../../../../prisma/myClient';
 import { withPrismaErrorHandling } from '@AppError';
 
-import type { UserCommandsRepository } from '../../commands/ports/CommandsRepository';
-import type { InsertUser } from '../../commands/commands-models/Insert';
-import type { UpdateUserData } from '../../commands/commands-models/Update';
+import type { UserCommandsRepository } from '../../ports/CommandsRepository';
+import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
+import type { UpdateUserData } from '../../use-cases/commands/commands-models/Update';
 
 function insertUser(user: InsertUser): Promise<{ id: number } | null> {
 	return withPrismaErrorHandling(() => {

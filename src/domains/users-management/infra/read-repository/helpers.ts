@@ -1,5 +1,5 @@
-import type { ClientAuthCredentials } from '../../queries/read-models/ClientAuth';
-import type { FullUser } from '../../queries/read-models/FullUser';
+import type { ClientAuthCredentials } from '../../use-cases/queries/read-models/ClientAuth';
+import type { FullUser } from '../../use-cases/queries/read-models/FullUser';
 
 export const fullUserSelect = {
 	id: true,

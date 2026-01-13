@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import type { PrivateProfile } from '../../queries/read-models/PrivateProfile';
+import type { PrivateProfile } from '../../use-cases/queries/read-models/PrivateProfile';
 import {
 	UserRoleEnumSchema,
 	UserStatusEnumSchema,

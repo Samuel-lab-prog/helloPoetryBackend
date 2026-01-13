@@ -1,5 +1,5 @@
-import type { UserReadRepository } from '../ports/ReadRepository';
-import type { PublicProfile } from '../read-models/PublicProfile';
+import type { UserReadRepository } from '../../ports/QueriesRepository';
+import type { PublicProfile } from './read-models/PublicProfile';
 import { ProfileNotFoundError } from './errors';
 
 interface Dependencies {

@@ -2,8 +2,8 @@ import type {
 	UserReadRepository,
 	SortOptions,
 	NavigationOptions,
-} from '../ports/ReadRepository';
-import type { SelectUsersPage } from '../read-models/index';
+} from '../../ports/QueriesRepository';
+import type { SelectUsersPage } from './read-models/index';
 
 interface Dependencies {
 	userReadRepository: UserReadRepository;

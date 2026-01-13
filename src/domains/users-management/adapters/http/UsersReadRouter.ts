@@ -20,7 +20,7 @@ import {
 	getPublicProfileFactory,
 	getPrivateProfileFactory,
 	getUsersFactory,
-} from '../../queries/use-cases/index';
+} from '../../use-cases/queries/index';
 
 import type {
 	FullUser,
@@ -28,7 +28,7 @@ import type {
 	PublicProfile,
 	userRole,
 	SelectUsersPage,
-} from '../../queries/read-models/index';
+} from '../../use-cases/queries/read-models/index';
 
 interface UsersReadRouterServices {
 	getUser: (params: {

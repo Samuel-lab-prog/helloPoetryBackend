@@ -3,7 +3,7 @@ import type {
 	userStatus,
 	friendshipStatus,
 	userRole,
-} from '../../queries/read-models/Enums';
+} from '../../use-cases/queries/read-models/Enums';
 
 export const UserStatusEnumSchema = t.UnionEnum([
 	'active',

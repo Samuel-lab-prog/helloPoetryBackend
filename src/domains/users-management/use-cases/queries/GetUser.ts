@@ -1,7 +1,7 @@
-import type { UserReadRepository } from '../ports/ReadRepository';
-import type { FullUser } from '../read-models/FullUser';
+import type { UserReadRepository } from '../../ports/QueriesRepository';
+import type { FullUser } from './read-models/FullUser';
 import { UserNotFoundError, CrossUserDataAccessError } from './errors';
-import type { userRole } from '../../queries/read-models/Enums';
+import type { userRole } from '../../use-cases/queries/read-models/Enums';
 import { canAccessUserInfo } from './policies/policies';
 
 export interface Dependencies {

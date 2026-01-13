@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import type { UserPreview } from '../../queries/read-models/index';
+import type { UserPreview } from '../../use-cases/queries/read-models/index';
 import { UserRoleEnumSchema } from './Enums';
 
 export const UserPreviewSchema = t.Object({

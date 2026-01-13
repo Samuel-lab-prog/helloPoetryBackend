@@ -1,5 +1,5 @@
-import type { InsertUser } from '../commands-models/Insert';
-import type { UpdateUserData } from '../commands-models/Update';
+import type { InsertUser } from '../use-cases/commands/commands-models/Insert';
+import type { UpdateUserData } from '../use-cases/commands/commands-models/Update';
 
 export interface UserCommandsRepository {
 	insertUser(user: InsertUser): Promise<{ id: number } | null>;

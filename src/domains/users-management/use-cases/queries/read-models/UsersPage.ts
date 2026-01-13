@@ -1,4 +1,4 @@
-import type { UserPreview } from '../read-models/Preview';
+import type { UserPreview } from './Preview';
 
 export type SelectUsersPage = {
 	users: UserPreview[];

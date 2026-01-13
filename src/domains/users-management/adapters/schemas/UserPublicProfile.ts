@@ -1,5 +1,6 @@
 import { t } from 'elysia';
-import type { PublicProfile } from '../../queries/read-models/PublicProfile';
+import type { PublicProfile } from '../../use-cases/queries/read-models/index';
+
 import {
 	UserRoleEnumSchema,
 	UserStatusEnumSchema,

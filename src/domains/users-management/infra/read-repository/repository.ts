@@ -5,14 +5,14 @@ import { withPrismaErrorHandling } from '@AppError';
 import type {
 	UserReadRepository,
 	SelectUsersParams,
-} from '../../queries/ports/ReadRepository';
+} from '../../ports/QueriesRepository';
 import type {
 	FullUser,
 	PublicProfile,
 	PrivateProfile,
 	ClientAuthCredentials,
 	SelectUsersPage,
-} from '../../queries/read-models/index';
+} from '../../use-cases/queries/read-models/index';
 import {
 	authUserSelect,
 	fullUserSelect,
