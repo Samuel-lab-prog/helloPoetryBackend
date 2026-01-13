@@ -112,7 +112,10 @@ function selectUserProfileById(
 
 		if (!user) return null;
 
-		let friendship: PublicProfile['friendship'] | undefined;
+		let friendship: PublicProfile['friendship'] = {
+			status: 'none',
+			isRequester: false,
+		};
 
 		if (requesterId && requesterId !== user.id) {
 			const relation = await prisma.friendship.findFirst({
@@ -139,8 +142,8 @@ function selectUserProfileById(
 			id: user.id,
 			nickname: user.nickname,
 			name: user.name,
-			bio: user.bio ?? undefined,
-			avatarUrl: user.avatarUrl ?? undefined,
+			bio: user.bio,
+			avatarUrl: user.avatarUrl,
 			role: user.role,
 			status: user.status,
 

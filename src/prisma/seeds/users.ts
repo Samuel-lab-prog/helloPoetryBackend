@@ -1,5 +1,5 @@
 import { BcryptHashService } from '@GenericSubdomains/authentication/infra/hashing/BcryptHashService';
-import { prisma } from '@prisma/client';
+import { prisma } from '../myClient';
 
 const passwordsPromises = [
 	BcryptHashService.hash('normaluserpassword'),

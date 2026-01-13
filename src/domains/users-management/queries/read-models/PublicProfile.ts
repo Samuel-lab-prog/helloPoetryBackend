@@ -4,8 +4,8 @@ export type PublicProfile = {
 	id: number;
 	nickname: string;
 	name: string;
-	bio?: string;
-	avatarUrl?: string;
+	bio: string;
+	avatarUrl: string;
 	role: userRole;
 	status: userStatus;
 
@@ -15,7 +15,7 @@ export type PublicProfile = {
 		friendsCount: number;
 	};
 
-	friendship?: {
+	friendship: {
 		status: friendshipStatus;
 		isRequester: boolean;
 	};
