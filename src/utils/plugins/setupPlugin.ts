@@ -1,16 +1,23 @@
 import Elysia from 'elysia';
+import { appErrorSchema } from '../AppError';
 
 export const SetupPlugin = new Elysia()
 	.as('global')
-	.state('clientId', null as number | null) // If we have the id, we guarantee authentication
-	.state('clientRole', 'user' as 'user' | 'author' | 'moderator')
+	.state('clientId', -1)
+	.state('clientRole', '')
 	.state('reqInitiatedAt', 0)
-	.state('authTiming', 0) // This is being instanciated in login and authPlugin
-	.state('reqId', '');
+	.state('authTiming', 0)
+	.state('reqId', '')
+	.guard({
+		as: 'scoped',
+		response: {
+			500: appErrorSchema,
+		},
+	});
 
 export type SetupPluginType = {
 	clientId: number | null;
-	clientRole: 'user' | 'author' | 'moderator';
+	clientRole: string;
 	reqInitiatedAt: number;
 	authTiming: number;
 	reqId: string;

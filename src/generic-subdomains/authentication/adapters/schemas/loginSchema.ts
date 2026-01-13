@@ -1,17 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from './AppError';
-
-export const dateSchema = t.Date({
-	example: '2024-01-01T12:00:00Z',
-	...makeValidationError('Date must be a valid date string'),
-});
-
-export const idSchema = t.Number({
-	minimum: 1,
-	example: 1,
-	readOnly: true,
-	...makeValidationError('ID must be a positive integer'),
-});
+import { makeValidationError } from '@AppError';
 
 export const emailSchema = t.String({
 	format: 'email',

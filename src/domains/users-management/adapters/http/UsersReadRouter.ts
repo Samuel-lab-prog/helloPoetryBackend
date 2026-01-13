@@ -6,6 +6,7 @@ import {
 	FullUserSchema,
 	UserPublicProfileSchema,
 	UserPrivateProfileSchema,
+	idSchema,
 } from '../schemas/index';
 
 import { QueriesRepository } from '../../infra/read-repository/repository';
@@ -23,41 +24,40 @@ import type {
 	userRole,
 } from '../../queries/read-models/index';
 
-interface UsersReadControllerServices {
-	fetchUser: (params: {
+interface UsersReadRouterServices {
+	getUser: (params: {
 		targetId: number;
 		requesterId: number;
 		requesterRole: userRole;
 	}) => Promise<FullUser>;
-	fetchPublicProfile: (
+	getPublicProfile: (
 		id: number,
 		requesterId?: number,
 	) => Promise<PublicProfile>;
-	fetchPrivateProfile: (id: number) => Promise<PrivateProfile>;
+	getPrivateProfile: (id: number) => Promise<PrivateProfile>;
 }
-export function createUsersReadRouter(services: UsersReadControllerServices) {
+export function createUsersReadRouter(services: UsersReadRouterServices) {
 	return new Elysia({ prefix: '/users' })
 		.get(
 			'/:id/profile',
 			({ params, query }) => {
-				return services.fetchPublicProfile(params.id, query.requesterId);
+				return services.getPublicProfile(params.id, query.requesterId);
 			},
 			{
 				response: {
 					200: UserPublicProfileSchema,
-					401: appErrorSchema,
+					404: appErrorSchema,
 					422: appErrorSchema,
-					500: appErrorSchema,
 				},
 				params: t.Object({
-					id: t.Number(),
+					id: idSchema,
 				}),
 				query: t.Object({
-					requesterId: t.Optional(t.Number()),
+					requesterId: t.Optional(idSchema),
 				}),
 				detail: {
-					summary: 'Fetch User Public Profile',
-					description: 'Fetches a user public profile by their ID.',
+					summary: 'Get User Public Profile',
+					description: 'Returns a user public profile by their ID.',
 					tags: ['Users Management'],
 				},
 			},
@@ -66,18 +66,16 @@ export function createUsersReadRouter(services: UsersReadControllerServices) {
 		.get(
 			'/me',
 			({ store }) => {
-				return services.fetchPrivateProfile(store.clientId!);
+				return services.getPrivateProfile(store.clientId);
 			},
 			{
 				response: {
 					200: UserPrivateProfileSchema,
-					401: appErrorSchema,
-					422: appErrorSchema,
-					500: appErrorSchema,
+					404: appErrorSchema,
 				},
 				detail: {
-					summary: 'Fetch My Private Profile',
-					description: 'Fetches the private profile of the authenticated user.',
+					summary: 'Get My Private Profile',
+					description: 'Returns the private profile of the authenticated user.',
 					tags: ['Users Management'],
 				},
 			},
@@ -85,37 +83,36 @@ export function createUsersReadRouter(services: UsersReadControllerServices) {
 		.get(
 			'/:id',
 			({ params, store }) => {
-				return services.fetchUser({
+				return services.getUser({
 					targetId: params.id,
 					requesterId: store.clientId!,
-					requesterRole: store.clientRole!,
+					requesterRole: store.clientRole as userRole,
 				});
 			},
 			{
 				response: {
 					200: FullUserSchema,
-					401: appErrorSchema,
-					422: appErrorSchema,
-					500: appErrorSchema,
+					403: appErrorSchema,
+					404: appErrorSchema,
 				},
 				params: t.Object({
-					id: t.Number(),
+					id: idSchema,
 				}),
 				detail: {
-					summary: 'Fetch User',
-					description: 'Fetches a user by their ID.',
+					summary: 'Get User',
+					description: 'Returns a user by their ID.',
 					tags: ['Users Management'],
 				},
 			},
 		);
 }
 
-const services: UsersReadControllerServices = {
-	fetchUser: fetchUserFactory({ userReadRepository: QueriesRepository }),
-	fetchPublicProfile: getPublicProfileFactory({
+const services: UsersReadRouterServices = {
+	getUser: fetchUserFactory({ userReadRepository: QueriesRepository }),
+	getPublicProfile: getPublicProfileFactory({
 		userReadRepository: QueriesRepository,
 	}),
-	fetchPrivateProfile: getPrivateProfileFactory({
+	getPrivateProfile: getPrivateProfileFactory({
 		userReadRepository: QueriesRepository,
 	}),
 };

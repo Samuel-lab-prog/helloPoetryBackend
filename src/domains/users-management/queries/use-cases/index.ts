@@ -6,3 +6,4 @@ export * from './errors';
 export * from './GetPrivateProfile';
 export * from './GetPublicProfile';
 export * from './GetUser';
+export * from './policies/policies';

@@ -4,5 +4,6 @@
 
 export * from './Enums';
 export * from './FullUser';
+export * from './IdSchema';
 export * from './UserPrivateProfile';
 export * from './UserPublicProfile';
