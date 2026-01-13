@@ -41,13 +41,15 @@
 		"drop": "npx prisma db push --force-reset",
 		"check-deps": "npx dependency-cruiser src",
 		"check": "bun lint:fix && bun format:fix && bun test && bun check-deps",
-		"compose": "docker-compose up --build"
+		"compose": "docker-compose up --build",
+		"barrels": "barrelsby --config barrels.config.json"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
 		"@elysiajs/openapi": "^1.4.13",
 		"@prisma/adapter-pg": "^7.2.0",
 		"@prisma/client": "^7.2.0",
+		"barrelsby": "^2.8.1",
 		"bcryptjs": "^3.0.3",
 		"dotenv": "^17.2.3",
 		"elysia": "^1.4.21",

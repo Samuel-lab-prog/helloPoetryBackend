@@ -7,7 +7,8 @@ const {
 	selectUserByEmail,
 	selectUserById,
 	selectUserByNickname,
-	selectUserProfileById,
+	selectPublicProfile,
+	selectPrivateProfile,
 } = QueriesRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
@@ -135,13 +136,13 @@ describe('Users Repository', () => {
 			});
 		});
 
-		describe('selectUserProfileById', () => {
+		describe('selectPublicProfile', () => {
 			it('returns public profile when id exists', async () => {
 				const inserted = await prisma.user.create({
 					data: EXOTIC_USER,
 					select: { id: true },
 				});
-				const profile = await selectUserProfileById(inserted!.id);
+				const profile = await selectPublicProfile(inserted!.id);
 
 				expect(profile).toMatchObject({
 					id: inserted!.id,
@@ -151,7 +152,28 @@ describe('Users Repository', () => {
 			});
 
 			it('returns null when id does not exist', async () => {
-				const profile = await selectUserProfileById(-1);
+				const profile = await selectPublicProfile(-1);
+				expect(profile).toBeNull();
+			});
+		});
+
+		describe('selectPrivateProfile', () => {
+			it('returns private profile when id exists', async () => {
+				const inserted = await prisma.user.create({
+					data: EXOTIC_USER,
+					select: { id: true },
+				});
+				const profile = await selectPrivateProfile(inserted!.id);
+
+				expect(profile).toMatchObject({
+					id: inserted!.id,
+					avatarUrl: EXOTIC_USER.avatarUrl,
+					role: 'user',
+				});
+			});
+
+			it('returns null when id does not exist', async () => {
+				const profile = await selectPrivateProfile(-1);
 				expect(profile).toBeNull();
 			});
 		});

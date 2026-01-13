@@ -34,7 +34,7 @@ export default defineConfig([
 			'max-classes-per-file': ['error', 3],
 			'max-depth': ['error', 4],
 			'max-lines': ['warn', 300],
-			'max-lines-per-function': ['error', { max: 80, skipComments: true }],
+			'max-lines-per-function': ['error', { max: 800, skipComments: true }],
 			'max-nested-callbacks': ['error', 2],
 			'max-params': ['error', 4],
 

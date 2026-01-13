@@ -1,5 +1,6 @@
 import type { ClientAuthCredentials } from '../read-models/ClientAuth';
 import type { FullUser } from '../read-models/FullUser';
+import type { PrivateProfile } from '../read-models/PrivateProfile';
 import type { PublicProfile } from '../read-models/PublicProfile';
 
 export interface UserReadRepository {
@@ -7,9 +8,11 @@ export interface UserReadRepository {
 	selectUserByNickname(nickname: string): Promise<FullUser | null>;
 	selectUserByEmail(email: string): Promise<FullUser | null>;
 
-	selectUserProfileById(
+	selectAuthUserByEmail(email: string): Promise<ClientAuthCredentials | null>;
+
+	selectPublicProfile(
 		id: number,
 		requesterId?: number,
 	): Promise<PublicProfile | null>;
-	selectAuthUserByEmail(email: string): Promise<ClientAuthCredentials | null>;
+	selectPrivateProfile(id: number): Promise<PrivateProfile | null>;
 }

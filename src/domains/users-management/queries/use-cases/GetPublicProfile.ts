@@ -2,7 +2,7 @@ import type { UserReadRepository } from '../ports/ReadRepository';
 import type { PublicProfile } from '../read-models/PublicProfile';
 import { ProfileNotFoundError } from './errors';
 
-export interface Dependencies {
+interface Dependencies {
 	userReadRepository: UserReadRepository;
 }
 
@@ -11,7 +11,7 @@ export function getPublicProfileFactory({ userReadRepository }: Dependencies) {
 		id: number,
 		requesterId?: number,
 	): Promise<PublicProfile> {
-		const profile = await userReadRepository.selectUserProfileById(
+		const profile = await userReadRepository.selectPublicProfile(
 			id,
 			requesterId,
 		);

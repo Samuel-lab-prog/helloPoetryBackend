@@ -5,62 +5,13 @@ import type { UserReadRepository } from '../../queries/ports/ReadRepository';
 import type { FullUser } from '../../queries/read-models/FullUser';
 import type { PublicProfile } from '../../queries/read-models/PublicProfile';
 import type { ClientAuthCredentials } from '../../queries/read-models/ClientAuth';
-
-const fullUserSelect = {
-	id: true,
-	nickname: true,
-	email: true,
-	name: true,
-	bio: true,
-	avatarUrl: true,
-	role: true,
-	status: true,
-	createdAt: true,
-	updatedAt: true,
-	emailVerifiedAt: true,
-} as const satisfies Record<keyof FullUser, boolean>;
-
-const userProfileSelect = {
-	id: true,
-	nickname: true,
-	name: true,
-	bio: true,
-	avatarUrl: true,
-	role: true,
-	status: true,
-
-	poems: {
-		where: {
-			status: 'published',
-			deletedAt: null,
-		},
-		select: { id: true },
-	},
-
-	comments: {
-		where: {
-			status: 'visible',
-		},
-		select: { id: true },
-	},
-
-	friendshipsFrom: {
-		where: { status: 'accepted' },
-		select: { id: true },
-	},
-
-	friendshipsTo: {
-		where: { status: 'accepted' },
-		select: { id: true },
-	},
-} as const;
-
-const authUserSelect = {
-	id: true,
-	email: true,
-	passwordHash: true,
-	role: true,
-} as const satisfies Record<keyof ClientAuthCredentials, boolean>;
+import {
+	authUserSelect,
+	fullUserSelect,
+	publicProfileSelect,
+	privateProfileSelect,
+} from './helpers';
+import type { PrivateProfile } from '../../queries/read-models/PrivateProfile';
 
 function selectUserById(id: number): Promise<FullUser | null> {
 	return withPrismaErrorHandling(() => {
@@ -100,14 +51,14 @@ function selectAuthUserByEmail(
 	});
 }
 
-function selectUserProfileById(
+function selectPublicProfile(
 	id: number,
 	requesterId?: number,
 ): Promise<PublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findUnique({
 			where: { id },
-			select: userProfileSelect,
+			select: publicProfileSelect,
 		});
 
 		if (!user) return null;
@@ -160,10 +111,68 @@ function selectUserProfileById(
 	});
 }
 
+export function selectPrivateProfile(
+	id: number,
+): Promise<PrivateProfile | null> {
+	return withPrismaErrorHandling(async () => {
+		const user = await prisma.user.findUnique({
+			where: { id },
+			select: privateProfileSelect,
+		});
+
+		if (!user) return null;
+
+		const acceptedFriends = [
+			...user.friendshipsFrom
+				.filter((f) => f.status === 'accepted')
+				.map((f) => f.userBId),
+			...user.friendshipsTo
+				.filter((f) => f.status === 'accepted')
+				.map((f) => f.userAId),
+		];
+
+		const stats = {
+			poemsCount: user.poems.length,
+			commentsCount: user.comments.length,
+			friendsCount: acceptedFriends.length,
+			poemsIds: user.poems.map((p) => p.id),
+			friendsIds: acceptedFriends,
+		};
+
+		const friendshipRequests = [
+			...user.friendshipsFrom.map((f) => ({
+				status: f.status,
+				isRequester: true,
+				userId: f.userBId,
+			})),
+			...user.friendshipsTo.map((f) => ({
+				status: f.status,
+				isRequester: false,
+				userId: f.userAId,
+			})),
+		];
+
+		return {
+			id: user.id,
+			nickname: user.nickname,
+			name: user.name,
+			bio: user.bio ?? null,
+			avatarUrl: user.avatarUrl ?? null,
+			role: user.role,
+			status: user.status,
+			email: user.email,
+			emailVerifiedAt: user.emailVerifiedAt ?? null,
+			stats,
+			friendshipRequests,
+		};
+	});
+}
+
 export const QueriesRepository: UserReadRepository = {
 	selectUserById,
 	selectUserByNickname,
 	selectUserByEmail,
 	selectAuthUserByEmail,
-	selectUserProfileById,
+	selectPublicProfile,
+	selectPrivateProfile,
 };

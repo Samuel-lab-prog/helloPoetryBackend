@@ -1,0 +1,12 @@
+{
+	"directory": [
+		"./src/domains/users-management/queries/read-models",
+		"./src/domains/users-management/queries/use-cases",
+		"./src/domains/users-management/adapters/schemas"
+	],
+	"exclude": [".*\\.test\\.ts$"],
+	"singleQuotes": true,
+	"delete": true,
+	"name": "index",
+	"location": "top"
+}
