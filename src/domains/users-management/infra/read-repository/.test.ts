@@ -3,8 +3,12 @@ import { QueriesRepository } from './repository';
 import type { InsertUser } from '../../commands/commands-models/Insert';
 import { prisma } from '../../../../prisma/myClient';
 
-const { selectUserByEmail, selectUserById, selectUserByNickname } =
-	QueriesRepository;
+const {
+	selectUserByEmail,
+	selectUserById,
+	selectUserByNickname,
+	selectUserProfileById,
+} = QueriesRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
 	{
@@ -110,6 +114,45 @@ describe('Users Repository', () => {
 			it('returns null when id does not exist', async () => {
 				const user = await selectUserById(-1);
 				expect(user).toBeNull();
+			});
+		});
+
+		describe('selectAuthUserByEmail', () => {
+			it('returns auth credentials when email exists', async () => {
+				const email = DEFAULT_USERS[2]!.email;
+				const user = await QueriesRepository.selectAuthUserByEmail(email);
+				expect(user).toMatchObject({
+					email,
+					passwordHash: DEFAULT_USERS[2]!.passwordHash,
+				});
+			});
+
+			it('returns null when email does not exist', async () => {
+				const user = await QueriesRepository.selectAuthUserByEmail(
+					'invalid@example.com',
+				);
+				expect(user).toBeNull();
+			});
+		});
+
+		describe('selectUserProfileById', () => {
+			it('returns public profile when id exists', async () => {
+				const inserted = await prisma.user.create({
+					data: EXOTIC_USER,
+					select: { id: true },
+				});
+				const profile = await selectUserProfileById(inserted!.id);
+
+				expect(profile).toMatchObject({
+					id: inserted!.id,
+					avatarUrl: EXOTIC_USER.avatarUrl,
+					role: 'user',
+				});
+			});
+
+			it('returns null when id does not exist', async () => {
+				const profile = await selectUserProfileById(-1);
+				expect(profile).toBeNull();
 			});
 		});
 	});
