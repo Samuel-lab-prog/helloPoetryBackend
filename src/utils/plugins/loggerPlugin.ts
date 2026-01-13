@@ -30,9 +30,9 @@ export const LoggerPlugin = new Elysia()
 			const statusCode = set.status || 200;
 			const sizeBytes = getResponseSize(responseValue);
 			const contentType = set.headers['content-type'] || 'unknown';
-			const isAuthenticated = !!store.userId || false;
-			const userId = store.userId || 'guest';
-			const role = store.role || 'guest';
+			const isAuthenticated = !!store.clientId || false;
+			const userId = store.clientId || 'guest';
+			const role = store.clientRole || 'guest';
 
 			log.info(
 				{

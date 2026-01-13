@@ -45,9 +45,9 @@ function buildErrorContext(request: Request, store: SetupPluginType) {
 			path,
 		},
 		auth: {
-			isAuthenticated: !!store.userId,
-			userId: store.userId,
-			role: store.role,
+			isAuthenticated: !!store.clientId,
+			userId: store.clientId,
+			role: store.clientRole,
 		},
 		timings: {
 			totalMs: performance.now() - store.reqInitiatedAt,
@@ -144,12 +144,16 @@ function convertDomainError(error: DomainError): AppError {
 				errorMessages: [message],
 				statusCode: 401,
 			});
-		case 'INVALID_OPERATION':
 		case 'VALIDATION_FAILED':
 		default:
 			return new AppError({
 				errorMessages: [message],
 				statusCode: 400,
+			});
+		case 'FORBIDDEN_USER_OPERATION':
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 403,
 			});
 	}
 }

@@ -46,8 +46,11 @@ describe('AuthRouter', () => {
 
 		const setCookie = resp.headers.get('set-cookie');
 		expect(setCookie).toContain('token=');
-		expect(setCookie).toContain('HttpOnly');
 		expect(setCookie).toContain('Path=/');
+
+		if (process.env.NODE_ENV === 'prod') {
+			expect(setCookie).toContain('HttpOnly');
+		}
 
 		expect(login).toHaveBeenCalledTimes(1);
 		expect(login).toHaveBeenCalledWith('user@test.com', 'password123');

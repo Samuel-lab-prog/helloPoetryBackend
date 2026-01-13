@@ -1,8 +1,9 @@
 const domainErrors = {
 	NOT_FOUND: 'Domain entity not found',
-	INVALID_OPERATION: 'Invalid operation on domain entity',
+	FORBIDDEN_USER_OPERATION: 'Invalid operation on domain entity',
 	VALIDATION_FAILED: 'Domain entity validation failed',
 	INVALID_CREDENTIALS: 'Invalid email or password',
+	INVALID_TOKEN: 'Invalid or expired token',
 };
 
 export class DomainError extends Error {

@@ -11,3 +11,12 @@ export class UserNotFoundError extends DomainError {
 		super('NOT_FOUND', 'Not found: User not found');
 	}
 }
+
+export class CrossUserDataAccessError extends DomainError {
+	constructor() {
+		super(
+			'FORBIDDEN_USER_OPERATION',
+			'Forbidden operation: Cannot access private user data of another user',
+		);
+	}
+}

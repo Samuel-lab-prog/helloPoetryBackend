@@ -5,11 +5,11 @@ import { loginSchema } from '@GeneralSchemas';
 import { login } from '../../services/login';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
-	token.httpOnly = true;
+	token.httpOnly = process.env.NODE_ENV === 'prod';
 	token.path = '/';
 	token.maxAge = 60 * 60 * 24 * 7;
 	token.secure = process.env.NODE_ENV === 'prod';
-	token.sameSite = 'none';
+	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
 }
 
 interface LoginResponse {
@@ -35,8 +35,11 @@ export function createAuthRouter(services: AuthControllerServices) {
 				setUpCookieTokenOptions(cookie.token!);
 
 				set.status = 204;
-				store.userId = result.client.id;
-				store.role = result.client.role as 'user' | 'author' | 'moderator';
+				store.clientId = result.client.id;
+				store.clientRole = result.client.role as
+					| 'user'
+					| 'author'
+					| 'moderator';
 				store.authTiming = Math.round(performance.now() - authInitiated);
 			},
 			{
