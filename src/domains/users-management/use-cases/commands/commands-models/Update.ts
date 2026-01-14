@@ -1,7 +1,6 @@
 export type UpdateUserData = Partial<{
 	name: string;
 	nickname: string;
-	email: string;
 	bio: string;
 	avatarUrl: string;
 }>;

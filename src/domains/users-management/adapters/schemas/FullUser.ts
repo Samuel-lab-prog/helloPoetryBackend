@@ -1,7 +1,7 @@
 import { t } from 'elysia';
 import type { FullUser } from '../../use-cases/queries/read-models/index';
 
-import { UserRoleEnumSchema, UserStatusEnumSchema } from './Enums';
+import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
 
 export const FullUserSchema = t.Object({
 	id: t.Number(),

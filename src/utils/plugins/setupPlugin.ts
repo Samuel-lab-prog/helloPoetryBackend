@@ -4,7 +4,7 @@ import { appErrorSchema } from '../AppError';
 export const SetupPlugin = new Elysia()
 	.as('global')
 	.state('clientId', -1)
-	.state('clientRole', '')
+	.state('clientRole', 'user' as 'user' | 'author' | 'moderator')
 	.state('reqInitiatedAt', 0)
 	.state('authTiming', 0)
 	.state('reqId', '')

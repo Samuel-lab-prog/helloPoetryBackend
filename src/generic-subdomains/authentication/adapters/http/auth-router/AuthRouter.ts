@@ -39,7 +39,7 @@ export function createAuthRouter(services: AuthControllerServices) {
 			set.status = 204;
 
 			store.clientId = result.client.id;
-			store.clientRole = result.client.role;
+			store.clientRole = result.client.role as 'user' | 'author' | 'moderator';
 		},
 		{
 			body: loginSchema,

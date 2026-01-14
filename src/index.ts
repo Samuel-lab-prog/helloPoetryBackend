@@ -10,7 +10,8 @@ import { SetupPlugin } from '@utils/plugins/setupPlugin';
 import { sanitize } from '@utils/xssClean';
 
 import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
-import { readUsersRouter } from './domains/users-management/adapters/http/UsersReadRouter';
+import { userQueriesRouter } from './domains/users-management/adapters/http/queries/UserQueriesRouter';
+import { userCommandsRouter } from './domains/users-management/adapters/http/commands/UsersCommandsRouter';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
@@ -54,5 +55,6 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(rateLimit(RATE_LIMIT_SETTINGS))
 	.use(openapi(OPEN_API_SETTINGS))
 	.use(authRouter)
-	.use(readUsersRouter)
+	.use(userQueriesRouter)
+	.use(userCommandsRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });

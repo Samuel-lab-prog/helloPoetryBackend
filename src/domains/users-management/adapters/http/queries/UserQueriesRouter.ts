@@ -11,50 +11,14 @@ import {
 	orderDirectionSchema,
 	orderUsersBySchema,
 	paginationLimitSchema,
-} from '../schemas/index';
-
-import { QueriesRepository } from '../../infra/read-repository/repository';
+} from '../../schemas/index';
 
 import {
-	getUserFactory,
-	getPublicProfileFactory,
-	getPrivateProfileFactory,
-	getUsersFactory,
-} from '../../use-cases/queries/index';
+	usersQueriesServices,
+	type UsersQueriesRouterServices,
+} from './Services';
 
-import type {
-	FullUser,
-	PrivateProfile,
-	PublicProfile,
-	userRole,
-	SelectUsersPage,
-} from '../../use-cases/queries/read-models/index';
-
-interface UsersReadRouterServices {
-	getUser: (params: {
-		targetId: number;
-		requesterId: number;
-		requesterRole: userRole;
-	}) => Promise<FullUser>;
-	getPublicProfile: (
-		id: number,
-		requesterId?: number,
-	) => Promise<PublicProfile>;
-	getPrivateProfile: (id: number) => Promise<PrivateProfile>;
-	getUsers: (params: {
-		navigationOptions: {
-			limit: number;
-			cursor?: number;
-		};
-		sortOptions: {
-			orderBy: 'createdAt' | 'nickname' | 'id';
-			orderDirection: 'asc' | 'desc';
-		};
-		nicknameSearch?: string;
-	}) => Promise<SelectUsersPage>;
-}
-
-export function createUsersReadRouter(services: UsersReadRouterServices) {
+export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
 		.get(
 			'/',
@@ -139,7 +103,7 @@ export function createUsersReadRouter(services: UsersReadRouterServices) {
 				return services.getUser({
 					targetId: params.id,
 					requesterId: store.clientId!,
-					requesterRole: store.clientRole as userRole,
+					requesterRole: store.clientRole,
 				});
 			},
 			{
@@ -160,17 +124,4 @@ export function createUsersReadRouter(services: UsersReadRouterServices) {
 		);
 }
 
-const services: UsersReadRouterServices = {
-	getUser: getUserFactory({ userQueriesRepository: QueriesRepository }),
-	getPublicProfile: getPublicProfileFactory({
-		userQueriesRepository: QueriesRepository,
-	}),
-	getPrivateProfile: getPrivateProfileFactory({
-		userQueriesRepository: QueriesRepository,
-	}),
-	getUsers: getUsersFactory({
-		userQueriesRepository: QueriesRepository,
-	}),
-};
-
-export const readUsersRouter = createUsersReadRouter(services);
+export const userQueriesRouter = createUsersReadRouter(usersQueriesServices);

@@ -4,7 +4,7 @@ import {
 	UserRoleEnumSchema,
 	UserStatusEnumSchema,
 	UserFriendshipStatusEnumSchema,
-} from './Enums';
+} from './fields/Enums';
 
 export const UserPrivateProfileSchema = t.Object({
 	id: t.Number(),

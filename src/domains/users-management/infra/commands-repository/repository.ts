@@ -8,7 +8,14 @@ import type { UpdateUserData } from '../../use-cases/commands/commands-models/Up
 function insertUser(user: InsertUser): Promise<{ id: number } | null> {
 	return withPrismaErrorHandling(() => {
 		return prisma.user.create({
-			data: user,
+			data: {
+				nickname: user.nickname,
+				email: user.email,
+				passwordHash: user.passwordHash,
+				name: user.name,
+				bio: user.bio,
+				avatarUrl: user.avatarUrl,
+			},
 			select: { id: true },
 		});
 	});
