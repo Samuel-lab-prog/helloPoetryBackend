@@ -25,7 +25,10 @@ export function authenticateClientFactory(dependencies: Dependencies) {
 			if (!client) {
 				throw new ClientNotFoundError();
 			}
-			return client;
+			return {
+				id: client.id,
+				role: client.role,
+			};
 		} catch {
 			throw new InvalidTokenError();
 		}
