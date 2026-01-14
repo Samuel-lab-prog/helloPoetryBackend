@@ -1,12 +1,12 @@
 import type {
-	UserReadRepository,
+	userQueriesRepository,
 	SortOptions,
 	NavigationOptions,
-} from '../../ports/QueriesRepository';
-import type { SelectUsersPage } from './read-models/index';
+} from '../../../ports/QueriesRepository';
+import type { SelectUsersPage } from './../read-models/UsersPage';
 
 interface Dependencies {
-	userReadRepository: UserReadRepository;
+	userQueriesRepository: userQueriesRepository;
 }
 
 interface GetUsersParams {
@@ -15,9 +15,9 @@ interface GetUsersParams {
 	nicknameSearch?: string;
 }
 
-export function getUsersFactory({ userReadRepository }: Dependencies) {
+export function getUsersFactory({ userQueriesRepository }: Dependencies) {
 	return function getUsers(params: GetUsersParams): Promise<SelectUsersPage> {
-		return userReadRepository.selectUsers({
+		return userQueriesRepository.selectUsers({
 			navigationOptions: {
 				limit: params.navigationOptions.limit ?? 20,
 				cursor: params.navigationOptions.cursor,

@@ -16,7 +16,7 @@ import {
 import { QueriesRepository } from '../../infra/read-repository/repository';
 
 import {
-	fetchUserFactory,
+	getUserFactory,
 	getPublicProfileFactory,
 	getPrivateProfileFactory,
 	getUsersFactory,
@@ -161,15 +161,15 @@ export function createUsersReadRouter(services: UsersReadRouterServices) {
 }
 
 const services: UsersReadRouterServices = {
-	getUser: fetchUserFactory({ userReadRepository: QueriesRepository }),
+	getUser: getUserFactory({ userQueriesRepository: QueriesRepository }),
 	getPublicProfile: getPublicProfileFactory({
-		userReadRepository: QueriesRepository,
+		userQueriesRepository: QueriesRepository,
 	}),
 	getPrivateProfile: getPrivateProfileFactory({
-		userReadRepository: QueriesRepository,
+		userQueriesRepository: QueriesRepository,
 	}),
 	getUsers: getUsersFactory({
-		userReadRepository: QueriesRepository,
+		userQueriesRepository: QueriesRepository,
 	}),
 };
 

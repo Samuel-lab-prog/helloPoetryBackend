@@ -1,7 +1,7 @@
 {
 	"directory": [
-		"./src/domains/users-management/queries/read-models",
-		"./src/domains/users-management/queries/use-cases",
+		"./src/domains/users-management/use-cases/queries",
+		"./src/domains/users-management/use-cases/queries/read-models",
 		"./src/domains/users-management/adapters/schemas"
 	],
 	"exclude": [".*\\.test\\.ts$"],

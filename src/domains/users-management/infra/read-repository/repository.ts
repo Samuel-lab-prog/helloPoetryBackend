@@ -3,7 +3,7 @@ import type { UserWhereInput } from '@prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@AppError';
 
 import type {
-	UserReadRepository,
+	userQueriesRepository,
 	SelectUsersParams,
 } from '../../ports/QueriesRepository';
 import type {
@@ -12,7 +12,7 @@ import type {
 	PrivateProfile,
 	ClientAuthCredentials,
 	SelectUsersPage,
-} from '../../use-cases/queries/read-models/index';
+} from '../../use-cases/queries/index';
 import {
 	authUserSelect,
 	fullUserSelect,
@@ -225,7 +225,7 @@ export function selectUsers(
 	});
 }
 
-export const QueriesRepository: UserReadRepository = {
+export const QueriesRepository: userQueriesRepository = {
 	selectUserById,
 	selectUserByNickname,
 	selectUserByEmail,

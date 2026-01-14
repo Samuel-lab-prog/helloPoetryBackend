@@ -4,6 +4,8 @@ const domainErrors = {
 	VALIDATION_FAILED: 'Domain entity validation failed',
 	INVALID_CREDENTIALS: 'Invalid email or password',
 	INVALID_TOKEN: 'Invalid or expired token',
+	CONFLICT: 'Domain entity conflict error',
+	OPERATION_FAILED: 'Domain operation failed',
 };
 
 export class DomainError extends Error {

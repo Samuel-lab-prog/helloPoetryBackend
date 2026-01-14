@@ -1,13 +1,11 @@
-import type {
-	PrivateProfile,
-	PublicProfile,
-	userStatus,
-	SelectUsersPage,
-	ClientAuthCredentials,
-	FullUser,
-} from '../use-cases/queries/read-models/index';
+import type { PrivateProfile } from '../use-cases/queries/read-models/PrivateProfile';
+import type { PublicProfile } from '../use-cases/queries/read-models/PublicProfile';
+import type { ClientAuthCredentials } from '../use-cases/queries/read-models/ClientAuth';
+import type { FullUser } from '../use-cases/queries/read-models/FullUser';
+import type { SelectUsersPage } from '../use-cases/queries/read-models/UsersPage';
+import type { userStatus } from '../use-cases/queries/read-models/Enums';
 
-export interface UserReadRepository {
+export interface userQueriesRepository {
 	selectUserById(id: number): Promise<FullUser | null>;
 	selectUserByNickname(nickname: string): Promise<FullUser | null>;
 	selectUserByEmail(email: string): Promise<FullUser | null>;
