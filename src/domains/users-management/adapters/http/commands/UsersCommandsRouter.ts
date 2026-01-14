@@ -29,8 +29,8 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 		.use(AuthPlugin)
 		.patch(
 			'/:id',
-			({ params, body, store }) => {
-				return services.updateUser(store.clientId, params.id, body);
+			({ params, body, auth }) => {
+				return services.updateUser(auth.clientId, params.id, body);
 			},
 			{
 				params: t.Object({

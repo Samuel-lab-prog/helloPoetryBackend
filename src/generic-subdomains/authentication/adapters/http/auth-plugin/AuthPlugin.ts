@@ -17,15 +17,15 @@ interface Dependencies {
 export function createAuthPlugin({ authenticate }: Dependencies) {
 	return new Elysia().use(SetupPlugin).guard({
 		as: 'scoped',
-		beforeHandle: async ({ cookie, store }) => {
+		beforeHandle: async ({ cookie, store, auth }) => {
 			const authInitiatedAt = performance.now();
 
 			try {
 				const token = cookie.token.value;
 				const client = await authenticate(token);
 
-				store.clientRole = client.role;
-				store.clientId = client.id;
+				auth.clientRole = client.role;
+				auth.clientId = client.id;
 			} finally {
 				store.authTiming = Math.round(performance.now() - authInitiatedAt);
 			}

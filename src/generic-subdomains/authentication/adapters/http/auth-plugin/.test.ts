@@ -9,7 +9,7 @@ const PREFIX = 'http://test';
 function createApp(authenticate: (token: string) => Promise<any>) {
 	return new Elysia()
 		.use(createAuthPlugin({ authenticate }))
-		.get('/protected', ({ store }: { store: any }) => store);
+		.get('/protected', ({ auth }: { auth: any }) => auth);
 }
 
 describe('AuthPlugin', () => {
@@ -38,7 +38,6 @@ describe('AuthPlugin', () => {
 
 		expect(body.clientId).toBe(1);
 		expect(body.clientRole).toBe('user');
-		expect(typeof body.authTiming).toBe('number');
 
 		expect(authenticate).toHaveBeenCalledTimes(1);
 	});

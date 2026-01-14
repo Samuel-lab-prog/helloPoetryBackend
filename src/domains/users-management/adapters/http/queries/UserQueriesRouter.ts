@@ -82,8 +82,8 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		.use(AuthPlugin)
 		.get(
 			'/me',
-			({ store }) => {
-				return services.getPrivateProfile(store.clientId);
+			({ auth }) => {
+				return services.getPrivateProfile(auth.clientId);
 			},
 			{
 				response: {
@@ -99,11 +99,11 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		)
 		.get(
 			'/:id',
-			({ params, store }) => {
+			({ params, auth }) => {
 				return services.getUser({
 					targetId: params.id,
-					requesterId: store.clientId!,
-					requesterRole: store.clientRole,
+					requesterId: auth.clientId!,
+					requesterRole: auth.clientRole as 'user' | 'author' | 'moderator',
 				});
 			},
 			{
