@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test';
 
-import { makeLoginClient } from './login';
+import { loginClientFactory } from './login';
 import { InvalidCredentialsError } from '../errors';
 
 import type { TokenService } from '../../ports/TokenService';
@@ -34,7 +34,7 @@ describe('makeLoginClient', () => {
 	});
 
 	it('should login successfully and return token and client data', async () => {
-		const loginClient = makeLoginClient({
+		const loginClient = loginClientFactory({
 			tokenService,
 			hashService,
 			findClientByEmail,
@@ -69,7 +69,7 @@ describe('makeLoginClient', () => {
 	it('should throw InvalidCredentialsError if client does not exist', async () => {
 		findClientByEmail.mockResolvedValueOnce(null);
 
-		const loginClient = makeLoginClient({
+		const loginClient = loginClientFactory({
 			tokenService,
 			hashService,
 			findClientByEmail,
@@ -86,7 +86,7 @@ describe('makeLoginClient', () => {
 	it('should throw InvalidCredentialsError if password is invalid', async () => {
 		hashService.compare = vi.fn().mockResolvedValue(false);
 
-		const loginClient = makeLoginClient({
+		const loginClient = loginClientFactory({
 			tokenService,
 			hashService,
 			findClientByEmail,

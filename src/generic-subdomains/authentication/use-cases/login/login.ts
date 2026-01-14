@@ -20,7 +20,7 @@ interface LoginResponse {
 	client: AuthClient;
 }
 
-export function makeLoginClient(dependencies: Dependencies) {
+export function loginClientFactory(dependencies: Dependencies) {
 	return async function loginClient(
 		clientEmail: string,
 		clientPassword: string,

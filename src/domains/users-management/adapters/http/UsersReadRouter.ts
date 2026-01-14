@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
-import { AuthPlugin } from '@root/generic-subdomains/authentication/adapters/http/AuthPlugin';
+import { AuthPlugin } from '@root/generic-subdomains/authentication/adapters/http/auth-plugin/AuthPlugin';
 
 import {
 	FullUserSchema,

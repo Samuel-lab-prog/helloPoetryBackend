@@ -1,8 +1,12 @@
 import { Elysia, t, type CookieOptions } from 'elysia';
 import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@AppError';
-import { loginSchema } from '../schemas/loginSchema';
-import { login } from '../../services/login';
+import { loginSchema } from '../../schemas/loginSchema';
+
+import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
+import { JwtTokenService } from '../../../infra/token/JwtTokenService';
+import { AuthPrismaRepository } from '../../../infra/repository/repository';
+import { loginClientFactory } from '../../../use-cases/login/login';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
 	token.httpOnly = process.env.NODE_ENV === 'prod';
@@ -54,5 +58,11 @@ export function createAuthRouter(services: AuthControllerServices) {
 		},
 	);
 }
+
+export const login = loginClientFactory({
+	hashService: BcryptHashService,
+	tokenService: JwtTokenService,
+	findClientByEmail: AuthPrismaRepository['findClientByEmail'],
+});
 
 export const authRouter = createAuthRouter({ login });

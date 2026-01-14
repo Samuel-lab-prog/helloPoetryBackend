@@ -9,7 +9,7 @@ import { LoggerPlugin } from '@utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@utils/plugins/setupPlugin';
 import { sanitize } from '@utils/xssClean';
 
-import { authRouter } from './generic-subdomains/authentication/adapters/http/AuthRouter';
+import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
 import { readUsersRouter } from './domains/users-management/adapters/http/UsersReadRouter';
 
 const PREFIX = '/api/v1';
