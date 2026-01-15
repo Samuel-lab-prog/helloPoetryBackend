@@ -3,7 +3,10 @@ import { withPrismaErrorHandling } from '@AppError';
 
 import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
 
-import type { SelectAuthorPoemParams } from '../../ports/PoemQueryParams';
+import type {
+	SelectAuthorPoemParams,
+	SelectAuthorPoemListParams,
+} from '../../ports/PoemQueryParams';
 
 import { authorPoemSelect } from './helpers';
 
@@ -32,6 +35,31 @@ function selectAuthorPoem(
 	});
 }
 
+function selectAuthorPoems(
+	params: SelectAuthorPoemListParams,
+): Promise<AuthorPoemListItem[]> {
+	return withPrismaErrorHandling(async () => {
+		const poems = await prisma.poem.findMany({
+			where: {
+				authorId: params.authorId,
+			},
+			select: authorPoemSelect,
+			orderBy: {
+				createdAt: 'desc',
+			},
+		});
+
+		return poems.map((poem) => ({
+			...poem,
+			stats: {
+				likesCount: poem._count.poemLikes,
+				commentsCount: poem._count.comments,
+			},
+		}));
+	});
+}
+
 export const QueriesRepository: PoemQueriesRepository = {
 	selectAuthorPoem,
+	selectAuthorPoemList: selectAuthorPoems,
 };

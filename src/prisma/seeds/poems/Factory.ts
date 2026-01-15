@@ -13,6 +13,7 @@ meus pensamentos acordam
 e dançam sozinhos
 no escuro da madrugada.`,
 			authorId,
+			tags: ['madrugada', 'silencio', 'pensamentos'],
 		},
 		{
 			title: 'Carta que nunca enviei',
@@ -24,6 +25,7 @@ Algumas palavras
 não suportam o peso da realidade.`,
 			authorId,
 			isCommentable: false,
+			tags: ['carta', 'não-enviada', 'palavras'],
 		},
 		{
 			title: 'Poema público',
@@ -36,6 +38,7 @@ não precisam de plateia.`,
 			visibility: 'public',
 			status: 'published',
 			moderationStatus: 'approved',
+			tags: ['publico', 'verdades', 'poema'],
 		},
 	];
 }

@@ -4,7 +4,7 @@ export type AuthorPoemListItem = {
 	id: number;
 	slug: string;
 	title: string;
-	tags?: string[];
+	tags: { id: number; name: string }[];
 
 	status: poemStatus;
 	visibility: poemVisibility;

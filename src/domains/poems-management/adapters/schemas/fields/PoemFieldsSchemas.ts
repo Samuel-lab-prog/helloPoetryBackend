@@ -39,16 +39,20 @@ export const PoemSlugSchema = t.String({
 	),
 });
 
+const TagNameSchema = t.String({
+	minLength: 2,
+	maxLength: 24,
+	example: 'melancolia',
+	...makeValidationError(
+		'Tag name must be between 2 and 24 characters and contain only letters, numbers, hyphens or underscores',
+	),
+});
+
 export const PoemTagsSchema = t.Optional(
 	t.Array(
-		t.String({
-			minLength: 2,
-			maxLength: 24,
-			pattern: '^[a-zA-Z0-9_-]+$',
-			example: 'melancolia',
-			...makeValidationError(
-				'Tags must contain only letters, numbers, hyphens or underscores',
-			),
+		t.Object({
+			name: TagNameSchema,
+			id: t.Number({ readOnly: true }),
 		}),
 		{
 			maxItems: 5,

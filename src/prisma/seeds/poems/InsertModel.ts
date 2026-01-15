@@ -10,6 +10,7 @@ export type InsertPoem = {
 	excerpt?: string;
 	content: string;
 	isCommentable?: boolean;
+	tags: string[];
 
 	status?: poemStatus;
 	visibility?: poemVisibility;

@@ -87,6 +87,12 @@ export const authorPoemSelect = {
 	moderationStatus: true,
 	createdAt: true,
 	updatedAt: true,
+	tags: {
+		select: {
+			name: true,
+			id: true,
+		},
+	},
 	_count: {
 		select: {
 			poemLikes: true,

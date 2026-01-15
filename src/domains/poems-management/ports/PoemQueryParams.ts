@@ -19,3 +19,7 @@ export type SelectPoemsByAuthorParams = {
 export type SelectAuthorPoemParams = {
 	poemId: number;
 };
+
+export type SelectAuthorPoemListParams = {
+	authorId: number;
+};
