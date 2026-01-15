@@ -1,178 +1,178 @@
-generator client {
-  provider = "prisma-client"
-  output   = "generated"
-}
+  generator client {
+    provider = "prisma-client"
+    output   = "generated"
+  }
 
-datasource db {
-  provider = "postgresql"
-}
+  datasource db {
+    provider = "postgresql"
+  }
 
-model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
-  passwordHash String
-  name         String
-  nickname     String  @unique
-  bio          String
-  avatarUrl    String
+  model User {
+    id           Int     @id @default(autoincrement())
+    email        String  @unique
+    passwordHash String
+    name         String
+    nickname     String  @unique
+    bio          String
+    avatarUrl    String
 
-  role   userRole   @default(user)
-  status userStatus @default(active)
+    role   userRole   @default(user)
+    status userStatus @default(active)
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
-  emailVerifiedAt DateTime?
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+    deletedAt       DateTime?
+    emailVerifiedAt DateTime?
 
-  poems           Poem[]
-  comments        Comment[]
-  commentLikes    CommentLike[]
-  poemLikes       PoemLike[]
-  friendshipsFrom Friendship[]  @relation("FriendshipUserA")
-  friendshipsTo   Friendship[]  @relation("FriendshipUserB")
+    poems           Poem[]
+    comments        Comment[]
+    commentLikes    CommentLike[]
+    poemLikes       PoemLike[]
+    friendshipsFrom Friendship[]  @relation("FriendshipUserA")
+    friendshipsTo   Friendship[]  @relation("FriendshipUserB")
 
-  fromPoemDedications Poem[] @relation("PoemToUserDedications")
-}
+    fromPoemDedications Poem[] @relation("PoemToUserDedications")
+  }
 
-enum userRole {
-  user
-  author
-  moderator
-}
+  enum userRole {
+    user
+    author
+    moderator
+  }
 
-enum userStatus {
-  active
-  banned
-  suspended
-}
+  enum userStatus {
+    active
+    banned
+    suspended
+  }
 
-model Friendship {
-  id        Int              @id @default(autoincrement())
-  userAId   Int
-  userBId   Int
-  status    friendshipStatus
-  createdAt DateTime         @default(now())
+  model Friendship {
+    id        Int              @id @default(autoincrement())
+    userAId   Int
+    userBId   Int
+    status    friendshipStatus
+    createdAt DateTime         @default(now())
 
-  userA User @relation("FriendshipUserA", fields: [userAId], references: [id])
-  userB User @relation("FriendshipUserB", fields: [userBId], references: [id])
+    userA User @relation("FriendshipUserA", fields: [userAId], references: [id])
+    userB User @relation("FriendshipUserB", fields: [userBId], references: [id])
 
-  @@unique([userAId, userBId])
-  @@index([userAId, status])
-  @@index([userBId, status])
-}
+    @@unique([userAId, userBId])
+    @@index([userAId, status])
+    @@index([userBId, status])
+  }
 
-enum friendshipStatus {
-  rejected
-  pending
-  accepted
-  blocked
-  none
-}
+  enum friendshipStatus {
+    rejected
+    pending
+    accepted
+    blocked
+    none
+  }
 
-model Comment {
-  id      Int    @id @default(autoincrement())
-  content String
+  model Comment {
+    id      Int    @id @default(autoincrement())
+    content String
 
-  createdAt DateTime      @default(now())
-  status    commentStatus @default(visible)
+    createdAt DateTime      @default(now())
+    status    commentStatus @default(visible)
 
-  authorId Int
-  author   User      @relation(fields: [authorId], references: [id])
-  PoemId   Int
-  Poem     Poem      @relation(fields: [PoemId], references: [id])
-  parentId Int?
-  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  replies  Comment[] @relation("CommentReplies")
+    authorId Int
+    author   User      @relation(fields: [authorId], references: [id])
+    PoemId   Int
+    Poem     Poem      @relation(fields: [PoemId], references: [id])
+    parentId Int?
+    parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+    replies  Comment[] @relation("CommentReplies")
 
-  likesRelation CommentLike[]
-}
+    likesRelation CommentLike[]
+  }
 
-enum commentStatus {
-  visible
-  deletedByAuthor
-  deletedByModerator
-}
+  enum commentStatus {
+    visible
+    deletedByAuthor
+    deletedByModerator
+  }
 
-model CommentLike {
-  userId    Int
-  commentId Int
-  createdAt DateTime @default(now())
+  model CommentLike {
+    userId    Int
+    commentId Int
+    createdAt DateTime @default(now())
 
-  user    User    @relation(fields: [userId], references: [id])
-  comment Comment @relation(fields: [commentId], references: [id])
+    user    User    @relation(fields: [userId], references: [id])
+    comment Comment @relation(fields: [commentId], references: [id])
 
-  @@id([userId, commentId])
-}
+    @@id([userId, commentId])
+  }
 
-model PoemLike {
-  userId    Int
-  PoemId    Int
-  createdAt DateTime @default(now())
+  model PoemLike {
+    userId    Int
+    PoemId    Int
+    createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
-  Poem Poem @relation(fields: [PoemId], references: [id])
+    user User @relation(fields: [userId], references: [id])
+    Poem Poem @relation(fields: [PoemId], references: [id])
 
-  @@id([userId, PoemId])
-}
+    @@id([userId, PoemId])
+  }
 
-model Poem {
-  id            Int     @id @default(autoincrement())
-  title         String
-  slug          String
-  excerpt       String?
-  content       String
-  isCommentable Boolean @default(true)
+    model Poem {
+      id            Int     @id @default(autoincrement())
+      title         String
+      slug          String
+      excerpt       String?
+      content       String
+      isCommentable Boolean @default(true)
 
-  toUserId Int?
-  toUser   User? @relation("PoemToUserDedications", fields: [toUserId], references: [id])
+      toUserId Int?
+      toUser   User? @relation("PoemToUserDedications", fields: [toUserId], references: [id])
 
-  toPoemId    Int?
-  toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])
-  dedications Poem[] @relation("PoemToPoemDedications")
+      toPoemId    Int?
+      toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])
+      dedications Poem[] @relation("PoemToPoemDedications")
 
-  status           poemStatus           @default(published)
-  visibility       poemVisibility       @default(public)
-  moderationStatus poemModerationStatus @default(approved)
+      status           poemStatus           @default(published)
+      visibility       poemVisibility       @default(public)
+      moderationStatus poemModerationStatus @default(approved)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+      createdAt DateTime  @default(now())
+      updatedAt DateTime  @updatedAt
+      deletedAt DateTime?
 
-  authorId  Int
-  tags      Tag[]
-  author    User       @relation(fields: [authorId], references: [id])
-  comments  Comment[]
-  poemLikes PoemLike[]
+      authorId  Int
+      tags      Tag[]
+      author    User       @relation(fields: [authorId], references: [id])
+      comments  Comment[]
+      poemLikes PoemLike[]
 
-  @@unique([authorId, slug])
-  @@index([createdAt])
-  @@index([authorId])
-  @@index([status, visibility])
-}
+      @@unique([authorId, slug])
+      @@index([createdAt])
+      @@index([authorId])
+      @@index([status, visibility])
+    }
 
-model Tag {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  model Tag {
+    id   Int    @id @default(autoincrement())
+    name String @unique
 
-  poems Poem[]
-}
+    poems Poem[]
+  }
 
-enum poemStatus {
-  draft
-  published
-  scheduled
-}
+  enum poemStatus {
+    draft
+    published
+    scheduled
+  }
 
-enum poemVisibility {
-  public
-  private
-  unlisted
-  friends
-}
+  enum poemVisibility {
+    public
+    private
+    unlisted
+    friends
+  }
 
-enum poemModerationStatus {
-  pending
-  approved
-  rejected
-  removed
-}
+  enum poemModerationStatus {
+    pending
+    approved
+    rejected
+    removed
+  }

@@ -12,6 +12,7 @@ import { sanitize } from '@utils/xssClean';
 import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
 import { userQueriesRouter } from './domains/users-management/adapters/http/queries/UserQueriesRouter';
 import { userCommandsRouter } from './domains/users-management/adapters/http/commands/UsersCommandsRouter';
+import { poemsQueriesRouter } from './domains/poems-management/adapters/http/queries/UserQueriesRouter';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
@@ -57,4 +58,5 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(authRouter)
 	.use(userQueriesRouter)
 	.use(userCommandsRouter)
+	.use(poemsQueriesRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });

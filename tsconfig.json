@@ -11,7 +11,7 @@
 		"paths": {
 			"@root/*": ["./*"],
 			"@utils/*": ["./utils/*"],
-			"@domains/*": ["./domains/*"],
+			"@Domains/*": ["./domains/*"],
 			"@prisma/*": ["./prisma/*"],
 			"@DomainError": ["./utils/DomainError.ts"],
 			"@AppError": ["./utils/AppError.ts"],
