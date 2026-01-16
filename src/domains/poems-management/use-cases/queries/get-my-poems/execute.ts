@@ -1,7 +1,6 @@
 import type { PoemQueriesRepository } from '../../../ports/QueriesRepository';
 import type { MyPoem } from '../read-models/MyPoem';
 
-import { PoemAccessDeniedError } from '../errors';
 import { canViewPoem } from '../policies/policies';
 
 export interface Dependencies {
@@ -16,21 +15,21 @@ export function getMyPoemsFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getMyPoems(
 		params: GetMyPoemsParams,
 	): Promise<MyPoem[]> {
-		const canView = canViewPoem({
-			requesterId: params.requesterId,
-			authorId: params.requesterId,
-			poemStatus: 'published',
-			poemVisibility: 'public',
-		});
-
-		if (!canView) {
-			throw new PoemAccessDeniedError();
-		}
-
 		const poems = await poemQueriesRepository.selectMyPoems({
 			requesterId: params.requesterId,
 		});
 
-		return poems;
+		return poems.filter((poem) =>
+			canViewPoem({
+				author: { id: params.requesterId },
+				poem: {
+					id: poem.id,
+					authorId: params.requesterId,
+					status: poem.status,
+					visibility: poem.visibility,
+				},
+				viewer: { id: params.requesterId },
+			}),
+		);
 	};
 }

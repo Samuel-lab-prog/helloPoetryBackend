@@ -7,28 +7,47 @@ import type {
 	poemVisibility,
 } from '../../queries/read-models/Enums';
 
-export type PoemPolicyContext = {
-	requesterId?: number;
-	requesterRole?: userRole;
-	requesterStatus?: userStatus;
+type ViewerContext = {
+	id?: number;
+	role?: userRole;
+	status?: userStatus;
+};
 
+type AuthorContext = {
+	friendIds?: number[];
+	id: number;
+};
+
+type PoemContext = {
+	id: number;
 	authorId: number;
-	poemStatus: poemStatus;
-	poemVisibility: poemVisibility;
+	status: poemStatus;
+	visibility: poemVisibility;
+};
 
-	isFriend?: boolean;
+export type PoemPolicyContext = {
+	viewer: ViewerContext;
+	author: AuthorContext;
+	poem: PoemContext;
 };
 
 export function canViewPoem(c: PoemPolicyContext): boolean {
-	if (c.requesterId === c.authorId) return true;
+	const { viewer, author, poem } = c;
 
-	if (!c.requesterId) {
-		return c.poemVisibility === 'public' || c.poemVisibility === 'unlisted';
+	if (viewer.role === 'moderator') return true;
+
+	if (viewer.id === author.id) return true;
+
+	if (poem.status !== 'published') {
+		return false;
 	}
 
-	if (c.requesterRole === 'moderator') return true;
+	// Visitante
+	if (!viewer.id) {
+		return poem.visibility === 'public' || poem.visibility === 'unlisted';
+	}
 
-	switch (c.poemVisibility) {
+	switch (poem.visibility) {
 		case 'public':
 		case 'unlisted':
 			return true;
@@ -37,7 +56,7 @@ export function canViewPoem(c: PoemPolicyContext): boolean {
 			return false;
 
 		case 'friends':
-			return c.isFriend === true;
+			return author.friendIds?.includes(viewer.id) ?? false;
 
 		default:
 			return false;
