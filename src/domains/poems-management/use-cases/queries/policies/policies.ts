@@ -20,7 +20,6 @@ type AuthorContext = {
 
 type PoemContext = {
 	id: number;
-	authorId: number;
 	status: poemStatus;
 	visibility: poemVisibility;
 };
@@ -42,7 +41,6 @@ export function canViewPoem(c: PoemPolicyContext): boolean {
 		return false;
 	}
 
-	// Visitante
 	if (!viewer.id) {
 		return poem.visibility === 'public' || poem.visibility === 'unlisted';
 	}
