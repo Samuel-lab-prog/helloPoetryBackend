@@ -11,7 +11,7 @@ import { loginClientFactory } from '../../../use-cases/login/login';
 function setUpCookieTokenOptions(token: CookieOptions) {
 	token.httpOnly = process.env.NODE_ENV === 'prod';
 	token.path = '/';
-	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60; // 7 days in prod, 60 seconds in dev
+	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60 * 60; // 7 days in prod, 60 * 60 seconds in dev
 	token.secure = process.env.NODE_ENV === 'prod';
 	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
 }

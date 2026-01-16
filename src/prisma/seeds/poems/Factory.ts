@@ -14,11 +14,13 @@ e dançam sozinhos
 no escuro da madrugada.`,
 			authorId,
 			tags: ['madrugada', 'silencio', 'pensamentos'],
+			visibility: 'friends',
 		},
 		{
 			title: 'Carta que nunca enviei',
 			slug: 'carta-que-nunca-enviei',
 			excerpt: 'Escrevi teu nome mil vezes e rasguei todas.',
+			visibility: 'private',
 			content: `Escrevi teu nome mil vezes
 e rasguei todas as folhas.
 Algumas palavras

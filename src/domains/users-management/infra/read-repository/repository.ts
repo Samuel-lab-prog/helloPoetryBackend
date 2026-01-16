@@ -6,89 +6,43 @@ import type {
 	userQueriesRepository,
 	SelectUsersParams,
 } from '../../ports/QueriesRepository';
+
 import type {
-	FullUser,
 	PublicProfile,
 	PrivateProfile,
 	ClientAuthCredentials,
 	SelectUsersPage,
-} from '../../use-cases/queries/index';
+} from '../../use-cases/queries';
+
 import {
 	authUserSelect,
-	fullUserSelect,
 	publicProfileSelect,
 	privateProfileSelect,
 	previewUserSelect,
+} from './selectsModels';
+
+import {
+	extractAcceptedFriendsIds,
+	extractFriendsIds,
+	resolveFriendship,
+	selectFullUser,
 } from './helpers';
 
-async function selectUserById(id: number): Promise<FullUser | null> {
-	const user = await withPrismaErrorHandling(() => {
-		return prisma.user.findUnique({
-			where: { id },
-			select: fullUserSelect,
-		});
-	});
-	if (!user) return null;
+const selectUserById = (id: number) => selectFullUser({ id });
 
-	const friendsIds = [
-		...user.friendshipsFrom.map((f) => f.userBId),
-		...user.friendshipsTo.map((f) => f.userAId),
-	];
-	return {
-		...user,
-		friendsIds,
-	};
-}
+const selectUserByEmail = (email: string) => selectFullUser({ email });
 
-async function selectUserByNickname(
-	nickname: string,
-): Promise<FullUser | null> {
-	const user = await withPrismaErrorHandling(() => {
-		return prisma.user.findUnique({
-			where: { nickname },
-			select: fullUserSelect,
-		});
-	});
-	if (!user) return null;
-
-	const friendsIds = [
-		...user.friendshipsFrom.map((f) => f.userBId),
-		...user.friendshipsTo.map((f) => f.userAId),
-	];
-	return {
-		...user,
-		friendsIds,
-	};
-}
-
-async function selectUserByEmail(email: string): Promise<FullUser | null> {
-	const user = await withPrismaErrorHandling(() => {
-		return prisma.user.findUnique({
-			where: { email },
-			select: fullUserSelect,
-		});
-	});
-	if (!user) return null;
-
-	const friendsIds = [
-		...user.friendshipsFrom.map((f) => f.userBId),
-		...user.friendshipsTo.map((f) => f.userAId),
-	];
-	return {
-		...user,
-		friendsIds,
-	};
-}
+const selectUserByNickname = (nickname: string) => selectFullUser({ nickname });
 
 function selectAuthUserByEmail(
 	email: string,
 ): Promise<ClientAuthCredentials | null> {
-	return withPrismaErrorHandling(() => {
-		return prisma.user.findUnique({
+	return withPrismaErrorHandling(() =>
+		prisma.user.findUnique({
 			where: { email },
 			select: authUserSelect,
-		});
-	});
+		}),
+	);
 }
 
 function selectPublicProfile(
@@ -103,33 +57,9 @@ function selectPublicProfile(
 
 		if (!user) return null;
 
-		let friendship: PublicProfile['friendship'] = {
-			status: 'none',
-			isRequester: false,
-		};
+		const friendship = await resolveFriendship(requesterId, user.id);
 
-		if (requesterId && requesterId !== user.id) {
-			const relation = await prisma.friendship.findFirst({
-				where: {
-					OR: [
-						{ userAId: requesterId, userBId: user.id },
-						{ userAId: user.id, userBId: requesterId },
-					],
-				},
-			});
-
-			friendship = relation
-				? {
-						status: relation.status,
-						isRequester: relation.userAId === requesterId,
-					}
-				: {
-						status: 'none',
-						isRequester: false,
-					};
-		}
-
-		const profile: PublicProfile = {
+		return {
 			id: user.id,
 			nickname: user.nickname,
 			name: user.name,
@@ -142,17 +72,12 @@ function selectPublicProfile(
 				commentsCount: user.comments.length,
 				friendsCount: user.friendshipsFrom.length + user.friendshipsTo.length,
 			},
-
 			friendship,
 		};
-
-		return profile;
 	});
 }
 
-export function selectPrivateProfile(
-	id: number,
-): Promise<PrivateProfile | null> {
+function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findUnique({
 			where: { id },
@@ -161,40 +86,10 @@ export function selectPrivateProfile(
 
 		if (!user) return null;
 
-		const acceptedFriends = [
-			...user.friendshipsFrom
-				.filter((f) => f.status === 'accepted')
-				.map((f) => f.userBId),
-			...user.friendshipsTo
-				.filter((f) => f.status === 'accepted')
-				.map((f) => f.userAId),
-		];
-
-		const stats = {
-			poemsCount: user.poems.length,
-			commentsCount: user.comments.length,
-			friendsCount: acceptedFriends.length,
-			poemsIds: user.poems.map((p) => p.id),
-			friendsIds: acceptedFriends,
-		};
-
-		const friendshipRequests = [
-			...user.friendshipsFrom.map((f) => ({
-				status: f.status,
-				isRequester: true,
-				userId: f.userBId,
-			})),
-			...user.friendshipsTo.map((f) => ({
-				status: f.status,
-				isRequester: false,
-				userId: f.userAId,
-			})),
-		];
-
-		const friendsIds = [
-			...user.friendshipsFrom.map((f) => f.userBId),
-			...user.friendshipsTo.map((f) => f.userAId),
-		];
+		const acceptedFriendsIds = extractAcceptedFriendsIds(
+			user.friendshipsFrom,
+			user.friendshipsTo,
+		);
 
 		return {
 			id: user.id,
@@ -203,69 +98,77 @@ export function selectPrivateProfile(
 			bio: user.bio ?? null,
 			avatarUrl: user.avatarUrl ?? null,
 			role: user.role,
-			friendsIds,
 			status: user.status,
 			email: user.email,
 			emailVerifiedAt: user.emailVerifiedAt ?? null,
-			stats,
-			friendshipRequests,
+			friendsIds: extractFriendsIds(user.friendshipsFrom, user.friendshipsTo),
+			stats: {
+				poemsCount: user.poems.length,
+				commentsCount: user.comments.length,
+				friendsCount: acceptedFriendsIds.length,
+				poemsIds: user.poems.map((p) => p.id),
+				friendsIds: acceptedFriendsIds,
+			},
+			friendshipRequests: [
+				...user.friendshipsFrom.map((f) => ({
+					status: f.status,
+					isRequester: true,
+					userId: f.userBId,
+				})),
+				...user.friendshipsTo.map((f) => ({
+					status: f.status,
+					isRequester: false,
+					userId: f.userAId,
+				})),
+			],
 		};
 	});
 }
 
-export function selectUsers(
-	params: SelectUsersParams,
-): Promise<SelectUsersPage> {
+function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
 	return withPrismaErrorHandling(async () => {
-		const { navigationOptions, filterOptions, sortOptions } = params;
-		const { cursor, limit } = navigationOptions;
-		const { searchNickname, status } = filterOptions;
-		const { orderBy, orderDirection } = sortOptions;
+		const {
+			navigationOptions: { cursor, limit },
+			filterOptions: { searchNickname, status },
+			sortOptions: { orderBy, orderDirection },
+		} = params;
 
-		const where: UserWhereInput = {};
-
-		if (searchNickname) {
-			where.nickname = {
-				contains: searchNickname,
-				mode: 'insensitive',
-			};
-		}
-
-		if (status) {
-			where.status = status;
-		}
+		const where: UserWhereInput = {
+			...(searchNickname && {
+				nickname: {
+					contains: searchNickname,
+					mode: 'insensitive',
+				},
+			}),
+			...(status && { status }),
+		};
 
 		const users = await prisma.user.findMany({
 			where,
 			take: limit + 1,
 			...(cursor && {
-				cursor: cursor ? { id: cursor } : undefined,
+				cursor: { id: cursor },
 				skip: 1,
 			}),
-			orderBy: {
-				[orderBy]: orderDirection,
-			},
+			orderBy: { [orderBy]: orderDirection },
 			select: previewUserSelect,
 		});
 
 		const hasMore = users.length > limit;
 		const items = hasMore ? users.slice(0, limit) : users;
 
-		const nextCursor =
-			items.length > 0 ? items[items.length - 1]!.id : undefined;
-
 		return {
 			users: items,
-			nextCursor,
 			hasMore,
+			nextCursor: items.at(-1)?.id,
 		};
 	});
 }
 
 export const QueriesRepository: userQueriesRepository = {
 	selectUserById,
-	selectUserByNickname,
 	selectUserByEmail,
+	selectUserByNickname,
 	selectAuthUserByEmail,
 	selectPublicProfile,
 	selectPrivateProfile,

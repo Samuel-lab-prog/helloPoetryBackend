@@ -32,12 +32,23 @@ export const authorPoemSelect = {
 	excerpt: true,
 	isCommentable: true,
 	createdAt: true,
+	status: true,
+	visibility: true,
 
 	author: {
 		select: {
 			id: true,
 			name: true,
 			nickname: true,
+			avatarUrl: true,
+			friendshipsTo: {
+				where: { status: 'accepted' },
+				select: { userAId: true },
+			},
+			friendshipsFrom: {
+				where: { status: 'accepted' },
+				select: { userBId: true },
+			},
 		},
 	},
 

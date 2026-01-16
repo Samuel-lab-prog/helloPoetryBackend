@@ -6,6 +6,8 @@ export const AuthorPoemSchema = t.Object({
 	id: idSchema,
 	title: PoemTitleSchema,
 	content: PoemContentSchema,
+	status: t.String(),
+	visibility: t.String(),
 
 	createdAt: t.Date(),
 
@@ -13,6 +15,8 @@ export const AuthorPoemSchema = t.Object({
 		id: idSchema,
 		name: t.String(),
 		nickname: t.String(),
+		avatarUrl: t.String(),
+		friendsIds: t.Array(t.Number()),
 	}),
 
 	stats: t.Object({

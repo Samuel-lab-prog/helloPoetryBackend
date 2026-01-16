@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import { prisma } from '@root/prisma/Client';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
@@ -41,8 +42,6 @@ function selectAuthorPoems(
 		const poems = await prisma.poem.findMany({
 			where: {
 				authorId: params.authorId,
-				status: 'published',
-				visibility: 'public',
 			},
 			select: authorPoemSelect,
 			orderBy: {
@@ -55,6 +54,13 @@ function selectAuthorPoems(
 			stats: {
 				likesCount: poem._count.poemLikes,
 				commentsCount: poem._count.comments,
+			},
+			author: {
+				...poem.author,
+				friendsIds: [
+					...poem.author.friendshipsTo.map((f) => f.userAId),
+					...poem.author.friendshipsFrom.map((f) => f.userBId),
+				],
 			},
 		}));
 	});

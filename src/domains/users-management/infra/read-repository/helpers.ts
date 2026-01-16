@@ -1,110 +1,77 @@
-import type { ClientAuthCredentials } from '../../use-cases/queries/read-models/ClientAuth';
+import type { FullUser } from '../../use-cases/queries';
+import { prisma } from '@root/prisma/Client';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import { fullUserSelect } from './selectsModels';
+import type { PublicProfile } from '../../use-cases/queries/read-models/PublicProfile';
 
-export const fullUserSelect = {
-	id: true,
-	nickname: true,
-	email: true,
-	name: true,
-	bio: true,
-	avatarUrl: true,
-	role: true,
-	status: true,
-	createdAt: true,
-	updatedAt: true,
-	emailVerifiedAt: true,
-	friendshipsTo: {
-		where: { status: 'accepted' },
-		select: { userAId: true },
-	},
-	friendshipsFrom: {
-		where: { status: 'accepted' },
-		select: { userBId: true },
-	},
-} as const;
+export function extractFriendsIds(
+	friendshipsFrom: { userBId: number }[],
+	friendshipsTo: { userAId: number }[],
+): number[] {
+	return [
+		...friendshipsFrom.map((f) => f.userBId),
+		...friendshipsTo.map((f) => f.userAId),
+	];
+}
 
-export const publicProfileSelect = {
-	id: true,
-	nickname: true,
-	name: true,
-	bio: true,
-	avatarUrl: true,
-	role: true,
-	status: true,
+export function extractAcceptedFriendsIds(
+	friendshipsFrom: { userBId: number; status: string }[],
+	friendshipsTo: { userAId: number; status: string }[],
+): number[] {
+	return [
+		...friendshipsFrom
+			.filter((f) => f.status === 'accepted')
+			.map((f) => f.userBId),
+		...friendshipsTo
+			.filter((f) => f.status === 'accepted')
+			.map((f) => f.userAId),
+	];
+}
 
-	poems: {
+export async function resolveFriendship(
+	requesterId: number | undefined,
+	userId: number,
+): Promise<PublicProfile['friendship']> {
+	if (!requesterId || requesterId === userId) {
+		return { status: 'none', isRequester: false };
+	}
+
+	const relation = await prisma.friendship.findFirst({
 		where: {
-			status: 'published',
-			deletedAt: null,
+			OR: [
+				{ userAId: requesterId, userBId: userId },
+				{ userAId: userId, userBId: requesterId },
+			],
 		},
-		select: { id: true },
-	},
+	});
 
-	comments: {
-		where: {
-			status: 'visible',
-		},
-		select: { id: true },
-	},
+	return relation
+		? {
+				status: relation.status,
+				isRequester: relation.userAId === requesterId,
+			}
+		: { status: 'none', isRequester: false };
+}
 
-	friendshipsFrom: {
-		where: { status: 'accepted' },
-		select: { id: true, status: true },
-	},
+type UserUniqueWhere =
+	| { id: number }
+	| { email: string }
+	| { nickname: string };
 
-	friendshipsTo: {
-		where: { status: 'accepted' },
-		select: { id: true, status: true },
-	},
-} as const;
+export async function selectFullUser(
+	where: UserUniqueWhere,
+): Promise<FullUser | null> {
+	const user = await withPrismaErrorHandling(() =>
+		prisma.user.findUnique({
+			where,
+			select: fullUserSelect,
+		}),
+	);
 
-export const privateProfileSelect = {
-	id: true,
-	nickname: true,
-	name: true,
-	bio: true,
-	email: true,
-	emailVerifiedAt: true,
-	avatarUrl: true,
-	role: true,
-	status: true,
+	if (!user) return null;
 
-	poems: {
-		where: {
-			status: 'published',
-			deletedAt: null,
-		},
-		select: { id: true },
-	},
-
-	comments: {
-		where: {
-			status: 'visible',
-		},
-		select: { id: true },
-	},
-
-	friendshipsFrom: {
-		where: { status: 'accepted' },
-		select: { id: true, status: true, userAId: true, userBId: true },
-	},
-
-	friendshipsTo: {
-		where: { status: 'accepted' },
-		select: { id: true, status: true, userAId: true, userBId: true },
-	},
-} as const;
-
-export const authUserSelect = {
-	id: true,
-	email: true,
-	passwordHash: true,
-	role: true,
-	status: true,
-} as const satisfies Record<keyof ClientAuthCredentials, boolean>;
-
-export const previewUserSelect = {
-	id: true,
-	nickname: true,
-	avatarUrl: true,
-	role: true,
-} as const;
+	return {
+		...user,
+		friendsIds: extractFriendsIds(user.friendshipsFrom, user.friendshipsTo),
+	};
+}
