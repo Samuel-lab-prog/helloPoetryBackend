@@ -1,5 +1,5 @@
-import { prisma } from '../../../../prisma/myClient';
-import { withPrismaErrorHandling } from '@AppError';
+import { prisma } from '@PrismaClient';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
 import type {

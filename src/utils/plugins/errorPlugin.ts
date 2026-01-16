@@ -3,7 +3,7 @@ import Elysia from 'elysia';
 import { AppError } from '../AppError.ts';
 import { DomainError } from '../DomainError.ts';
 import { log } from '../logger.ts';
-import { SetupPlugin, type SetupPluginType } from './setupPlugin.ts';
+import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) {
@@ -35,8 +35,9 @@ function logError(
 	);
 }
 
-function buildErrorContext(request: Request, store: SetupPluginType) {
+function buildErrorContext(request: Request, ctx: SetupPluginContext) {
 	const path = request.url.substring(request.url.indexOf('/', 8));
+	const { store, auth } = ctx;
 
 	return {
 		request: {
@@ -45,9 +46,9 @@ function buildErrorContext(request: Request, store: SetupPluginType) {
 			path,
 		},
 		auth: {
-			isAuthenticated: !!store.clientId,
-			userId: store.clientId,
-			role: store.clientRole,
+			isAuthenticated: !!auth.clientId,
+			userId: auth.clientId,
+			role: auth.clientRole,
 		},
 		timings: {
 			totalMs: performance.now() - store.reqInitiatedAt,
@@ -61,12 +62,15 @@ type HandleErrorContext = {
 	error: unknown;
 	code: unknown;
 	request: Request;
-	store: SetupPluginType;
+	store: SetupPluginContext['store'];
+	auth: SetupPluginContext['auth'];
 };
 
-function handleError({ set, error, code, request, store }: HandleErrorContext) {
+function handleError(ctx: HandleErrorContext) {
+	const { set, error, code, request, store, auth } = ctx;
+
 	const appError = normalizeError(code, error);
-	const context = buildErrorContext(request, store);
+	const context = buildErrorContext(request, { store, auth });
 
 	set.status = appError.statusCode;
 

@@ -17,7 +17,7 @@ export const LoggerPlugin = new Elysia()
 
 	.onAfterResponse(
 		{ as: 'scoped' },
-		({ store, request, set, responseValue }) => {
+		({ store, auth, request, set, responseValue }) => {
 			if (request.url.includes('/docs')) {
 				return;
 			}
@@ -30,9 +30,9 @@ export const LoggerPlugin = new Elysia()
 			const statusCode = set.status || 200;
 			const sizeBytes = getResponseSize(responseValue);
 			const contentType = set.headers['content-type'] || 'unknown';
-			const isAuthenticated = !!store.clientId || false;
-			const userId = store.clientId || 'guest';
-			const role = store.clientRole || 'guest';
+			const isAuthenticated = !!auth.clientId || false;
+			const userId = auth.clientId || 'guest';
+			const role = auth.clientRole || 'guest';
 
 			log.info(
 				{

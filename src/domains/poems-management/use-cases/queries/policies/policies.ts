@@ -43,10 +43,3 @@ export function canViewPoem(c: PoemPolicyContext): boolean {
 			return false;
 	}
 }
-
-export function canAppearInPublicFeed(c: {
-	poemStatus: poemStatus;
-	poemVisibility: poemVisibility;
-}): boolean {
-	return c.poemStatus === 'published' && c.poemVisibility === 'public';
-}

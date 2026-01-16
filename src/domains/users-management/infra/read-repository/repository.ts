@@ -1,6 +1,6 @@
-import { prisma } from '../../../../prisma/myClient';
+import { prisma } from '@PrismaClient';
 import type { UserWhereInput } from '@prisma/generated/models/User';
-import { withPrismaErrorHandling } from '@AppError';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type {
 	userQueriesRepository,

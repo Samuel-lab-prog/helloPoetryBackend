@@ -21,10 +21,14 @@ export const SetupPlugin = new Elysia()
 		},
 	});
 
-export type SetupPluginType = {
-	clientId: number | null;
-	clientRole: string;
-	reqInitiatedAt: number;
-	authTiming: number;
-	reqId: string;
+export type SetupPluginContext = {
+	auth: {
+		clientId: number | null;
+		clientRole: string;
+	};
+	store: {
+		reqInitiatedAt: number;
+		authTiming: number;
+		reqId: string;
+	};
 };
