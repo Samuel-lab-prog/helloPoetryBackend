@@ -1,22 +1,26 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
-import {
-	DatabaseError,
-	ConflictError,
-	NotFoundError,
-} from '@root/utils/AppError';
+import { DatabaseError, ConflictError, NotFoundError } from '@AppError';
 
 function handlePrismaError(error: PrismaClientKnownRequestError): never {
+	const modelName = error.meta?.modelName;
+	const metaRaw = JSON.stringify(error.meta?.driverAdapterError);
+	const field = metaRaw.match(/\\"[^_]+_([^\\"]+?)_key\\"/)?.[1];
+
 	switch (error.code) {
 		case 'P2002': {
-			throw ConflictError('An unique constraint would be violated');
+			throw ConflictError(
+				`Unique ${field} in ${modelName} constraint violated`,
+			);
 			break;
 		}
 		case 'P2003': {
-			throw ConflictError('A foreign key constraint would be violated');
+			throw ConflictError(
+				`Foreign key constraint violated on field ${field} in ${modelName}`,
+			);
 			break;
 		}
 		case 'P2025': {
-			throw NotFoundError('The requested model was not found');
+			throw NotFoundError(`The requested model (${modelName}) was not found`);
 			break;
 		}
 		default:
