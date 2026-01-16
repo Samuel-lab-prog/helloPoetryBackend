@@ -20,7 +20,6 @@ export const UserFriendshipStatusEnumSchema = t.UnionEnum([
 	'pending',
 	'accepted',
 	'blocked',
-	'none',
 ] as const);
 
 type _AssertExtends<_T extends _U, _U> = true;
