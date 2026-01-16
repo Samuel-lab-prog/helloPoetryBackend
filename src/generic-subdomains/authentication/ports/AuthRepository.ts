@@ -2,6 +2,7 @@ export interface ClientAuthCredentials {
 	id: number;
 	role: string;
 	email: string;
+	status: string;
 	passwordHash: string;
 }
 

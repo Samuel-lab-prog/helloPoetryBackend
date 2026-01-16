@@ -11,6 +11,7 @@ interface Dependencies {
 interface AuthClient {
 	id: number;
 	role: string;
+	status: string;
 }
 
 export function authenticateClientFactory(dependencies: Dependencies) {
@@ -28,6 +29,7 @@ export function authenticateClientFactory(dependencies: Dependencies) {
 			return {
 				id: client.id,
 				role: client.role,
+				status: client.status,
 			};
 		} catch {
 			throw new InvalidTokenError();

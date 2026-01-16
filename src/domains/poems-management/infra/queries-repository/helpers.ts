@@ -23,3 +23,35 @@ export const myPoemSelect = {
 		},
 	},
 } as const;
+
+export const authorPoemSelect = {
+	id: true,
+	slug: true,
+	title: true,
+	content: true,
+	excerpt: true,
+	isCommentable: true,
+	createdAt: true,
+
+	author: {
+		select: {
+			id: true,
+			name: true,
+			nickname: true,
+		},
+	},
+
+	tags: {
+		select: {
+			id: true,
+			name: true,
+		},
+	},
+
+	_count: {
+		select: {
+			poemLikes: true,
+			comments: true,
+		},
+	},
+} as const;
