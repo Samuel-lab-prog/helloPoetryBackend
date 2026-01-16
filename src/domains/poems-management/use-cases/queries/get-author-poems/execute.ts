@@ -1,5 +1,5 @@
 import type { PoemQueriesRepository } from '../../../ports/QueriesRepository';
-import type { AuthorPoemListItem } from '../read-models/AuthorPoemListItem';
+import type { MyPoem } from '../read-models/MyPoem';
 
 import { PoemAccessDeniedError } from '../errors';
 import { canViewPoem } from '../policies/policies';
@@ -8,18 +8,17 @@ export interface Dependencies {
 	poemQueriesRepository: PoemQueriesRepository;
 }
 
-export interface GetAuthorPoemsParams {
+export interface GetMyPoemsParams {
 	requesterId: number;
-	authorId: number;
 }
 
-export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
-	return async function getAuthorPoems(
-		params: GetAuthorPoemsParams,
-	): Promise<AuthorPoemListItem[]> {
+export function getMyPoemsFactory({ poemQueriesRepository }: Dependencies) {
+	return async function getMyPoems(
+		params: GetMyPoemsParams,
+	): Promise<MyPoem[]> {
 		const canView = canViewPoem({
 			requesterId: params.requesterId,
-			authorId: params.authorId,
+			authorId: params.requesterId,
 			poemStatus: 'published',
 			poemVisibility: 'public',
 		});
@@ -28,8 +27,8 @@ export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
 			throw new PoemAccessDeniedError();
 		}
 
-		const poems = await poemQueriesRepository.selectAuthorPoemList({
-			authorId: params.authorId,
+		const poems = await poemQueriesRepository.selectMyPoems({
+			requesterId: params.requesterId,
 		});
 
 		return poems;

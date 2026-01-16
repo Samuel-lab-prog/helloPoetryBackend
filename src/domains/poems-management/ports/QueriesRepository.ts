@@ -1,15 +1,7 @@
-import type { AuthorPoemListItem } from '../use-cases/queries/read-models/AuthorPoemListItem';
+import type { MyPoem } from '../use-cases/queries/read-models/MyPoem';
 
-import type {
-	SelectAuthorPoemParams,
-	SelectAuthorPoemListParams,
-} from './PoemQueryParams';
+import type { SelectMyPoemsParams } from './PoemQueryParams';
 
 export interface PoemQueriesRepository {
-	selectAuthorPoem(
-		params: SelectAuthorPoemParams,
-	): Promise<AuthorPoemListItem | null>;
-	selectAuthorPoemList(
-		params: SelectAuthorPoemListParams,
-	): Promise<AuthorPoemListItem[]>;
+	selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]>;
 }

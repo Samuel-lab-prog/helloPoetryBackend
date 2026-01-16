@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import type { AuthorPoemListItem } from '../../use-cases/queries/read-models/AuthorPoemListItem';
+import type { MyPoem } from '../../use-cases/queries/read-models/MyPoem';
 import {
 	PoemContentSchema,
 	PoemTitleSchema,
@@ -16,7 +16,7 @@ import {
 	PoemStatusEnumSchema,
 } from './fields/Enums';
 
-export const AuthorPoemSchema = t.Object({
+export const MyPoemSchema = t.Object({
 	id: idSchema,
 	slug: PoemSlugSchema,
 	title: PoemTitleSchema,
@@ -40,7 +40,4 @@ export const AuthorPoemSchema = t.Object({
 });
 
 type _AssertExtends<_T extends _U, _U> = true;
-type _AssertCreateUser = _AssertExtends<
-	typeof AuthorPoemSchema.static,
-	AuthorPoemListItem
->;
+type _AssertCreateUser = _AssertExtends<typeof MyPoemSchema.static, MyPoem>;

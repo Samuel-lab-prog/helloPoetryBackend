@@ -48,15 +48,13 @@ const TagNameSchema = t.String({
 	),
 });
 
-export const PoemTagsSchema = t.Optional(
-	t.Array(
-		t.Object({
-			name: TagNameSchema,
-			id: t.Number({ readOnly: true }),
-		}),
-		{
-			maxItems: 5,
-			...makeValidationError('You can specify up to 5 tags per poem'),
-		},
-	),
+export const PoemTagsSchema = t.Array(
+	t.Object({
+		name: TagNameSchema,
+		id: t.Number({ readOnly: true }),
+	}),
+	{
+		maxItems: 5,
+		...makeValidationError('You can specify up to 5 tags per poem'),
+	},
 );

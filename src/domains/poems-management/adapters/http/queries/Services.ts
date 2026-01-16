@@ -1,29 +1,15 @@
 import { QueriesRepository } from '../../../infra/queries-repository/repository';
 
-import { getAuthorPoemFactory } from '../../../use-cases/queries/get-author-poem/execute';
-import { getAuthorPoemsFactory } from '../../../use-cases/queries/get-author-poems/execute';
+import { getMyPoemsFactory } from '../../../use-cases/queries/get-author-poems/execute';
 
-import type { AuthorPoemListItem } from '../../../use-cases/queries/read-models/AuthorPoemListItem';
+import type { MyPoem } from '../../../use-cases/queries/read-models/MyPoem';
 
 export interface PoemQueriesRouterServices {
-	getAuthorPoem: (params: {
-		poemId: number;
-		authorId: number;
-		requesterId: number;
-	}) => Promise<AuthorPoemListItem>;
-
-	getAuthorPoems: (params: {
-		authorId: number;
-		requesterId: number;
-	}) => Promise<AuthorPoemListItem[]>;
+	getMyPoems: (params: { requesterId: number }) => Promise<MyPoem[]>;
 }
 
 export const poemQueriesServices: PoemQueriesRouterServices = {
-	getAuthorPoem: getAuthorPoemFactory({
-		poemQueriesRepository: QueriesRepository,
-	}),
-
-	getAuthorPoems: getAuthorPoemsFactory({
+	getMyPoems: getMyPoemsFactory({
 		poemQueriesRepository: QueriesRepository,
 	}),
 };

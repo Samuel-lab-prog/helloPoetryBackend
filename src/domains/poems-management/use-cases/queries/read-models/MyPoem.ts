@@ -1,6 +1,6 @@
 import type { poemVisibility, poemStatus, poemModerationStatus } from './Enums';
 
-export type AuthorPoemListItem = {
+export type MyPoem = {
 	id: number;
 	slug: string;
 	title: string;

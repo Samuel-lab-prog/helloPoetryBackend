@@ -3,47 +3,19 @@ import { withPrismaErrorHandling } from '@AppError';
 
 import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
 
-import type {
-	SelectAuthorPoemParams,
-	SelectAuthorPoemListParams,
-} from '../../ports/PoemQueryParams';
+import type { SelectMyPoemsParams } from '../../ports/PoemQueryParams';
 
-import { authorPoemSelect } from './helpers';
+import { myPoemSelect } from './helpers';
 
-import type { AuthorPoemListItem } from '../../use-cases/queries/read-models/AuthorPoemListItem';
+import type { MyPoem } from '../../use-cases/queries/read-models/MyPoem';
 
-function selectAuthorPoem(
-	params: SelectAuthorPoemParams,
-): Promise<AuthorPoemListItem | null> {
-	return withPrismaErrorHandling(async () => {
-		const poem = await prisma.poem.findUnique({
-			where: { id: params.poemId },
-			select: authorPoemSelect,
-		});
-
-		if (!poem) {
-			return null;
-		}
-
-		return {
-			...poem,
-			stats: {
-				likesCount: poem._count.poemLikes,
-				commentsCount: poem._count.comments,
-			},
-		};
-	});
-}
-
-function selectAuthorPoems(
-	params: SelectAuthorPoemListParams,
-): Promise<AuthorPoemListItem[]> {
+function selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
 			where: {
-				authorId: params.authorId,
+				authorId: params.requesterId,
 			},
-			select: authorPoemSelect,
+			select: myPoemSelect,
 			orderBy: {
 				createdAt: 'desc',
 			},
@@ -60,6 +32,5 @@ function selectAuthorPoems(
 }
 
 export const QueriesRepository: PoemQueriesRepository = {
-	selectAuthorPoem,
-	selectAuthorPoemList: selectAuthorPoems,
+	selectMyPoems,
 };
