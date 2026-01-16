@@ -1,4 +1,4 @@
-import { prisma } from '@PrismaClient';
+import { prisma } from '@root/prisma/Client';
 import type { UserWhereInput } from '@prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
@@ -21,31 +21,63 @@ import {
 	previewUserSelect,
 } from './helpers';
 
-function selectUserById(id: number): Promise<FullUser | null> {
-	return withPrismaErrorHandling(() => {
+async function selectUserById(id: number): Promise<FullUser | null> {
+	const user = await withPrismaErrorHandling(() => {
 		return prisma.user.findUnique({
 			where: { id },
 			select: fullUserSelect,
 		});
 	});
+	if (!user) return null;
+
+	const friendsIds = [
+		...user.friendshipsFrom.map((f) => f.userBId),
+		...user.friendshipsTo.map((f) => f.userAId),
+	];
+	return {
+		...user,
+		friendsIds,
+	};
 }
 
-function selectUserByNickname(nickname: string): Promise<FullUser | null> {
-	return withPrismaErrorHandling(() => {
+async function selectUserByNickname(
+	nickname: string,
+): Promise<FullUser | null> {
+	const user = await withPrismaErrorHandling(() => {
 		return prisma.user.findUnique({
 			where: { nickname },
 			select: fullUserSelect,
 		});
 	});
+	if (!user) return null;
+
+	const friendsIds = [
+		...user.friendshipsFrom.map((f) => f.userBId),
+		...user.friendshipsTo.map((f) => f.userAId),
+	];
+	return {
+		...user,
+		friendsIds,
+	};
 }
 
-function selectUserByEmail(email: string): Promise<FullUser | null> {
-	return withPrismaErrorHandling(() => {
+async function selectUserByEmail(email: string): Promise<FullUser | null> {
+	const user = await withPrismaErrorHandling(() => {
 		return prisma.user.findUnique({
 			where: { email },
 			select: fullUserSelect,
 		});
 	});
+	if (!user) return null;
+
+	const friendsIds = [
+		...user.friendshipsFrom.map((f) => f.userBId),
+		...user.friendshipsTo.map((f) => f.userAId),
+	];
+	return {
+		...user,
+		friendsIds,
+	};
 }
 
 function selectAuthUserByEmail(
@@ -105,7 +137,6 @@ function selectPublicProfile(
 			avatarUrl: user.avatarUrl,
 			role: user.role,
 			status: user.status,
-
 			stats: {
 				poemsCount: user.poems.length,
 				commentsCount: user.comments.length,
@@ -160,6 +191,11 @@ export function selectPrivateProfile(
 			})),
 		];
 
+		const friendsIds = [
+			...user.friendshipsFrom.map((f) => f.userBId),
+			...user.friendshipsTo.map((f) => f.userAId),
+		];
+
 		return {
 			id: user.id,
 			nickname: user.nickname,
@@ -167,6 +203,7 @@ export function selectPrivateProfile(
 			bio: user.bio ?? null,
 			avatarUrl: user.avatarUrl ?? null,
 			role: user.role,
+			friendsIds,
 			status: user.status,
 			email: user.email,
 			emailVerifiedAt: user.emailVerifiedAt ?? null,

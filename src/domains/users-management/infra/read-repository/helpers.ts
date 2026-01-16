@@ -1,5 +1,4 @@
 import type { ClientAuthCredentials } from '../../use-cases/queries/read-models/ClientAuth';
-import type { FullUser } from '../../use-cases/queries/read-models/FullUser';
 
 export const fullUserSelect = {
 	id: true,
@@ -13,7 +12,15 @@ export const fullUserSelect = {
 	createdAt: true,
 	updatedAt: true,
 	emailVerifiedAt: true,
-} as const satisfies Record<keyof FullUser, boolean>;
+	friendshipsTo: {
+		where: { status: 'accepted' },
+		select: { userAId: true },
+	},
+	friendshipsFrom: {
+		where: { status: 'accepted' },
+		select: { userBId: true },
+	},
+} as const;
 
 export const publicProfileSelect = {
 	id: true,

@@ -1,4 +1,4 @@
-import { prisma } from '../../myClient';
+import { prisma } from '../../Client';
 import { createPoemSeeds } from './Factory';
 
 export async function seedPoems(params: { authorId: number }) {

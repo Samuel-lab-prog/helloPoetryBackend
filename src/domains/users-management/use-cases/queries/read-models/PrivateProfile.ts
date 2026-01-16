@@ -8,6 +8,7 @@ export type PrivateProfile = {
 	avatarUrl: string;
 	role: userRole;
 	status: userStatus;
+	friendsIds: number[];
 	email: string;
 	emailVerifiedAt: Date | null;
 

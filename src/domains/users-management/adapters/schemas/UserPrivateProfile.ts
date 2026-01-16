@@ -16,6 +16,7 @@ export const UserPrivateProfileSchema = t.Object({
 	status: UserStatusEnumSchema,
 	email: t.String(),
 	emailVerifiedAt: t.Nullable(t.Date()),
+	friendsIds: t.Array(t.Number()),
 
 	stats: t.Object({
 		poemsCount: t.Number(),

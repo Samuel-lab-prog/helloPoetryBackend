@@ -1,4 +1,4 @@
-import { prisma } from '../../myClient';
+import { prisma } from '../../Client';
 import { createUserSeeds } from './Factory';
 
 export async function seedUsers() {

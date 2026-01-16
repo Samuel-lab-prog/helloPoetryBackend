@@ -12,6 +12,7 @@ export const FullUserSchema = t.Object({
 	avatarUrl: t.String(),
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
+	friendsIds: t.Array(t.Number()),
 	createdAt: t.Date(),
 	updatedAt: t.Date(),
 	emailVerifiedAt: t.Nullable(t.Date()),

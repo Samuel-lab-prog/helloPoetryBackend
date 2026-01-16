@@ -1,4 +1,4 @@
-import { prisma } from '@PrismaClient';
+import { prisma } from '@root/prisma/Client';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { UserCommandsRepository } from '../../ports/CommandsRepository';

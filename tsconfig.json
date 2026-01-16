@@ -15,12 +15,11 @@
 			"@prisma/*": ["./prisma/*"],
 			"@DomainError": ["./utils/DomainError.ts"],
 			"@AppError": ["./utils/AppError.ts"],
-			"@GeneralSchemas": ["./utils/generalSchemas.ts"],
 			"@SetupPlugin": ["./utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
 
 			"@PrismaErrorHandler": ["./prisma/HandlePrismaErrors.ts"],
-			"@PrismaClient": ["./prisma/myClient.ts"]
+			"@PrismaClient": ["./prisma/Client.ts"]
 		},
 
 		// Bundler mode
