@@ -14,6 +14,9 @@ import {
 import { printDomainStatistics } from './reports/domain-reports';
 import { printRootNamespaceRestriction } from './reports/domain-namspace-violation';
 import { printNoRootSourceCode } from './reports/no-root-src-code';
+import { printDomainIsolation } from './reports/domain-isolation';
+import { printDirectionalViolations } from './reports/directional-rule';
+import { printChangeAmplification } from './reports/change-amp';
 
 export function runDependencyAnalysis(): void {
 	const depcruise = loadDepcruiseData();
@@ -35,6 +38,9 @@ export function runDependencyAnalysis(): void {
 	printDomainNamespaceIntegrity(depcruise);
 	printRootNamespaceRestriction(depcruise);
 	printNoRootSourceCode(depcruise);
+	printDomainIsolation(depcruise);
+	printDirectionalViolations(depcruise);
+	printChangeAmplification();
 }
 
 runDependencyAnalysis();
