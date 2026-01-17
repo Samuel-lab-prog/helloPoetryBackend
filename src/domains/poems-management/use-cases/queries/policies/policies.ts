@@ -1,16 +1,12 @@
 import type {
-	userRole,
-	userStatus,
-} from '@Domains/users-management/use-cases/queries/read-models/Enums';
-import type {
 	poemStatus,
 	poemVisibility,
 } from '../../queries/read-models/Enums';
 
 type ViewerContext = {
 	id?: number;
-	role?: userRole;
-	status?: userStatus;
+	role?: 'user' | 'moderator' | 'author';
+	status?: 'active' | 'suspended' | 'banned';
 };
 
 type AuthorContext = {

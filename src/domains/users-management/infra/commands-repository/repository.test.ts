@@ -1,7 +1,7 @@
 import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
 import { CommandsRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
-import { prisma } from '../../../../prisma/Client';
+import { prisma } from '@PrismaClient';
 
 const { insertUser, softDeleteUser, updateUser } = CommandsRepository;
 

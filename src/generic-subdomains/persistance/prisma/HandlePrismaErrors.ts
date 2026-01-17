@@ -1,5 +1,9 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
-import { DatabaseError, ConflictError, NotFoundError } from '@AppError';
+import {
+	DatabaseError,
+	ConflictError,
+	NotFoundError,
+} from '@root/generic-subdomains/utils/AppError';
 
 function handlePrismaError(error: PrismaClientKnownRequestError): never {
 	const modelName = error.meta?.modelName;

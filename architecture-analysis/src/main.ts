@@ -4,20 +4,20 @@ import { buildLocMap, attachLocToFanOut } from './metrics/loc-metrics';
 import {
 	calculateDomainLoc,
 	calculateDomainStatistics,
-} from './metrics//domain-statistics';
-import { printDomainNamespaceIntegrity } from './metrics/domain-namespace';
+} from './metrics/domain-statistics';
+import { printNoCrossDomainCalls } from './metrics/rules/no-cross-domain-calls';
 import {
 	printTopFanOut,
 	printTopFanIn,
 	printHotspotModules,
 } from './reports/dependency-reports';
 import { printDomainStatistics } from './reports/domain-reports';
-import { printRootNamespaceRestriction } from './reports/domain-namspace-violation';
-import { printNoRootSourceCode } from './reports/no-root-src-code';
-import { printDomainIsolation } from './reports/domain-isolation';
-import { printDirectionalViolations } from './reports/directional-rule';
-import { printChangeAmplification } from './reports/change-amp';
+import { printDomainIsolation } from './metrics/domain-isolation';
+import { printChangeAmplification } from './metrics/change-amp';
 
+import { printNoInvalidRootNamespaces } from './metrics/rules/no-invalid-namespaces';
+import { printNoRootSourceCode } from './metrics/rules/no-root-src-code';
+import { printNoInvalidDirectionalDependencies } from './metrics/rules/no-invalid-directional-dependencies';
 export function runDependencyAnalysis(): void {
 	const depcruise = loadDepcruiseData();
 	const cloc = loadClocData();
@@ -35,12 +35,14 @@ export function runDependencyAnalysis(): void {
 	printTopFanIn(fanIn);
 	printHotspotModules(fanOutWithLoc);
 	printDomainStatistics(domainStats);
-	printDomainNamespaceIntegrity(depcruise);
-	printRootNamespaceRestriction(depcruise);
-	printNoRootSourceCode(depcruise);
 	printDomainIsolation(depcruise);
-	printDirectionalViolations(depcruise);
+
 	printChangeAmplification();
+
+	printNoCrossDomainCalls(depcruise);
+	printNoInvalidRootNamespaces(depcruise);
+	printNoRootSourceCode(depcruise);
+	printNoInvalidDirectionalDependencies(depcruise);
 }
 
 runDependencyAnalysis();

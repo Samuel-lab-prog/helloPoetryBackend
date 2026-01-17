@@ -1,5 +1,7 @@
 /* eslint-disable max-nested-callbacks */
+import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
+import { printTable, type TableColumn } from '../ui/print-table';
 
 type ChangeAmplificationMetric = {
 	domain: string;
@@ -67,4 +69,67 @@ export function calculateChangeAmplification(
 		avgFilesChanged: s.totalFiles / (s.commits || 1),
 		maxFilesChanged: s.maxFiles,
 	}));
+}
+
+function classify(avg: number): {
+	label: string;
+	color: (text: string) => string;
+} {
+	if (avg <= 2) return { label: 'STRONG', color: green };
+	if (avg <= 5) return { label: 'OK', color: yellow };
+	return { label: 'WEAK', color: red };
+}
+const COMMITS_TO_ANALYZE = 100;
+export function printChangeAmplification(): void {
+	const metrics = calculateChangeAmplification(COMMITS_TO_ANALYZE);
+
+	const columns: TableColumn<ChangeAmplificationMetric>[] = [
+		{
+			header: 'DOMAIN',
+			width: 30,
+			render: (m) => ({
+				text: m.domain,
+				color: classify(m.avgFilesChanged).color,
+			}),
+		},
+		{
+			header: 'COMMITS',
+			width: 14,
+			align: 'right',
+			render: (m) => ({ text: String(m.commits) }),
+		},
+		{
+			header: 'AVG FILES',
+			width: 16,
+			align: 'right',
+			render: (m) => {
+				const { color } = classify(m.avgFilesChanged);
+				return {
+					text: m.avgFilesChanged.toFixed(2),
+					color,
+				};
+			},
+		},
+		{
+			header: 'MAX FILES',
+			width: 16,
+			align: 'right',
+			render: (m) => ({ text: String(m.maxFilesChanged) }),
+		},
+		{
+			header: 'STATUS',
+			width: 10,
+			align: 'right',
+			render: (m) => {
+				const { label, color } = classify(m.avgFilesChanged);
+				return { text: label, color };
+			},
+		},
+	];
+
+	printTable(
+		`Change Amplification Metrics (last ${COMMITS_TO_ANALYZE} commits)`,
+		columns,
+		[...metrics].sort((a, b) => b.avgFilesChanged - a.avgFilesChanged),
+	);
 }

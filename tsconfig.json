@@ -12,14 +12,18 @@
 			"@root/*": ["./*"],
 			"@utils/*": ["./utils/*"],
 			"@Domains/*": ["./domains/*"],
-			"@prisma/*": ["./prisma/*"],
-			"@DomainError": ["./utils/DomainError.ts"],
-			"@AppError": ["./utils/AppError.ts"],
-			"@SetupPlugin": ["./utils/plugins/setupPlugin.ts"],
+			"@prisma/*": ["./generic-subdomains/persistance/prisma/*"],
+			"@DomainError": ["./generic-subdomains/utils/DomainError.ts"],
+			"@AppError": ["./generic-subdomains/utils/AppError.ts"],
+			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
 
-			"@PrismaErrorHandler": ["./prisma/HandlePrismaErrors.ts"],
-			"@PrismaClient": ["./prisma/Client.ts"]
+			"@PrismaErrorHandler": [
+				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"
+			],
+			"@PrismaClient": [
+				"./generic-subdomains/persistance/prisma/PrismaClient.ts"
+			]
 		},
 
 		// Bundler mode

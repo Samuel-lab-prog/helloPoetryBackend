@@ -11,8 +11,8 @@ if (process.env.NODE_ENV !== 'prod') {
 export default defineConfig({
 	schema: 'src/prisma/schema.prisma',
 	migrations: {
-		path: 'src/prisma/migrations',
-		seed: 'bun src/prisma/seeds/main.ts',
+		path: 'src/generic-subdomains/persistance/prisma/migrations',
+		seed: 'bun src/generic-subdomains/persistance/prisma/seeds/main.ts',
 	},
 
 	datasource: {

@@ -1,6 +1,8 @@
-import type { DepcruiseData } from '../types';
+import { red, green, yellow } from 'kleur/colors';
+import { printTable, type TableColumn } from '../ui/print-table';
+import type { CruiseResult } from '../types';
 
-export type DomainIsolationMetric = {
+type DomainIsolationMetric = {
 	domain: string;
 	internalDeps: number;
 	externalDeps: number;
@@ -13,11 +15,11 @@ function extractDomain(path: string): string | null {
 }
 
 export function calculateDomainIsolation(
-	depcruise: DepcruiseData,
+	cruiseResult: CruiseResult,
 ): DomainIsolationMetric[] {
 	const acc = new Map<string, { internal: number; external: number }>();
 
-	depcruise.modules.forEach((m) => {
+	cruiseResult.modules.forEach((m) => {
 		const fromDomain = extractDomain(m.source);
 		if (!fromDomain) return;
 
@@ -46,4 +48,67 @@ export function calculateDomainIsolation(
 			externalPercent: v.external / total,
 		};
 	});
+}
+
+function classify(externalPercent: number): {
+	label: string;
+	color: (text: string) => string;
+} {
+	if (externalPercent <= 0.1) return { label: 'STRONG', color: green };
+	if (externalPercent <= 0.25) return { label: 'OK', color: yellow };
+	return { label: 'WEAK', color: red };
+}
+
+export function printDomainIsolation(cruiseResult: CruiseResult): void {
+	const metrics = calculateDomainIsolation(cruiseResult);
+
+	const columns: TableColumn<DomainIsolationMetric>[] = [
+		{
+			header: 'DOMAIN',
+			width: 30,
+			render: (m) => ({
+				text: m.domain,
+				color: classify(m.externalPercent).color,
+			}),
+		},
+		{
+			header: 'INT DEPS',
+			width: 12,
+			align: 'right',
+			render: (m) => ({ text: String(m.internalDeps) }),
+		},
+		{
+			header: 'EXT DEPS',
+			width: 12,
+			align: 'right',
+			render: (m) => ({ text: String(m.externalDeps) }),
+		},
+		{
+			header: '% EXT',
+			width: 10,
+			align: 'right',
+			render: (m) => {
+				const { color } = classify(m.externalPercent);
+				return {
+					text: `${(m.externalPercent * 100).toFixed(1)}%`,
+					color,
+				};
+			},
+		},
+		{
+			header: 'STATUS',
+			width: 10,
+			align: 'right',
+			render: (m) => {
+				const { label, color } = classify(m.externalPercent);
+				return { text: label, color };
+			},
+		},
+	];
+
+	printTable(
+		`Domain Isolation Metrics`,
+		columns,
+		[...metrics].sort((a, b) => b.externalPercent - a.externalPercent),
+	);
 }

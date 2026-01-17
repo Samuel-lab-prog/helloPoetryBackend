@@ -2,19 +2,13 @@
 module.exports = {
 	forbidden: [
 		{
-			name: 'no-deep-utils-import',
-			severity: 'warn',
-			from: { path: '^src/routes' },
-			to: { path: '^src/utils/.+/.+/.+' },
-		},
-		{
 			name: 'no-circular',
 			severity: 'warn',
 			comment:
 				'This dependency is part of a circular relationship. You might want to revise ' +
 				'your solution (i.e. use dependency inversion, make sure the modules have a single responsibility) ',
 			from: {
-				pathNot: '^src/prisma/generated',
+				pathNot: '^src/generic-subdomains/persistance/prisma/generated',
 			},
 			to: {
 				circular: true,

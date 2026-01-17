@@ -1,11 +1,6 @@
-export type DepcruiseModule = {
-	source: string;
-	dependencies: { resolved: string }[];
-};
+import type { ICruiseResult } from 'dependency-cruiser';
 
-export type DepcruiseData = {
-	modules: DepcruiseModule[];
-};
+export type CruiseResult = ICruiseResult;
 
 export type ClocFileInfo = {
 	code?: number;

@@ -1,4 +1,6 @@
-export const TERMINAL_WIDTH = 100;
+import { blue } from 'kleur/colors';
+
+const TERMINAL_WIDTH = 100;
 
 export function center(text: string, width = TERMINAL_WIDTH): string {
 	const pad = Math.max(0, Math.floor((width - text.length) / 2));
@@ -19,6 +21,6 @@ export function padLeft(text: string, width: number): string {
 
 export function section(title: string): void {
 	console.log('\n' + divider());
-	console.log(center(title.toUpperCase()));
+	console.log(center(blue(title.toUpperCase())));
 	console.log(divider());
 }
