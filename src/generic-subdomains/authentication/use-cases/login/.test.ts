@@ -17,6 +17,7 @@ describe('makeLoginClient', () => {
 		role: 'user',
 		email: 'test@email.com',
 		passwordHash: 'hashed-password',
+		status: 'active',
 	};
 
 	beforeEach(() => {
@@ -62,6 +63,7 @@ describe('makeLoginClient', () => {
 			client: {
 				id: 1,
 				role: 'user',
+				status: 'active',
 			},
 		});
 	});

@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@AppError';
-import { cookieTokenSchema } from '../../schemas/schemas';
+import { cookieTokenSchema } from '../../schemas/cookieTokenSchema';
 
 import { authenticateClientFactory } from '../../../use-cases/authenticate/authenticate';
 import { JwtTokenService } from '../../../infra/token/JwtTokenService';
@@ -11,6 +11,7 @@ interface Dependencies {
 	authenticate: (token: string) => Promise<{
 		id: number;
 		role: string;
+		status: string;
 	}>;
 }
 
@@ -26,10 +27,12 @@ export function createAuthPlugin({ authenticate }: Dependencies) {
 
 				auth.clientRole = client.role;
 				auth.clientId = client.id;
+				auth.clientStatus = client.status;
 			} finally {
 				store.authTiming = Math.round(performance.now() - authInitiatedAt);
 			}
 		},
+
 		response: {
 			401: appErrorSchema,
 		},

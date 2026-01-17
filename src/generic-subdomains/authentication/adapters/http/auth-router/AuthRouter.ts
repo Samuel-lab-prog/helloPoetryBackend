@@ -11,14 +11,14 @@ import { loginClientFactory } from '../../../use-cases/login/login';
 function setUpCookieTokenOptions(token: CookieOptions) {
 	token.httpOnly = process.env.NODE_ENV === 'prod';
 	token.path = '/';
-	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60 * 60; // 7 days in prod, 60 * 60 seconds in dev
+	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60 * 60;
 	token.secure = process.env.NODE_ENV === 'prod';
 	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
 }
 
 interface LoginResponse {
 	token: string;
-	client: { id: number; role: string };
+	client: { id: number; role: string; status: string };
 }
 
 interface AuthControllerServices {
@@ -39,7 +39,8 @@ export function createAuthRouter(services: AuthControllerServices) {
 			set.status = 204;
 
 			auth.clientId = result.client.id;
-			auth.clientRole = result.client.role as 'user' | 'author' | 'moderator';
+			auth.clientRole = result.client.role;
+			auth.clientStatus = result.client.status;
 		},
 		{
 			body: loginSchema,

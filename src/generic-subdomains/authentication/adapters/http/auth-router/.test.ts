@@ -5,7 +5,7 @@ import { createAuthRouter } from './AuthRouter';
 
 const login = mock(async () => ({
 	token: 'test-jwt-token',
-	client: { id: 1, role: 'user' },
+	client: { id: 1, role: 'user', status: 'active' },
 }));
 
 const PREFIX = 'http://test/auth';

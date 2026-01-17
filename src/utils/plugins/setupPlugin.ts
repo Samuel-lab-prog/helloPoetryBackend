@@ -7,6 +7,7 @@ export const SetupPlugin = new Elysia()
 	.decorate('auth', {
 		clientId: -1,
 		clientRole: '',
+		clientStatus: '',
 	})
 	.decorate('logger', {
 		log,

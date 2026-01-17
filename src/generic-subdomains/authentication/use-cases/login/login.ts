@@ -13,6 +13,7 @@ interface Dependencies {
 interface AuthClient {
 	id: number;
 	role: string;
+	status: string;
 }
 
 interface LoginResponse {
@@ -53,6 +54,7 @@ export function loginClientFactory(dependencies: Dependencies) {
 			client: {
 				id: client.id,
 				role: client.role,
+				status: client.status,
 			},
 		};
 	};

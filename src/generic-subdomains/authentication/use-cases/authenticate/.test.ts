@@ -13,6 +13,7 @@ describe('authenticateClientFactory', () => {
 		id: 1,
 		role: 'user',
 		email: 'test@email.com',
+		status: 'active',
 	};
 
 	beforeEach(() => {
@@ -44,6 +45,7 @@ describe('authenticateClientFactory', () => {
 		expect(result).toEqual({
 			id: 1,
 			role: 'user',
+			status: 'active',
 		});
 	});
 
