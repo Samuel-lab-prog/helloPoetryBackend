@@ -4,10 +4,10 @@ import { openapi, fromTypes } from '@elysiajs/openapi';
 import { rateLimit } from 'elysia-rate-limit';
 import { BunAdapter } from 'elysia/adapter/bun';
 
-import { ErrorPlugin } from '@root/generic-subdomains/utils/plugins/errorPlugin';
-import { LoggerPlugin } from '@root/generic-subdomains/utils/plugins/loggerPlugin';
-import { SetupPlugin } from '@root/generic-subdomains/utils/plugins/setupPlugin';
-import { sanitize } from '@root/generic-subdomains/utils/xssClean';
+import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
+import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
+import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
+import { sanitize } from '@GenericSubdomains/utils/xssClean';
 
 import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
 import { userQueriesRouter } from './domains/users-management/adapters/http/queries/UserQueriesRouter';

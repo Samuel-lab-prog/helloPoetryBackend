@@ -1,5 +1,5 @@
-import { prisma } from '@root/generic-subdomains/persistance/prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@root/generic-subdomains/persistance/prisma/HandlePrismaErrors';
+import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
+import { withPrismaErrorHandling } from '@GenericSubdomains/persistance/prisma/HandlePrismaErrors';
 
 import type { UserCommandsRepository } from '../../ports/CommandsRepository';
 import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';

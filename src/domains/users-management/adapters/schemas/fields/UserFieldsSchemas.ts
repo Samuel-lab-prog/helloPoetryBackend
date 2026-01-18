@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from '@root/generic-subdomains/utils/AppError';
+import { makeValidationError } from '@GenericSubdomains/utils/AppError';
 
 export const NicknameSchema = t.String({
 	minLength: 3,

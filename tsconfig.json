@@ -9,8 +9,6 @@
 		"allowJs": true,
 		"baseUrl": "./src",
 		"paths": {
-			"@root/*": ["./*"],
-			"@utils/*": ["./utils/*"],
 			"@Domains/*": ["./domains/*"],
 			"@prisma/*": ["./generic-subdomains/persistance/prisma/*"],
 			"@DomainError": ["./generic-subdomains/utils/DomainError.ts"],

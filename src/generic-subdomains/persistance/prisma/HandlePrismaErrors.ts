@@ -3,7 +3,7 @@ import {
 	DatabaseError,
 	ConflictError,
 	NotFoundError,
-} from '@root/generic-subdomains/utils/AppError';
+} from '@GenericSubdomains/utils/AppError';
 
 function handlePrismaError(error: PrismaClientKnownRequestError): never {
 	const modelName = error.meta?.modelName;

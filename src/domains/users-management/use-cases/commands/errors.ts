@@ -1,4 +1,4 @@
-import { DomainError } from '@root/generic-subdomains/utils/DomainError';
+import { DomainError } from '@GenericSubdomains/utils/DomainError';
 
 export class UserCreationError extends DomainError {
 	constructor() {

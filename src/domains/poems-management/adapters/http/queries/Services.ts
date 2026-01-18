@@ -1,10 +1,10 @@
 import { QueriesRepository } from '../../../infra/queries-repository/repository';
 
 import { getMyPoemsFactory } from '../../../use-cases/queries/get-my-poems/execute';
-import { getAuthorPoemsFactory } from '@root/domains/poems-management/use-cases/queries/get-author-poems/execute';
+import { getAuthorPoemsFactory } from '@Domains/poems-management/use-cases/queries/get-author-poems/execute';
 
 import type { MyPoem } from '../../../use-cases/queries/read-models/MyPoem';
-import type { AuthorPoem } from '@root/domains/poems-management/use-cases/queries/read-models/AuthorPoem';
+import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/read-models/AuthorPoem';
 
 export interface PoemQueriesRouterServices {
 	getMyPoems: (params: { requesterId: number }) => Promise<MyPoem[]>;

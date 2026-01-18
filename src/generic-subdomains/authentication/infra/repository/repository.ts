@@ -1,4 +1,4 @@
-import { QueriesRepository } from '@root/domains/users-management/infra/read-repository/repository';
+import { QueriesRepository } from '@Domains/users-management/infra/read-repository/repository';
 import type { AuthRepository } from '../../ports/AuthRepository';
 
 // We are importing a repository since authentication module is allowed to read user data

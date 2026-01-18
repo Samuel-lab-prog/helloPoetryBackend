@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@root/generic-subdomains/authentication/adapters/http/auth-plugin/AuthPlugin';
+import { AuthPlugin } from '@GenericSubdomains/authentication/adapters/http/auth-plugin/AuthPlugin';
 
 import { MyPoemSchema } from '../../schemas/MyPoemSchema';
 import { AuthorPoemSchema } from '../../schemas/AuthorPoemSchema';
