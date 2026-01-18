@@ -1,6 +1,7 @@
 import type { ClocData, CruiseResult } from '../types';
 import { green, yellow, red, cyan, magenta } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
+import { classifyDistanceFromMain } from '../classify-results';
 
 type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';
 
@@ -154,8 +155,14 @@ function classifyDistance(
 		return { label: 'INFRA', color: magenta };
 	}
 
-	if (distance <= 0.3) return { label: 'GOOD', color: green };
-	if (distance <= 0.6) return { label: 'OK', color: yellow };
+	const classification = classifyDistanceFromMain(distance);
+
+	if (classification === 'GOOD') {
+		return { label: 'GOOD', color: green };
+	}
+	if (classification === 'OK') {
+		return { label: 'OK', color: yellow };
+	}
 	return { label: 'FAIL', color: red };
 }
 

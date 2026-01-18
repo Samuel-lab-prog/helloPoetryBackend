@@ -34,3 +34,11 @@ export function classifyChangeAmplification(
 	if (avgFiles > 5 || maxFiles > 20) return 'OK';
 	return 'GOOD';
 }
+
+export function classifyDistanceFromMain(
+	distance: number,
+): 'GOOD' | 'OK' | 'FAIL' {
+	if (distance <= 0.3) return 'GOOD';
+	if (distance <= 0.6) return 'OK';
+	return 'FAIL';
+}
