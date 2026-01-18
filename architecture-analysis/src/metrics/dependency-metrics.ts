@@ -3,17 +3,51 @@ import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
 import { classifyFanOut, classifyFanIn } from '../classify-results/index';
 
-const IGNORED_MODULES_PREFIXES = ['node_modules/', 'internal/', '/index.ts'];
+/**
+ * Modules that should be completely ignored in dependency analysis
+ */
+const IGNORED_MODULES_PREFIXES = [
+	'node_modules/',
+	'internal/',
+	'/index.ts',
+
+	// technical/shared infrastructure
+	'src/persistance/',
+	'src/generic-subdomains/persistance/',
+	'src/generic-subdomains/utils/prisma',
+];
+
+/**
+ * Modules that are allowed to have very high fan-in
+ * (shared infrastructure, cross-cutting concerns)
+ */
+const FAN_IN_EXCEPTIONS_PREFIXES = [
+	'src/generic-subdomains/persistance/',
+	'src/generic-subdomains/utils/',
+	'bun:test',
+];
+
+function hasAnyPrefix(path: string, prefixes: string[]): boolean {
+	return prefixes.some((prefix) => path.startsWith(prefix));
+}
 
 function isIgnored(modulePath: string): boolean {
-	return IGNORED_MODULES_PREFIXES.some((prefix) =>
-		modulePath.startsWith(prefix),
-	);
+	return hasAnyPrefix(modulePath, IGNORED_MODULES_PREFIXES);
+}
+
+function isFanInException(modulePath: string): boolean {
+	return hasAnyPrefix(modulePath, FAN_IN_EXCEPTIONS_PREFIXES);
 }
 
 function isEntryPoint(modulePath: string): boolean {
 	return modulePath.endsWith('/index.ts') || modulePath === 'src/index.ts';
 }
+
+export type FanMetric = {
+	module: string;
+	dependencies: number;
+	loc?: number;
+};
 
 export function calculateFanOut(data: CruiseResult): FanMetric[] {
 	return data.modules
@@ -21,7 +55,7 @@ export function calculateFanOut(data: CruiseResult): FanMetric[] {
 		.filter((m) => !isIgnored(m.source))
 		.map((m) => ({
 			module: m.source,
-			dependencies: m.dependencies.length,
+			dependencies: m.dependencies.filter((d) => !isIgnored(d.resolved)).length,
 		}));
 }
 
@@ -34,18 +68,15 @@ export function calculateFanIn(data: CruiseResult): Map<string, number> {
 			m.dependencies
 				.filter((d) => !isIgnored(d.resolved))
 				.forEach((d) => {
+					// shared infra does not accumulate fan-in
+					if (isFanInException(d.resolved)) return;
+
 					fanIn.set(d.resolved, (fanIn.get(d.resolved) ?? 0) + 1);
 				});
 		});
 
 	return fanIn;
 }
-
-export type FanMetric = {
-	module: string;
-	dependencies: number;
-	loc?: number;
-};
 
 function classifyFanInResult(deps: number): {
 	label: string;
@@ -66,7 +97,6 @@ function classifyFanOutResult(deps: number): {
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };
 }
-
 export function printTopFanOut(fanOut: FanMetric[], limit = 15): void {
 	const columns: TableColumn<FanMetric>[] = [
 		{
@@ -150,13 +180,16 @@ export function printHotspotModules(
 ): void {
 	const metrics: HotspotMetric[] = fanOutWithLoc.filter(
 		(m): m is HotspotMetric =>
-			m.dependencies > minDeps && (m.loc ?? 0) > minLoc,
+			m.dependencies > minDeps &&
+			(m.loc ?? 0) > minLoc &&
+			!isFanInException(m.module),
 	);
 
 	if (metrics.length === 0) {
 		console.log(green('✔ No hotspot modules detected'));
 		return;
 	}
+
 	const columns: TableColumn<HotspotMetric>[] = [
 		{
 			header: 'DEPS',

@@ -1,4 +1,5 @@
 import { loadClocData, loadDepcruiseData } from './io/loaders';
+
 import {
 	calculateFanIn,
 	calculateFanOut,
@@ -6,15 +7,22 @@ import {
 	printHotspotModules,
 	printTopFanIn,
 } from './metrics/dependency-metrics';
+
 import { buildLocMap, attachLocToFanOut } from './metrics/loc-metrics';
+
 import {
-	calculateDomainLoc,
+	calculateDomainAggregates,
 	calculateDomainStatistics,
 	printDomainStatistics,
 } from './metrics/domain-statistics';
+
 import { printNoCrossDomainCalls } from './metrics/rules/no-cross-domain-calls';
 import { printDomainIsolation } from './metrics/domain-isolation';
 import { printChangeAmplification } from './metrics/change-amp';
+import {
+	printInstabilityAbstraction,
+	calculateAbstractionInstability,
+} from './metrics/abstraction-instability';
 
 import { printNoInvalidRootNamespaces } from './metrics/rules/no-invalid-namespaces';
 import { printNoRootSourceCode } from './metrics/rules/no-root-src-code';
@@ -24,23 +32,38 @@ function runDependencyAnalysis(): void {
 	const depcruise = loadDepcruiseData();
 	const cloc = loadClocData();
 
+	// ----------------------------
+	// Dependency metrics
+	// ----------------------------
 	const fanOut = calculateFanOut(depcruise);
 	const fanIn = calculateFanIn(depcruise);
 
 	const locMap = buildLocMap(cloc);
 	const fanOutWithLoc = attachLocToFanOut(fanOut, locMap);
 
-	const domainLoc = calculateDomainLoc(cloc);
-	const domainStats = calculateDomainStatistics(domainLoc, cloc.SUM.code);
+	const domainAggregates = calculateDomainAggregates(cloc);
 
+	const archMetrics = calculateAbstractionInstability(cloc, depcruise);
+
+	const totalLoc = cloc.SUM.code;
+
+	const domainMetrics = calculateDomainStatistics(domainAggregates, totalLoc);
+
+	// ----------------------------
+	// Output
+	// ----------------------------
 	printTopFanOut(fanOut);
 	printTopFanIn(fanIn);
 	printHotspotModules(fanOutWithLoc);
-	printDomainStatistics(domainStats);
+
+	printDomainStatistics(domainMetrics);
 	printDomainIsolation(depcruise);
-
 	printChangeAmplification();
+	printInstabilityAbstraction(archMetrics);
 
+	// ----------------------------
+	// Architectural rules
+	// ----------------------------
 	printNoCrossDomainCalls(depcruise);
 	printNoInvalidRootNamespaces(depcruise);
 	printNoRootSourceCode(depcruise);

@@ -1,11 +1,14 @@
-import type { ClocData } from '../types';
+import type { ClocData, DomainMetric, DomainAggregate } from '../types';
 import { classifyDomainSize } from '../classify-results/index';
 
-export function calculateDomainLoc(cloc: ClocData): Map<string, number> {
-	const domainLoc = new Map<string, number>();
+export function calculateDomainAggregates(
+	cloc: ClocData,
+): Map<string, DomainAggregate> {
+	const domainData = new Map<string, DomainAggregate>();
 
 	Object.entries(cloc).forEach(([file, info]) => {
-		if (!info.code) return;
+		// ignore cloc summary and files without code
+		if (file === 'SUM' || !info?.code) return;
 
 		const match = file.match(
 			/(?:^|\/|\\)src[/\\](domains|generic-subdomains)[/\\]([^/\\]+)[/\\]/,
@@ -15,41 +18,41 @@ export function calculateDomainLoc(cloc: ClocData): Map<string, number> {
 
 		const domainName = match[2]!;
 
-		domainLoc.set(domainName, (domainLoc.get(domainName) ?? 0) + info.code);
+		const current = domainData.get(domainName) ?? { loc: 0, files: 0 };
+
+		domainData.set(domainName, {
+			loc: current.loc + info.code,
+			files: current.files + 1,
+		});
 	});
 
-	return domainLoc;
+	return domainData;
 }
 
 export function calculateDomainStatistics(
-	domainLoc: Map<string, number>,
+	domainData: Map<string, DomainAggregate>,
 	totalLoc: number,
 ): DomainMetric[] {
-	const values = [...domainLoc.values()];
+	const locValues = [...domainData.values()].map((d) => d.loc);
 
-	const mean = values.reduce((a, b) => a + b, 0) / values.length;
+	const mean = locValues.reduce((a, b) => a + b, 0) / locValues.length;
+
 	const variance =
-		values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+		locValues.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / locValues.length;
 
 	const stdDev = Math.sqrt(variance) || 1;
 
-	return [...domainLoc.entries()].map(([domain, loc]) => ({
+	return [...domainData.entries()].map(([domain, data]) => ({
 		domain,
-		loc,
-		percent: loc / totalLoc,
-		zScore: (loc - mean) / stdDev,
+		loc: data.loc,
+		files: data.files,
+		percent: data.loc / totalLoc,
+		zScore: (data.loc - mean) / stdDev,
 	}));
 }
 
 import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
-
-export type DomainMetric = {
-	domain: string;
-	loc: number;
-	percent: number;
-	zScore: number;
-};
 
 function classifySizeResult(percent: number): {
 	label: string;
@@ -77,6 +80,12 @@ export function printDomainStatistics(metrics: DomainMetric[]): void {
 			width: 12,
 			align: 'right',
 			render: (m) => ({ text: String(m.loc) }),
+		},
+		{
+			header: 'FILES',
+			width: 12,
+			align: 'right',
+			render: (m) => ({ text: String(m.files) }),
 		},
 		{
 			header: '% TOTAL',

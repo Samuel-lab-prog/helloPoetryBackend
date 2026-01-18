@@ -19,6 +19,12 @@ export type FanMetric = {
 export type DomainMetric = {
 	domain: string;
 	loc: number;
+	files: number;
 	percent: number;
 	zScore: number;
+};
+
+export type DomainAggregate = {
+	loc: number;
+	files: number;
 };
