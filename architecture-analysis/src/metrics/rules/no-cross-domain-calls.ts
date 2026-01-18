@@ -52,10 +52,6 @@ function checkDomainNamespaceIntegrity(
 	return violations;
 }
 
-/* ----------------------------------
- * Printing
- * ---------------------------------- */
-
 export function printNoCrossDomainCalls(cruiseResult: CruiseResult): void {
 	const violations = checkDomainNamespaceIntegrity(cruiseResult);
 

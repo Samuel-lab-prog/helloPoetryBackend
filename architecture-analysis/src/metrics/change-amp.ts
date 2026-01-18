@@ -2,6 +2,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
 import { printTable, type TableColumn } from '../ui/print-table';
+import { classifyChangeAmplification } from '../classify-results';
 
 type ChangeAmplificationMetric = {
 	domain: string;
@@ -71,13 +72,17 @@ export function calculateChangeAmplification(
 	}));
 }
 
-function classify(avg: number): {
+function classify(
+	avg: number,
+	maxFiles: number,
+): {
 	label: string;
 	color: (text: string) => string;
 } {
-	if (avg <= 2) return { label: 'STRONG', color: green };
-	if (avg <= 5) return { label: 'OK', color: yellow };
-	return { label: 'WEAK', color: red };
+	const label = classifyChangeAmplification(avg, maxFiles);
+	if (label === 'GOOD') return { label, color: green };
+	if (label === 'OK') return { label, color: yellow };
+	return { label, color: red };
 }
 const COMMITS_TO_ANALYZE = 100;
 export function printChangeAmplification(): void {
@@ -89,7 +94,7 @@ export function printChangeAmplification(): void {
 			width: 30,
 			render: (m) => ({
 				text: m.domain,
-				color: classify(m.avgFilesChanged).color,
+				color: classify(m.avgFilesChanged, m.maxFilesChanged).color,
 			}),
 		},
 		{
@@ -103,7 +108,7 @@ export function printChangeAmplification(): void {
 			width: 16,
 			align: 'right',
 			render: (m) => {
-				const { color } = classify(m.avgFilesChanged);
+				const { color } = classify(m.avgFilesChanged, m.maxFilesChanged);
 				return {
 					text: m.avgFilesChanged.toFixed(2),
 					color,
@@ -121,7 +126,7 @@ export function printChangeAmplification(): void {
 			width: 10,
 			align: 'right',
 			render: (m) => {
-				const { label, color } = classify(m.avgFilesChanged);
+				const { label, color } = classify(m.avgFilesChanged, m.maxFilesChanged);
 				return { text: label, color };
 			},
 		},

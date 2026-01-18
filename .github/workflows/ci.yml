@@ -49,7 +49,7 @@ jobs:
       - run: bun install
       - run: bun lint
       - run: bun format
-
+      - run: bun metrics
   build:
     runs-on: ubuntu-latest
     needs: [test, quality]

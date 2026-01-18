@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
 import type { CruiseResult } from '../types';
+import { classifyIsolation } from '../classify-results/index';
 
 type DomainIsolationMetric = {
 	domain: string;
@@ -50,13 +51,14 @@ export function calculateDomainIsolation(
 	});
 }
 
-function classify(externalPercent: number): {
+function classifyIsolationResult(externalPercent: number): {
 	label: string;
 	color: (text: string) => string;
 } {
-	if (externalPercent <= 0.1) return { label: 'STRONG', color: green };
-	if (externalPercent <= 0.25) return { label: 'OK', color: yellow };
-	return { label: 'WEAK', color: red };
+	const label = classifyIsolation(externalPercent);
+	if (label === 'GOOD') return { label, color: green };
+	if (label === 'OK') return { label, color: yellow };
+	return { label, color: red };
 }
 
 export function printDomainIsolation(cruiseResult: CruiseResult): void {
@@ -68,7 +70,7 @@ export function printDomainIsolation(cruiseResult: CruiseResult): void {
 			width: 30,
 			render: (m) => ({
 				text: m.domain,
-				color: classify(m.externalPercent).color,
+				color: classifyIsolationResult(m.externalPercent).color,
 			}),
 		},
 		{
@@ -88,7 +90,7 @@ export function printDomainIsolation(cruiseResult: CruiseResult): void {
 			width: 10,
 			align: 'right',
 			render: (m) => {
-				const { color } = classify(m.externalPercent);
+				const { color } = classifyIsolationResult(m.externalPercent);
 				return {
 					text: `${(m.externalPercent * 100).toFixed(1)}%`,
 					color,
@@ -100,7 +102,7 @@ export function printDomainIsolation(cruiseResult: CruiseResult): void {
 			width: 10,
 			align: 'right',
 			render: (m) => {
-				const { label, color } = classify(m.externalPercent);
+				const { label, color } = classifyIsolationResult(m.externalPercent);
 				return { text: label, color };
 			},
 		},
