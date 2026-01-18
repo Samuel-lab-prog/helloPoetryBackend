@@ -2,6 +2,7 @@
 import Elysia from 'elysia';
 import { AppError } from '../AppError.ts';
 import { DomainError } from '../DomainError.ts';
+import { DatabaseError } from '@DatabaseError';
 import { log } from '../logger.ts';
 import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
 
@@ -14,8 +15,38 @@ function normalizeError(code: unknown, error: unknown): AppError {
 		return convertDomainError(error);
 	}
 
+	if (error instanceof DatabaseError) {
+		return convertDatabaseError(error);
+	}
+
 	const normalizedCode = typeof code === 'string' ? code : 'UNKNOWN';
 	return convertElysiaError(normalizedCode, error);
+}
+
+function convertDatabaseError(error: DatabaseError): AppError {
+	switch (error.type) {
+		case 'NOT_FOUND':
+			return new AppError({
+				statusCode: 404,
+				errorMessages: [error.message],
+			});
+		case 'CONFLICT':
+			return new AppError({
+				statusCode: 409,
+				errorMessages: [error.message],
+			});
+		case 'FORBIDDEN_USER_OPERATION':
+			return new AppError({
+				statusCode: 403,
+				errorMessages: [error.message],
+			});
+		case 'UNKNOWN':
+		default:
+			return new AppError({
+				statusCode: 500,
+				errorMessages: [error.message],
+			});
+	}
 }
 
 function logError(
@@ -149,7 +180,6 @@ function convertDomainError(error: DomainError): AppError {
 				statusCode: 401,
 			});
 		case 'VALIDATION_FAILED':
-		default:
 			return new AppError({
 				errorMessages: [message],
 				statusCode: 400,
@@ -158,6 +188,11 @@ function convertDomainError(error: DomainError): AppError {
 			return new AppError({
 				errorMessages: [message],
 				statusCode: 403,
+			});
+		default:
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 400,
 			});
 	}
 }

@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@GenericSubdomains/persistance/prisma/HandlePrismaErrors';
+import { withPrismaErrorHandling } from '@prisma/error-handling/HandlePrismaErrors';
 
 import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
 import type {

@@ -1,6 +1,6 @@
 import type { FullUser } from '../../use-cases/queries';
 import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@GenericSubdomains/persistance/prisma/HandlePrismaErrors';
+import { withPrismaErrorHandling } from '@prisma/error-handling/HandlePrismaErrors';
 import { fullUserSelect } from './selectsModels';
 import type { PublicProfile } from '../../use-cases/queries/read-models/PublicProfile';
 

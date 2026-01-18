@@ -29,6 +29,7 @@ describe('getUserFactory', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		emailVerifiedAt: null,
+		friendsIds: [2, 3],
 	};
 
 	beforeEach(() => {
@@ -42,7 +43,6 @@ describe('getUserFactory', () => {
 			selectUsers: mock(),
 		};
 
-		// reset do comportamento da policy
 		(policies.canAccessUserInfo as any).mockReset();
 	});
 

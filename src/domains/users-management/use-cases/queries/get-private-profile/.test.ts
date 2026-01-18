@@ -19,6 +19,7 @@ describe('getPrivateProfileFactory', () => {
 		role: 'user',
 		status: 'active',
 		emailVerifiedAt: new Date('2023-01-03T00:00:00Z'),
+		friendsIds: [2, 3, 4],
 		stats: {
 			poemsCount: 10,
 			commentsCount: 25,

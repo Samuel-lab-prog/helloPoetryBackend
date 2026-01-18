@@ -23,7 +23,7 @@ describe('getPublicProfileFactory', () => {
 			friendsCount: 5,
 		},
 		friendship: {
-			status: 'none',
+			status: 'accepted',
 			isRequester: false,
 		},
 	};
@@ -74,7 +74,7 @@ describe('getPublicProfileFactory', () => {
 			1,
 			42,
 		);
-		expect(result.friendship.status).toBe('none');
+		expect(result.friendship.status).toBe('accepted');
 	});
 
 	it('should throw ProfileNotFoundError when profile does not exist', async () => {
