@@ -1,4 +1,4 @@
-import { QueriesRepository } from '../../../infra/queries-repository/repository';
+import { queriesRepository } from '../../../infra/queries-repository/repository';
 
 import {
 	getMyPoemsFactory,
@@ -8,7 +8,7 @@ import {
 	type AuthorPoem,
 } from '../../../use-cases/queries/index';
 
-export interface PoemQueriesRouterServices {
+export interface QueriesRouterServices {
 	getMyPoems: (params: { requesterId: number }) => Promise<MyPoem[]>;
 	getAuthorPoems: (params: {
 		requesterId: number;
@@ -20,14 +20,14 @@ export interface PoemQueriesRouterServices {
 	}) => Promise<AuthorPoem | MyPoem>;
 }
 
-export const poemQueriesServices: PoemQueriesRouterServices = {
+export const queriesRouterServices: QueriesRouterServices = {
 	getMyPoems: getMyPoemsFactory({
-		poemQueriesRepository: QueriesRepository,
+		poemQueriesRepository: queriesRepository,
 	}),
 	getAuthorPoems: getAuthorPoemsFactory({
-		poemQueriesRepository: QueriesRepository,
+		poemQueriesRepository: queriesRepository,
 	}),
 	getPoemById: getPoemFactory({
-		poemQueriesRepository: QueriesRepository,
+		poemQueriesRepository: queriesRepository,
 	}),
 };

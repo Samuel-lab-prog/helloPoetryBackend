@@ -7,7 +7,7 @@ import type {
 	SelectAuthorPoemsParams,
 } from './PoemQueryParams';
 
-export interface PoemQueriesRepository {
+export interface QueriesRepository {
 	selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]>;
 	selectAuthorPoems(params: SelectAuthorPoemsParams): Promise<AuthorPoem[]>;
 	selectPoemById(poemId: number): Promise<FullPoem | null>;

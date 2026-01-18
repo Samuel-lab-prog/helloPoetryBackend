@@ -2,7 +2,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
-import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
+import type { QueriesRepository } from '../../ports/QueriesRepository';
 import type {
 	SelectAuthorPoemsParams,
 	SelectMyPoemsParams,
@@ -106,7 +106,7 @@ function selectPoemById(poemId: number): Promise<FullPoem | null> {
 	});
 }
 
-export const QueriesRepository: PoemQueriesRepository = {
+export const queriesRepository: QueriesRepository = {
 	selectMyPoems,
 	selectAuthorPoems,
 	selectPoemById,

@@ -3,13 +3,10 @@ import { AuthPlugin } from '@AuthPlugin';
 
 import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas';
 
-import {
-	type PoemQueriesRouterServices,
-	poemQueriesServices,
-} from './Services';
+import { type QueriesRouterServices, queriesRouterServices } from './Services';
 import { appErrorSchema } from '@AppError';
 
-export function createPoemsQueriesRouter(services: PoemQueriesRouterServices) {
+export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
 		.use(AuthPlugin)
 		.get(
@@ -80,4 +77,6 @@ export function createPoemsQueriesRouter(services: PoemQueriesRouterServices) {
 		);
 }
 
-export const poemsQueriesRouter = createPoemsQueriesRouter(poemQueriesServices);
+export const poemsQueriesRouter = createPoemsQueriesRouter(
+	queriesRouterServices,
+);
