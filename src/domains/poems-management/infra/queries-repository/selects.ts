@@ -66,3 +66,32 @@ export const authorPoemSelect = {
 		},
 	},
 } as const;
+
+export const fullPoemSelect = {
+	id: true,
+	slug: true,
+	title: true,
+	content: true,
+	excerpt: true,
+	isCommentable: true,
+	createdAt: true,
+	updatedAt: true,
+	deletedAt: true,
+	status: true,
+	visibility: true,
+	moderationStatus: true,
+	author: {
+		select: {
+			id: true,
+			name: true,
+			nickname: true,
+			avatarUrl: true,
+			friendshipsFrom: { select: { userBId: true } },
+			friendshipsTo: { select: { userAId: true } },
+		},
+	},
+	toUser: { select: { id: true, name: true, nickname: true, avatarUrl: true } },
+	toPoem: { select: { id: true, title: true, slug: true, authorId: true } },
+	tags: { select: { id: true, name: true } },
+	_count: { select: { poemLikes: true, comments: true } },
+} as const;

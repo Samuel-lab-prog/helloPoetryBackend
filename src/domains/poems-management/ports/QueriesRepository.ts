@@ -1,5 +1,6 @@
 import type { AuthorPoem } from '../use-cases/queries/read-models/AuthorPoem';
 import type { MyPoem } from '../use-cases/queries/read-models/MyPoem';
+import type { FullPoem } from '../use-cases/queries/read-models/FullPoem';
 
 import type {
 	SelectMyPoemsParams,
@@ -9,4 +10,5 @@ import type {
 export interface PoemQueriesRepository {
 	selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]>;
 	selectAuthorPoems(params: SelectAuthorPoemsParams): Promise<AuthorPoem[]>;
+	selectPoemById(poemId: number): Promise<FullPoem | null>;
 }
