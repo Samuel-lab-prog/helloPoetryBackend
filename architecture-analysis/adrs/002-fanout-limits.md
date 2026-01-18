@@ -15,8 +15,8 @@ Static analysis revealed that most modules stay below 10 direct dependencies.
 
 Fan-out thresholds are defined as:
 
-- OK: ≤ 7 dependencies
-- WARN: 8–12 dependencies
+- GOOD: ≤ 7 dependencies
+- OK: 8–12 dependencies
 - FAIL: > 12 dependencies
 
 Modules classified as FAIL will break the CI pipeline.

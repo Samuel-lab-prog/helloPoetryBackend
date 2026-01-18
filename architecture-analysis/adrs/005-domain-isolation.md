@@ -13,11 +13,11 @@ Domain isolation can be measured by the percentage of external dependencies.
 
 Domain isolation is classified as:
 
-- STRONG: ≤ 15% external dependencies
+- GOOD: ≤ 15% external dependencies
 - OK: 16–30% external dependencies
-- WEAK: > 30% external dependencies
+- FAIL: > 30% external dependencies
 
-Domains classified as WEAK will fail the CI pipeline.
+Domains classified as FAIL will fail the CI pipeline.
 
 ## Consequences
 

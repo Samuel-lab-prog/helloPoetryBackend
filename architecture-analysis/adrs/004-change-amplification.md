@@ -17,14 +17,14 @@ Change amplification is classified using two signals:
 
 Average files per commit:
 
-- OK: ≤ 5
-- WARN: 6–10
+- GOOD: ≤ 5
+- OK: 6–10
 - FAIL: > 10
 
 Maximum files in a single commit:
 
-- OK: ≤ 20
-- WARN: 21–30
+- GOOD: ≤ 20
+- OK: 21–30
 - FAIL: > 30
 
 If either signal is FAIL, the domain is classified as FAIL.
