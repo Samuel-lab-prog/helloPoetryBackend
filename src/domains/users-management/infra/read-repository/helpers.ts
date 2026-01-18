@@ -1,6 +1,6 @@
 import type { FullUser } from '../../use-cases/queries';
-import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@prisma/error-handling/HandlePrismaErrors';
+import { prisma } from '@PrismaClient';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import { fullUserSelect } from './selectsModels';
 import type { PublicProfile } from '../../use-cases/queries/read-models/PublicProfile';
 
@@ -33,7 +33,7 @@ export async function resolveFriendship(
 	userId: number,
 ): Promise<PublicProfile['friendship']> {
 	if (!requesterId || requesterId === userId) {
-		return { status: 'none', isRequester: false };
+		return undefined;
 	}
 
 	const relation = await prisma.friendship.findFirst({
@@ -50,7 +50,7 @@ export async function resolveFriendship(
 				status: relation.status,
 				isRequester: relation.userAId === requesterId,
 			}
-		: { status: 'none', isRequester: false };
+		: undefined;
 }
 
 type UserUniqueWhere =

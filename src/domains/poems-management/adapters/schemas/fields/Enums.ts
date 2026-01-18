@@ -3,7 +3,7 @@ import type {
 	poemStatus,
 	poemVisibility,
 	poemModerationStatus,
-} from '../../../use-cases/queries/read-models/Enums';
+} from '../../../use-cases/queries/index';
 
 export const PoemStatusEnumSchema = t.UnionEnum([
 	'draft',

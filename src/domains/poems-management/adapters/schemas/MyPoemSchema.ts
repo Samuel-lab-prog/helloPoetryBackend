@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import type { MyPoem } from '../../use-cases/queries/read-models/MyPoem';
+import type { MyPoem } from '../../use-cases/queries/index';
 import {
 	PoemContentSchema,
 	PoemTitleSchema,

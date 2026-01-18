@@ -1,6 +1,6 @@
-import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
-import type { UserWhereInput } from '@GenericSubdomains/persistance/prisma/generated/models/User';
-import { withPrismaErrorHandling } from '@prisma/error-handling/HandlePrismaErrors';
+import { prisma } from '@PrismaClient';
+import type { UserWhereInput } from '@Prisma/generated/models/User';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type {
 	userQueriesRepository,

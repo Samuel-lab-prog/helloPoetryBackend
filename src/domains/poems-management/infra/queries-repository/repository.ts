@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
-import { prisma } from '@GenericSubdomains/persistance/prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@prisma/error-handling/HandlePrismaErrors';
+import { prisma } from '@PrismaClient';
+import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { PoemQueriesRepository } from '../../ports/QueriesRepository';
 import type {
@@ -10,9 +10,11 @@ import type {
 
 import { authorPoemSelect, myPoemSelect, fullPoemSelect } from './selects';
 
-import type { MyPoem } from '../../use-cases/queries/read-models/MyPoem';
-import type { AuthorPoem } from '../../use-cases/queries/read-models/AuthorPoem';
-import type { FullPoem } from '../../use-cases/queries/read-models/FullPoem';
+import type {
+	MyPoem,
+	AuthorPoem,
+	FullPoem,
+} from '../../use-cases/queries/index';
 
 function selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {

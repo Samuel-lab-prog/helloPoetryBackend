@@ -1,4 +1,4 @@
-import { DomainError } from '@GenericSubdomains/utils/DomainError';
+import { DomainError } from '@DomainError';
 
 export class PoemAccessDeniedError extends DomainError {
 	constructor() {

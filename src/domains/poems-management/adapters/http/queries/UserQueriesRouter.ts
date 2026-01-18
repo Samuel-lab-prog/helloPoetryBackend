@@ -1,9 +1,7 @@
 import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@GenericSubdomains/authentication/adapters/http/auth-plugin/AuthPlugin';
+import { AuthPlugin } from '@AuthPlugin';
 
-import { MyPoemSchema } from '../../schemas/MyPoemSchema';
-import { AuthorPoemSchema } from '../../schemas/AuthorPoemSchema';
-import { idSchema } from '../../schemas/parameters/IdSchema';
+import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas';
 
 import {
 	type PoemQueriesRouterServices,

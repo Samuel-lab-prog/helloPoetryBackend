@@ -22,10 +22,12 @@ export const UserPublicProfileSchema = t.Object({
 		friendsCount: t.Number(),
 	}),
 
-	friendship: t.Object({
-		status: UserFriendshipStatusEnumSchema,
-		isRequester: t.Boolean(),
-	}),
+	friendship: t.Optional(
+		t.Object({
+			status: UserFriendshipStatusEnumSchema,
+			isRequester: t.Boolean(),
+		}),
+	),
 });
 
 type _AssertExtends<_T extends _U, _U> = true;

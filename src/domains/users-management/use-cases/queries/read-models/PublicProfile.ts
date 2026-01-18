@@ -15,7 +15,7 @@ export type PublicProfile = {
 		friendsCount: number;
 	};
 
-	friendship: {
+	friendship?: {
 		status: friendshipStatus;
 		isRequester: boolean;
 	};

@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { makeValidationError } from '@AppError';
 
 export const PoemTitleSchema = t.String({
 	minLength: 3,

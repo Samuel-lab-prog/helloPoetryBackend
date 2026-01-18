@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import type { SelectUsersPage } from '../../use-cases/queries/read-models/index';
+import type { SelectUsersPage } from '../../use-cases/queries/index';
 
 import { UserPreviewSchema } from './UserPreview';
 

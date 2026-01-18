@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { cookieTokenSchema } from '../../schemas/cookieTokenSchema';
 
 import { authenticateClientFactory } from '../../../use-cases/authenticate/authenticate';

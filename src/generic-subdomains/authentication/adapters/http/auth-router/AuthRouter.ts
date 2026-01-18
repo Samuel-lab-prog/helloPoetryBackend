@@ -1,6 +1,6 @@
 import { Elysia, t, type CookieOptions } from 'elysia';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { loginSchema } from '../../schemas/loginSchema';
 
 import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
