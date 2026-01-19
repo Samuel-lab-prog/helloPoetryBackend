@@ -4,10 +4,10 @@
 
 export * from './CreateUserSchema';
 export * from './FullUser';
-export * from './IdSchema';
-export * from './OrderBySchema';
-export * from './OrderDirectionSchema';
-export * from './PaginationLimitSchema';
+export * from './parameters/IdSchema';
+export * from './parameters/OrderBySchema';
+export * from './parameters/OrderDirectionSchema';
+export * from './parameters/PaginationLimitSchema';
 export * from './UpdateUserSchema';
 export * from './UserPreview';
 export * from './UserPrivateProfile';

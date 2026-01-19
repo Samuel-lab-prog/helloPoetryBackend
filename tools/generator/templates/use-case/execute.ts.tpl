@@ -1,8 +1,8 @@
 import type { {{RepositoryType}} } from '../../../ports/{{RepositoryFile}}';
 import type { {{DataModel}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/{{DataModel}}';
-import { } from '../errors';
-import { } from '../dtos';
-import { } from '../policies/policies';
+import { } from '../Errors';
+import { } from '../dtos/Dtos';
+import { } from '../policies/Policies';
 
 interface Dependencies {
   {{repositoryVar}}: {{RepositoryType}};

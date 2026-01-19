@@ -84,7 +84,7 @@ function classify(
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };
 }
-const COMMITS_TO_ANALYZE = 5;
+const COMMITS_TO_ANALYZE = 50;
 export function printChangeAmplification(): void {
 	const metrics = calculateChangeAmplification(COMMITS_TO_ANALYZE);
 
