@@ -1,11 +1,16 @@
-import { readFile, writeFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { ensureImports } from '../../utils/EnsureImports';
 
 export async function SyncRepositoryInterface(
 	domain: string,
 	isCommand: boolean,
-	dataModel: string,
-	useCaseName: string,
+	dataModels: string[],
+	repositoryMethods: {
+		name: string;
+		parameters: string[];
+		returnTypes: string[];
+	}[],
 ) {
 	const repositoryPath = join(
 		'src',
@@ -15,44 +20,38 @@ export async function SyncRepositoryInterface(
 		isCommand ? 'CommandsRepository.ts' : 'QueriesRepository.ts',
 	);
 
-	let content: string;
-	try {
-		content = await readFile(repositoryPath, 'utf-8');
-	} catch {
-		throw new Error(`Repository file not found: ${repositoryPath}`);
-	}
-
-	const methodName = isCommand ? `execute${useCaseName}` : `select${dataModel}`;
+	// Ensures that types are imported
 	const importPath = `../use-cases/${isCommand ? 'commands' : 'queries'}/read-models/Index`;
-
-	// Extrai todos os tipos já importados
-	const existingImportsMatch = content.match(
-		/import type {([\s\S]*?)} from ['"].*?Index['"]/m,
+	const content = await ensureImports(
+		repositoryPath,
+		importPath,
+		dataModels,
+		true,
 	);
-	const existingTypes: string[] = existingImportsMatch
-		? existingImportsMatch[1]!.split(',').map((t) => t.trim())
-		: [];
 
-	if (!existingTypes.includes(dataModel)) existingTypes.push(dataModel);
-
-	const newImport = `import type { ${existingTypes.join(', ')} } from '${importPath}';`;
-
-	content = content.replace(
-		/import type {[\s\S]*?} from ['"].*?Index['"];\n*/g,
-		'',
-	);
-	content = newImport + '\n\n' + content;
-
+	// Finds the interface definition
 	const match = content.match(/export\s+interface\s+\w+\s*{([\s\S]*?)^\}/m);
 	if (!match)
 		throw new Error(`Cannot find interface in repository: ${repositoryPath}`);
 
 	const interfaceBody = match[1];
-	const newMethod = `  ${methodName}(params: { requesterId: number }): Promise<${dataModel}[]>;\n`;
+
+	// Adds all methods (supports multiple repositoryMethods)
+	let newMethods = '';
+	if (repositoryMethods && repositoryMethods.length > 0) {
+		for (const m of repositoryMethods) {
+			const params = m.parameters
+				.map((p) => `${p.split(':')[0]}: ${p.split(':')[1]?.trim() || 'any'}`)
+				.join(', ');
+			const returnType = m.returnTypes.join(' | ');
+			newMethods += `  ${m.name}(params: { ${params} }): Promise<${returnType}>;\n`;
+		}
+	}
 
 	const updatedContent = content.replace(
 		match[0],
-		match[0].replace(interfaceBody!, interfaceBody + newMethod),
+		match[0].replace(interfaceBody!, interfaceBody + newMethods),
 	);
+
 	await writeFile(repositoryPath, updatedContent, 'utf-8');
 }

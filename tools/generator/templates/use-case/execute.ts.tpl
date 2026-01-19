@@ -1,6 +1,6 @@
 import type { {{RepositoryType}} } from '../../../ports/{{RepositoryFile}}';
-import type { {{DataModel}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/{{DataModel}}';
-import { } from '../Errors';
+import type { {{#each DataModels}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/Index';
+import { {{#each Errors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } from '../Errors';
 import { } from '../dtos/Dtos';
 import { } from '../policies/Policies';
 
@@ -9,25 +9,24 @@ interface Dependencies {
 }
 
 export interface {{UseCaseName}}Params {
-  requesterId: number;
+  {{#each UseCaseParams}}
+  {{this}};
+  {{/each}}
 }
 
 export function {{factoryName}}({ {{repositoryVar}} }: Dependencies) {
-  return async function {{useCaseName}}(
-    params: {{UseCaseName}}Params,
-  ): Promise<{{DataModel}}[]> {
-    const result = await {{repositoryVar}}.{{repositoryMethod}}({
-      requesterId: params.requesterId,
-    });
+  return async function {{useCaseName}}(params: {{UseCaseName}}Params): Promise<{{UseCaseReturnType}}> {
+    const { {{#each UseCaseParams}}{{splitName this}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
 
-    {{#if hasPolicy}}
-    return result.filter((item) =>
-      {{PolicyName}}({
-        // TODO: map domain data
-      }),
-    );
-    {{else}}
+    {{#each RepositoryMethods}}
+    const result = await {{../repositoryVar}}.{{this.name}}({
+      {{#each this.parameters}}
+      {{splitName this}}{{#unless @last}}, {{/unless}}
+      {{/each}}
+    });
+    {{/each}}
+
+    // Implement the use case logic here
     return result;
-    {{/if}}
   };
 }

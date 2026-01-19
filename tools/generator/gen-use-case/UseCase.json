@@ -1,0 +1,40 @@
+{
+	"domain": "hey",
+	"useCases": [
+		{
+			"name": "get-private-user-info",
+			"type": "query",
+			"dataModels": ["FullUser"],
+			"errors": ["UserNotFoundError", "UnauthorizedError"],
+			"repositoryMethods": [
+				{
+					"name": "selectFullUser",
+					"parameters": ["userId: number"],
+					"returnTypes": ["FullUser[]"]
+				}
+			],
+			"useCaseFunc": {
+				"name": "getPrivateUserInfo",
+				"parameters": ["userId: number", "requesterId: number"],
+				"returnTypes": ["FullUser[]", "null"]
+			},
+			"serviceFunc": {
+				"name": "getUserPrivateInfo",
+				"parameters": ["userId: number", "requesterId: number"],
+				"returnTypes": ["FullUser[]", "null"]
+			},
+			"http": {
+				"method": "GET",
+				"path": "/:id/private-info",
+				"query": ["includeSensitiveData: boolean"],
+				"params": ["id: int"],
+				"responsesCodes": ["200", "404", "403"],
+				"needsAuth": true,
+				"schemaName": "GetPrivateUserInfoSchema",
+				"summary": "Retrieve private information of a user by ID",
+				"description": "This endpoint retrieves private information of a user specified by their ID. It requires authentication and may include sensitive data based on the query parameter.",
+				"tags": ["Users", "Private Info"]
+			}
+		}
+	]
+}

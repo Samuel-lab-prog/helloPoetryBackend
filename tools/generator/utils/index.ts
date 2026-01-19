@@ -27,3 +27,7 @@ export function toPascalCase(value: string) {
 	const camel = toCamelCase(value);
 	return camel.charAt(0).toUpperCase() + camel.slice(1);
 }
+
+Handlebars.registerHelper('splitName', function (param: string) {
+	return param.split(':')[0]!.trim();
+});

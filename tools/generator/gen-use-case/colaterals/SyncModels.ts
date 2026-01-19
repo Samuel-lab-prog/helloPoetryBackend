@@ -1,11 +1,10 @@
-import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { ensureFileExists, ensureExportLine } from '../../utils/EnsureFiles';
 
 export async function SyncModels(
 	domain: string,
 	isCommand: boolean,
-	useCaseName: string,
-	dataModel: string,
+	dataModels: string[],
 ) {
 	const basePath = join(
 		'src',
@@ -15,29 +14,15 @@ export async function SyncModels(
 		isCommand ? 'commands/command-models' : 'queries/read-models',
 	);
 
-	const modelPath = join(basePath, `${dataModel}.ts`);
 	const indexPath = join(basePath, 'Index.ts');
 
-	try {
-		await readFile(modelPath, 'utf-8');
-		console.log(`✔ Model already exists: ${modelPath}`);
-	} catch {
-		await writeFile(
+	for (const dataModel of dataModels) {
+		const modelPath = join(basePath, `${dataModel}.ts`);
+		await ensureFileExists(
 			modelPath,
 			`export interface ${dataModel} { /* TODO */ }\n`,
-			'utf-8',
 		);
-	}
-
-	let indexContent = '';
-	try {
-		indexContent = await readFile(indexPath, 'utf-8');
-	} catch {
-		await writeFile(indexPath, '', 'utf-8');
-	}
-
-	const exportLine = `export * from './${dataModel}';\n`;
-	if (!indexContent.includes(exportLine)) {
-		await writeFile(indexPath, indexContent + exportLine, 'utf-8');
+		const exportLine = `export * from './${dataModel}';\n`;
+		await ensureExportLine(indexPath, exportLine);
 	}
 }
