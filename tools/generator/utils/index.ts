@@ -7,15 +7,14 @@ export function render(template: string, context: Record<string, unknown>) {
 	return compiled(context);
 }
 
-const templateDir = 'tools/generator/templates/use-case';
+const templateDir = 'tools/generator/templates';
 
 export async function generateFile(
-	tplName: string,
+	tplPath: string,
 	target: string,
 	context: Record<string, unknown>,
 ) {
-	const template = await readFile(join(templateDir, tplName), 'utf-8');
-
+	const template = await readFile(join(templateDir, tplPath), 'utf-8');
 	const rendered = render(template, context);
 	await writeFile(target, rendered);
 }
