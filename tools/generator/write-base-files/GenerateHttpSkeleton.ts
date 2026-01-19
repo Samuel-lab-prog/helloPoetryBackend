@@ -1,5 +1,4 @@
 import { join } from 'path';
-import { green } from 'kleur/colors';
 import { generateFile } from '../utils/index.ts';
 
 type Context = {
@@ -39,7 +38,4 @@ export async function generateHttpSkeleton(c: Context) {
 		RoutePrefix: 'commands',
 		RouterVariableName: 'commandsRouter',
 	});
-
-	console.log(green(`✔ Created interface: ${queriesServicesPath}`));
-	console.log(green(`✔ Created interface: ${commandsServicesPath}`));
 }

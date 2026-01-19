@@ -58,6 +58,9 @@ const files = [
 		path: join(basePath, 'adapters/schemas/fields', 'Enums.ts'),
 	},
 	{
+		path: join(basePath, 'adapters/schemas', 'Index.ts'),
+	},
+	{
 		path: join(basePath, 'adapters/schemas/parameters', 'IdSchema.ts'),
 		content: ` const firstLineOfCode = 'Hello, World!';`,
 	},
@@ -86,7 +89,10 @@ const files = [
 		path: join(basePath, 'use-cases/queries/', 'Errors.ts'),
 	},
 	{
-		path: join(basePath, 'use-cases/queries/read-models', 'FullEntity.ts'),
+		path: join(basePath, 'use-cases/queries/', 'Index.ts'),
+	},
+	{
+		path: join(basePath, 'use-cases/queries/read-models', 'Index.ts'),
 	},
 	{
 		path: join(basePath, 'use-cases/queries/policies', 'Policies.ts'),
@@ -98,10 +104,10 @@ const files = [
 		path: join(basePath, 'use-cases/commands/', 'Errors.ts'),
 	},
 	{
-		path: join(basePath, 'use-cases/commands/command-models', 'Create.ts'),
+		path: join(basePath, 'use-cases/commands/', 'Index.ts'),
 	},
 	{
-		path: join(basePath, 'use-cases/commands/command-models', 'Update.ts'),
+		path: join(basePath, 'use-cases/commands/command-models', 'Index.ts'),
 	},
 	{
 		path: join(basePath, 'use-cases/commands/policies', 'Policies.ts'),

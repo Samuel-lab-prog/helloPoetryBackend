@@ -1,4 +1,4 @@
-import { {{InfraRepositoryName}} } from '../../../infra/{{InfraRepositoryFolder}}/repository';
+import { {{InfraRepositoryName}} } from '../../../infra/{{InfraRepositoryFolder}}/Repository';
 
 export interface {{RouterServicesInterfaceName}} {
   // methods will be added here

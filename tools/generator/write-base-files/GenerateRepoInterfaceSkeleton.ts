@@ -1,5 +1,4 @@
 import { join } from 'path';
-import { green } from 'kleur/colors';
 import { generateFile } from '../utils/index.ts';
 
 export async function generateRepositorySkeleton(domainName: string) {
@@ -32,6 +31,4 @@ export async function generateRepositorySkeleton(domainName: string) {
 			RepositoryName: 'CommandsRepository',
 		},
 	);
-	console.log(green(`✔ Created interface: ${queriesInterfacePath}`));
-	console.log(green(`✔ Created interface: ${commandsInterfacePath}`));
 }

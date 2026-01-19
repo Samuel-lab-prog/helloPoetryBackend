@@ -48,7 +48,7 @@
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
 		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && echo 'All checks passed!'",
-		"gen:usecase": "bun tools/generator/GenUseCase.ts",
+		"gen:usecase": "bun tools/generator/gen-use-case/Main.ts",
 		"gen:schema": "bun tools/generator/GenSchema.ts",
 		"gen:bc": "bun tools/generator/GenBoundedContext.ts"
 	},
