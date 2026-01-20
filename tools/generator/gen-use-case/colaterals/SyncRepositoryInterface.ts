@@ -11,7 +11,7 @@ interface RepositoryMethod {
 export async function SyncRepositoryInterface(
 	domain: string,
 	isCommand: boolean,
-	dataModels: string[],
+	dataModelsNames: string[],
 	repositoryMethods: RepositoryMethod[],
 ) {
 	const repositoryPath = join(
@@ -27,7 +27,7 @@ export async function SyncRepositoryInterface(
 	const content = await ensureImportsExists(
 		repositoryPath,
 		importPath,
-		dataModels,
+		dataModelsNames,
 		true,
 	);
 

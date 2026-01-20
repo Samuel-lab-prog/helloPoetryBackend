@@ -1,5 +1,5 @@
 import type { {{RepositoryType}} } from '../../../ports/{{RepositoryFile}}';
-import type { {{#each DataModels}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/Index';
+import type { {{#each DataModels}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/Index';
 import { {{#each Errors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } from '../Errors';
 import { } from '../dtos/Dtos';
 import { } from '../policies/Policies';

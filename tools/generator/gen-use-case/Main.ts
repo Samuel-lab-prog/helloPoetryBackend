@@ -7,7 +7,7 @@ import { generateFile } from '../utils/TemplateUtils.ts';
 import { toCamelCase, toPascalCase } from '../utils/StringUtils.ts';
 
 import { SyncServicesImports } from './colaterals/SyncServicesImports.ts';
-import { SyncModels } from './colaterals/SyncDataModels.ts';
+import { syncDataModels } from './colaterals/SyncDataModels.ts';
 import { SyncUseCaseIndex } from './colaterals/SyncUseCaseIndex.ts';
 import { SyncRepositoryInterface } from './colaterals/SyncRepositoryInterface.ts';
 
@@ -15,7 +15,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const configPath = join(__dirname, 'UseCase.json');
-const config = JSON.parse(await readFile(configPath, 'utf-8'));
+const config: { domain: string; useCases: UseCase[] } = JSON.parse(
+	await readFile(configPath, 'utf-8'),
+);
 
 function getRepositoryConfig(isCommand: boolean) {
 	return {
@@ -78,13 +80,52 @@ for (const useCase of config.useCases) {
 		SyncRepositoryInterface(
 			config.domain,
 			isCommand,
-			dataModels,
+			dataModels.flatMap((dm) => dm.name),
 			repositoryMethods,
 		),
 		SyncUseCaseIndex(config.domain, isCommand, name),
-		SyncServicesImports(config.domain, isCommand, [useCaseName], dataModels),
-		SyncModels(config.domain, isCommand, dataModels),
+		SyncServicesImports(
+			config.domain,
+			isCommand,
+			[useCaseName],
+			dataModels.flatMap((dm) => dm.name),
+		),
+		syncDataModels(config.domain, isCommand, dataModels),
 	]);
 
 	console.log(green(`✔ Use-case ${UseCaseName} generated!`));
 }
+
+type UseCase = {
+	name: string;
+	type: 'command' | 'query';
+	dataModels: { name: string; properties: Record<string, string> }[];
+	errors: string[];
+	repositoryMethods: {
+		name: string;
+		parameters: string[];
+		returnTypes: string[];
+	}[];
+	useCaseFunc: {
+		name: string;
+		parameters: string[];
+		returnTypes: string[];
+	};
+	serviceFunc: {
+		name: string;
+		parameters: string[];
+		returnTypes: string[];
+	};
+	http: {
+		method: string;
+		path: string;
+		query: string[];
+		params: string[];
+		responsesCodes: string[];
+		needsAuth: boolean;
+		schemaName: string;
+		summary: string;
+		description: string;
+		tags: string[];
+	};
+};
