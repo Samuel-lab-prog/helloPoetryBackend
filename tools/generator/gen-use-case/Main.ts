@@ -3,13 +3,13 @@ import { join } from 'path';
 import { green } from 'kleur/colors';
 
 import { generateFile } from '../utils/TemplateUtils.ts';
-import { toCamelCase, toPascalCase } from '../utils/StringUtils.ts';
-import { readFileSafe } from '../utils/FilesUtils.ts';
+import { toCamelCase, toPascalCase } from '../utils/string-utils/execute.ts';
+import { readFileSafe } from '../utils/files-utils/execute.ts';
 
-import { syncDataModels } from './colaterals/SyncDataModels.ts';
+import { syncDataModels } from './colaterals/sync-data-models/execute.ts';
 import { SyncUseCaseBarrels } from './colaterals/SyncUseCaseBarrels.ts';
 import { syncRepositoryInterface } from './colaterals/SyncRepositoryInterface.ts';
-import { syncDomainErrors } from './colaterals/SyncDomainErrors.ts';
+import { syncDomainErrors } from './colaterals/sync-domain-errors/execute.ts';
 
 const configPath = join(__dirname, 'UseCase.json');
 const config: { domain: string; useCases: UseCase[] } = JSON.parse(

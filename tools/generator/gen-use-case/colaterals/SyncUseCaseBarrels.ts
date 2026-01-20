@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { ensureExportLine } from '../../utils/ExportUtils';
+import { ensureExportLine } from '../../utils/ensure-export-line/execute';
 
 /**
  * Adds export lines to the use-case barrels for the given use case.

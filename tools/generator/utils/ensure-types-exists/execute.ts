@@ -1,4 +1,4 @@
-import { readFileSafe, writeFileSafe } from './FilesUtils';
+import { readFileSafe, writeFileSafe } from '../files-utils/execute';
 
 export interface TypeScriptType {
 	name: string;

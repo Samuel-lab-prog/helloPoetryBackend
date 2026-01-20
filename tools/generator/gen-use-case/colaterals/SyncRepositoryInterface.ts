@@ -1,10 +1,10 @@
 import { join } from 'path';
-import { writeFileSafe } from '../../utils/FilesUtils';
-import { ensureImportsExists } from '../../utils/EnsureImportsExists.ts';
+import { writeFileSafe } from '../../utils/files-utils/execute.ts';
+import { ensureImportsExists } from '../../utils/ensure-imports-exists/execute.ts';
 import {
 	ensureInterfaceMethods,
 	type Method,
-} from '../../utils/EnsureInterfaceMethods.ts';
+} from '../../utils/ensure-interface-methods/execute.ts';
 
 /**
  * Synchronizes a repository interface:

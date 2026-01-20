@@ -1,5 +1,11 @@
-import { readFileSafe, writeFileSafe } from './FilesUtils';
-
+import { readFileSafe, writeFileSafe } from '../files-utils/execute';
+/**
+ * Ensures that a specific export line exists in an index file.
+ * Deduplicates existing lines.
+ * Creates directories and the file if necessary.
+ * @param indexPath Path to the index file
+ * @param exportLine Export line to ensure
+ */
 export async function ensureExportLine(
 	indexPath: string,
 	exportLine: string,

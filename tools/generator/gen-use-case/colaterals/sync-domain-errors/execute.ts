@@ -1,4 +1,7 @@
-import { writeFileSafe, readFileSafe } from '../../utils/FilesUtils';
+import {
+	writeFileSafe,
+	readFileSafe,
+} from '../../../utils/files-utils/execute';
 import { join } from 'path';
 
 export interface DomainErrorDefinition {

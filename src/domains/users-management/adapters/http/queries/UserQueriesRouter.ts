@@ -18,6 +18,7 @@ import {
 	type UsersQueriesRouterServices,
 } from './Services';
 
+// eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
 		.get(
