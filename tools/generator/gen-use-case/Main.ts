@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { generateFile } from '../utils/TemplateUtils.ts';
 import { toCamelCase, toPascalCase } from '../utils/StringUtils.ts';
 
-import { SyncServicesImports } from './colaterals/SyncServicesImports.ts';
+import { syncServicesFile } from './colaterals/SyncServicesFunctions.ts';
 import { syncDataModels } from './colaterals/SyncDataModels.ts';
 import { SyncUseCaseIndex } from './colaterals/SyncUseCaseIndex.ts';
 import { SyncRepositoryInterface } from './colaterals/SyncRepositoryInterface.ts';
@@ -35,6 +35,7 @@ for (const useCase of config.useCases) {
 		dataModels,
 		errors,
 		useCaseFunc,
+
 		repositoryMethods = [],
 	} = useCase;
 
@@ -84,10 +85,14 @@ for (const useCase of config.useCases) {
 			repositoryMethods,
 		),
 		SyncUseCaseIndex(config.domain, isCommand, name),
-		SyncServicesImports(
+		syncServicesFile(
 			config.domain,
 			isCommand,
-			[useCaseName],
+			config.useCases.map((uc) => ({
+				name: uc.serviceFunc.name,
+				parameters: uc.serviceFunc.parameters,
+				returnTypes: uc.serviceFunc.returnTypes,
+			})),
 			dataModels.flatMap((dm) => dm.name),
 		),
 		syncDataModels(config.domain, isCommand, dataModels),
@@ -103,24 +108,24 @@ type UseCase = {
 	errors: string[];
 	repositoryMethods: {
 		name: string;
-		parameters: string[];
+		parameters: { name: string; type: string }[];
 		returnTypes: string[];
 	}[];
 	useCaseFunc: {
 		name: string;
-		parameters: string[];
+		parameters: { name: string; type: string }[];
 		returnTypes: string[];
 	};
 	serviceFunc: {
 		name: string;
-		parameters: string[];
+		parameters: { name: string; type: string }[];
 		returnTypes: string[];
 	};
 	http: {
 		method: string;
 		path: string;
-		query: string[];
-		params: string[];
+		query: { name: string; type: string }[];
+		params: { name: string; type: string }[];
 		responsesCodes: string[];
 		needsAuth: boolean;
 		schemaName: string;

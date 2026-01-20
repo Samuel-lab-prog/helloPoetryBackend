@@ -21,25 +21,30 @@
 			"repositoryMethods": [
 				{
 					"name": "selectFullUser",
-					"parameters": ["userId: number"],
+					"parameters": [{ "name": "userId", "type": "number" }],
 					"returnTypes": ["FullUser[]"]
 				}
 			],
 			"useCaseFunc": {
 				"name": "getPrivateUserInfo",
-				"parameters": ["userId: number"],
+				"parameters": [{ "name": "userId", "type": "number" }],
 				"returnTypes": ["FullUser[]", "null"]
 			},
 			"serviceFunc": {
-				"name": "getUserPrivateInfo",
-				"parameters": ["userId: number"],
+				"name": "getPrivateUserInfo",
+				"parameters": [
+					{
+						"name": "userId",
+						"type": "number"
+					}
+				],
 				"returnTypes": ["FullUser[]", "null"]
 			},
 			"http": {
 				"method": "GET",
 				"path": "/:id/private-info",
-				"query": ["includeSensitiveData: boolean"],
-				"params": ["id: int"],
+				"query": [{ "name": "includeSensitiveData", "type": "boolean" }],
+				"params": [{ "name": "id", "type": "number" }],
 				"responsesCodes": ["200", "404", "403"],
 				"needsAuth": true,
 				"schemaName": "GetPrivateUserInfoSchema",
@@ -65,25 +70,30 @@
 			"repositoryMethods": [
 				{
 					"name": "selectPartialUser",
-					"parameters": ["userId: number"],
+					"parameters": [{ "name": "userId", "type": "number" }],
 					"returnTypes": ["PartialUser[]"]
 				}
 			],
 			"useCaseFunc": {
 				"name": "getPublicUserInfo",
-				"parameters": ["userId: number"],
+				"parameters": [{ "name": "userId", "type": "number" }],
 				"returnTypes": ["PartialUser[]", "null"]
 			},
 			"serviceFunc": {
-				"name": "getUserPublicInfo",
-				"parameters": ["userId: number"],
+				"name": "getPublicUserInfo",
+				"parameters": [
+					{
+						"name": "userId",
+						"type": "number"
+					}
+				],
 				"returnTypes": ["PartialUser[]", "null"]
 			},
 			"http": {
 				"method": "GET",
 				"path": "/:id/public-info",
-				"query": ["includeSensitiveData: boolean"],
-				"params": ["id: int"],
+				"query": [{ "name": "includeSensitiveData", "type": "boolean" }],
+				"params": [{ "name": "id", "type": "number" }],
 				"responsesCodes": ["200", "404", "403"],
 				"needsAuth": true,
 				"schemaName": "GetPublicUserInfoSchema",

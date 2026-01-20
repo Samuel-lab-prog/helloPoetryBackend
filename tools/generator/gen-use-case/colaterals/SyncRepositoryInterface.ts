@@ -4,7 +4,7 @@ import { ensureImportsExists } from '../../utils/EnsureImportsExists.ts';
 
 interface RepositoryMethod {
 	name: string;
-	parameters: string[];
+	parameters: { name: string; type: string }[];
 	returnTypes: string[];
 }
 
@@ -23,6 +23,7 @@ export async function SyncRepositoryInterface(
 	);
 
 	// Garantir imports corretos
+
 	const importPath = `../use-cases/${isCommand ? 'commands' : 'queries'}/read-models/Index`;
 	const content = await ensureImportsExists(
 		repositoryPath,
@@ -81,7 +82,7 @@ function methodExists(interfaceBody: string, methodName: string): boolean {
  */
 function formatMethod(method: RepositoryMethod): string {
 	const params = method.parameters
-		.map((p) => `${p.split(':')[0]}: ${p.split(':')[1]?.trim() || 'any'}`)
+		.map((p) => `${p.name}: ${p.type}`)
 		.join(', ');
 
 	const returnType = method.returnTypes.join(' | ');

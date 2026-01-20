@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
+import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@AppError';
 import { cookieTokenSchema } from '../../schemas/cookieTokenSchema';
 

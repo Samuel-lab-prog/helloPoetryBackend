@@ -10,18 +10,18 @@ interface Dependencies {
 
 export interface {{UseCaseName}}Params {
   {{#each UseCaseParams}}
-  {{this}};
+  {{this.name}}: {{this.type}};
   {{/each}}
 }
 
 export function {{factoryName}}({ {{repositoryVar}} }: Dependencies) {
   return async function {{useCaseName}}(params: {{UseCaseName}}Params): Promise<{{UseCaseReturnType}}> {
-    const { {{#each UseCaseParams}}{{splitName this}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
+    const { {{#each UseCaseParams}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
 
     {{#each RepositoryMethods}}
     const result = await {{../repositoryVar}}.{{this.name}}({
       {{#each this.parameters}}
-      {{splitName this}}{{#unless @last}}, {{/unless}}
+      {{this.name}}{{#unless @last}}, {{/unless}}
       {{/each}}
     });
     {{/each}}
