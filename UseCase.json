@@ -1,0 +1,54 @@
+{
+	"domain": "hey",
+	"useCases": [
+		{
+			"name": "buscar-betinha",
+			"type": "command",
+			"dataModels": [
+				{
+					"name": "GetBetinha",
+					"properties": {
+						"betinhaFriendsIds": "number[]",
+						"betinhaName": "string"
+					}
+				}
+			],
+			"errors": [
+				{
+					"name": "BetinhaNotFoundError",
+					"type": "NOT_FOUND",
+					"message": "Não pudemos encontrar o betinha. Nunca sobra nada pro beta"
+				}
+			],
+			"repositoryMethods": [
+				{
+					"name": "findBetinhaById",
+					"parameters": [{ "name": "id", "type": "number" }],
+					"returnTypes": ["GetBetinha", "null"]
+				}
+			],
+			"useCaseFunc": {
+				"name": "buscarBetinha",
+				"parameters": [{ "name": "id", "type": "number" }],
+				"returnTypes": ["GetBetinha", "null"]
+			},
+			"serviceFunc": {
+				"name": "buscarBetinha",
+				"parameters": [{ "name": "id", "type": "number" }],
+				"returnTypes": ["GetBetinha", "null"]
+			},
+			"http": {
+				"method": "POST",
+				"path": "/users/:id/buscar-betinha",
+				"query": [],
+				"params": [{ "name": "id", "type": "number" }],
+				"responsesCodes": ["200", "404", "400"],
+				"needsAuth": true,
+				"schemaName": "GetBetinhaSchema",
+				"summary": "Retrieve Betinha Information",
+				"description": "This endpoint allows retrieving Betinha information by their ID.",
+				"tags": ["Users"]
+			}
+		}
+	]
+}

@@ -1,9 +1,0 @@
-{
-	"files.associations": {
-		"*.tpl": "handlebars",
-		"*.jsm": "javascript",
-		"*.cjs": "javascript",
-		"*.ts": "typescript",
-		"*.tsx": "typescriptreact"
-	}
-}

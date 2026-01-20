@@ -9,20 +9,18 @@
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^25.0.9",
 		"@types/pg": "^8.16.0",
-		"barrelsby": "^2.8.1",
 		"cloc": "^2.6.0-cloc",
 		"dependency-cruiser": "^17.3.6",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.5",
 		"globals": "^17.0.0",
-		"handlebars": "^4.7.8",
 		"jiti": "^2.6.1",
 		"madge": "^8.0.0",
 		"prisma": "^7.2.0",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.53.0"
+		"typescript-eslint": "^8.53.1"
 	},
 	"scripts": {
 		"build": "bun build src/index.ts --target bun --outdir dist",
@@ -41,16 +39,12 @@
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"test": "bun test",
-		"barrels": "barrelsby --config barrels.config.json",
 		"metrics:cloc": "npx cloc src --by-file --exclude-dir=prisma --json --out cloc.json",
 		"metrics:depcruise": "npx dependency-cruiser src --output-type json --output-to depcruise.json",
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
-		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && echo 'All checks passed!'",
-		"gen:usecase": "bun tools/generator/gen-use-case/Main.ts",
-		"gen:schema": "bun tools/generator/GenSchema.ts",
-		"gen:bc": "bun tools/generator/GenBoundedContext.ts"
+		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && echo 'All checks passed!'"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
@@ -63,7 +57,7 @@
 		"elysia-rate-limit": "^4.4.2",
 		"jsonwebtoken": "^9.0.3",
 		"kleur": "^4.1.5",
-		"pino": "^10.2.0",
+		"pino": "^10.2.1",
 		"pino-pretty": "^13.1.3",
 		"slugify": "^1.6.6",
 		"ts-morph": "^27.0.2",

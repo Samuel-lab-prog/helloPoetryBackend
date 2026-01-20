@@ -1,2 +1,0 @@
-import { DomainError } from '@DomainError';
-
