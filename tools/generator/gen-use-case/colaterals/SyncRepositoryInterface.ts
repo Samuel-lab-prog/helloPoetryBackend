@@ -1,18 +1,27 @@
-import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { writeFileSafe } from '../../utils/FilesUtils';
 import { ensureImportsExists } from '../../utils/EnsureImportsExists.ts';
+import {
+	ensureInterfaceMethods,
+	type Method,
+} from '../../utils/EnsureInterfaceMethods.ts';
 
-interface RepositoryMethod {
-	name: string;
-	parameters: { name: string; type: string }[];
-	returnTypes: string[];
-}
-
-export async function SyncRepositoryInterface(
+/**
+ * Synchronizes a repository interface:
+ * - Ensures the interface file exists.
+ * - Adds missing imports.
+ * - Adds missing repository methods, deduplicating existing ones.
+ *
+ * @param domain Domain name
+ * @param isCommand Whether this is a commands or queries repository
+ * @param dataModelsNames List of data models to import
+ * @param repositoryMethods List of methods to add to the interface
+ */
+export async function syncRepositoryInterface(
 	domain: string,
 	isCommand: boolean,
 	dataModelsNames: string[],
-	repositoryMethods: RepositoryMethod[],
+	repositoryMethods: Method[],
 ) {
 	const repositoryPath = join(
 		'src',
@@ -22,70 +31,15 @@ export async function SyncRepositoryInterface(
 		isCommand ? 'CommandsRepository.ts' : 'QueriesRepository.ts',
 	);
 
-	// Garantir imports corretos
-
-	const importPath = `../use-cases/${isCommand ? 'commands' : 'queries'}/read-models/Index`;
-	const content = await ensureImportsExists(
+	const importPath = `../use-cases/${isCommand ? 'commands/commands-models' : 'queries/read-models'}/Index`;
+	let content = await ensureImportsExists(
 		repositoryPath,
 		importPath,
 		dataModelsNames,
 		true,
 	);
 
-	const updatedContent = addMethodsToInterface(content, repositoryMethods);
+	content = ensureInterfaceMethods(repositoryPath, content, repositoryMethods);
 
-	await writeFile(repositoryPath, updatedContent, 'utf-8');
-}
-
-/**
- * Adds methods to the repository interface.
- * Removes duplicates and keeps formatting clean.
- */
-function addMethodsToInterface(
-	content: string,
-	repositoryMethods: RepositoryMethod[],
-): string {
-	// Locate the interface
-	const match = content.match(/export\s+interface\s+\w+\s*{([\s\S]*?)^\}/m);
-	if (!match) throw new Error('Cannot find interface in repository');
-
-	const interfaceBody = match[1];
-
-	// Generate new methods (only those that don't exist)
-	const newMethods = repositoryMethods
-		.filter((m) => !methodExists(interfaceBody!, m.name))
-		.map((m) => formatMethod(m))
-		.join('');
-
-	if (!newMethods) return content; // nothing to add
-
-	// Update the interface content
-	const trimmedBody = interfaceBody!.trimEnd();
-	const updatedInterface = trimmedBody + '\n' + newMethods;
-
-	return content.replace(
-		match[0],
-		match[0].replace(interfaceBody!, updatedInterface),
-	);
-}
-
-/**
- * Checks if a method already exists in the interface
- */
-function methodExists(interfaceBody: string, methodName: string): boolean {
-	const regex = new RegExp(`\\b${methodName}\\s*\\(`, 'm');
-	return regex.test(interfaceBody);
-}
-
-/**
- * Formats a method for insertion into the interface
- */
-function formatMethod(method: RepositoryMethod): string {
-	const params = method.parameters
-		.map((p) => `${p.name}: ${p.type}`)
-		.join(', ');
-
-	const returnType = method.returnTypes.join(' | ');
-
-	return `  ${method.name}(params: { ${params} }): Promise<${returnType}>;\n`;
+	await writeFileSafe(repositoryPath, content);
 }

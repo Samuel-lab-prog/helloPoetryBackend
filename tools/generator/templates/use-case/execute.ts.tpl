@@ -1,32 +1,45 @@
-import type { {{RepositoryType}} } from '../../../ports/{{RepositoryFile}}';
-import type { {{#each DataModels}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } from '../{{#if isCommand}}commands-models{{else}}read-models{{/if}}/Index';
-import { {{#each Errors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } from '../Errors';
+import type { {{RepositoryInterfaceType}} } from '../../../ports/{{RepositoryInterfaceFileName}}';
+import type { {{#each DataModels}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } from '../{{DataModelsFolder}}/Index';
+import { {{#each DomainErrors}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } from '../Errors';
 import { } from '../dtos/Dtos';
 import { } from '../policies/Policies';
 
 interface Dependencies {
-  {{repositoryVar}}: {{RepositoryType}};
+  {{RepositoryVariable}}: {{RepositoryInterfaceType}};
 }
 
-export interface {{UseCaseName}}Params {
-  {{#each UseCaseParams}}
+{{#if UseCaseFunctionParameters.length}}
+export interface {{UseCaseInterfaceName}} {
+  {{#each UseCaseFunctionParameters}}
   {{this.name}}: {{this.type}};
   {{/each}}
 }
+{{/if}}
+export function {{UseCaseFactoryName}}({ {{RepositoryVariable}} }: Dependencies) {
+  return async function {{UseCaseFunctionName}}(
+    {{#if UseCaseFunctionParameters.length}}
+      params: {{UseCaseInterfaceName}}
+    {{/if}}
+  ): Promise<{{UseCaseFunctionReturnTypes}}> {
 
-export function {{factoryName}}({ {{repositoryVar}} }: Dependencies) {
-  return async function {{useCaseName}}(params: {{UseCaseName}}Params): Promise<{{UseCaseReturnType}}> {
-    const { {{#each UseCaseParams}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
+    {{#if UseCaseFunctionParameters.length}}
+      const { {{#each UseCaseFunctionParameters}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
+    {{/if}}
 
     {{#each RepositoryMethods}}
-    const result = await {{../repositoryVar}}.{{this.name}}({
-      {{#each this.parameters}}
-      {{this.name}}{{#unless @last}}, {{/unless}}
-      {{/each}}
-    });
+      const result = await {{../RepositoryVariable}}.{{this.name}}(
+        {{#if this.parameters.length}}
+          {
+            {{#each this.parameters}}
+              {{this.name}}{{#unless @last}}, {{/unless}}
+            {{/each}}
+          }
+        {{/if}}
+      );
     {{/each}}
 
     // Implement the use case logic here
     return result;
   };
 }
+

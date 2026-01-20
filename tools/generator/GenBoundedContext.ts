@@ -7,6 +7,7 @@ import {
 	generateRepoSkeleton,
 	generateRepositoryTest,
 } from './write-base-files/GenerateInfraSkeleton.ts';
+import { generateErrorsSkeleton } from './write-base-files/GenerateErrorsSkeleton.ts';
 
 const [, , maybeDomain] = process.argv;
 
@@ -28,7 +29,7 @@ const folders = [
 	'use-cases/queries/read-models',
 	'use-cases/queries/policies',
 	'use-cases/queries/dtos',
-	'use-cases/commands/command-models',
+	'use-cases/commands/commands-models',
 	'use-cases/commands/policies',
 	'ports',
 ];
@@ -107,7 +108,7 @@ const files = [
 		path: join(basePath, 'use-cases/commands/', 'Index.ts'),
 	},
 	{
-		path: join(basePath, 'use-cases/commands/command-models', 'Index.ts'),
+		path: join(basePath, 'use-cases/commands/commands-models', 'Index.ts'),
 	},
 	{
 		path: join(basePath, 'use-cases/commands/policies', 'Policies.ts'),
@@ -134,6 +135,7 @@ await generateRepoSkeleton({
 await generateRepositoryTest({
 	domainName,
 });
+await generateErrorsSkeleton(domainName);
 
 console.log(
 	green(

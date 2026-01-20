@@ -1,4 +1,5 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { dirname } from 'path';
 
 /**
  * Reads a file safely. If the file does not exist, creates it with optional initial content.
@@ -14,13 +15,13 @@ export async function readFileSafe(
 	try {
 		return await readFile(filePath, 'utf-8');
 	} catch {
-		await writeFile(filePath, initialContent, 'utf-8');
+		await writeFileSafe(filePath, initialContent);
 		return initialContent;
 	}
 }
 
 /**
- * Writes content to a file.
+ * Writes content to a file, creating directories if they do not exist.
  *
  * @param filePath Path to the file
  * @param content Content to write
@@ -29,6 +30,7 @@ export async function writeFileSafe(
 	filePath: string,
 	content: string,
 ): Promise<void> {
+	await mkdir(dirname(filePath), { recursive: true });
 	await writeFile(filePath, content, 'utf-8');
 }
 
@@ -44,3 +46,14 @@ export async function ensureFileExists(
 ): Promise<void> {
 	await readFileSafe(filePath, initialContent);
 }
+
+/**
+ * Ensures that a specific export line exists in a file.
+ * If the line is missing, it is appended to the end of the file.
+ * Creates directories and the file if necessary, and evita duplicatas sutis.
+ *
+ * @param indexPath Path to the file
+ * @param exportLine Line to ensure is present
+ * @example
+ * await ensureExportLine('src/index.ts', "export * from './my-module';");
+ */
