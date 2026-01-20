@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { writeFileSafe } from '../../utils/files-utils/execute.ts';
-import { ensureImportsExists } from '../../utils/ensure-imports-exists/execute.ts';
+import { ensureNamedImportDeclaration } from '../../utils/ensure-imports-exists/execute.ts';
 import {
-	ensureInterfaceMethods,
+	ensureRepositoryInterfaceMethods,
 	type Method,
 } from '../../utils/ensure-interface-methods/execute.ts';
 
@@ -32,14 +32,14 @@ export async function syncRepositoryInterface(
 	);
 
 	const importPath = `../use-cases/${isCommand ? 'commands/commands-models' : 'queries/read-models'}/Index`;
-	let content = await ensureImportsExists(
+	let content = await ensureNamedImportDeclaration(
 		repositoryPath,
 		importPath,
 		dataModelsNames,
 		true,
 	);
 
-	content = ensureInterfaceMethods(repositoryPath, content, repositoryMethods);
+	content = await ensureRepositoryInterfaceMethods(repositoryPath, isCommand ? 'CommandsRepository' : 'QueriesRepository', repositoryMethods);
 
 	await writeFileSafe(repositoryPath, content);
 }

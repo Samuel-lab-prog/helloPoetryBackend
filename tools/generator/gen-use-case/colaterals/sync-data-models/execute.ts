@@ -1,6 +1,6 @@
 import { join } from 'path';
 import {
-	ensureType,
+	ensureExportedTypeAlias,
 	type TypeScriptType,
 } from '../../../utils/ensure-types-exists/execute';
 
@@ -14,7 +14,7 @@ export async function syncDataModels(
 
 	for (const model of dataModels) {
 		const modelPath = join(path, `${model.name}.ts`);
-		await ensureType(modelPath, model);
+		await ensureExportedTypeAlias(modelPath, model);
 	}
 }
 

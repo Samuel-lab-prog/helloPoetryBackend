@@ -1,68 +1,82 @@
+import { project } from '../TsMorpshProject';
+
 export interface Method {
-	name: string;
-	parameters: { name: string; type: string }[];
-	returnTypes: string[];
+  name: string;
+  parameters: { name: string; type: string }[];
+  returnTypes: string[];
 }
 
 /**
- * Ensures that all repository methods exist in the interface.
- * Adds missing methods, deduplicates existing ones.
+ * Ensures that a repository interface exists and contains all required methods.
+ *
+ * Behavior:
+ * - Opens or creates the target file.
+ * - Ensures the repository interface exists.
+ * - Adds missing method signatures to the interface.
+ * - Does NOT remove or modify existing methods.
+ * - Operation is idempotent.
+ *
+ * The interface name is inferred from the file path:
+ * - Files containing "Commands" → CommandsRepository
+ * - Otherwise → QueriesRepository
+ *
+ * This function operates at the AST level using ts-morph,
+ * avoiding regex-based parsing and string manipulation.
+ *
+ * @param filePath - Path to the repository interface file
+ * @param repositoryMethods - List of methods to ensure
+ *
+ * @example
+ * await ensureRepositoryInterfaceMethods(
+ *   'src/domains/user/repositories/CommandsRepository.ts',
+ *   methods
+ * );
  */
-export function ensureInterfaceMethods(
-	filePath: string,
-	content: string,
-	repositoryMethods: Method[],
-): string {
-	const interfaceMatch = content.match(
-		/export\s+interface\s+\w+\s*{([\s\S]*?)^}/m,
-	);
+export async function ensureRepositoryInterfaceMethods(
+  filePath: string,
+	interfaceName: string,
+  repositoryMethods: Method[],
+): Promise<void> {
+  const sourceFile = project.createSourceFile(
+    filePath,
+    '',
+    { overwrite: false }
+  );
 
-	if (!interfaceMatch) {
-		// Interface does not exist: create a default one
-		const interfaceName = filePath.includes('Commands')
-			? 'CommandsRepository'
-			: 'QueriesRepository';
-		const methodsText = repositoryMethods.map(formatMethod).join('');
-		return (
-			`export interface ${interfaceName} {\n${methodsText}}\n` +
-			(content ? '\n' + content : '')
-		);
-	}
+  let repoInterface = sourceFile.getInterface(interfaceName);
 
-	const interfaceBody = interfaceMatch[1]!;
+  // Create interface if it does not exist
+  if (!repoInterface) {
+    repoInterface = sourceFile.addInterface({
+      name: interfaceName,
+      isExported: true,
+    });
+  }
 
-	const newMethods = repositoryMethods
-		.filter((m) => !methodExists(interfaceBody, m.name))
-		.map(formatMethod)
-		.join('');
+  const existingMethodNames = new Set(
+    repoInterface.getMethods().map((m) => m.getName())
+  );
 
-	if (!newMethods) return content;
+  for (const method of repositoryMethods) {
+    if (existingMethodNames.has(method.name)) {
+      continue;
+    }
 
-	const updatedInterfaceBody = interfaceBody.trimEnd() + '\n' + newMethods;
+    repoInterface.addMethod({
+      name: method.name,
+      parameters: [
+        {
+          name: 'params',
+          type: method.parameters.length
+            ? `{ ${method.parameters
+                .map((p) => `${p.name}: ${p.type}`)
+                .join('; ')} }`
+            : undefined,
+        },
+      ].filter(Boolean),
+      returnType: `Promise<${method.returnTypes.join(' | ')}>`,
+    });
+  }
 
-	return content.replace(interfaceBody, updatedInterfaceBody);
-}
-
-/**
- * Checks if a method already exists in the interface
- */
-function methodExists(interfaceBody: string, methodName: string): boolean {
-	const regex = new RegExp(`\\b${methodName}\\s*\\(`, 'm');
-	return regex.test(interfaceBody);
-}
-
-/**
- * Formats a method for insertion into the interface
- */
-function formatMethod(method: Method): string {
-	const hasParameters = method.parameters.length > 0;
-	if (!hasParameters) {
-		const returnType = method.returnTypes.join(' | ');
-		return `  ${method.name}(): Promise<${returnType}>;\n`;
-	}
-	const params = method.parameters
-		.map((p) => `${p.name}: ${p.type}`)
-		.join(', ');
-	const returnType = method.returnTypes.join(' | ');
-	return `  ${method.name}(params: { ${params} }): Promise<${returnType}>;\n`;
+  await sourceFile.save();
 }

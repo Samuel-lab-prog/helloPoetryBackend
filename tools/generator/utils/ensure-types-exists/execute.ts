@@ -1,54 +1,74 @@
-import { readFileSafe, writeFileSafe } from '../files-utils/execute';
+import {
+  Project,
+  QuoteKind,
+  SyntaxKind,
+} from 'ts-morph';
+
+const project = new Project({
+  manipulationSettings: {
+    quoteKind: QuoteKind.Single,
+  },
+});
 
 export interface TypeScriptType {
-	name: string;
-	properties: Record<string, string>;
+  name: string;
+  properties: Record<string, string>;
 }
 
 /**
- * Ensures that a TypeScript type exists in a file.
- * - Creates the file if it doesn't exist.
- * - Adds missing properties if the type already exists.
- * - Deduplicates properties.
+ * Ensures that an exported TypeScript type alias exists and
+ * contains all required properties.
  *
- * @param filePath Path to the TypeScript file
- * @param iface Type definition
+ * - Creates the file if it does not exist
+ * - Creates the type alias if it does not exist
+ * - Adds missing properties
+ * - Preserves existing properties
+ * - Idempotent
  */
-export async function ensureType(
-	filePath: string,
-	iface: TypeScriptType,
+export async function ensureExportedTypeAlias(
+  filePath: string,
+  typeDef: TypeScriptType,
 ): Promise<void> {
-	let content = await readFileSafe(filePath, '');
+  const sourceFile = project.createSourceFile(
+    filePath,
+    '',
+    { overwrite: false }
+  );
 
-	const typeRegex = new RegExp(
-		`export\\s+type\\s+${iface.name}\\s*=\\s*{([\\s\\S]*?)};`,
-		'm',
-	);
+  let typeAlias = sourceFile.getTypeAlias(typeDef.name);
 
-	const existingProps: Record<string, string> = {};
+  if (!typeAlias) {
+    typeAlias = sourceFile.addTypeAlias({
+      name: typeDef.name,
+      isExported: true,
+      type: '{}',
+    });
+  }
 
-	const match = content.match(typeRegex);
-	if (match && match[1]) {
-		match[1].split('\n').forEach((line) => {
-			const propMatch = line.trim().match(/^(\w+)\s*:\s*(.+);$/);
-			if (propMatch && propMatch[1] && propMatch[2]) {
-				existingProps[propMatch[1]] = propMatch[2];
-			}
-		});
-	}
+  let typeNode = typeAlias.getTypeNode();
 
-	const mergedProps = { ...existingProps, ...iface.properties };
-	const propsContent = Object.entries(mergedProps)
-		.map(([key, type]) => `\t${key}: ${type};`)
-		.join('\n');
+  // Force literal if something unexpected exists
+  if (!typeNode || !typeNode.isKind(SyntaxKind.TypeLiteral)) {
+    typeAlias.setType('{}');
+    typeNode = typeAlias.getTypeNodeOrThrow();
+  }
 
-	const typeContent = `export type ${iface.name} = {\n${propsContent}\n};\n`;
+  const literal = typeNode.asKindOrThrow(SyntaxKind.TypeLiteral);
 
-	if (match) {
-		content = content.replace(typeRegex, typeContent.trim());
-	} else {
-		content = (content.trim() ? content + '\n\n' : '') + typeContent;
-	}
+  const existingProps = new Set(
+    literal.getMembers()
+      .filter(m => m.isKind(SyntaxKind.PropertySignature))
+      .map(m => m.getName())
+  );
 
-	await writeFileSafe(filePath, content);
+  for (const [name, type] of Object.entries(typeDef.properties)) {
+    if (existingProps.has(name)) continue;
+
+    literal.addProperty({
+      name,
+      type,
+    });
+  }
+
+  await sourceFile.save();
 }

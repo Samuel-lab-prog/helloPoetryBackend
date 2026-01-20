@@ -1,76 +1,83 @@
-import { readFileSafe } from '../files-utils/execute';
+import { project } from '../TsMorpshProject';
 
 /**
- * Writes content to a file, creating directories if they do not exist.
+ * Ensures that a named import declaration exists in a TypeScript file.
  *
- * @param filePath Path to the file
- * @param content Content to write
- */
-/**
- * Ensures that the specified symbols are imported from a module.
- * Adds missing imports and removes old duplicates. Does not create files.
+ * Behavior:
+ * - Opens the file if it exists, or creates it if it does not.
+ * - Ensures that all provided symbols are imported from the given module.
+ * - Deduplicates symbols automatically.
+ * - Preserves existing imports, comments, and formatting.
+ * - Supports both `import {}` and `import type {}`.
+ * - Operation is idempotent: running it multiple times yields the same file.
  *
- * @param filePath Path of the file to update
- * @param importPath Module path to import from
- * @param symbolsToImport List of named exports to import
- * @param isType If true, generates `import type`, otherwise `import`
- * @returns Updated file content with ensured imports
+ * This function operates at the AST level using ts-morph, avoiding
+ * string manipulation, regex parsing, or manual content rewriting.
+ *
+ * @param filePath - Path to the TypeScript file to update
+ * @param moduleSpecifier - Module path to import from (e.g. `@/errors`)
+ * @param namedImports - List of named symbols to ensure
+ * @param isTypeOnly - Whether the import should be `import type`
+ *
+ * @example
+ * // Adds: import { DomainError } from '@/errors';
+ * await ensureNamedImportDeclaration(
+ *   'src/use-cases/create-user.ts',
+ *   '@/errors',
+ *   ['DomainError']
+ * );
+ *
+ * @example
+ * // Adds or updates: import type { UserDTO } from '@/dtos';
+ * await ensureNamedImportDeclaration(
+ *   'src/use-cases/create-user.ts',
+ *   '@/dtos',
+ *   ['UserDTO'],
+ *   true
+ * );
  */
-export async function ensureImportsExists(
-	filePath: string,
-	importPath: string,
-	symbolsToImport: string[],
-	isType: boolean = false,
-): Promise<string> {
-	let content = await readFileSafe(filePath, '');
+export async function ensureNamedImportDeclaration(
+  filePath: string,
+  moduleSpecifier: string,
+  namedImports: string[],
+  isTypeOnly: boolean = false,
+): Promise<void> {
+  const sourceFile = project.createSourceFile(
+    filePath,
+    '',
+    { overwrite: false }
+  );
 
-	const currentImports = extractExistingImports(content, importPath, isType);
-	const allImports = Array.from(
-		new Set([...currentImports, ...symbolsToImport]),
-	);
+  // Try to find an existing import declaration with the same module specifier
+  // and the same type (value import vs type-only import).
+  const existingImport = sourceFile
+    .getImportDeclarations()
+    .find(
+      (imp) =>
+        imp.getModuleSpecifierValue() === moduleSpecifier &&
+        imp.isTypeOnly() === isTypeOnly
+    );
 
-	content = removeOldImport(content, importPath, isType);
+  if (!existingImport) {
+    // No import from this module yet → create a new one
+    sourceFile.addImportDeclaration({
+      moduleSpecifier,
+      namedImports,
+      isTypeOnly,
+    });
+  } else {
+    // Merge existing named imports with the new ones
+    const currentImports = existingImport
+      .getNamedImports()
+      .map((ni) => ni.getName());
 
-	const newImport = allImports.length
-		? formatImport(allImports, importPath, isType)
-		: '';
+    const merged = Array.from(
+      new Set([...currentImports, ...namedImports])
+    );
 
-	return newImport + content;
-}
+    existingImport.removeNamedImports();
+    existingImport.addNamedImports(merged);
+  }
 
-function extractExistingImports(
-	content: string,
-	importPath: string,
-	isType: boolean,
-): string[] {
-	const regex = new RegExp(
-		`import\\s+${isType ? 'type\\s+' : ''}\\{([\\s\\S]*?)\\}\\s+from\\s+['"]${importPath}['"]`,
-		'g',
-	);
-
-	const matches = [...content.matchAll(regex)];
-	if (!matches.length) return [];
-
-	return matches.flatMap((match) =>
-		match[1]!
-			.split(',')
-			.map((s) => s.replace(/\/\*.*?\*\//g, '').trim())
-			.filter(Boolean),
-	);
-}
-
-function removeOldImport(
-	content: string,
-	importPath: string,
-	isType: boolean,
-): string {
-	const regex = new RegExp(
-		`^\\s*import\\s+${isType ? 'type\\s+' : ''}\\{([\\s\\S]*?)\\}\\s+from\\s+['"]${importPath}['"];?\\s*\\n?`,
-		'gm',
-	);
-	return content.replace(regex, '');
-}
-
-function formatImport(symbols: string[], importPath: string, isType: boolean) {
-	return `import${isType ? ' type' : ''} { ${symbols.join(', ')} } from '${importPath}';\n\n`;
+  await sourceFile.save();
 }

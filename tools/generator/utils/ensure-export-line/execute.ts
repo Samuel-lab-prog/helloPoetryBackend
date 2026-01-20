@@ -1,25 +1,37 @@
-import { readFileSafe, writeFileSafe } from '../files-utils/execute';
+import { SourceFile } from 'ts-morph';
+
 /**
- * Ensures that a specific export line exists in an index file.
- * Deduplicates existing lines.
- * Creates directories and the file if necessary.
- * @param indexPath Path to the index file
- * @param exportLine Export line to ensure
+ * Ensures that an export declaration exists in the given SourceFile.
+ *
+ * Behavior:
+ * - If an export with the same moduleSpecifier already exists, nothing changes.
+ * - Otherwise, a new export declaration is added.
+ * - Idempotent.
+ *
+ * This function:
+ * - Operates only on the AST
+ * - Does NOT read or write files
+ * - Does NOT create SourceFiles
+ *
+ * @param sourceFile - ts-morph SourceFile instance
+ * @param moduleSpecifier - Module path used in the export
+ * @param namedExports - Optional named exports
  */
-export async function ensureExportLine(
-	indexPath: string,
-	exportLine: string,
-): Promise<void> {
-	const content = await readFileSafe(indexPath, '');
+export function ensureExportDeclarationInSourceFile(
+  sourceFile: SourceFile,
+  moduleSpecifier: string,
+  namedExports?: string[],
+): void {
+  const existingExport = sourceFile
+    .getExportDeclarations()
+    .find(
+      ed => ed.getModuleSpecifierValue() === moduleSpecifier
+    );
 
-	const lines = new Set(
-		content
-			.split('\n')
-			.map((line) => line.trim())
-			.filter(Boolean),
-	);
+  if (existingExport) return;
 
-	lines.add(exportLine.trim());
-
-	await writeFileSafe(indexPath, Array.from(lines).join('\n') + '\n');
+  sourceFile.addExportDeclaration({
+    moduleSpecifier,
+    namedExports,
+  });
 }
