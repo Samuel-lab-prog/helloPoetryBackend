@@ -7,7 +7,7 @@ import { generateFile } from '../utils/TemplateUtils.ts';
 import { toCamelCase, toPascalCase } from '../utils/StringUtils.ts';
 
 import { SyncServicesImports } from './colaterals/SyncServicesImports.ts';
-import { SyncModels } from './colaterals/SyncModels.ts';
+import { SyncModels } from './colaterals/SyncDataModels.ts';
 import { SyncUseCaseIndex } from './colaterals/SyncUseCaseIndex.ts';
 import { SyncRepositoryInterface } from './colaterals/SyncRepositoryInterface.ts';
 

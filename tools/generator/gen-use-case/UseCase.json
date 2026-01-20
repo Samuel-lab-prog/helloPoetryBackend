@@ -4,7 +4,19 @@
 		{
 			"name": "get-private-user-info",
 			"type": "query",
-			"dataModels": ["FullUser"],
+			"dataModels": [
+				{
+					"name": "FullUser",
+					"properties": {
+						"id": "number",
+						"username": "string",
+						"email": "string",
+						"fullName": "string",
+						"address": "string",
+						"phoneNumber": "string"
+					}
+				}
+			],
 			"errors": ["UserNotFoundError", "UnauthorizedError"],
 			"repositoryMethods": [
 				{
@@ -39,7 +51,16 @@
 		{
 			"name": "get-public-user-info",
 			"type": "query",
-			"dataModels": ["PartialUser"],
+			"dataModels": [
+				{
+					"name": "PartialUser",
+					"properties": {
+						"id": "number",
+						"username": "string",
+						"fullName": "string"
+					}
+				}
+			],
 			"errors": ["UserNotFoundError", "UnauthorizedError"],
 			"repositoryMethods": [
 				{
