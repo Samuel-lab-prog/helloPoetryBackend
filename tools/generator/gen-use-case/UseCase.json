@@ -15,12 +15,12 @@
 			],
 			"useCaseFunc": {
 				"name": "getPrivateUserInfo",
-				"parameters": ["userId: number", "requesterId: number"],
+				"parameters": ["userId: number"],
 				"returnTypes": ["FullUser[]", "null"]
 			},
 			"serviceFunc": {
 				"name": "getUserPrivateInfo",
-				"parameters": ["userId: number", "requesterId: number"],
+				"parameters": ["userId: number"],
 				"returnTypes": ["FullUser[]", "null"]
 			},
 			"http": {
@@ -34,6 +34,41 @@
 				"summary": "Retrieve private information of a user by ID",
 				"description": "This endpoint retrieves private information of a user specified by their ID. It requires authentication and may include sensitive data based on the query parameter.",
 				"tags": ["Users", "Private Info"]
+			}
+		},
+		{
+			"name": "get-public-user-info",
+			"type": "query",
+			"dataModels": ["PartialUser"],
+			"errors": ["UserNotFoundError", "UnauthorizedError"],
+			"repositoryMethods": [
+				{
+					"name": "selectPartialUser",
+					"parameters": ["userId: number"],
+					"returnTypes": ["PartialUser[]"]
+				}
+			],
+			"useCaseFunc": {
+				"name": "getPublicUserInfo",
+				"parameters": ["userId: number"],
+				"returnTypes": ["PartialUser[]", "null"]
+			},
+			"serviceFunc": {
+				"name": "getUserPublicInfo",
+				"parameters": ["userId: number"],
+				"returnTypes": ["PartialUser[]", "null"]
+			},
+			"http": {
+				"method": "GET",
+				"path": "/:id/public-info",
+				"query": ["includeSensitiveData: boolean"],
+				"params": ["id: int"],
+				"responsesCodes": ["200", "404", "403"],
+				"needsAuth": true,
+				"schemaName": "GetPublicUserInfoSchema",
+				"summary": "Retrieve public information of a user by ID",
+				"description": "This endpoint retrieves public information of a user specified by their ID. It requires authentication and may include sensitive data based on the query parameter.",
+				"tags": ["Users", "Public Info"]
 			}
 		}
 	]

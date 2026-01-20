@@ -2,7 +2,7 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { AuthorPoem } from '../read-models/AuthorPoem';
 import { canViewPoem } from '../policies/policies';
 
-export interface Dependencies {
+interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
 

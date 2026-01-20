@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { toCamelCase } from '../../utils/index.ts';
+import { toCamelCase } from '../../utils/StringUtils';
 
 export async function SyncServicesImports(
 	domain: string,

@@ -1,5 +1,6 @@
 import { join } from 'path';
-import { ensureFileExists, ensureExportLine } from '../../utils/EnsureFiles';
+import { ensureFileExists } from '../../utils/FilesUtils';
+import { ensureExportLine } from '../../utils/ExportUtils';
 
 export async function SyncModels(
 	domain: string,

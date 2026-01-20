@@ -4,7 +4,7 @@ import { UserNotFoundError, CrossUserDataAccessError } from '../errors';
 import type { userRole } from '../read-models/Enums';
 import { canAccessUserInfo } from '../policies/policies';
 
-export interface Dependencies {
+interface Dependencies {
 	userQueriesRepository: userQueriesRepository;
 }
 

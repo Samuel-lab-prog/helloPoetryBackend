@@ -1,25 +1,44 @@
 import { mkdir, readFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { green } from 'kleur/colors';
-import { generateFile, toCamelCase, toPascalCase } from '../utils/index.ts';
+import { fileURLToPath } from 'url';
+
+import { generateFile } from '../utils/TemplateUtils.ts';
+import { toCamelCase, toPascalCase } from '../utils/StringUtils.ts';
+
 import { SyncServicesImports } from './colaterals/SyncServicesImports.ts';
 import { SyncModels } from './colaterals/SyncModels.ts';
 import { SyncUseCaseIndex } from './colaterals/SyncUseCaseIndex.ts';
 import { SyncRepositoryInterface } from './colaterals/SyncRepositoryInterface.ts';
 
-import { fileURLToPath } from 'url';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const configPath = join(__dirname, 'UseCase.json');
+const config = JSON.parse(await readFile(configPath, 'utf-8'));
 
-const jsonContent = await readFile(configPath, 'utf-8');
-const config = JSON.parse(jsonContent);
+function getRepositoryConfig(isCommand: boolean) {
+	return {
+		type: isCommand ? 'CommandsRepository' : 'QueriesRepository',
+		file: isCommand ? 'CommandsRepository' : 'QueriesRepository',
+		variable: isCommand ? 'commandsRepository' : 'queriesRepository',
+		folder: isCommand ? 'commands' : 'queries',
+	};
+}
 
 for (const useCase of config.useCases) {
-	const { name, type, dataModels, errors, useCaseFunc } = useCase;
+	const {
+		name,
+		type,
+		dataModels,
+		errors,
+		useCaseFunc,
+		repositoryMethods = [],
+	} = useCase;
+
 	const isCommand = type === 'command';
+	const repo = getRepositoryConfig(isCommand);
+
 	const useCaseName = toCamelCase(useCaseFunc.name);
 	const UseCaseName = toPascalCase(useCaseFunc.name);
 
@@ -28,23 +47,24 @@ for (const useCase of config.useCases) {
 		'domains',
 		config.domain,
 		'use-cases',
-		isCommand ? 'commands' : 'queries',
+		repo.folder,
 		name,
 	);
+
 	await mkdir(basePath, { recursive: true });
 
 	const context = {
 		UseCaseName,
 		useCaseName,
 		factoryName: `${useCaseName}Factory`,
-		RepositoryType: isCommand ? `CommandsRepository` : `QueriesRepository`,
-		RepositoryFile: isCommand ? 'CommandsRepository' : 'QueriesRepository',
-		repositoryVar: isCommand ? 'commandsRepository' : 'queriesRepository',
+		RepositoryType: repo.type,
+		RepositoryFile: repo.file,
+		repositoryVar: repo.variable,
 		UseCaseParams: useCaseFunc.parameters,
 		UseCaseReturnType: useCaseFunc.returnTypes.join(' | '),
 		DataModels: dataModels,
 		Errors: errors,
-		RepositoryMethods: useCase.repositoryMethods || [],
+		RepositoryMethods: repositoryMethods,
 		isCommand,
 	};
 
@@ -53,20 +73,18 @@ for (const useCase of config.useCases) {
 		join(basePath, 'execute.ts'),
 		context,
 	);
-	await SyncRepositoryInterface(
-		config.domain,
-		isCommand,
-		dataModels,
-		useCase.repositoryMethods || [],
-	);
-	await SyncUseCaseIndex(config.domain, isCommand, name);
-	await SyncServicesImports(
-		config.domain,
-		isCommand,
-		[useCaseName],
-		dataModels,
-	);
-	await SyncModels(config.domain, isCommand, dataModels);
+
+	await Promise.all([
+		SyncRepositoryInterface(
+			config.domain,
+			isCommand,
+			dataModels,
+			repositoryMethods,
+		),
+		SyncUseCaseIndex(config.domain, isCommand, name),
+		SyncServicesImports(config.domain, isCommand, [useCaseName], dataModels),
+		SyncModels(config.domain, isCommand, dataModels),
+	]);
 
 	console.log(green(`✔ Use-case ${UseCaseName} generated!`));
 }

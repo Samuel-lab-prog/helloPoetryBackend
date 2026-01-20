@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { generateFile } from '../utils/index.ts';
+import { generateFile } from '../utils/TemplateUtils';
 
 type Context = {
 	domainName: string;
