@@ -1,4 +1,4 @@
-import { defineUseCases } from './DefineUseCases';
+import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
 	domain: 'hey',

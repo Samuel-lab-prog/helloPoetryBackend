@@ -1,9 +1,12 @@
 import { existsSync } from 'fs';
 import { green } from 'kleur/colors';
 
-import { generateBoundedContext } from './BoundedContextFactory';
-import useCases from './UseCases.config.ts';
-import type { UseCaseDefinition, DataModelsDefinition } from './DefineUseCases';
+import { generateBoundedContext } from './BoundedContextFactory.ts';
+import useCases from '../UseCases.config.ts';
+import type {
+	UseCaseDefinition,
+	DataModelsDefinition,
+} from './DefineUseCases.ts';
 
 type UseCasesConfigModule<DM extends DataModelsDefinition> = {
 	domain: string;
