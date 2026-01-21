@@ -44,7 +44,8 @@
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
-		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && echo 'All checks passed!'"
+		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && echo 'All checks passed!'",
+		"gen-usecases": "bun generator/UseCasesFactory.ts"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
