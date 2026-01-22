@@ -62,10 +62,7 @@ async function generate<DM extends DataModelsDefinition>(
 
 			ensureProperties(modelTypeAlias, props);
 
-			ensureBarrelExport(
-				`${modelsDir}/index.ts`,
-				`./${modelName}`,
-			);
+			ensureBarrelExport(`${modelsDir}/index.ts`, `./${modelName}`);
 		}
 	}
 

@@ -1,12 +1,16 @@
 type Primitive = 'string' | 'number' | 'boolean' | 'string[]' | 'number[]';
 
-type ResolvePrimitive<T extends Primitive> =
-	T extends 'string' ? string :
-	T extends 'number' ? number :
-	T extends 'boolean' ? boolean :
-	T extends 'string[]' ? string[] :
-	T extends 'number[]' ? number[] :
-	never;
+type ResolvePrimitive<T extends Primitive> = T extends 'string'
+	? string
+	: T extends 'number'
+		? number
+		: T extends 'boolean'
+			? boolean
+			: T extends 'string[]'
+				? string[]
+				: T extends 'number[]'
+					? number[]
+					: never;
 
 type PropertyMap = Record<string, Primitive>;
 
@@ -40,9 +44,7 @@ type ResolveDataModels<T extends DataModelsDefinition> = {
 
 type BaseReturn = 'null' | 'void';
 
-type ReturnTypeNames<DataModels> =
-	| keyof DataModels
-	| BaseReturn;
+type ReturnTypeNames<DataModels> = keyof DataModels | BaseReturn;
 
 type FunctionDefinition<DataModels> = {
 	params: ParamDefinition[];
@@ -88,9 +90,7 @@ type RepositoryMethodDefinition<DataModels> = {
 	returns: ReturnTypeNames<DataModels>[];
 };
 
-export type UseCaseDefinition<
-	DataModels extends DataModelsDefinition,
-> = {
+export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
 	name: string;
 	type: 'command' | 'query';
 
@@ -101,13 +101,9 @@ export type UseCaseDefinition<
 		ResolveDataModels<DataModels>
 	>[];
 
-	useCaseFunc: FunctionDefinition<
-		ResolveDataModels<DataModels>
-	>;
+	useCaseFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
 
-	serviceFunc: FunctionDefinition<
-		ResolveDataModels<DataModels>
-	>;
+	serviceFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
 
 	http: HttpDefinition;
 };

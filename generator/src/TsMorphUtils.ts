@@ -54,26 +54,26 @@ export function getOrCreateSourceFile(
  * @returns ExportDeclaration
  */
 export function ensureBarrelExport(
-  filePath: string,
-  barrelPath: string,
+	filePath: string,
+	barrelPath: string,
 ): ExportDeclaration {
-  const sourceFile = getOrCreateSourceFile(project, filePath);
+	const sourceFile = getOrCreateSourceFile(project, filePath);
 
-  const existing = sourceFile
-    .getExportDeclarations()
-    .find(
-      (decl) =>
-        decl.getModuleSpecifierValue() === barrelPath &&
-        decl.getNamedExports().length === 0
-    );
+	const existing = sourceFile
+		.getExportDeclarations()
+		.find(
+			(decl) =>
+				decl.getModuleSpecifierValue() === barrelPath &&
+				decl.getNamedExports().length === 0,
+		);
 
-  if (existing) {
-    return existing;
-  }
+	if (existing) {
+		return existing;
+	}
 
-  return sourceFile.addExportDeclaration({
-    moduleSpecifier: barrelPath,
-  });
+	return sourceFile.addExportDeclaration({
+		moduleSpecifier: barrelPath,
+	});
 }
 
 /**
