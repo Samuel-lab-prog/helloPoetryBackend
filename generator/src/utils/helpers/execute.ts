@@ -86,3 +86,10 @@ export function getOrCreateSourceFile(
 	ensureDirectory(filePath);
 	return project.createSourceFile(filePath, '', { overwrite: false });
 }
+
+export function toPascalCase(str: string) {
+	return str
+		.split(/[-_]/g)
+		.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+		.join('');
+}
