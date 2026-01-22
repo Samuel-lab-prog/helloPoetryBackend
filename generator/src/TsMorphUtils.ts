@@ -1,5 +1,6 @@
 import {
 	ClassDeclaration,
+	ExportDeclaration,
 	InterfaceDeclaration,
 	Project,
 	SourceFile,
@@ -45,15 +46,44 @@ export function getOrCreateSourceFile(
 }
 
 /**
+ * Ensures that a barrel export (`export * from 'path'`) exists in a source file.
+ * If it does not exist, it will be created.
+ *
+ * @param filePath Path to the index.ts (or any source file)
+ * @param barrelPath Module specifier to export from
+ * @returns ExportDeclaration
+ */
+export function ensureBarrelExport(
+  filePath: string,
+  barrelPath: string,
+): ExportDeclaration {
+  const sourceFile = getOrCreateSourceFile(project, filePath);
+
+  const existing = sourceFile
+    .getExportDeclarations()
+    .find(
+      (decl) =>
+        decl.getModuleSpecifierValue() === barrelPath &&
+        decl.getNamedExports().length === 0
+    );
+
+  if (existing) {
+    return existing;
+  }
+
+  return sourceFile.addExportDeclaration({
+    moduleSpecifier: barrelPath,
+  });
+}
+
+/**
  * Ensures that an interface exists in a file.
- * @param project ts-morph Project instance
  * @param filePath Path to the source file
  * @param interfaceName Interface name
  * @param isExported Whether the interface should be exported
  * @returns InterfaceDeclaration
  */
 export function ensureInterface(
-	project: Project,
 	filePath: string,
 	interfaceName: string,
 	isExported = true,
@@ -69,7 +99,6 @@ export function ensureInterface(
  * Ensures that a type alias exists in a source file.
  * If it does not exist, it will be created with the provided type expression.
  *
- * @param project ts-morph Project instance
  * @param filePath Path to the source file
  * @param typeName Type alias name
  * @param typeExpression TypeScript type expression
@@ -77,7 +106,6 @@ export function ensureInterface(
  * @returns TypeAliasDeclaration
  */
 export function ensureTypeAlias(
-	project: Project,
 	filePath: string,
 	typeName: string,
 	typeExpression: string,

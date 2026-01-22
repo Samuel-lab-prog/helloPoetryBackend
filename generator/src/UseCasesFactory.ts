@@ -8,7 +8,12 @@ import type {
 	DataModelsDefinition,
 } from './DefineUseCases.ts';
 
-import { project, ensureProperties, ensureTypeAlias } from './TsMorphUtils.ts';
+import {
+	project,
+	ensureProperties,
+	ensureTypeAlias,
+	ensureBarrelExport,
+} from './TsMorphUtils.ts';
 
 type UseCasesConfigFile<DM extends DataModelsDefinition> = {
 	domain: string;
@@ -16,11 +21,7 @@ type UseCasesConfigFile<DM extends DataModelsDefinition> = {
 };
 
 /**
- * Generates the use case files in the specified domain folder. If the domain folder does not exist, it creates the bounded context structure first.
- * @param config The use cases configuration object.
- * @param basePath The base path where the domain folder is located.
- * @example
- * await generate(useCases, './src/domains');
+ * Generates the use case files in the specified domain folder.
  */
 async function generate<DM extends DataModelsDefinition>(
 	config: UseCasesConfigFile<DM>,
@@ -42,22 +43,29 @@ async function generate<DM extends DataModelsDefinition>(
 		const kind = uc.type === 'command' ? 'commands' : 'queries';
 		const modelsDir = `${domainPath}/use-cases/${kind}/models`;
 
-		// 1️⃣ Generate data models
-		for (const [modelName, properties] of Object.entries(uc.dataModels ?? {})) {
+		// 1️⃣ Generate data models and their barrel export
+		for (const model of uc.dataModels ?? []) {
+			const { name: modelName, properties } = model;
 			const modelFilePath = `${modelsDir}/${modelName}.ts`;
 
 			const modelTypeAlias = ensureTypeAlias(
-				project,
 				modelFilePath,
 				modelName,
 				'{}',
 				true,
 			);
+
 			const props = Object.entries(properties).map(([name, type]) => ({
 				name,
 				type,
 			}));
+
 			ensureProperties(modelTypeAlias, props);
+
+			ensureBarrelExport(
+				`${modelsDir}/index.ts`,
+				`./${modelName}`,
+			);
 		}
 	}
 

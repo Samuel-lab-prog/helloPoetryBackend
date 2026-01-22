@@ -8,50 +8,67 @@ export default defineUseCases({
 			name: 'get-client',
 			type: 'query',
 
-			dataModels: {
-				FullClient: {
-					clientId: 'number[]',
-					clientName: 'string',
-					clientEmail: 'string',
+			dataModels: [
+				{
+					name: 'FullClient',
+					properties: {
+						clientId: 'number[]',
+						clientName: 'string',
+						clientEmail: 'string',
+					},
 				},
-			},
+			],
 
-			errors: {
-				ClientNotFoundError: {
+			errors: [
+				{
+					name: 'ClientNotFoundError',
 					type: 'NOT_FOUND',
 					message: 'Client not found.',
 				},
-			},
+			],
 
-			repositoryMethods: {
-				findClientById: {
-					params: {
-						id: 'number',
-					},
+			repositoryMethods: [
+				{
+					name: 'findClientById',
+					params: [
+						{
+							name: 'id',
+							type: 'number',
+						},
+					],
 					returns: ['FullClient', 'null'],
-				} as const,
-			},
+				},
+			] as const,
 
 			useCaseFunc: {
-				params: {
-					id: 'number',
-				},
+				params: [
+					{
+						name: 'id',
+						type: 'number',
+					},
+				],
 				returns: ['FullClient', 'null'],
 			} as const,
 
 			serviceFunc: {
-				params: {
-					id: 'number',
-				},
+				params: [
+					{
+						name: 'id',
+						type: 'number',
+					},
+				],
 				returns: ['FullClient', 'null'],
 			} as const,
 
 			http: {
 				method: 'POST',
 				path: '/clients/:id',
-				params: {
-					id: 'number',
-				},
+				params: [
+					{
+						name: 'id',
+						type: 'number',
+					},
+				],
 				responsesCodes: [200, 404, 400],
 				needsAuth: true,
 				schemaName: 'GetClientSchema',
