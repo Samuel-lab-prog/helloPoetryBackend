@@ -8,22 +8,26 @@ import type {
 	DataModelsDefinition,
 } from './DefineUseCases.ts';
 
-type UseCasesConfigModule<DM extends DataModelsDefinition> = {
+type UseCasesConfigFile<DM extends DataModelsDefinition> = {
 	domain: string;
 	useCases: UseCaseDefinition<DM>[];
 };
-
-async function generateUseCases<DM extends DataModelsDefinition>(
-	module: UseCasesConfigModule<DM>,
+/**
+ * Generates the use case files in the specified domain folder. If the domain folder does not exist, it creates the bounded context structure first.
+ * @param config The use cases configuration object.
+ * @param basePath The base path where the domain folder is located.
+ */
+async function generate<DM extends DataModelsDefinition>(
+	config: UseCasesConfigFile<DM>,
 	basePath: string,
 ): Promise<void> {
-	const domainPath = `${basePath}/${module.domain}`;
+	const domainPath = `${basePath}/${config.domain}`;
 
 	if (!existsSync(domainPath)) {
-		await generateBoundedContext(module.domain, basePath);
+		await generateBoundedContext(config.domain, basePath);
 		console.log(
 			green(
-				`Created Bounded Context folder structure for domain: ${module.domain}`,
+				`Created Bounded Context folder structure for domain: ${config.domain}`,
 			),
 		);
 	}
@@ -31,5 +35,5 @@ async function generateUseCases<DM extends DataModelsDefinition>(
 	// Here you would add the logic to generate files for each use case
 }
 
-await generateUseCases(useCases, './src/domains');
+await generate(useCases, './src/domains');
 console.log(green('Use Cases generated successfully!'));
