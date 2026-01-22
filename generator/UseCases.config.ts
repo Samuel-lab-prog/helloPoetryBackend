@@ -100,6 +100,38 @@ export default defineUseCases({
 				needsAuth: true,
 				schemaName: 'GetClientSchema',
 			},
+			dtos: [
+				{
+					inputModel: 'FullClient',
+					outputModel: 'ClientSummary',
+				},
+				{
+					inputModel: 'ClientSummary',
+					outputModel: 'FullClient',
+				},
+			],
+			policies: [
+				{
+					name: 'canAccessClientInfo',
+					parameters: {
+						requesterId: 'number',
+						requesterRole: 'string',
+						targetId: 'number',
+					},
+					body: `
+								return ctx.requesterRole === 'admin' || ctx.requesterId === ctx.targetId;
+						`.trim(),
+				},
+				{
+					name: 'isAdminUser',
+					parameters: {
+						userRole: 'string',
+					},
+					body: `
+								return ctx.userRole === 'admin';
+						`.trim(),
+				},
+			],
 		},
 	],
 });

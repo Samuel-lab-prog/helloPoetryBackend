@@ -106,6 +106,17 @@ export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
 	serviceFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
 
 	http: HttpDefinition;
+
+	dtos?: {
+		inputModel: string;
+		outputModel: string;
+	}[];
+
+	policies?: {
+		name: string;
+		parameters: Record<string, Primitive>;
+		body: string;
+	}[];
 };
 
 /* =======================
