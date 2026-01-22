@@ -8,12 +8,12 @@ import type {
 	DataModelsDefinition,
 } from './DefineUseCases.ts';
 
-import {
-	project,
-	ensureProperties,
-	ensureTypeAlias,
-	ensureBarrelExport,
-} from './TsMorphUtils.ts';
+import { ensureTypeAlias } from './utils/ensure-type/execute';
+import { ensureProperties } from './utils/ensure-properties/execute';
+import { ensureDomainErrorClass } from './generators/domain-error/execute.ts';
+import { ensureQueriesRepositoryInterface } from './generators/repository-interface/execute.ts';
+import { ensureBarrelExport } from './utils/ensures-barrel-line/execute.ts';
+import { project } from './utils/helpers/execute.ts';
 
 type UseCasesConfigFile<DM extends DataModelsDefinition> = {
 	domain: string;
@@ -64,6 +64,23 @@ async function generate<DM extends DataModelsDefinition>(
 
 			ensureBarrelExport(`${modelsDir}/index.ts`, `./${modelName}`);
 		}
+
+		// 2️⃣ Generate the domain errors file
+		const errorsFilePath = `${domainPath}/use-cases/${kind}/errors.ts`;
+
+		for (const error of uc.errors) {
+			ensureDomainErrorClass(errorsFilePath, error);
+		}
+
+		// 3️⃣ Sync repository interface
+		const repoFilePath = `${domainPath}/ports/${kind.charAt(0).toUpperCase() + kind.slice(1)}Repository.ts`;
+
+		ensureQueriesRepositoryInterface(
+			repoFilePath,
+			'QueriesRepository',
+			uc.repositoryMethods,
+			'../use-cases/queries/models/Index',
+		);
 	}
 
 	await project.save();

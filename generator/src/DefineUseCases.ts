@@ -55,7 +55,7 @@ type FunctionDefinition<DataModels> = {
    Errors
 ======================= */
 
-type ErrorType = 'NOT_FOUND' | 'VALIDATION' | 'UNAUTHORIZED';
+type ErrorType = 'NOT_FOUND' | 'VALIDATION_FAILED' | 'UNAUTHORIZED';
 
 type ErrorDefinition = {
 	name: string;

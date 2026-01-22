@@ -17,6 +17,13 @@ export default defineUseCases({
 						clientEmail: 'string',
 					},
 				},
+				{
+					name: 'ClientSummary',
+					properties: {
+						clientId: 'number',
+						clientName: 'string',
+					},
+				},
 			],
 
 			errors: [
@@ -24,6 +31,11 @@ export default defineUseCases({
 					name: 'ClientNotFoundError',
 					type: 'NOT_FOUND',
 					message: 'Client not found.',
+				},
+				{
+					name: 'ClientValidationError',
+					type: 'VALIDATION_FAILED',
+					message: 'Client data is invalid.',
 				},
 			],
 
@@ -37,6 +49,21 @@ export default defineUseCases({
 						},
 					],
 					returns: ['FullClient', 'null'],
+				},
+				{
+					name: 'listAllClients',
+					params: [],
+					returns: ['ClientSummary[]'],
+				},
+				{
+					name: 'deleteClient',
+					params: [
+						{
+							name: 'id',
+							type: 'number',
+						},
+					],
+					returns: ['void'],
 				},
 			] as const,
 
