@@ -1,15 +1,13 @@
-import { existsSync, mkdirSync } from 'fs';
 import { ensureNamedImport } from '../../utils/ensure-import/execute';
 import { ensureFunction } from '../../utils/ensure-function/execute';
-import { join } from 'path';
 
 type DtoInput = {
-	filePath: string; // caminho final do Dtos.ts
-	functionName: string; // nome da função DTO, ex: toAuthorPoem
-	inputModel: string; // tipo de input
-	outputModel: string; // tipo de output
-	inputPath: string; // caminho relativo do input model
-	outputPath: string; // caminho relativo do output model
+	filePath: string;
+	functionName: string;
+	inputModel: string;
+	outputModel: string;
+	inputPath: string;
+	outputPath: string;
 };
 
 export function ensureDtoFile(dto: DtoInput) {
@@ -22,14 +20,9 @@ export function ensureDtoFile(dto: DtoInput) {
 		outputPath,
 	} = dto;
 
-	const dir = join(filePath, '..');
-	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-
-	// Imports
 	ensureNamedImport(filePath, inputModel, inputPath, true);
 	ensureNamedImport(filePath, outputModel, outputPath, true);
 
-	// Função DTO
 	const fn = ensureFunction(filePath, functionName, {
 		isExported: true,
 		parameters: [

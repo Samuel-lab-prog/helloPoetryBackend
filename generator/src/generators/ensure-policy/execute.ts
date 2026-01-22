@@ -1,46 +1,33 @@
-import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { project } from '../../utils/helpers/execute';
-import { FunctionDeclaration } from 'ts-morph';
+import { toPascalCase, type Primitive } from '../../utils/helpers/execute';
+import { ensureTypeAlias } from '../../utils/ensure-type/execute';
+import { ensureFunction } from '../../utils/ensure-function/execute';
 
 type PolicyModel = {
-	filePath: string; // caminho do Policies.ts
-	name: string; // nome da função, ex: canAccessClientInfo
-	parameters: Record<string, string>; // objeto de parâmetros { paramName: type }
-	body: string; // corpo da função
+	filePath: string;
+	name: string;
+	parameters: Record<string, Primitive>;
+	body: string;
 };
 
-export function ensurePolicyFile(policy: PolicyModel) {
-	const dir = join(policy.filePath, '..');
-	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+export function ensurePolicyFile(p: PolicyModel) {
+	const pascalName = toPascalCase(p.name);
+	const paramsTypeName = `${pascalName}PolicyParams`;
+	ensureTypeAlias(p.filePath, paramsTypeName, p.parameters, false);
 
-	// Abre ou cria o arquivo
-	let sourceFile = project.getSourceFile(policy.filePath);
-	if (!sourceFile) {
-		sourceFile = project.createSourceFile(policy.filePath, '', {
-			overwrite: true,
-		});
-	}
+	const fn = ensureFunction(p.filePath, p.name, {
+		isExported: true,
+		returnType: 'boolean',
+		parameters: [{ name: 'ctx', type: paramsTypeName }],
+	});
+	const destructured = Object.keys(p.parameters).join(', ');
 
-	// Transform parameters object em string para TS
-	const paramEntries = Object.entries(policy.parameters);
-	const paramName = 'ctx';
-	const paramType = `{ ${paramEntries.map(([k, t]) => `${k}: ${t}`).join('; ')} }`;
+	fn.setBodyText(
+		`
+const { ${destructured} } = ctx;
 
-	// Verifica se a função já existe
-	let fn: FunctionDeclaration | undefined = sourceFile.getFunction(policy.name);
-
-	if (!fn) {
-		fn = sourceFile.addFunction({
-			name: policy.name,
-			isExported: true,
-			parameters: [{ name: paramName, type: paramType }],
-			returnType: 'boolean',
-			statements: policy.body.trim(),
-		});
-	} else {
-		fn.setBodyText(policy.body.trim());
-	}
+${p.body}
+`.trim(),
+	);
 
 	return fn;
 }

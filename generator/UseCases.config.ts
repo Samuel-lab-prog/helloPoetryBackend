@@ -12,7 +12,7 @@ export default defineUseCases({
 				{
 					name: 'FullClient',
 					properties: {
-						clientId: 'number[]',
+						clientId: 'number',
 						clientName: 'string',
 						clientEmail: 'string',
 					},
@@ -74,7 +74,7 @@ export default defineUseCases({
 						type: 'number',
 					},
 				],
-				returns: ['FullClient', 'null'],
+				returns: ['FullClient', 'ClientSummary', 'null'],
 			} as const,
 
 			serviceFunc: {
@@ -84,7 +84,7 @@ export default defineUseCases({
 						type: 'number',
 					},
 				],
-				returns: ['FullClient', 'null'],
+				returns: ['FullClient', 'ClientSummary', 'null'],
 			} as const,
 
 			http: {
@@ -105,10 +105,6 @@ export default defineUseCases({
 					inputModel: 'FullClient',
 					outputModel: 'ClientSummary',
 				},
-				{
-					inputModel: 'ClientSummary',
-					outputModel: 'FullClient',
-				},
 			],
 			policies: [
 				{
@@ -119,7 +115,7 @@ export default defineUseCases({
 						targetId: 'number',
 					},
 					body: `
-								return ctx.requesterRole === 'admin' || ctx.requesterId === ctx.targetId;
+								return requesterRole === 'admin' || requesterId === targetId;
 						`.trim(),
 				},
 				{
@@ -128,7 +124,7 @@ export default defineUseCases({
 						userRole: 'string',
 					},
 					body: `
-								return ctx.userRole === 'admin';
+								return userRole === 'admin';
 						`.trim(),
 				},
 			],

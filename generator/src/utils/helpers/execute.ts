@@ -93,3 +93,34 @@ export function toPascalCase(str: string) {
 		.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
 		.join('');
 }
+
+/**
+ * Converts an object map of property names and types
+ * into a TypeScript object literal type string.
+ *
+ * @example
+ * objectToTypeLiteral({ id: 'string', age: 'number' })
+ * // => "{ id: string; age: number }"
+ *
+ * @param properties Object where keys are property names and values are type strings
+ * @returns A TypeScript object literal type representation
+ */
+export function objectToTypeLiteral(
+	properties: Record<string, string>,
+): string {
+	const entries = Object.entries(properties);
+
+	if (entries.length === 0) {
+		return '{}';
+	}
+
+	return `{ ${entries.map(([key, value]) => `${key}: ${value}`).join('; ')} }`;
+}
+
+export function destructure(variables: string[]): string {
+	return `{ ${variables.join(', ')} }`;
+}
+
+export function toCamelCase(str: string): string {
+	return str.replace(/-([a-z])/g, (_, c) => (c ? c.toUpperCase() : ''));
+}

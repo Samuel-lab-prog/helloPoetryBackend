@@ -10,7 +10,6 @@ import type {
 } from './DefineUseCases.ts';
 
 import { ensureTypeAlias } from './utils/ensure-type/execute';
-import { ensureProperties } from './utils/ensure-properties/execute';
 import { ensureDomainErrorClass } from './generators/domain-error/execute.ts';
 import { ensureQueriesRepositoryInterface } from './generators/repository-interface/execute.ts';
 import { ensureBarrelExport } from './utils/ensures-barrel-line/execute.ts';
@@ -72,7 +71,7 @@ function generatePolicies(
 	kind: 'commands' | 'queries',
 	policies?: {
 		name: string;
-		parameters: Record<string, string>;
+		parameters: Record<string, Primitive>;
 		body: string;
 	}[],
 ) {
@@ -91,22 +90,12 @@ function generatePolicies(
 
 function generateModels(
 	modelsDir: string,
-	dataModels?: { name: string; properties: Record<string, Primitive> }[],
+	dataModels?: { name: string; properties: Record<string, string> }[],
 ) {
 	for (const model of dataModels ?? []) {
 		const modelFilePath = join(modelsDir, `${model.name}.ts`);
-		const modelTypeAlias = ensureTypeAlias(
-			modelFilePath,
-			model.name,
-			'{}',
-			true,
-		);
+		ensureTypeAlias(modelFilePath, model.name, model.properties, true);
 
-		const props = Object.entries(model.properties).map(([name, type]) => ({
-			name,
-			type,
-		}));
-		ensureProperties(modelTypeAlias, props);
 		ensureBarrelExport(join(modelsDir, 'index.ts'), `./${model.name}`);
 	}
 }

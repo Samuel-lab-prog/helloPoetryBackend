@@ -20,30 +20,29 @@ export function ensureQueriesRepositoryInterface(
 ): InterfaceDeclaration {
 	const sourceFile = getOrCreateSourceFile(project, filePath);
 
-	// garante interface
-	const repoInterface =
-		sourceFile.getInterface(repositoryName) ??
-		sourceFile.addInterface({
-			name: repositoryName,
-			isExported: true,
-		});
+	const interfaceDeclaration = sourceFile.getInterface(repositoryName);
 
-	for (const method of repositoryMethods) {
-		const methodName = method.name;
+	if (interfaceDeclaration !== undefined) {
+		interfaceDeclaration.remove();
+	}
 
-		if (repoInterface.getMethod(methodName)) {
+	const newInterface = sourceFile.addInterface({
+		name: repositoryName,
+		isExported: true,
+	});
+
+	for (const m of repositoryMethods) {
+		if (newInterface.getMethod(m.name)) {
 			continue;
 		}
 
-		// params
-		const paramsType = buildParamsType(method.params);
+		const paramsType = buildParamsType(m.params);
 
-		// return
-		const resolvedReturn = buildReturnType(method.returns);
+		const resolvedReturn = buildReturnType(m.returns);
 		const returnType = `Promise<${resolvedReturn}>`;
 
-		repoInterface.addMethod({
-			name: methodName,
+		newInterface.addMethod({
+			name: m.name,
 			parameters:
 				paramsType === 'void'
 					? []
@@ -56,8 +55,7 @@ export function ensureQueriesRepositoryInterface(
 			returnType,
 		});
 
-		// imports de models
-		for (const ret of method.returns) {
+		for (const ret of m.returns) {
 			let baseType = ret;
 			if (ret === 'null' || ret === 'void') continue;
 			if (ret.includes('[]')) {
@@ -67,5 +65,5 @@ export function ensureQueriesRepositoryInterface(
 		}
 	}
 
-	return repoInterface;
+	return newInterface;
 }

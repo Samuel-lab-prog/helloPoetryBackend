@@ -19,13 +19,11 @@ export function ensureNamedImport(
 ): ImportDeclaration {
 	const sourceFile = getOrCreateSourceFile(project, filePath);
 
-	// procura import do mesmo módulo
 	const existingImport = sourceFile
 		.getImportDeclarations()
 		.find((imp) => imp.getModuleSpecifierValue() === moduleSpecifier);
 
 	if (!existingImport) {
-		// não existe import desse módulo → cria
 		return sourceFile.addImportDeclaration({
 			moduleSpecifier,
 			namedImports: [importName],
