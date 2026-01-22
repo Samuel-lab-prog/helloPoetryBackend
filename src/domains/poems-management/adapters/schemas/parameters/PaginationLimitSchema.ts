@@ -1,0 +1,8 @@
+import { t } from 'elysia';
+import { makeValidationError } from '@AppError';
+
+export const paginationLimitSchema = t.Number({
+	minimum: 1,
+	maximum: 200,
+	...makeValidationError('Limit must be a positive integer between 1 and 200'),
+});
