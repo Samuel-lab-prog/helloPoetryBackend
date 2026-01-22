@@ -1,33 +1,34 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'hey',
+	domain: 'clients',
 
 	useCases: [
 		{
-			name: 'buscar-betinha',
-			type: 'command',
+			name: 'get-client',
+			type: 'query',
 
 			dataModels: {
-				GetBetinha: {
-					betinhaFriendsIds: 'number[]',
-					betinhaName: 'string',
+				FullClient: {
+					clientId: 'number[]',
+					clientName: 'string',
+					clientEmail: 'string',
 				},
 			},
 
 			errors: {
-				BetinhaNotFoundError: {
+				ClientNotFoundError: {
 					type: 'NOT_FOUND',
-					message: 'Não pudemos encontrar o betinha. Nunca sobra nada pro beta',
+					message: 'Client not found.',
 				},
 			},
 
 			repositoryMethods: {
-				findBetinhaById: {
+				findClientById: {
 					params: {
 						id: 'number',
 					},
-					returns: ['GetBetinha', 'null'],
+					returns: ['FullClient', 'null'],
 				} as const,
 			},
 
@@ -35,25 +36,25 @@ export default defineUseCases({
 				params: {
 					id: 'number',
 				},
-				returns: ['GetBetinha', 'null'],
+				returns: ['FullClient', 'null'],
 			} as const,
 
 			serviceFunc: {
 				params: {
 					id: 'number',
 				},
-				returns: ['GetBetinha', 'null'],
+				returns: ['FullClient', 'null'],
 			} as const,
 
 			http: {
 				method: 'POST',
-				path: '/users/:id/buscar-betinha',
+				path: '/clients/:id',
 				params: {
 					id: 'number',
 				},
 				responsesCodes: [200, 404, 400],
 				needsAuth: true,
-				schemaName: 'GetBetinhaSchema',
+				schemaName: 'GetClientSchema',
 			},
 		},
 	],
