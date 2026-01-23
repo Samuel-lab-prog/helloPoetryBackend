@@ -14,8 +14,12 @@ const filePaths = [
 
 	join('infra/queries-repository', 'Repository.ts'),
 	join('infra/queries-repository', 'Repository.test.ts'),
+	join('infra/queries-repository', 'SelectModels.ts'),
+	join('infra/queries-repository', 'Helpers.ts'),
 	join('infra/commands-repository', 'Repository.ts'),
 	join('infra/commands-repository', 'Repository.test.ts'),
+	join('infra/commands-repository', 'SelectModels.ts'),
+	join('infra/commands-repository', 'Helpers.ts'),
 
 	join('use-cases/queries/', 'Errors.ts'),
 	join('use-cases/queries/', 'Index.ts'),

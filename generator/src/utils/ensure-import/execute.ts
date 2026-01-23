@@ -10,6 +10,12 @@ import { getOrCreateSourceFile, project } from '../helpers/execute';
  * @param importName Named import identifier (e.g. "User")
  * @param moduleSpecifier Module specifier (e.g. "./user")
  * @returns ImportDeclaration
+ * @example
+ * ensureNamedImport(
+ *   'src/domains/users-management/infra/read-repository/repository.ts',
+ *  'prisma',
+ *  '@PrismaClient',
+ * );
  */
 export function ensureNamedImport(
 	filePath: string,

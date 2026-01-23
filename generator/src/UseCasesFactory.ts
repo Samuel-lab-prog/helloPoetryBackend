@@ -13,6 +13,7 @@ import { generateUseCaseFactory } from './generators/use-case/execute.ts';
 import { generateDTOs } from './generators/ensure-dto/execute.ts';
 import { generatePolicies } from './generators/ensure-policy/execute.ts';
 import { ensureDomainStructure } from './generators/domain-structure/execute.ts';
+import { syncRepository } from './generators/respository/execute.ts';
 import { project } from './utils/helpers/execute.ts';
 
 type UseCasesConfigFile<DM extends DataModelsDefinition> = {
@@ -33,6 +34,16 @@ function generateUseCaseFiles<DM extends DataModelsDefinition>(
 	generateUseCaseFactory(domainPath, uc, kind);
 	generateDTOs(domainPath, kind, uc.dtos);
 	generatePolicies(domainPath, kind, uc.policies);
+	syncRepository({
+		helpers: [],
+		domainPath,
+		kind: kind === 'queries' ? 'query' : 'command',
+		dataModels: uc.dataModels.map((dm) => ({
+			name: dm.name,
+			path: '../../use-cases/' + kind + '/models/Index',
+		})),
+		methods: uc.repositoryMethods,
+	});
 }
 
 async function generate<DM extends DataModelsDefinition>(

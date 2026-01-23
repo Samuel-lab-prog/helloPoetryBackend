@@ -49,13 +49,51 @@ export default defineUseCases({
 						},
 					],
 					returns: ['FullClient', 'null'],
+					body: `
+						// Repository implementation goes here
+						const client = await prisma.user.findUnique({
+							where: { id },
+						});
+						return client;
+					`.trim(),
+					selectModel: {
+						name: 'clientSelectModel',
+						body: `
+					id: true,
+					name: true,
+					email: true,
+				`.trim(),
+					},
 				},
 				{
 					name: 'listAllClients',
 					params: [],
 					returns: ['ClientSummary[]'],
+					body: `
+						// Repository implementation goes here
+						const clients = await prisma.user.findMany({
+							select: clientSelectModel,
+						});
+						return clients;
+					`.trim(),
+					selectModel: {
+						name: 'clientSelectModel',
+						body: `
+					id: true,
+					name: true,
+				`.trim(),
+					},
 				},
+
 				{
+					selectModel: {
+						name: 'clientSelectModel',
+						body: `
+					id: true,
+					name: true,
+					email: true,
+				`.trim(),
+					},
 					name: 'deleteClient',
 					params: [
 						{
@@ -64,6 +102,12 @@ export default defineUseCases({
 						},
 					],
 					returns: ['void'],
+					body: `
+				// Repository implementation goes here
+				await prisma.user.delete({
+					where: { id },
+				});
+			`.trim(),
 				},
 			] as const,
 

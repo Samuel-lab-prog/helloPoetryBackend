@@ -89,6 +89,8 @@ type RepositoryMethodDefinition<DataModels> = {
 	name: string;
 	params: ParamDefinition[];
 	returns: ReturnTypeNames<DataModels>[];
+	body: string;
+	selectModel?: { name: string; body: string };
 };
 
 export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
