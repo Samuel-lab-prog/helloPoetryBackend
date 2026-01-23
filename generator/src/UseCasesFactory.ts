@@ -33,7 +33,7 @@ async function generate<DM extends DataModelsDefinition>(
 
 	for (const uc of config.useCases) {
 		const kind = uc.type === 'command' ? 'commands' : 'queries';
-		await generateUseCaseFiles(domainPath, uc, kind);
+		generateUseCaseFiles(domainPath, uc, kind);
 	}
 
 	await project.save();
@@ -146,6 +146,7 @@ function generateUseCaseFactory<DM extends DataModelsDefinition>(
 		repositoryProperty:
 			kind === 'queries' ? 'poemQueriesRepository' : 'poemCommandsRepository',
 		params: uc.useCaseFunc.params,
+		funcBody: uc.useCaseFunc.body,
 		returnType: uc.useCaseFunc.returns.join(' | '),
 		modelImports: uc.dataModels.map((m) => ({
 			name: m.name,
@@ -169,7 +170,7 @@ function generateUseCaseBarrel(
 function generateDTOs(
 	domainPath: string,
 	kind: 'commands' | 'queries',
-	dtos?: { inputModel: string; outputModel: string }[],
+	dtos?: { inputModel: string; outputModel: string; body: string }[],
 ) {
 	if (!dtos) return;
 	const dtosDir = join(domainPath, 'use-cases', kind, 'dtos');
@@ -180,8 +181,9 @@ function generateDTOs(
 			functionName: `to${dto.outputModel}`,
 			inputModel: dto.inputModel,
 			outputModel: dto.outputModel,
-			inputPath: `../models/${dto.inputModel}`,
-			outputPath: `../models/${dto.outputModel}`,
+			inputPath: `../models/Index`,
+			outputPath: `../models/Index`,
+			body: dto.body,
 		});
 	}
 }

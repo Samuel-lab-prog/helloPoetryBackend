@@ -75,6 +75,13 @@ export default defineUseCases({
 					},
 				],
 				returns: ['FullClient', 'ClientSummary', 'null'],
+				body: `
+					const client = await poemQueriesRepository.findClientById({ id });
+					if (!client) {
+						throw new ClientNotFoundError();
+					}
+					return client;
+				`,
 			} as const,
 
 			serviceFunc: {
@@ -85,6 +92,7 @@ export default defineUseCases({
 					},
 				],
 				returns: ['FullClient', 'ClientSummary', 'null'],
+				body: ``,
 			} as const,
 
 			http: {
@@ -104,6 +112,12 @@ export default defineUseCases({
 				{
 					inputModel: 'FullClient',
 					outputModel: 'ClientSummary',
+					body: `
+								return {
+									clientId: fullClient.clientId,
+									clientName: fullClient.clientName,
+								};
+						`.trim(),
 				},
 			],
 			policies: [

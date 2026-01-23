@@ -49,6 +49,7 @@ type ReturnTypeNames<DataModels> = keyof DataModels | BaseReturn;
 type FunctionDefinition<DataModels> = {
 	params: ParamDefinition[];
 	returns: ReturnTypeNames<DataModels>[];
+	body: string;
 };
 
 /* =======================
@@ -110,6 +111,7 @@ export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
 	dtos?: {
 		inputModel: string;
 		outputModel: string;
+		body: string;
 	}[];
 
 	policies?: {

@@ -6,6 +6,7 @@ type DtoInput = {
 	functionName: string;
 	inputModel: string;
 	outputModel: string;
+	body: string;
 	inputPath: string;
 	outputPath: string;
 };
@@ -33,15 +34,6 @@ export function ensureDtoFile(dto: DtoInput) {
 		],
 	});
 
-	const paramName = inputModel.charAt(0).toLowerCase() + inputModel.slice(1);
-
-	fn.setBodyText(
-		`
-return {
-  // TODO: map ${inputModel} to ${outputModel}
-  ...${paramName}
-};
-`.trim(),
-	);
+	fn.setBodyText(dto.body.trim());
 	fn.setReturnType(outputModel);
 }
