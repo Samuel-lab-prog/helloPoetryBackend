@@ -1,5 +1,6 @@
 import { ensureNamedImport } from '../../utils/ensure-import/execute';
 import { ensureFunction } from '../../utils/ensure-function/execute';
+import { join } from 'path';
 
 type DtoInput = {
 	filePath: string;
@@ -8,9 +9,10 @@ type DtoInput = {
 	outputModel: string;
 	inputPath: string;
 	outputPath: string;
+	body: string;
 };
 
-export function ensureDtoFile(dto: DtoInput) {
+function ensureDtoFile(dto: DtoInput) {
 	const {
 		filePath,
 		functionName,
@@ -18,6 +20,7 @@ export function ensureDtoFile(dto: DtoInput) {
 		outputModel,
 		inputPath,
 		outputPath,
+		body,
 	} = dto;
 
 	ensureNamedImport(filePath, inputModel, inputPath, true);
@@ -27,21 +30,37 @@ export function ensureDtoFile(dto: DtoInput) {
 		isExported: true,
 		parameters: [
 			{
-				name: inputModel.charAt(0).toLowerCase() + inputModel.slice(1),
+				name: 'input',
 				type: inputModel,
 			},
 		],
 	});
 
-	const paramName = inputModel.charAt(0).toLowerCase() + inputModel.slice(1);
-
 	fn.setBodyText(
 		`
-return {
-  // TODO: map ${inputModel} to ${outputModel}
-  ...${paramName}
-};
+${body}
 `.trim(),
 	);
 	fn.setReturnType(outputModel);
+}
+
+export function generateDTOs(
+	domainPath: string,
+	kind: 'commands' | 'queries',
+	dtos?: { inputModel: string; outputModel: string; body: string }[],
+) {
+	if (!dtos) return;
+	const dtosDir = join(domainPath, 'use-cases', kind, 'dtos');
+	const dtoFilePath = join(dtosDir, 'Dtos.ts');
+	for (const dto of dtos) {
+		ensureDtoFile({
+			filePath: dtoFilePath,
+			functionName: `to${dto.outputModel}`,
+			inputModel: dto.inputModel,
+			outputModel: dto.outputModel,
+			inputPath: `../models/${dto.inputModel}`,
+			outputPath: `../models/${dto.outputModel}`,
+			body: dto.body,
+		});
+	}
 }

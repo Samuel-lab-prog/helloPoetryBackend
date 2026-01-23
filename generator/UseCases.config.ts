@@ -75,6 +75,14 @@ export default defineUseCases({
 					},
 				],
 				returns: ['FullClient', 'ClientSummary', 'null'],
+				body: `
+					// Use case implementation goes here
+					const client = await repository.findClientById(id);
+					if (!client) {
+						throw new ClientNotFoundError();
+					}
+					return client;
+				`.trim(),
 			} as const,
 
 			serviceFunc: {
@@ -85,6 +93,14 @@ export default defineUseCases({
 					},
 				],
 				returns: ['FullClient', 'ClientSummary', 'null'],
+				body: `
+					// Service implementation goes here
+					const client = await service.findClientById(id);
+					if (!client) {
+						throw new ClientNotFoundError();
+					}
+					return client;
+				`.trim(),
 			} as const,
 
 			http: {
@@ -104,6 +120,12 @@ export default defineUseCases({
 				{
 					inputModel: 'FullClient',
 					outputModel: 'ClientSummary',
+					body: `
+						return {
+							clientId: input.clientId,
+							clientName: input.clientName,
+						}
+					`.trim(),
 				},
 			],
 			policies: [

@@ -6,6 +6,11 @@ import { ensureInterface } from '../../utils/ensure-interface/execute';
 import { ensureProperties } from '../../utils/ensure-properties/execute';
 import { ensureFunction } from '../../utils/ensure-function/execute';
 import { toPascalCase, toCamelCase } from '../../utils/helpers/execute';
+import type {
+	DataModelsDefinition,
+	UseCaseDefinition,
+} from '../../DefineUseCases';
+import { ensureBarrelExport } from '../../utils/ensures-barrel-line/execute';
 
 type Param = {
 	name: string;
@@ -29,7 +34,7 @@ type UseCaseFactoryInput = {
 	}[];
 };
 
-export function ensureUseCaseFactoryFile({
+function ensureUseCaseFactoryFile({
 	domainPath,
 	useCaseName,
 	repositoryName,
@@ -106,4 +111,39 @@ export function ensureUseCaseFactoryFile({
 	);
 
 	return factory;
+}
+
+function generateUseCaseBarrel(
+	domainPath: string,
+	name: string,
+	kind: 'commands' | 'queries',
+) {
+	const useCasesBarrelPath = join(domainPath, 'use-cases', kind, 'index.ts');
+	ensureBarrelExport(useCasesBarrelPath, `./${name}/execute`);
+}
+
+export function generateUseCaseFactory<DM extends DataModelsDefinition>(
+	domainPath: string,
+	uc: UseCaseDefinition<DM>,
+	kind: 'commands' | 'queries',
+) {
+	ensureUseCaseFactoryFile({
+		domainPath,
+		useCaseName: uc.name,
+		repositoryName:
+			kind === 'queries' ? 'QueriesRepository' : 'CommandsRepository',
+		repositoryProperty:
+			kind === 'queries' ? 'poemQueriesRepository' : 'poemCommandsRepository',
+		params: uc.useCaseFunc.params,
+		returnType: uc.useCaseFunc.returns.join(' | '),
+		modelImports: uc.dataModels.map((m) => ({
+			name: m.name,
+			from: `./models/${m.name}`,
+		})),
+		policyImports: [],
+		kind,
+		domainErrors: uc.errors,
+	});
+
+	generateUseCaseBarrel(domainPath, uc.name, kind);
 }

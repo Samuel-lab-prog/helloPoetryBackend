@@ -1,15 +1,9 @@
 import { ensureNamedImport } from '../../utils/ensure-import/execute';
 import { ensureClass } from '../../utils/ensure-class/execute';
 import { Scope } from 'ts-morph';
+import { join } from 'path';
 
-/**
- * Ensures that a DomainError class exists for a given error definition.
- *
- * @param filePath Path to the source file
- * @param error Error definition (name, type, message)
- * @returns ClassDeclaration
- */
-export function ensureDomainErrorClass(
+function ensureDomainErrorClass(
 	filePath: string,
 	error: {
 		name: string;
@@ -27,4 +21,15 @@ export function ensureDomainErrorClass(
 			statements: [`super('${error.type}', '${error.message}');`],
 		});
 	});
+}
+
+export function generateDomainErrors(
+	domainPath: string,
+	kind: string,
+	errors: { name: string; type: string; message: string }[],
+) {
+	const errorsFilePath = join(domainPath, 'use-cases', kind, 'Errors.ts');
+	for (const error of errors) {
+		ensureDomainErrorClass(errorsFilePath, error);
+	}
 }

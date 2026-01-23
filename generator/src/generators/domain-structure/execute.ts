@@ -1,3 +1,4 @@
+import { existsSync } from 'fs';
 import { mkdir, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 
@@ -31,11 +32,6 @@ const filePaths = [
 	join('ports', 'CommandsRepository.ts'),
 ];
 
-/**
- * Creates the folder structure and files for a new Bounded Context
- * @param name Bounded Context name
- * @param basePath Base path where the Bounded Context will be created
- */
 export async function generateBoundedContext(
 	name: string,
 	basePath: string,
@@ -47,4 +43,14 @@ export async function generateBoundedContext(
 	});
 
 	await Promise.all(tasks);
+}
+
+export async function ensureDomainStructure(domain: string, basePath: string) {
+	const domainPath = `${basePath}/${domain}`;
+	if (!existsSync(domainPath)) {
+		await generateBoundedContext(domain, basePath);
+		console.log(
+			`Created Bounded Context folder structure for domain: ${domain}`,
+		);
+	}
 }

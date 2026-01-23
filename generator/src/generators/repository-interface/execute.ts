@@ -5,10 +5,12 @@ import {
 	buildParamsType,
 	buildReturnType,
 	type ParamDefinition,
+	type Primitive,
 } from '../../utils/helpers/execute';
 import { InterfaceDeclaration } from 'ts-morph';
+import { join } from 'path';
 
-export function ensureQueriesRepositoryInterface(
+function ensureQueriesRepositoryInterface(
 	filePath: string,
 	repositoryName: string,
 	repositoryMethods: readonly {
@@ -66,4 +68,26 @@ export function ensureQueriesRepositoryInterface(
 	}
 
 	return newInterface;
+}
+
+export function syncRepositoryInterface(
+	domainPath: string,
+	kind: string,
+	repositoryMethods: {
+		name: string;
+		params: { name: string; type: Primitive }[];
+		returns: string[];
+	}[],
+) {
+	const repoFilePath = join(
+		domainPath,
+		'ports',
+		`${kind.charAt(0).toUpperCase() + kind.slice(1)}Repository.ts`,
+	);
+	ensureQueriesRepositoryInterface(
+		repoFilePath,
+		kind === 'queries' ? 'QueriesRepository' : 'CommandsRepository',
+		repositoryMethods,
+		`../use-cases/${kind}/models/Index`,
+	);
 }
