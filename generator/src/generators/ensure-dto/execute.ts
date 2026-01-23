@@ -58,8 +58,8 @@ export function generateDTOs(
 			functionName: `to${dto.outputModel}`,
 			inputModel: dto.inputModel,
 			outputModel: dto.outputModel,
-			inputPath: `../models/${dto.inputModel}`,
-			outputPath: `../models/${dto.outputModel}`,
+			inputPath: `../models/Index`,
+			outputPath: `../models/Index`,
 			body: dto.body,
 		});
 	}

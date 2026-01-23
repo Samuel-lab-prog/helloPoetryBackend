@@ -64,7 +64,7 @@ function ensureUseCaseFactoryFile({
 	);
 
 	for (const { name } of modelImports) {
-		ensureNamedImport(filePath, name, `../models/${name}`, true);
+		ensureNamedImport(filePath, name, `../models/Index`, true);
 	}
 
 	for (const { name, from } of policyImports) {
