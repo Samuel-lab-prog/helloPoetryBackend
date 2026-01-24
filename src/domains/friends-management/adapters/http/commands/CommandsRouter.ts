@@ -61,6 +61,31 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 					tags: ['Friends Management'],
 				},
 			},
+		)
+		.patch(
+			'/reject/:id',
+			({ auth, params }) => {
+				return services.rejectFriendRequest({
+					fromUserId: params.id,
+					toUserId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: SendFriendRequestSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				status: 200,
+				detail: {
+					summary: 'Reject Friend Request',
+					description:
+						'Rejects a friend request from the specified user to the authenticated user.',
+					tags: ['Friends Management'],
+				},
+			},
 		);
 }
 

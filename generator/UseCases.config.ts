@@ -5,51 +5,16 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'accept-friend-request',
+			name: 'reject-friend-request',
 			type: 'command',
 
-			dataModels: [
-				{
-					name: 'UserSummary',
-					properties: {
-						id: 'number',
-						name: 'string',
-						nickname: 'string',
-					},
-				},
-				{
-					name: 'FriendRequest',
-					properties: {
-						fromUserId: 'number',
-						toUserId: 'number',
-						status: 'string',
-						createdAt: 'string',
-					},
-				},
-			],
+			dataModels: [],
 
-			errors: [
-				{
-					name: 'UserNotFoundError',
-					type: 'NOT_FOUND',
-					message: 'Target user not found.',
-				},
-				{
-					name: 'CannotSendRequestToYourselfError',
-					type: 'VALIDATION_FAILED',
-					message: 'You cannot send a friend request to yourself.',
-				},
-				{
-					name: 'FriendshipAlreadyExistsError',
-					type: 'CONFLICT',
-					message:
-						'A friendship or request already exists between these users.',
-				},
-			],
+			errors: [],
 
 			repositoryMethods: [
 				{
-					name: 'acceptFriendRequest',
+					name: 'rejectFriendRequest',
 					params: [
 						{ name: 'fromUserId', type: 'number' },
 						{ name: 'toUserId', type: 'number' },
@@ -63,29 +28,12 @@ export default defineUseCases({
 								status: 'pending',
 							},
 							data: {
-								status: 'accepted',
+								status: 'rejected',
 							},
 						});
 					`.trim(),
 				},
-				{
-					name: 'findFriendshipBetweenUsers',
-					params: [
-						{ name: 'userAId', type: 'number' },
-						{ name: 'userBId', type: 'number' },
-					],
-					returns: ['FriendRequest', 'null'],
-					body: `
-						return prisma.friendship.findFirst({
-							where: {
-								OR: [
-									{ userAId, userBId },
-									{ userAId: userBId, userBId: userAId },
-								],
-							},
-						});
-					`.trim(),
-				},
+
 				{
 					name: 'createFriendRequest',
 					params: [
@@ -131,7 +79,7 @@ export default defineUseCases({
 						throw new FriendshipAlreadyExistsError();
 					}
 
-					return repository.acceptFriendRequest(
+					return repository.rejectFriendRequest(
 						fromUserId,
 						toUserId,
 					);
@@ -140,7 +88,7 @@ export default defineUseCases({
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'acceptFriendRequest',
+					useCaseFuncName: 'rejectFriendRequest',
 					params: [{ fromUserId: 'number' }, { toUserId: 'number' }],
 					returns: ['FriendRequest'],
 				},

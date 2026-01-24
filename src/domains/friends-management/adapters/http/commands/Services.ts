@@ -3,6 +3,7 @@ import type { FriendRequest } from '../../../use-cases/commands/models/Index';
 import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
+	rejectFriendRequestFactory,
 } from '../../../use-cases/commands/Index';
 
 export interface CommandsRouterServices {
@@ -14,6 +15,10 @@ export interface CommandsRouterServices {
 		fromUserId: number;
 		toUserId: number;
 	}): Promise<FriendRequest>;
+	rejectFriendRequest(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<FriendRequest>;
 }
 
 export const commandsRouterServices: CommandsRouterServices = {
@@ -21,6 +26,9 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 	}),
 	acceptFriendRequest: acceptFriendRequestFactory({
+		commandsRepository,
+	}),
+	rejectFriendRequest: rejectFriendRequestFactory({
 		commandsRepository,
 	}),
 };
