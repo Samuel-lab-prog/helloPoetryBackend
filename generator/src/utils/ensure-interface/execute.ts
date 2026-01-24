@@ -12,10 +12,15 @@ export function ensureInterface(
 	filePath: string,
 	interfaceName: string,
 	isExported = true,
+	content?: string,
 ): InterfaceDeclaration {
 	const sourceFile = getOrCreateSourceFile(project, filePath);
 	return (
 		sourceFile.getInterface(interfaceName) ??
-		sourceFile.addInterface({ name: interfaceName, isExported })
+		sourceFile.addInterface({
+			name: interfaceName,
+			isExported,
+			...(content ? { statements: content } : {}),
+		})
 	);
 }

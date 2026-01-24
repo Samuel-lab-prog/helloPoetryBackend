@@ -1,4 +1,6 @@
+import { ensureExportedObject } from '../../utils/ensure-expo-object/execute';
 import { ensureNamedImport } from '../../utils/ensure-import/execute';
+import { ensureInterface } from '../../utils/ensure-interface/execute';
 
 type SyncServicesParams = {
 	domainPath: string;
@@ -23,7 +25,6 @@ export function syncServices(ctx: SyncServicesParams) {
 		currentPath,
 		`${kind}Repository`,
 		`../../../infra/${kind}-repository/Repository`,
-		true,
 	);
 	// Data Models Imports
 	dataModels.forEach((model) => {
@@ -36,5 +37,40 @@ export function syncServices(ctx: SyncServicesParams) {
 			service.useCaseFuncName + 'Factory',
 			`../../../use-cases/${kind}/Index`,
 		);
+	});
+	// Router Services Interface
+	const ifaceName = `${kind.charAt(0).toUpperCase() + kind.slice(1)}RouterServices`;
+	const ifaceImplName =
+		ifaceName.charAt(0).toLocaleLowerCase() + ifaceName.slice(1);
+	const iface = ensureInterface(currentPath, ifaceName, true);
+	// Ruoter Services Implementation
+	ensureExportedObject({
+		filePath: currentPath,
+		objectName: ifaceImplName,
+		type: ifaceName,
+		content: '{ }',
+	});
+
+	services.forEach((s) => {
+		if (iface.getMethod(s.useCaseFuncName)) {
+			return;
+		}
+
+		const params = s.params
+			.map((p) =>
+				Object.entries(p)
+					// eslint-disable-next-line max-nested-callbacks
+					.map(([key, type]) => `${key}: ${type}`)
+					.join(', '),
+			)
+			.join('; ');
+
+		const returns = s.returns.length > 1 ? s.returns.join(' | ') : s.returns[0];
+
+		iface.addMethod({
+			name: s.useCaseFuncName,
+			parameters: [{ name: 'params', type: `{ ${params} }` }],
+			returnType: `Promise<${returns}>`,
+		});
 	});
 }

@@ -133,7 +133,7 @@ export function generateUseCaseFactory<DM extends DataModelsDefinition>(
 		repositoryName:
 			kind === 'queries' ? 'QueriesRepository' : 'CommandsRepository',
 		repositoryProperty:
-			kind === 'queries' ? 'poemQueriesRepository' : 'poemCommandsRepository',
+			kind === 'queries' ? 'queriesRepository' : 'commandsRepository',
 		params: uc.useCaseFunc.params,
 		returnType: uc.useCaseFunc.returns.join(' | '),
 		modelImports: uc.dataModels.map((m) => ({
