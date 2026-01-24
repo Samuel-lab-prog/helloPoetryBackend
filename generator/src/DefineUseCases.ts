@@ -70,17 +70,6 @@ type ErrorsDefinition = ErrorDefinition[];
    HTTP
 ======================= */
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-
-type HttpDefinition = {
-	method: HttpMethod;
-	path: string;
-	params: ParamDefinition[];
-	responsesCodes: number[];
-	needsAuth: boolean;
-	schemaName: string;
-};
-
 type ServiceDefinition = {
 	useCaseFuncName: string;
 	params: Record<string, string>[];
@@ -113,8 +102,6 @@ export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
 	useCaseFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
 
 	serviceFunctions: ServiceDefinition[];
-
-	http: HttpDefinition;
 
 	dtos?: {
 		inputModel: string;

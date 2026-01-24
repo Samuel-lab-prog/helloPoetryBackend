@@ -136,20 +136,6 @@ export default defineUseCases({
 					returns: ['FullClient', 'ClientSummary', 'null'],
 				},
 			],
-
-			http: {
-				method: 'POST',
-				path: '/clients/:id',
-				params: [
-					{
-						name: 'id',
-						type: 'number',
-					},
-				],
-				responsesCodes: [200, 404, 400],
-				needsAuth: true,
-				schemaName: 'GetClientSchema',
-			},
 			dtos: [
 				{
 					inputModel: 'FullClient',
