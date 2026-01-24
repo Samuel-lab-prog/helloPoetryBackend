@@ -13,4 +13,8 @@ export interface CommandsRepository {
 		fromUserId: number;
 		toUserId: number;
 	}): Promise<FriendRequest>;
+	blockFriendRequest(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<FriendRequest>;
 }

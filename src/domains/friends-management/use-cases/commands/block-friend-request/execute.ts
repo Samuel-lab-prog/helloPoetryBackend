@@ -6,21 +6,21 @@ interface Dependencies {
 	commandsRepository: CommandsRepository;
 }
 
-export interface RejectFriendRequestParams {
+export interface BlockFriendRequestParams {
 	fromUserId: number;
 	toUserId: number;
 }
 
-export function rejectFriendRequestFactory({
+export function blockFriendRequestFactory({
 	commandsRepository,
 }: Dependencies) {
-	return function rejectFriendRequest(
-		params: RejectFriendRequestParams,
+	return function blockFriendRequest(
+		params: BlockFriendRequestParams,
 	): Promise<FriendRequest> {
 		if (params.fromUserId === params.toUserId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 		const { fromUserId, toUserId } = params;
-		return commandsRepository.rejectFriendRequest({ fromUserId, toUserId });
+		return commandsRepository.blockFriendRequest({ fromUserId, toUserId });
 	};
 }

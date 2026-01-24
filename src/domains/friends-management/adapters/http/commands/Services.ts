@@ -4,6 +4,7 @@ import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
 	rejectFriendRequestFactory,
+	blockFriendRequestFactory,
 } from '../../../use-cases/commands/Index';
 
 export interface CommandsRouterServices {
@@ -19,6 +20,10 @@ export interface CommandsRouterServices {
 		fromUserId: number;
 		toUserId: number;
 	}): Promise<FriendRequest>;
+	blockFriendRequest(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<FriendRequest>;
 }
 
 export const commandsRouterServices: CommandsRouterServices = {
@@ -29,6 +34,9 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 	}),
 	rejectFriendRequest: rejectFriendRequestFactory({
+		commandsRepository,
+	}),
+	blockFriendRequest: blockFriendRequestFactory({
 		commandsRepository,
 	}),
 };

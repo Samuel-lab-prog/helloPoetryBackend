@@ -7,6 +7,7 @@ export const commandsRepository: CommandsRepository = {
 	createFriendRequest,
 	acceptFriendRequest,
 	rejectFriendRequest,
+	blockFriendRequest,
 };
 
 export function acceptFriendRequest(params: {
@@ -73,5 +74,25 @@ export function rejectFriendRequest(params: {
 			toUserId,
 			status: result[0]!.status,
 		};
+	});
+}
+
+export function blockFriendRequest(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<FriendRequest> {
+	const { fromUserId, toUserId } = params;
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.friendship.updateManyAndReturn({
+			where: {
+				userAId: fromUserId,
+				userBId: toUserId,
+			},
+			data: {
+				status: 'blocked',
+			},
+			select: { status: true },
+		});
+		return { fromUserId, toUserId, status: rs[0]!.status };
 	});
 }

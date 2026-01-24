@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
@@ -83,6 +84,31 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Reject Friend Request',
 					description:
 						'Rejects a friend request from the specified user to the authenticated user.',
+					tags: ['Friends Management'],
+				},
+			},
+		)
+		.patch(
+			'/block/:id',
+			({ auth, params }) => {
+				return services.blockFriendRequest({
+					fromUserId: auth.clientId,
+					toUserId: params.id,
+				});
+			},
+			{
+				response: {
+					200: SendFriendRequestSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				status: 200,
+				detail: {
+					summary: 'Block Friend Request',
+					description:
+						'Blocks a friend request from the specified user to the authenticated user.',
 					tags: ['Friends Management'],
 				},
 			},

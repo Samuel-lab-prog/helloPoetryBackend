@@ -5,7 +5,7 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'reject-friend-request',
+			name: 'block-friend-request',
 			type: 'command',
 
 			dataModels: [],
@@ -14,7 +14,7 @@ export default defineUseCases({
 
 			repositoryMethods: [
 				{
-					name: 'rejectFriendRequest',
+					name: 'blockFriendRequest',
 					params: [
 						{ name: 'fromUserId', type: 'number' },
 						{ name: 'toUserId', type: 'number' },
@@ -28,25 +28,7 @@ export default defineUseCases({
 								status: 'pending',
 							},
 							data: {
-								status: 'rejected',
-							},
-						});
-					`.trim(),
-				},
-
-				{
-					name: 'createFriendRequest',
-					params: [
-						{ name: 'fromUserId', type: 'number' },
-						{ name: 'toUserId', type: 'number' },
-					],
-					returns: ['FriendRequest'],
-					body: `
-						return prisma.friendship.create({
-							data: {
-								userAId: fromUserId,
-								userBId: toUserId,
-								status: 'pending',
+								status: 'blocked',
 							},
 						});
 					`.trim(),
@@ -79,7 +61,7 @@ export default defineUseCases({
 						throw new FriendshipAlreadyExistsError();
 					}
 
-					return repository.rejectFriendRequest(
+					return repository.blockFriendRequest(
 						fromUserId,
 						toUserId,
 					);
@@ -88,7 +70,7 @@ export default defineUseCases({
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'rejectFriendRequest',
+					useCaseFuncName: 'blockFriendRequest',
 					params: [{ fromUserId: 'number' }, { toUserId: 'number' }],
 					returns: ['FriendRequest'],
 				},
