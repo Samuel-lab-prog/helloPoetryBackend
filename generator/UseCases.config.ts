@@ -5,7 +5,7 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'block-friend-request',
+			name: 'delete-friend',
 			type: 'command',
 
 			dataModels: [],
@@ -14,21 +14,17 @@ export default defineUseCases({
 
 			repositoryMethods: [
 				{
-					name: 'blockFriendRequest',
+					name: 'deleteFriend',
 					params: [
 						{ name: 'fromUserId', type: 'number' },
 						{ name: 'toUserId', type: 'number' },
 					],
 					returns: ['FriendRequest'],
 					body: `
-						return prisma.friendship.updateMany({
+						return prisma.friendship.deleteAndReturn({
 							where: {
 								userAId: fromUserId,
 								userBId: toUserId,
-								status: 'pending',
-							},
-							data: {
-								status: 'blocked',
 							},
 						});
 					`.trim(),
@@ -61,7 +57,7 @@ export default defineUseCases({
 						throw new FriendshipAlreadyExistsError();
 					}
 
-					return repository.blockFriendRequest(
+					return repository.deleteFriend(
 						fromUserId,
 						toUserId,
 					);
@@ -70,7 +66,7 @@ export default defineUseCases({
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'blockFriendRequest',
+					useCaseFuncName: 'deleteFriend',
 					params: [{ fromUserId: 'number' }, { toUserId: 'number' }],
 					returns: ['FriendRequest'],
 				},

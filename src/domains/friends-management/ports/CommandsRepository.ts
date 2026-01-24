@@ -17,4 +17,8 @@ export interface CommandsRepository {
 		fromUserId: number;
 		toUserId: number;
 	}): Promise<FriendRequest>;
+	deleteFriend(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<{ fromUserId: number; toUserId: number }>;
 }

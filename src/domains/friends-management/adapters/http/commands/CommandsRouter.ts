@@ -112,6 +112,34 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 					tags: ['Friends Management'],
 				},
 			},
+		)
+		.delete(
+			'/:id',
+			({ auth, params }) => {
+				return services.deleteFriend({
+					fromUserId: auth.clientId,
+					toUserId: params.id,
+				});
+			},
+			{
+				response: {
+					200: t.Object({
+						fromUserId: idSchema,
+						toUserId: idSchema,
+					}),
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				status: 200,
+				detail: {
+					summary: 'Delete Friend',
+					description:
+						'Deletes the friendship between the authenticated user and the specified user.',
+					tags: ['Friends Management'],
+				},
+			},
 		);
 }
 

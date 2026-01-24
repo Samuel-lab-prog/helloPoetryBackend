@@ -8,6 +8,7 @@ export const commandsRepository: CommandsRepository = {
 	acceptFriendRequest,
 	rejectFriendRequest,
 	blockFriendRequest,
+	deleteFriend,
 };
 
 export function acceptFriendRequest(params: {
@@ -94,5 +95,21 @@ export function blockFriendRequest(params: {
 			select: { status: true },
 		});
 		return { fromUserId, toUserId, status: rs[0]!.status };
+	});
+}
+
+export function deleteFriend(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<{ fromUserId: number; toUserId: number }> {
+	const { fromUserId, toUserId } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.friendship.deleteMany({
+			where: {
+				userAId: toUserId,
+				userBId: fromUserId,
+			},
+		});
+		return { fromUserId, toUserId };
 	});
 }
