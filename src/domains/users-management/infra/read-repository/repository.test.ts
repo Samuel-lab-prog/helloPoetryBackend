@@ -48,6 +48,7 @@ const EXOTIC_USER: InsertUser = {
 };
 
 beforeEach(async () => {
+	await prisma.friendship.deleteMany();
 	await prisma.poem.deleteMany();
 	await prisma.user.deleteMany();
 	await prisma.user.createMany({

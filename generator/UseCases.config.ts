@@ -1,173 +1,148 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'clients',
+	domain: 'friends-management',
 
 	useCases: [
 		{
-			name: 'get-client',
-			type: 'query',
+			name: 'send-friend-request',
+			type: 'command',
 
 			dataModels: [
 				{
-					name: 'FullClient',
+					name: 'UserSummary',
 					properties: {
-						clientId: 'number',
-						clientName: 'string',
-						clientEmail: 'string',
+						id: 'number',
+						name: 'string',
+						nickname: 'string',
 					},
 				},
 				{
-					name: 'ClientSummary',
+					name: 'FriendRequest',
 					properties: {
-						clientId: 'number',
-						clientName: 'string',
+						fromUserId: 'number',
+						toUserId: 'number',
+						status: 'string',
+						createdAt: 'string',
 					},
 				},
 			],
 
 			errors: [
 				{
-					name: 'ClientNotFoundError',
+					name: 'UserNotFoundError',
 					type: 'NOT_FOUND',
-					message: 'Client not found.',
+					message: 'Target user not found.',
 				},
 				{
-					name: 'ClientValidationError',
+					name: 'CannotSendRequestToYourselfError',
 					type: 'VALIDATION_FAILED',
-					message: 'Client data is invalid.',
+					message: 'You cannot send a friend request to yourself.',
+				},
+				{
+					name: 'FriendshipAlreadyExistsError',
+					type: 'CONFLICT',
+					message:
+						'A friendship or request already exists between these users.',
 				},
 			],
 
 			repositoryMethods: [
 				{
-					name: 'findClientById',
-					params: [
-						{
-							name: 'id',
-							type: 'number',
-						},
-					],
-					returns: ['FullClient', 'null'],
+					name: 'findUserById',
+					params: [{ name: 'id', type: 'number' }],
+					returns: ['UserSummary', 'null'],
 					body: `
-						// Repository implementation goes here
-						const client = await prisma.user.findUnique({
+						const user = await prisma.user.findUnique({
 							where: { id },
+							select: userSelectModel,
 						});
-						return client;
+						return user;
 					`.trim(),
 					selectModel: {
-						name: 'clientSelectModel',
+						name: 'userSelectModel',
 						body: `
-					id: true,
-					name: true,
-					email: true,
-				`.trim(),
+							id: true,
+							name: true,
+							nickname: true,
+						`.trim(),
 					},
 				},
 				{
-					name: 'listAllClients',
-					params: [],
-					returns: ['ClientSummary[]'],
-					body: `
-						// Repository implementation goes here
-						const clients = await prisma.user.findMany({
-							select: clientSelectModel,
-						});
-						return clients;
-					`.trim(),
-					selectModel: {
-						name: 'clientSelectModel',
-						body: `
-					id: true,
-					name: true,
-				`.trim(),
-					},
-				},
-
-				{
-					selectModel: {
-						name: 'clientSelectModel',
-						body: `
-					id: true,
-					name: true,
-					email: true,
-				`.trim(),
-					},
-					name: 'deleteClient',
+					name: 'findFriendshipBetweenUsers',
 					params: [
-						{
-							name: 'id',
-							type: 'number',
-						},
+						{ name: 'userAId', type: 'number' },
+						{ name: 'userBId', type: 'number' },
 					],
-					returns: ['void'],
+					returns: ['FriendRequest', 'null'],
 					body: `
-				// Repository implementation goes here
-				await prisma.user.delete({
-					where: { id },
-				});
-			`.trim(),
+						return prisma.friendship.findFirst({
+							where: {
+								OR: [
+									{ userAId, userBId },
+									{ userAId: userBId, userBId: userAId },
+								],
+							},
+						});
+					`.trim(),
+				},
+				{
+					name: 'createFriendRequest',
+					params: [
+						{ name: 'fromUserId', type: 'number' },
+						{ name: 'toUserId', type: 'number' },
+					],
+					returns: ['FriendRequest'],
+					body: `
+						return prisma.friendship.create({
+							data: {
+								userAId: fromUserId,
+								userBId: toUserId,
+								status: 'pending',
+							},
+						});
+					`.trim(),
 				},
 			] as const,
 
 			useCaseFunc: {
 				params: [
-					{
-						name: 'id',
-						type: 'number',
-					},
+					{ name: 'requesterId', type: 'number' },
+					{ name: 'targetUserId', type: 'number' },
 				],
-				returns: ['FullClient', 'ClientSummary', 'null'],
+				returns: ['FriendRequest'],
 				body: `
-					// Use case implementation goes here
-					const client = await repository.findClientById(id);
-					if (!client) {
-						throw new ClientNotFoundError();
+					if (requesterId === targetUserId) {
+						throw new CannotSendRequestToYourselfError();
 					}
-					return client;
+
+					const targetUser = await repository.findUserById(targetUserId);
+					if (!targetUser) {
+						throw new UserNotFoundError();
+					}
+
+					const existingFriendship =
+						await repository.findFriendshipBetweenUsers(
+							requesterId,
+							targetUserId,
+						);
+
+					if (existingFriendship) {
+						throw new FriendshipAlreadyExistsError();
+					}
+
+					return repository.createFriendRequest(
+						requesterId,
+						targetUserId,
+					);
 				`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'getClient',
-					params: [{ id: 'number' }, { requesterId: 'number' }],
-					returns: ['FullClient', 'ClientSummary', 'null'],
-				},
-			],
-			dtos: [
-				{
-					inputModel: 'FullClient',
-					outputModel: 'ClientSummary',
-					body: `
-						return {
-							clientId: input.clientId,
-							clientName: input.clientName,
-						}
-					`.trim(),
-				},
-			],
-			policies: [
-				{
-					name: 'canAccessClientInfo',
-					parameters: {
-						requesterId: 'number',
-						requesterRole: 'string',
-						targetId: 'number',
-					},
-					body: `
-								return requesterRole === 'admin' || requesterId === targetId;
-						`.trim(),
-				},
-				{
-					name: 'isAdminUser',
-					parameters: {
-						userRole: 'string',
-					},
-					body: `
-								return userRole === 'admin';
-						`.trim(),
+					useCaseFuncName: 'sendFriendRequest',
+					params: [{ requesterId: 'number' }, { targetUserId: 'number' }],
+					returns: ['FriendRequest'],
 				},
 			],
 		},
