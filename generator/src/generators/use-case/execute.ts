@@ -88,7 +88,7 @@ function ensureUseCaseFactoryFile({
 		params.map(({ name, type }) => ({ name, type })),
 	);
 
-	const factoryName = `${pascalName}Factory`;
+	const factoryName = `${camelName}Factory`;
 
 	const factory = ensureFunction(filePath, factoryName, {
 		isExported: true,

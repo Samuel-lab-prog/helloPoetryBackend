@@ -81,6 +81,12 @@ type HttpDefinition = {
 	schemaName: string;
 };
 
+type ServiceDefinition = {
+	useCaseFuncName: string;
+	params: Record<string, string>[];
+	returns: string[];
+};
+
 /* =======================
    Repository / Use Case
 ======================= */
@@ -106,7 +112,7 @@ export type UseCaseDefinition<DataModels extends DataModelsDefinition> = {
 
 	useCaseFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
 
-	serviceFunc: FunctionDefinition<ResolveDataModels<DataModels>>;
+	serviceFunctions: ServiceDefinition[];
 
 	http: HttpDefinition;
 

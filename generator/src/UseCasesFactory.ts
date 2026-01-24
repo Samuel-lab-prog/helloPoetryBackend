@@ -14,6 +14,7 @@ import { generateDTOs } from './generators/ensure-dto/execute.ts';
 import { generatePolicies } from './generators/ensure-policy/execute.ts';
 import { ensureDomainStructure } from './generators/domain-structure/execute.ts';
 import { syncRepository } from './generators/respository/execute.ts';
+import { syncServices } from './generators/services/execute.ts';
 import { project } from './utils/helpers/execute.ts';
 
 type UseCasesConfigFile<DM extends DataModelsDefinition> = {
@@ -44,17 +45,27 @@ function generateUseCaseFiles<DM extends DataModelsDefinition>(
 		})),
 		methods: uc.repositoryMethods,
 	});
+	syncServices({
+		domainPath,
+		kind: kind === 'queries' ? 'query' : 'command',
+		dataModels: uc.dataModels.map((dm) => ({
+			name: dm.name,
+			path: '../../../use-cases/' + kind + '/models/Index',
+		})),
+		services: uc.serviceFunctions,
+	});
 }
 
 async function generate<DM extends DataModelsDefinition>(
 	config: UseCasesConfigFile<DM>,
 	basePath: string,
 ): Promise<void> {
-	const domainPath = join(basePath, config.domain);
+	const { domain, useCases: ucs } = config;
+	const domainPath = join(basePath, domain);
 
-	await ensureDomainStructure(config.domain, basePath);
+	await ensureDomainStructure(domain, basePath);
 
-	for (const uc of config.useCases) {
+	for (const uc of ucs) {
 		const kind = uc.type === 'command' ? 'commands' : 'queries';
 		generateUseCaseFiles(domainPath, uc, kind);
 	}

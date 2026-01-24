@@ -129,23 +129,13 @@ export default defineUseCases({
 				`.trim(),
 			} as const,
 
-			serviceFunc: {
-				params: [
-					{
-						name: 'id',
-						type: 'number',
-					},
-				],
-				returns: ['FullClient', 'ClientSummary', 'null'],
-				body: `
-					// Service implementation goes here
-					const client = await service.findClientById(id);
-					if (!client) {
-						throw new ClientNotFoundError();
-					}
-					return client;
-				`.trim(),
-			} as const,
+			serviceFunctions: [
+				{
+					useCaseFuncName: 'getClient',
+					params: [{ id: 'number' }, { requesterId: 'number' }],
+					returns: ['FullClient', 'ClientSummary', 'null'],
+				},
+			],
 
 			http: {
 				method: 'POST',
