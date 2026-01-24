@@ -1,6 +1,12 @@
-import { Project, SourceFile } from 'ts-morph';
+import {
+	IndentationText,
+	NewLineKind,
+	Project,
+	QuoteKind,
+	SourceFile,
+} from 'ts-morph';
 import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 
 export type Primitive =
 	| 'string'
@@ -53,7 +59,13 @@ export function buildReturnType(returns: readonly string[]): string {
 }
 
 export const project = new Project({
-	tsConfigFilePath: 'tsconfig.json',
+	tsConfigFilePath: resolve(process.cwd(), 'tsconfig.json'),
+	manipulationSettings: {
+		quoteKind: QuoteKind.Single,
+		useTrailingCommas: true,
+		indentationText: IndentationText.Tab,
+		newLineKind: NewLineKind.LineFeed,
+	},
 });
 
 /**
@@ -61,7 +73,7 @@ export const project = new Project({
  * @param filePath Absolute or relative file path
  */
 export function ensureDirectory(filePath: string): void {
-	const dir = dirname(filePath);
+	const dir = dirname(resolve(process.cwd(), filePath));
 	mkdirSync(dir, { recursive: true });
 }
 

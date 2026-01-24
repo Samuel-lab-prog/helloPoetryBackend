@@ -24,6 +24,7 @@ type UseCaseFactoryInput = {
 	repositoryProperty: string;
 	params: readonly Param[];
 	returnType: string;
+	funcBody: string;
 	modelImports: readonly { name: string; from: string }[];
 	policyImports?: readonly { name: string; from: string }[];
 	kind: 'queries' | 'commands';
@@ -40,6 +41,7 @@ function ensureUseCaseFactoryFile({
 	repositoryName,
 	repositoryProperty,
 	params,
+	funcBody,
 	returnType,
 	modelImports,
 	policyImports = [],
@@ -72,7 +74,7 @@ function ensureUseCaseFactoryFile({
 	}
 
 	for (const { name } of domainErrors) {
-		ensureNamedImport(filePath, name, '../Errors', true);
+		ensureNamedImport(filePath, name, '../Errors', false);
 	}
 
 	const dependencies = ensureInterface(filePath, 'Dependencies', false);
@@ -101,12 +103,11 @@ function ensureUseCaseFactoryFile({
 	});
 
 	factory.setBodyText(
-		`return function ${camelName}(
+		`return async function ${camelName}(
   params: ${paramsInterfaceName}
 ): Promise<${returnType}> {
-  console.log(params);
-  console.log(${repositoryProperty});
-  return null;
+const { ${params.map((p) => p.name).join(', ')} } = params;
+  ${funcBody}
 };`,
 	);
 
