@@ -5,7 +5,7 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'send-friend-request',
+			name: 'accept-friend-request',
 			type: 'command',
 
 			dataModels: [
@@ -49,24 +49,24 @@ export default defineUseCases({
 
 			repositoryMethods: [
 				{
-					name: 'findUserById',
-					params: [{ name: 'id', type: 'number' }],
-					returns: ['UserSummary', 'null'],
+					name: 'acceptFriendRequest',
+					params: [
+						{ name: 'fromUserId', type: 'number' },
+						{ name: 'toUserId', type: 'number' },
+					],
+					returns: ['FriendRequest'],
 					body: `
-						const user = await prisma.user.findUnique({
-							where: { id },
-							select: userSelectModel,
+						return prisma.friendship.updateMany({
+							where: {
+								userAId: fromUserId,
+								userBId: toUserId,
+								status: 'pending',
+							},
+							data: {
+								status: 'accepted',
+							},
 						});
-						return user;
 					`.trim(),
-					selectModel: {
-						name: 'userSelectModel',
-						body: `
-							id: true,
-							name: true,
-							nickname: true,
-						`.trim(),
-					},
 				},
 				{
 					name: 'findFriendshipBetweenUsers',
@@ -107,41 +107,41 @@ export default defineUseCases({
 
 			useCaseFunc: {
 				params: [
-					{ name: 'requesterId', type: 'number' },
-					{ name: 'targetUserId', type: 'number' },
+					{ name: 'fromUserId', type: 'number' },
+					{ name: 'toUserId', type: 'number' },
 				],
 				returns: ['FriendRequest'],
 				body: `
-					if (requesterId === targetUserId) {
+					if (fromUserId === toUserId) {
 						throw new CannotSendRequestToYourselfError();
 					}
 
-					const targetUser = await repository.findUserById(targetUserId);
+					const targetUser = await repository.findUserById(toUserId);
 					if (!targetUser) {
 						throw new UserNotFoundError();
 					}
 
 					const existingFriendship =
 						await repository.findFriendshipBetweenUsers(
-							requesterId,
-							targetUserId,
+							fromUserId,
+							toUserId,
 						);
 
 					if (existingFriendship) {
 						throw new FriendshipAlreadyExistsError();
 					}
 
-					return repository.createFriendRequest(
-						requesterId,
-						targetUserId,
+					return repository.acceptFriendRequest(
+						fromUserId,
+						toUserId,
 					);
 				`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'sendFriendRequest',
-					params: [{ requesterId: 'number' }, { targetUserId: 'number' }],
+					useCaseFuncName: 'acceptFriendRequest',
+					params: [{ fromUserId: 'number' }, { toUserId: 'number' }],
 					returns: ['FriendRequest'],
 				},
 			],

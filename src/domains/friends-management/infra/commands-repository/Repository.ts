@@ -3,27 +3,50 @@ import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type { FriendRequest } from '../../use-cases/commands/models/Index';
 
+export const commandsRepository: CommandsRepository = {
+	createFriendRequest,
+	acceptFriendRequest,
+};
+
+export function acceptFriendRequest(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<FriendRequest> {
+	const { fromUserId, toUserId } = params;
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.friendship.updateManyAndReturn({
+			where: {
+				userAId: fromUserId,
+				userBId: toUserId,
+				status: 'pending',
+			},
+			data: {
+				status: 'accepted',
+			},
+			select: { status: true },
+		});
+		return { fromUserId, toUserId, status: rs[0]!.status };
+	});
+}
+
 export function createFriendRequest(params: {
 	fromUserId: number;
 	toUserId: number;
 }): Promise<FriendRequest> {
 	const { fromUserId, toUserId } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.friendship.create({
+		const result = await prisma.friendship.create({
 			data: {
 				userAId: fromUserId,
 				userBId: toUserId,
 				status: 'pending',
 			},
+			select: { status: true },
 		});
 		return {
-			fromUserId: fromUserId,
-			toUserId: toUserId,
-			status: 'pending',
+			fromUserId,
+			toUserId,
+			status: result.status,
 		};
 	});
 }
-
-export const commandsRepository: CommandsRepository = {
-	createFriendRequest,
-};

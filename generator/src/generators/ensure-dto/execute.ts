@@ -10,7 +10,6 @@ type DtoInput = {
 	body: string;
 	inputPath: string;
 	outputPath: string;
-	body: string;
 };
 
 function ensureDtoFile(dto: DtoInput) {
@@ -37,15 +36,11 @@ function ensureDtoFile(dto: DtoInput) {
 		],
 	});
 
-<<<<<<< HEAD
 	fn.setBodyText(
 		`
 ${body}
 `.trim(),
 	);
-=======
-	fn.setBodyText(dto.body.trim());
->>>>>>> 8f90278b258e9d5f410674f69eaf0ed9dc7f3afe
 	fn.setReturnType(outputModel);
 }
 
