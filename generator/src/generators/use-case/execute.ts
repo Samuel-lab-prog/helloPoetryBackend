@@ -144,6 +144,7 @@ export function generateUseCaseFactory<DM extends DataModelsDefinition>(
 		policyImports: [],
 		kind,
 		domainErrors: uc.errors,
+		funcBody: uc.useCaseFunc.body,
 	});
 
 	generateUseCaseBarrel(domainPath, uc.name, kind);

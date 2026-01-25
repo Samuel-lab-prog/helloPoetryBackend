@@ -22,19 +22,16 @@ function ensureQueriesRepositoryInterface(
 ): InterfaceDeclaration {
 	const sourceFile = getOrCreateSourceFile(project, filePath);
 
-	const interfaceDeclaration = sourceFile.getInterface(repositoryName);
-
-	if (interfaceDeclaration !== undefined) {
-		interfaceDeclaration.remove();
+	let interfaceDeclaration = sourceFile.getInterface(repositoryName);
+	if (!interfaceDeclaration) {
+		interfaceDeclaration = sourceFile.addInterface({
+			name: repositoryName,
+			isExported: true,
+		});
 	}
 
-	const newInterface = sourceFile.addInterface({
-		name: repositoryName,
-		isExported: true,
-	});
-
 	for (const m of repositoryMethods) {
-		if (newInterface.getMethod(m.name)) {
+		if (interfaceDeclaration.getMethod(m.name)) {
 			continue;
 		}
 
@@ -43,7 +40,7 @@ function ensureQueriesRepositoryInterface(
 		const resolvedReturn = buildReturnType(m.returns);
 		const returnType = `Promise<${resolvedReturn}>`;
 
-		newInterface.addMethod({
+		interfaceDeclaration!.addMethod({
 			name: m.name,
 			parameters:
 				paramsType === 'void'
@@ -67,7 +64,7 @@ function ensureQueriesRepositoryInterface(
 		}
 	}
 
-	return newInterface;
+	return interfaceDeclaration!;
 }
 
 export function syncRepositoryInterface(

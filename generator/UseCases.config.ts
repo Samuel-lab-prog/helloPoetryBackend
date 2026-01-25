@@ -5,26 +5,53 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'delete-friend',
-			type: 'command',
+			name: 'get-friendship-status',
+			type: 'query',
 
-			dataModels: [],
+			dataModels: [
+				{
+					name: 'FriendshipRecord',
+					properties: {
+						userAId: 'number',
+						userBId: 'number',
+						status: 'string',
+						createdAt: 'string',
+					},
+				},
+				{
+					name: 'FriendshipStatusSnapshot',
+					properties: {
+						exists: 'boolean',
+
+						// none | pending_sent | pending_received | friends | blocked | rejected
+						status: 'string',
+
+						requesterId: 'number',
+
+						canSendRequest: 'boolean',
+						canAcceptRequest: 'boolean',
+						canRemoveFriend: 'boolean',
+					},
+				},
+			],
 
 			errors: [],
 
 			repositoryMethods: [
 				{
-					name: 'deleteFriend',
+					name: 'findFriendshipBetweenUsers',
 					params: [
-						{ name: 'fromUserId', type: 'number' },
-						{ name: 'toUserId', type: 'number' },
+						{ name: 'userAId', type: 'number' },
+						{ name: 'userBId', type: 'number' },
 					],
-					returns: ['FriendRequest'],
+					returns: ['FriendshipRecord', 'null'],
 					body: `
-						return prisma.friendship.deleteAndReturn({
+						return prisma.friendship.findFirst({
 							where: {
-								userAId: fromUserId,
-								userBId: toUserId,
+								OR: [
+									{ userAId, userBId },
+									{ userAId: userBId, userBId: userAId },
+								],
 							},
 						});
 					`.trim(),
@@ -33,42 +60,82 @@ export default defineUseCases({
 
 			useCaseFunc: {
 				params: [
-					{ name: 'fromUserId', type: 'number' },
-					{ name: 'toUserId', type: 'number' },
+					{ name: 'viewerId', type: 'number' },
+					{ name: 'targetUserId', type: 'number' },
 				],
-				returns: ['FriendRequest'],
+				returns: ['FriendshipStatusSnapshot'],
 				body: `
-					if (fromUserId === toUserId) {
-						throw new CannotSendRequestToYourselfError();
+					if (viewerId === targetUserId) {
+						return {
+							exists: false,
+							status: 'none',
+							requesterId: 0,
+							canSendRequest: false,
+							canAcceptRequest: false,
+							canRemoveFriend: false,
+						};
 					}
 
-					const targetUser = await repository.findUserById(toUserId);
-					if (!targetUser) {
-						throw new UserNotFoundError();
-					}
-
-					const existingFriendship =
+					const friendship =
 						await repository.findFriendshipBetweenUsers(
-							fromUserId,
-							toUserId,
+							viewerId,
+							targetUserId,
 						);
 
-					if (existingFriendship) {
-						throw new FriendshipAlreadyExistsError();
+					if (!friendship) {
+						return {
+							exists: false,
+							status: 'none',
+							requesterId: 0,
+							canSendRequest: true,
+							canAcceptRequest: false,
+							canRemoveFriend: false,
+						};
 					}
 
-					return repository.deleteFriend(
-						fromUserId,
-						toUserId,
-					);
+					if (friendship.status === 'pending') {
+						const sentByViewer =
+							friendship.userAId === viewerId;
+
+						return {
+							exists: true,
+							status: sentByViewer
+								? 'pending_sent'
+								: 'pending_received',
+							requesterId: friendship.userAId,
+							canSendRequest: false,
+							canAcceptRequest: !sentByViewer,
+							canRemoveFriend: sentByViewer,
+						};
+					}
+
+					if (friendship.status === 'accepted') {
+						return {
+							exists: true,
+							status: 'friends',
+							requesterId: friendship.userAId,
+							canSendRequest: false,
+							canAcceptRequest: false,
+							canRemoveFriend: true,
+						};
+					}
+
+					return {
+						exists: true,
+						status: friendship.status,
+						requesterId: friendship.userAId,
+						canSendRequest: false,
+						canAcceptRequest: false,
+						canRemoveFriend: false,
+					};
 				`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'deleteFriend',
-					params: [{ fromUserId: 'number' }, { toUserId: 'number' }],
-					returns: ['FriendRequest'],
+					useCaseFuncName: 'getFriendshipStatus',
+					params: [{ viewerId: 'number' }, { targetUserId: 'number' }],
+					returns: ['FriendshipStatusSnapshot'],
 				},
 			],
 		},
