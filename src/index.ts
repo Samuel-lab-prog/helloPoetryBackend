@@ -16,6 +16,7 @@ import { poemsQueriesRouter } from './domains/poems-management/adapters/http/que
 import { poemsCommandsRouter } from './domains/poems-management/adapters/http/commands/QueriesRouter';
 import { friendsQueriesRouter } from '@Domains/friends-management/adapters/http/queries/QueriesRouter';
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/http/commands/CommandsRouter';
+import { interactionsCommandsRouter } from '@Domains/interactions/adapters/http/commands/CommandsRouter';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
@@ -65,4 +66,5 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(poemsCommandsRouter)
 	.use(friendsQueriesRouter)
 	.use(friendsCommandsRouter)
+	.use(interactionsCommandsRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });
