@@ -77,8 +77,8 @@
 
     authorId Int
     author   User      @relation(fields: [authorId], references: [id])
-    PoemId   Int
-    Poem     Poem      @relation(fields: [PoemId], references: [id])
+    poemId   Int
+    poem     Poem      @relation(fields: [poemId], references: [id])
     parentId Int?
     parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
     replies  Comment[] @relation("CommentReplies")

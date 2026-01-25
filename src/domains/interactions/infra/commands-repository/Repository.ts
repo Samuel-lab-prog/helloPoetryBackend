@@ -1,7 +1,10 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/CommandsRepository';
-import type { PoemLike } from '../../use-cases/commands/models/Index';
+import type {
+	PoemLike,
+	PoemComment,
+} from '../../use-cases/commands/models/Index';
 
 export function existsPoemLike(params: {
 	userId: number;
@@ -40,7 +43,10 @@ export function createPoemLike(params: {
 	});
 }
 
-export function deletePoemLike(params: { userId: number; poemId: number }): Promise<PoemLike> {
+export function deletePoemLike(params: {
+	userId: number;
+	poemId: number;
+}): Promise<PoemLike> {
 	const { userId, poemId } = params;
 
 	return withPrismaErrorHandling(() => {
@@ -55,21 +61,10 @@ export function deletePoemLike(params: { userId: number; poemId: number }): Prom
 	});
 }
 
-export function findPoemById(params: { poemId: number }): Promise<number | null> {
-
-	const { poemId } = params;
-	return withPrismaErrorHandling(async () => {
-		const poem = await prisma.poem.findUnique({
-			where: { id: poemId },
-			select: { id: true },
-		});
-		return poem?.id ?? null;
-	});
-
-}
-
-export function findPoemLike(params: { userId: number, poemId: number }): Promise<PoemLike | null> {
-
+export function findPoemLike(params: {
+	userId: number;
+	poemId: number;
+}): Promise<PoemLike | null> {
 	const { userId, poemId } = params;
 	return withPrismaErrorHandling(() => {
 		return prisma.poemLike.findUnique({
@@ -81,7 +76,47 @@ export function findPoemLike(params: { userId: number, poemId: number }): Promis
 			},
 		});
 	});
+}
 
+// ----------------------------------------
+// Poem Comments
+// ----------------------------------------
+
+export function createPoemComment(params: {
+	userId: number;
+	poemId: number;
+	content: string;
+}): Promise<PoemComment> {
+	const { userId, poemId, content } = params;
+	return withPrismaErrorHandling(async () => {
+		const comment = await prisma.comment.create({
+			data: {
+				authorId: userId,
+				poemId,
+				content,
+			},
+		});
+		return {
+			id: comment.id,
+			content: comment.content,
+			createdAt: comment.createdAt,
+			status: comment.status,
+			userId: comment.authorId,
+			poemId: comment.poemId,
+			parentId: comment.parentId,
+		};
+	});
+}
+
+export function deletePoemComment(params: {
+	commentId: number;
+}): Promise<void> {
+	const { commentId } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.comment.delete({
+			where: { id: commentId },
+		});
+	});
 }
 
 export const commandsRepository: CommandsRepository = {
@@ -89,4 +124,6 @@ export const commandsRepository: CommandsRepository = {
 	existsPoemLike,
 	createPoemLike,
 	deletePoemLike,
+	createPoemComment,
+	deletePoemComment,
 };

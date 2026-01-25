@@ -6,6 +6,7 @@ const domainErrors = {
 	INVALID_TOKEN: 'Invalid or expired token',
 	CONFLICT: 'Domain entity conflict error',
 	OPERATION_FAILED: 'Domain operation failed',
+	BAD_REQUEST: 'Bad request on domain entity',
 };
 
 export class DomainError extends Error {

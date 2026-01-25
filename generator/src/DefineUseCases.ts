@@ -61,7 +61,9 @@ type ErrorType =
 	| 'VALIDATION_FAILED'
 	| 'UNAUTHORIZED'
 	| 'CONFLICT'
-	| 'INTERNAL_SERVER_ERROR';
+	| 'INTERNAL_SERVER_ERROR'
+	| 'FORBIDDEN'
+	| 'BAD_REQUEST';
 
 type ErrorDefinition = {
 	name: string;
