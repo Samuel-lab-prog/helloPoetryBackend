@@ -1,8 +1,7 @@
 node_modules
 docker-compose.yml
 dist
-/src/generated/prisma
-/src/prisma/generated
+src/generic-subdomains/persistance/prisma/generated
 .env
 cloc.json
 depcruise.json

@@ -105,13 +105,13 @@
 
   model PoemLike {
     userId    Int
-    PoemId    Int
+    poemId    Int
     createdAt DateTime @default(now())
 
     user User @relation(fields: [userId], references: [id])
-    Poem Poem @relation(fields: [PoemId], references: [id])
+    Poem Poem @relation(fields: [poemId], references: [id])
 
-    @@id([userId, PoemId])
+    @@id([userId, poemId])
   }
 
     model Poem {
