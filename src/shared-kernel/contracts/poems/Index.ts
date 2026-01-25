@@ -29,7 +29,7 @@ async function getPoemInteractionInfo(poemId: number) {
 	});
 }
 
-interface PoemsContract {
+export interface PoemsContract {
 	getPoemInteractionInfo(poemId: number): Promise<{
 		exists: boolean;
 		authorId: number | null;

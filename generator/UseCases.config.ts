@@ -1,80 +1,94 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'interactions',
+	domain: 'moderation',
 
 	useCases: [
 		{
-			name: 'get-poem-comments',
-			type: 'query',
+			name: 'suspend-user',
+			type: 'command',
 
 			dataModels: [
 				{
-					name: 'PoemComment',
+					name: 'UserSuspension',
 					properties: {
 						id: 'number',
 						userId: 'number',
-						poemId: 'number',
-						content: 'string',
-						createdAt: 'string',
+						reason: 'string',
+						startAt: 'string',
+						moderatorId: 'number',
 					},
 				},
 			],
 
 			errors: [
 				{
-					name: 'PoemNotFoundError',
+					name: 'UserNotFoundError',
 					type: 'NOT_FOUND',
-					message: 'Poem not found.',
+					message: 'User not found.',
+				},
+				{
+					name: 'UserAlreadySuspendedError',
+					type: 'CONFLICT',
+					message: 'User is already suspended.',
 				},
 			],
 
 			repositoryMethods: [
 				{
-					name: 'findPoemById',
-					params: [{ name: 'poemId', type: 'number' }],
-					returns: ['number', 'null'],
+					name: 'selectActiveSuspensionByUserId',
+					params: [{ name: 'userId', type: 'number' }],
+					returns: ['UserSuspension | null'],
 					body: `
-				const poem = await prisma.poem.findUnique({
-					where: { id: poemId },
-					select: { id: true },
-				});
-				return poem?.id ?? null;
-			`.trim(),
-				},
-				{
-					name: 'findCommentsByPoemId',
-					params: [{ name: 'poemId', type: 'number' }],
-					returns: ['PoemComment'],
-					body: `
-				return prisma.poemComment.findMany({
-					where: { poemId },
-					orderBy: { createdAt: 'desc' },
+				return prisma.userSanctions.findFirst({
+					where: { userId, endAt: null },
 				});
 			`.trim(),
 				},
 			],
 
+			// Função principal do  case
 			useCaseFunc: {
-				params: [{ name: 'poemId', type: 'number' }],
-				returns: ['PoemComment'],
+				params: [
+					{ name: 'userId', type: 'number' },
+					{ name: 'reason', type: 'string' },
+					{ name: 'moderatorId', type: 'number' },
+				],
+				returns: ['UserSuspension'],
 				body: `
-			const poemExists =
-				await repository.findPoemById(poemId);
-
-			if (!poemExists) {
-				throw new PoemNotFoundError();
-			}
-
-			return repository.findCommentsByPoemId(poemId);
+			const { userId, reason, requesterId, requesterRole } = params;
+					const userExists = await usersContract.getUserBasicInfo(userId);
+			
+					if (requesterId === userId) {
+						throw new CannotSuspendSelfError();
+					}
+			
+					if (requesterRole === 'user') {
+						throw new InsufficientPermissionsError();
+					}
+			
+					if (!userExists.exists) {
+						throw new UserNotFoundError();
+					}
+			
+					const activeSuspension = await queriesRepository.selectActiveSuspensionByUserId({ userId });
+					if (activeSuspension) {
+						throw new UserAlreadySuspendedError();
+					}
+			
+					return commandsRepository.createSuspension({ userId, reason, moderatorId: requesterId });
 		`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'getPoemComments',
-					params: [{ poemId: 'number' }],
-					returns: ['PoemComment'],
+					useCaseFuncName: 'suspendUser',
+					params: [
+						{ userId: 'number' },
+						{ reason: 'string' },
+						{ moderatorId: 'number' },
+					],
+					returns: ['UserSuspension'],
 				},
 			],
 		},

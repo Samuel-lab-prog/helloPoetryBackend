@@ -32,7 +32,11 @@
     friendshipsTo   Friendship[]  @relation("FriendshipUserB")
 
     fromPoemDedications Poem[] @relation("PoemToUserDedications")
-  }
+  
+    userSanctions UserSanction[] @relation("ModeratorSanctions")
+    sanctions      UserSanction[] @relation("SanctionedUser")
+
+}
 
   enum userRole {
     user
@@ -175,3 +179,24 @@
     rejected
     removed
   }
+
+model UserSanction {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  type       SanctionType
+  reason     String
+  startAt    DateTime  @default(now())
+  endAt      DateTime? // null means permanent sanction
+  moderatorId Int
+
+  user      User @relation("SanctionedUser", fields: [userId], references: [id])
+  moderator User @relation("ModeratorSanctions", fields: [moderatorId], references: [id])
+
+  @@index([userId])
+  @@index([startAt])
+}
+
+enum SanctionType {
+  suspension
+  ban
+}

@@ -10,6 +10,47 @@ import {
 import { InterfaceDeclaration } from 'ts-morph';
 import { join } from 'path';
 
+/**
+ * Remove wrappers de tipo:
+ * - Promise<>
+ * - unions
+ * - arrays
+ */
+function extractBaseType(type: string): string | null {
+	if (!type) return null;
+
+	let t = type.trim();
+
+	if (t === 'null' || t === 'void') return null;
+
+	// remove Promise<>
+	if (t.startsWith('Promise<') && t.endsWith('>')) {
+		t = t.slice(8, -1);
+	}
+
+	// pega apenas o primeiro da union
+	if (t.includes('|')) {
+		t = t.split('|')[0]!.trim();
+	}
+
+	// remove array
+	if (t.endsWith('[]')) {
+		t = t.replace('[]', '');
+	}
+
+	// primitives
+	if (['string', 'number', 'boolean', 'any', 'unknown', 'object'].includes(t)) {
+		return null;
+	}
+
+	// valida identificador TS
+	if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(t)) {
+		return null;
+	}
+
+	return t;
+}
+
 function ensureQueriesRepositoryInterface(
 	filePath: string,
 	repositoryName: string,
@@ -23,6 +64,7 @@ function ensureQueriesRepositoryInterface(
 	const sourceFile = getOrCreateSourceFile(project, filePath);
 
 	let interfaceDeclaration = sourceFile.getInterface(repositoryName);
+
 	if (!interfaceDeclaration) {
 		interfaceDeclaration = sourceFile.addInterface({
 			name: repositoryName,
@@ -36,11 +78,10 @@ function ensureQueriesRepositoryInterface(
 		}
 
 		const paramsType = buildParamsType(m.params);
-
 		const resolvedReturn = buildReturnType(m.returns);
 		const returnType = `Promise<${resolvedReturn}>`;
 
-		interfaceDeclaration!.addMethod({
+		interfaceDeclaration.addMethod({
 			name: m.name,
 			parameters:
 				paramsType === 'void'
@@ -55,16 +96,15 @@ function ensureQueriesRepositoryInterface(
 		});
 
 		for (const ret of m.returns) {
-			let baseType = ret;
-			if (ret === 'null' || ret === 'void') continue;
-			if (ret.includes('[]')) {
-				baseType = ret.replace('[]', '');
-			}
-			ensureNamedImport(filePath, baseType, `${modelsImportBasePath}`, true);
+			const baseType = extractBaseType(ret);
+
+			if (!baseType) continue;
+
+			ensureNamedImport(filePath, baseType, modelsImportBasePath, true);
 		}
 	}
 
-	return interfaceDeclaration!;
+	return interfaceDeclaration;
 }
 
 export function syncRepositoryInterface(
@@ -81,6 +121,7 @@ export function syncRepositoryInterface(
 		'ports',
 		`${kind.charAt(0).toUpperCase() + kind.slice(1)}Repository.ts`,
 	);
+
 	ensureQueriesRepositoryInterface(
 		repoFilePath,
 		kind === 'queries' ? 'QueriesRepository' : 'CommandsRepository',
