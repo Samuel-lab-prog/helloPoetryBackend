@@ -1,7 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/QueriesRepository';
-import type { PoemComment } from '../../use-cases/commands/models/Index';
+import type { PoemComment } from '../../use-cases/queries/models/Index';
 
 export function selectCommentById(params: {
 	commentId: number;
@@ -31,6 +31,33 @@ export function selectCommentById(params: {
 	});
 }
 
+export function findCommentsByPoemId(params: {
+	poemId: number;
+}): Promise<PoemComment[]> {
+	const { poemId } = params;
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.comment.findMany({
+			where: { poemId },
+			orderBy: { createdAt: 'desc' },
+			select: {
+				id: true,
+				content: true,
+				authorId: true,
+				poemId: true,
+				createdAt: true,
+			},
+		});
+		return rs.map((comment) => ({
+			id: comment.id,
+			content: comment.content,
+			userId: comment.authorId,
+			poemId: comment.poemId,
+			createdAt: comment.createdAt,
+		}));
+	});
+}
+
 export const queriesRepository: QueriesRepository = {
 	selectCommentById,
+	findCommentsByPoemId,
 };

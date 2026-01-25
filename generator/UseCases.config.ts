@@ -5,60 +5,60 @@ export default defineUseCases({
 
 	useCases: [
 		{
-	name: 'get-poem-comments',
-	type: 'query',
+			name: 'get-poem-comments',
+			type: 'query',
 
-	dataModels: [
-		{
-			name: 'PoemComment',
-			properties: {
-				id: 'number',
-				userId: 'number',
-				poemId: 'number',
-				content: 'string',
-				createdAt: 'string',
-			},
-		},
-	],
+			dataModels: [
+				{
+					name: 'PoemComment',
+					properties: {
+						id: 'number',
+						userId: 'number',
+						poemId: 'number',
+						content: 'string',
+						createdAt: 'string',
+					},
+				},
+			],
 
-	errors: [
-		{
-			name: 'PoemNotFoundError',
-			type: 'NOT_FOUND',
-			message: 'Poem not found.',
-		},
-	],
+			errors: [
+				{
+					name: 'PoemNotFoundError',
+					type: 'NOT_FOUND',
+					message: 'Poem not found.',
+				},
+			],
 
-	repositoryMethods: [
-		{
-			name: 'findPoemById',
-			params: [{ name: 'poemId', type: 'number' }],
-			returns: ['number', 'null'],
-			body: `
+			repositoryMethods: [
+				{
+					name: 'findPoemById',
+					params: [{ name: 'poemId', type: 'number' }],
+					returns: ['number', 'null'],
+					body: `
 				const poem = await prisma.poem.findUnique({
 					where: { id: poemId },
 					select: { id: true },
 				});
 				return poem?.id ?? null;
 			`.trim(),
-		},
-		{
-			name: 'findCommentsByPoemId',
-			params: [{ name: 'poemId', type: 'number' }],
-			returns: ['PoemComment'],
-			body: `
+				},
+				{
+					name: 'findCommentsByPoemId',
+					params: [{ name: 'poemId', type: 'number' }],
+					returns: ['PoemComment'],
+					body: `
 				return prisma.poemComment.findMany({
 					where: { poemId },
 					orderBy: { createdAt: 'desc' },
 				});
 			`.trim(),
-		},
-	],
+				},
+			],
 
-	useCaseFunc: {
-		params: [{ name: 'poemId', type: 'number' }],
-		returns: ['PoemComment'],
-		body: `
+			useCaseFunc: {
+				params: [{ name: 'poemId', type: 'number' }],
+				returns: ['PoemComment'],
+				body: `
 			const poemExists =
 				await repository.findPoemById(poemId);
 
@@ -68,15 +68,15 @@ export default defineUseCases({
 
 			return repository.findCommentsByPoemId(poemId);
 		`.trim(),
-	} as const,
+			} as const,
 
-	serviceFunctions: [
-		{
-			useCaseFuncName: 'getPoemComments',
-			params: [{ poemId: 'number' }],
-			returns: ['PoemComment'],
+			serviceFunctions: [
+				{
+					useCaseFuncName: 'getPoemComments',
+					params: [{ poemId: 'number' }],
+					returns: ['PoemComment'],
+				},
+			],
 		},
-	],
-},
 	],
 });
