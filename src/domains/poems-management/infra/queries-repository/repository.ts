@@ -3,10 +3,6 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/QueriesRepository';
-import type {
-	SelectAuthorPoemsParams,
-	SelectMyPoemsParams,
-} from '../../ports/PoemQueryParams';
 
 import { authorPoemSelect, myPoemSelect, fullPoemSelect } from './selects';
 
@@ -16,7 +12,7 @@ import type {
 	FullPoem,
 } from '../../use-cases/queries/index';
 
-function selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]> {
+function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
 			where: {
@@ -38,9 +34,9 @@ function selectMyPoems(params: SelectMyPoemsParams): Promise<MyPoem[]> {
 	});
 }
 
-function selectAuthorPoems(
-	params: SelectAuthorPoemsParams,
-): Promise<AuthorPoem[]> {
+function selectAuthorPoems(params: {
+	authorId: number;
+}): Promise<AuthorPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
 			where: {
