@@ -16,6 +16,7 @@
 			"@DatabaseError": ["./generic-subdomains/utils/DatabaseError.ts"],
 			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
+			"@SharedKernel/*": ["./shared-kernel/*"],
 			"@AuthPlugin": [
 				"./generic-subdomains/authentication/adapters/http/auth-plugin/AuthPlugin.ts"
 			],

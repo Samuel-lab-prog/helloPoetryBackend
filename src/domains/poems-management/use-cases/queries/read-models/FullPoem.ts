@@ -1,4 +1,4 @@
-import type { poemStatus, poemVisibility, poemModerationStatus } from './Enums';
+import type { PoemStatus, PoemVisibility, PoemModerationStatus } from './Enums';
 
 export interface FullPoem {
 	id: number;
@@ -10,9 +10,9 @@ export interface FullPoem {
 	createdAt: Date;
 	updatedAt: Date;
 
-	status: poemStatus;
-	visibility: poemVisibility;
-	moderationStatus: poemModerationStatus;
+	status: PoemStatus;
+	visibility: PoemVisibility;
+	moderationStatus: PoemModerationStatus;
 
 	author: {
 		id: number;

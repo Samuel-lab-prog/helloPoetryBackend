@@ -1,4 +1,4 @@
-import type { poemVisibility, poemStatus, poemModerationStatus } from './Enums';
+import type { PoemVisibility, PoemStatus, PoemModerationStatus } from './Enums';
 
 export type MyPoem = {
 	id: number;
@@ -6,9 +6,9 @@ export type MyPoem = {
 	title: string;
 	tags: { id: number; name: string }[];
 
-	status: poemStatus;
-	visibility: poemVisibility;
-	moderationStatus: poemModerationStatus;
+	status: PoemStatus;
+	visibility: PoemVisibility;
+	moderationStatus: PoemModerationStatus;
 
 	createdAt: Date;
 	updatedAt: Date;

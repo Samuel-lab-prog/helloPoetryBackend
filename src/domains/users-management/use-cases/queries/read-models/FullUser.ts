@@ -1,4 +1,4 @@
-import type { userRole, userStatus } from './Enums';
+import type { UserRole, UserStatus } from './Enums';
 
 export type FullUser = {
 	id: number;
@@ -8,8 +8,8 @@ export type FullUser = {
 	bio: string;
 	avatarUrl: string;
 
-	role: userRole;
-	status: userStatus;
+	role: UserRole;
+	status: UserStatus;
 
 	friendsIds: number[];
 	createdAt: Date;

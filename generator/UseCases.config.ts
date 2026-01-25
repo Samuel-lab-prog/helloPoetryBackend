@@ -1,57 +1,80 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'friends-management',
+	domain: 'interactions',
 
 	useCases: [
 		{
-			name: 'get-friendship-status',
-			type: 'query',
+			name: 'like-poem',
+			type: 'command',
 
 			dataModels: [
 				{
-					name: 'FriendshipRecord',
+					name: 'PoemLike',
 					properties: {
-						userAId: 'number',
-						userBId: 'number',
-						status: 'string',
+						userId: 'number',
+						poemId: 'number',
 						createdAt: 'string',
-					},
-				},
-				{
-					name: 'FriendshipStatusSnapshot',
-					properties: {
-						exists: 'boolean',
-
-						// none | pending_sent | pending_received | friends | blocked | rejected
-						status: 'string',
-
-						requesterId: 'number',
-
-						canSendRequest: 'boolean',
-						canAcceptRequest: 'boolean',
-						canRemoveFriend: 'boolean',
 					},
 				},
 			],
 
-			errors: [],
+			errors: [
+				{
+					name: 'PoemNotFoundError',
+					type: 'NOT_FOUND',
+					message: 'Poem not found.',
+				},
+				{
+					name: 'AlreadyLikedError',
+					type: 'CONFLICT',
+					message: 'User already liked this poem.',
+				},
+			],
 
 			repositoryMethods: [
 				{
-					name: 'findFriendshipBetweenUsers',
-					params: [
-						{ name: 'userAId', type: 'number' },
-						{ name: 'userBId', type: 'number' },
-					],
-					returns: ['FriendshipRecord', 'null'],
+					name: 'findPoemById',
+					params: [{ name: 'poemId', type: 'number' }],
+					returns: ['number', 'null'],
 					body: `
-						return prisma.friendship.findFirst({
+						const poem = await prisma.poem.findUnique({
+							where: { id: poemId },
+							select: { id: true },
+						});
+						return poem?.id ?? null;
+					`.trim(),
+				},
+				{
+					name: 'findPoemLike',
+					params: [
+						{ name: 'userId', type: 'number' },
+						{ name: 'poemId', type: 'number' },
+					],
+					returns: ['PoemLike', 'null'],
+					body: `
+						return prisma.poemLike.findUnique({
 							where: {
-								OR: [
-									{ userAId, userBId },
-									{ userAId: userBId, userBId: userAId },
-								],
+								userId_poemId: {
+									userId,
+									poemId,
+								},
+							},
+						});
+					`.trim(),
+				},
+				{
+					name: 'createPoemLike',
+					params: [
+						{ name: 'userId', type: 'number' },
+						{ name: 'poemId', type: 'number' },
+					],
+					returns: ['PoemLike'],
+					body: `
+						return prisma.poemLike.create({
+							data: {
+								userId,
+								poemId,
 							},
 						});
 					`.trim(),
@@ -60,82 +83,40 @@ export default defineUseCases({
 
 			useCaseFunc: {
 				params: [
-					{ name: 'viewerId', type: 'number' },
-					{ name: 'targetUserId', type: 'number' },
+					{ name: 'userId', type: 'number' },
+					{ name: 'poemId', type: 'number' },
 				],
-				returns: ['FriendshipStatusSnapshot'],
+				returns: ['PoemLike'],
 				body: `
-					if (viewerId === targetUserId) {
-						return {
-							exists: false,
-							status: 'none',
-							requesterId: 0,
-							canSendRequest: false,
-							canAcceptRequest: false,
-							canRemoveFriend: false,
-						};
+					const poemExists =
+						await repository.findPoemById(poemId);
+
+					if (!poemExists) {
+						throw new PoemNotFoundError();
 					}
 
-					const friendship =
-						await repository.findFriendshipBetweenUsers(
-							viewerId,
-							targetUserId,
+					const existingLike =
+						await repository.findPoemLike(
+							userId,
+							poemId,
 						);
 
-					if (!friendship) {
-						return {
-							exists: false,
-							status: 'none',
-							requesterId: 0,
-							canSendRequest: true,
-							canAcceptRequest: false,
-							canRemoveFriend: false,
-						};
+					if (existingLike) {
+						throw new AlreadyLikedError();
 					}
 
-					if (friendship.status === 'pending') {
-						const sentByViewer =
-							friendship.userAId === viewerId;
-
-						return {
-							exists: true,
-							status: sentByViewer
-								? 'pending_sent'
-								: 'pending_received',
-							requesterId: friendship.userAId,
-							canSendRequest: false,
-							canAcceptRequest: !sentByViewer,
-							canRemoveFriend: sentByViewer,
-						};
-					}
-
-					if (friendship.status === 'accepted') {
-						return {
-							exists: true,
-							status: 'friends',
-							requesterId: friendship.userAId,
-							canSendRequest: false,
-							canAcceptRequest: false,
-							canRemoveFriend: true,
-						};
-					}
-
-					return {
-						exists: true,
-						status: friendship.status,
-						requesterId: friendship.userAId,
-						canSendRequest: false,
-						canAcceptRequest: false,
-						canRemoveFriend: false,
-					};
+					return repository.createPoemLike(
+						userId,
+						poemId,
+					);
 				`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'getFriendshipStatus',
-					params: [{ viewerId: 'number' }, { targetUserId: 'number' }],
-					returns: ['FriendshipStatusSnapshot'],
+					useCaseFuncName: 'likePoem',
+					params: [{ userId: 'number' }, { poemId: 'number' }],
+					returns: ['PoemLike'],
 				},
 			],
 		},

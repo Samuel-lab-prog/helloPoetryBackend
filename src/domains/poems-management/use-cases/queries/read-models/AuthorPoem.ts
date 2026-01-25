@@ -1,4 +1,4 @@
-import type { poemVisibility, poemStatus } from './Enums';
+import type { PoemVisibility, PoemStatus } from './Enums';
 
 export interface AuthorPoem {
 	id: number;
@@ -6,8 +6,8 @@ export interface AuthorPoem {
 	content: string;
 	createdAt: Date;
 
-	status: poemStatus;
-	visibility: poemVisibility;
+	status: PoemStatus;
+	visibility: PoemVisibility;
 
 	author: {
 		id: number;

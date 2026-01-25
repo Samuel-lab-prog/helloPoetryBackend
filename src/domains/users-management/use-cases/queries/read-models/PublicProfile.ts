@@ -1,4 +1,5 @@
-import type { userRole, friendshipStatus, userStatus } from './Enums';
+import type { UserRole, UserStatus } from './Enums';
+import type { FriendshipStatus } from '@SharedKernel/Enums';
 
 export type PublicProfile = {
 	id: number;
@@ -6,8 +7,8 @@ export type PublicProfile = {
 	name: string;
 	bio: string;
 	avatarUrl: string;
-	role: userRole;
-	status: userStatus;
+	role: UserRole;
+	status: UserStatus;
 
 	stats: {
 		poemsCount: number;
@@ -16,7 +17,7 @@ export type PublicProfile = {
 	};
 
 	friendship?: {
-		status: friendshipStatus;
+		status: FriendshipStatus;
 		isRequester: boolean;
 	};
 };

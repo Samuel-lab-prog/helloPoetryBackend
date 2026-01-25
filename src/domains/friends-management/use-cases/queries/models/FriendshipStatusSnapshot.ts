@@ -1,6 +1,8 @@
+import type { FriendshipStatus } from './Enums';
+
 export type FriendshipStatusSnapshot = {
 	exists: boolean;
-	status: string;
+	status: FriendshipStatus | 'none';
 	requesterId: number;
 	canSendRequest: boolean;
 	canAcceptRequest: boolean;

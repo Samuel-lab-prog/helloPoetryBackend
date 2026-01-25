@@ -7,7 +7,11 @@ type Violation = {
 	rootNamespace: string;
 };
 
-const ALLOWED_ROOT_NAMESPACES = new Set(['domains', 'generic-subdomains']);
+const ALLOWED_ROOT_NAMESPACES = new Set([
+	'domains',
+	'generic-subdomains',
+	'shared-kernel',
+]);
 
 function extractRootNamespace(path: string): string | null {
 	const match = path.match(/^src\/([^/]+)\//);
