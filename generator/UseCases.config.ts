@@ -5,7 +5,7 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'like-poem',
+			name: 'unlike-poem',
 			type: 'command',
 
 			dataModels: [
@@ -26,9 +26,9 @@ export default defineUseCases({
 					message: 'Poem not found.',
 				},
 				{
-					name: 'AlreadyLikedError',
-					type: 'CONFLICT',
-					message: 'User already liked this poem.',
+					name: 'LikeNotFoundError',
+					type: 'NOT_FOUND',
+					message: 'Like not found.',
 				},
 			],
 
@@ -38,12 +38,12 @@ export default defineUseCases({
 					params: [{ name: 'poemId', type: 'number' }],
 					returns: ['number', 'null'],
 					body: `
-						const poem = await prisma.poem.findUnique({
-							where: { id: poemId },
-							select: { id: true },
-						});
-						return poem?.id ?? null;
-					`.trim(),
+				const poem = await prisma.poem.findUnique({
+					where: { id: poemId },
+					select: { id: true },
+				});
+				return poem?.id ?? null;
+			`.trim(),
 				},
 				{
 					name: 'findPoemLike',
@@ -53,31 +53,33 @@ export default defineUseCases({
 					],
 					returns: ['PoemLike', 'null'],
 					body: `
-						return prisma.poemLike.findUnique({
-							where: {
-								userId_poemId: {
-									userId,
-									poemId,
-								},
-							},
-						});
-					`.trim(),
+				return prisma.poemLike.findUnique({
+					where: {
+						userId_poemId: {
+							userId,
+							poemId,
+						},
+					},
+				});
+			`.trim(),
 				},
 				{
-					name: 'createPoemLike',
+					name: 'deletePoemLike',
 					params: [
 						{ name: 'userId', type: 'number' },
 						{ name: 'poemId', type: 'number' },
 					],
 					returns: ['PoemLike'],
 					body: `
-						return prisma.poemLike.create({
-							data: {
-								userId,
-								poemId,
-							},
-						});
-					`.trim(),
+				return prisma.poemLike.delete({
+					where: {
+						userId_poemId: {
+							userId,
+							poemId,
+						},
+					},
+				});
+			`.trim(),
 				},
 			] as const,
 
@@ -88,33 +90,33 @@ export default defineUseCases({
 				],
 				returns: ['PoemLike'],
 				body: `
-					const poemExists =
-						await repository.findPoemById(poemId);
+			const poemExists =
+				await repository.findPoemById(poemId);
 
-					if (!poemExists) {
-						throw new PoemNotFoundError();
-					}
+			if (!poemExists) {
+				throw new PoemNotFoundError();
+			}
 
-					const existingLike =
-						await repository.findPoemLike(
-							userId,
-							poemId,
-						);
+			const existingLike =
+				await repository.findPoemLike(
+					userId,
+					poemId,
+				);
 
-					if (existingLike) {
-						throw new AlreadyLikedError();
-					}
+			if (!existingLike) {
+				throw new LikeNotFoundError();
+			}
 
-					return repository.createPoemLike(
-						userId,
-						poemId,
-					);
-				`.trim(),
+			return repository.deletePoemLike(
+				userId,
+				poemId,
+			);
+		`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'likePoem',
+					useCaseFuncName: 'unlikePoem',
 					params: [{ userId: 'number' }, { poemId: 'number' }],
 					returns: ['PoemLike'],
 				},

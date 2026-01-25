@@ -9,4 +9,5 @@ export interface CommandsRepository {
 	}): Promise<PoemLike | null>;
 
 	createPoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
+	deletePoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
 }

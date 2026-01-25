@@ -13,7 +13,6 @@ import { appErrorSchema } from '@AppError';
 function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/interactions' })
 		.use(AuthPlugin)
-
 		.post(
 			'/poems/:id/like',
 			({ auth, params }) => {
@@ -28,8 +27,6 @@ function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 				}),
 				response: {
 					200: PoemLikeSchema,
-					400: appErrorSchema,
-					401: appErrorSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
@@ -39,7 +36,30 @@ function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 					tags: ['Interactions'],
 				},
 			},
-		);
+		)
+    .delete(
+      '/poems/:id/like',
+      ({ auth, params }) => {
+        return services.unlikePoem({
+          userId: auth.clientId,
+          poemId: Number(params.id),
+        });
+      },
+      {
+        params: t.Object({
+          id: idSchema,
+        }),
+        response: {
+          200: PoemLikeSchema,
+          404: appErrorSchema,
+        },
+        detail: {
+          summary: 'Unlike Poem',
+          description: 'Removes a like from a poem by the authenticated user.',
+          tags: ['Interactions'],
+        },
+      },
+    );
 }
 export const interactionsCommandsRouter = createInteractionsCommandsRouter(
 	commandsRouterServices,
