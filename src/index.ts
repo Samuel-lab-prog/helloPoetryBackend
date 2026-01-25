@@ -13,6 +13,7 @@ import { authRouter } from './generic-subdomains/authentication/adapters/http/au
 import { userQueriesRouter } from './domains/users-management/adapters/http/queries/UserQueriesRouter';
 import { userCommandsRouter } from './domains/users-management/adapters/http/commands/UsersCommandsRouter';
 import { poemsQueriesRouter } from './domains/poems-management/adapters/http/queries/UserQueriesRouter';
+import { poemsCommandsRouter } from './domains/poems-management/adapters/http/commands/QueriesRouter';
 
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/http/commands/CommandsRouter';
 
@@ -61,5 +62,6 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(userQueriesRouter)
 	.use(userCommandsRouter)
 	.use(poemsQueriesRouter)
+	.use(poemsCommandsRouter)
 	.use(friendsCommandsRouter)
 	.listen({ hostname: HOST_NAME, port: PORT });

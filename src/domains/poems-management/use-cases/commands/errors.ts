@@ -1,10 +1,10 @@
 import { DomainError } from '@DomainError';
 
-export class PoemAccessDeniedError extends DomainError {
+export class PoemCreationDeniedError extends DomainError {
 	constructor() {
 		super(
-			'CONFLICT',
-			'Forbidden operation: You do not have access to this poem',
+			'FORBIDDEN_USER_OPERATION',
+			'Forbidden operation: You do not have permission to create a poem',
 		);
 	}
 }
