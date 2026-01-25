@@ -10,7 +10,7 @@ import {
 	commentPoemFactory,
 	deleteCommentFactory,
 } from '../../../use-cases/commands/Index';
-import { poemsContract } from '@Domains/poems-management/contracts/Index';
+import { poemsContract } from '@SharedKernel/contracts/poems/Index';
 
 export interface CommandsRouterServices {
 	likePoem(params: { userId: number; poemId: number }): Promise<PoemLike>;

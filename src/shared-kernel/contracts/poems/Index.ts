@@ -1,6 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { PoemVisibility } from '../use-cases/queries';
+import type { PoemVisibility } from '../../Enums';
 
 async function getPoemInteractionInfo(poemId: number) {
 	return await withPrismaErrorHandling(async () => {
