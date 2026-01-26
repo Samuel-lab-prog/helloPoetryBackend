@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+ 
 import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
 import { printTable, type TableColumn } from '../ui/print-table';

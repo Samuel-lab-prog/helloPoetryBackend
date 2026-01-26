@@ -1,11 +1,11 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { PoemsContract } from '../../../ports/PoemServices';
+import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
 import type { PoemComment } from '../models/Index';
 import { PoemNotFoundError, EmptyCommentError } from '../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
-	poemsContract: PoemsContract;
+	poemsContract: PoemsContractForInteractions;
 }
 
 export interface CommentPoemParams {

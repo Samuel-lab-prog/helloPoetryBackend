@@ -1,94 +1,80 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'moderation',
+	domain: 'feed-engine',
 
 	useCases: [
 		{
-			name: 'suspend-user',
-			type: 'command',
+			name: 'get-feed',
+			type: 'query',
 
 			dataModels: [
 				{
-					name: 'UserSuspension',
+					name: 'FeedItem',
 					properties: {
 						id: 'number',
-						userId: 'number',
-						reason: 'string',
-						startAt: 'string',
-						moderatorId: 'number',
+						authorId: 'number',
+						content: 'string',
+						createdAt: 'string',
 					},
 				},
 			],
 
-			errors: [
-				{
-					name: 'UserNotFoundError',
-					type: 'NOT_FOUND',
-					message: 'User not found.',
-				},
-				{
-					name: 'UserAlreadySuspendedError',
-					type: 'CONFLICT',
-					message: 'User is already suspended.',
-				},
-			],
+			errors: [],
 
 			repositoryMethods: [
 				{
-					name: 'selectActiveSuspensionByUserId',
-					params: [{ name: 'userId', type: 'number' }],
-					returns: ['UserSuspension | null'],
+					name: 'selectFeedItems',
+					params: [
+						{ name: 'userId', type: 'number' },
+						{ name: 'limit', type: 'number' },
+						{ name: 'offset', type: 'number' },
+					],
+					returns: ['FeedItem[]'],
 					body: `
-				return prisma.userSanctions.findFirst({
-					where: { userId, endAt: null },
-				});
-			`.trim(),
+return prisma.post.findMany({
+	where: {
+		visibility: 'public'
+	},
+	orderBy: {
+		createdAt: 'desc'
+	},
+	take: limit,
+	skip: offset,
+});
+					`.trim(),
 				},
 			],
 
-			// Função principal do  case
 			useCaseFunc: {
 				params: [
 					{ name: 'userId', type: 'number' },
-					{ name: 'reason', type: 'string' },
-					{ name: 'moderatorId', type: 'number' },
+					{ name: 'page', type: 'number' },
+					{ name: 'pageSize', type: 'number' },
 				],
-				returns: ['UserSuspension'],
+				returns: ['FeedItem[]'],
 				body: `
-			const { userId, reason, requesterId, requesterRole } = params;
-					const userExists = await usersContract.getUserBasicInfo(userId);
-			
-					if (requesterId === userId) {
-						throw new CannotSuspendSelfError();
-					}
-			
-					if (requesterRole === 'user') {
-						throw new InsufficientPermissionsError();
-					}
-			
-					if (!userExists.exists) {
-						throw new UserNotFoundError();
-					}
-			
-					const activeSuspension = await queriesRepository.selectActiveSuspensionByUserId({ userId });
-					if (activeSuspension) {
-						throw new UserAlreadySuspendedError();
-					}
-			
-					return commandsRepository.createSuspension({ userId, reason, moderatorId: requesterId });
-		`.trim(),
+const { userId, page, pageSize } = params;
+
+const offset = (page - 1) * pageSize;
+
+return queriesRepository.selectFeedItems({
+	userId,
+	limit: pageSize,
+	offset,
+});
+				`.trim(),
 			} as const,
 
 			serviceFunctions: [
 				{
-					useCaseFuncName: 'suspendUser',
+					useCaseFuncName: 'getFeed',
 					params: [
 						{ userId: 'number' },
-						{ reason: 'string' },
-						{ moderatorId: 'number' },
+						{ page: 'number' },
+						{ pageSize: 'number' },
 					],
-					returns: ['UserSuspension'],
+					returns: ['FeedItem[]'],
 				},
 			],
 		},

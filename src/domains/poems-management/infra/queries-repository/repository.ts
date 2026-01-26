@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+ 
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 

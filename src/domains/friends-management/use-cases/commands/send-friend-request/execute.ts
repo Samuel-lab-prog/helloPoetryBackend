@@ -5,7 +5,6 @@ import {
 	UserNotFoundError,
 	FriendshipAlreadyExistsError,
 } from '../Errors';
-import { canSendFriendRequest } from '../policies/Policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -21,12 +20,8 @@ export function sendFriendRequestFactory({ commandsRepository }: Dependencies) {
 		params: SendFriendRequestParams,
 	): Promise<FriendRequest> {
 		const { requesterId, targetUserId } = params;
-		const validationResult = canSendFriendRequest({
-			fromId: requesterId,
-			toId: targetUserId,
-		});
 
-		if (validationResult.reason?.includes('yourself')) {
+		if (requesterId === targetUserId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 

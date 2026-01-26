@@ -1,8 +1,8 @@
 import { t } from 'elysia';
 import type {
-	poemStatus,
-	poemVisibility,
-	poemModerationStatus,
+	PoemStatus,
+	PoemVisibility,
+	PoemModerationStatus,
 } from '../../../use-cases/queries/index';
 
 export const PoemStatusEnumSchema = t.UnionEnum([
@@ -29,15 +29,15 @@ type _AssertExtends<_T extends _U, _U> = true;
 
 type _AssertPoemStatus = _AssertExtends<
 	typeof PoemStatusEnumSchema.static,
-	poemStatus
+	PoemStatus
 >;
 
 type _AssertPoemVisibility = _AssertExtends<
 	typeof PoemVisibilityEnumSchema.static,
-	poemVisibility
+	PoemVisibility
 >;
 
 type _AssertPoemModerationStatus = _AssertExtends<
 	typeof PoemModerationStatusEnumSchema.static,
-	poemModerationStatus
+	PoemModerationStatus
 >;

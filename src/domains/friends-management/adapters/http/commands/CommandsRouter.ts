@@ -7,7 +7,7 @@ import {
 	commandsRouterServices,
 	type CommandsRouterServices,
 } from './Services';
-import { idSchema } from '../../schemas/parameters/IdSchema';
+import { idSchema } from '@SharedKernel/Schemas';
 import { SendFriendRequestSchema } from '../../schemas/Index';
 
 export function createFriendsCommandsRouter(services: CommandsRouterServices) {

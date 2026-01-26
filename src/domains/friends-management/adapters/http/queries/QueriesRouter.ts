@@ -3,7 +3,7 @@ import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { queriesRouterServices, type QueriesRouterServices } from './Services';
-import { idSchema } from '../../schemas/parameters/IdSchema';
+import { idSchema } from '@SharedKernel/Schemas';
 import { FriendshipStatusSchema } from '../../schemas/Index';
 
 export function createFriendsQueriesRouter(services: QueriesRouterServices) {
