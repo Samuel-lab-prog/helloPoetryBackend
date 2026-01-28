@@ -2,10 +2,10 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { type QueriesRouterServices, queriesRouterServices } from './Services';
-
+import { feedPoemSchema } from '../../schemas/FeedPoemsSchema';
 import { appErrorSchema } from '@AppError';
 
-function createFeedQueriesRouter(services: QueriesRouterServices) {
+export function createFeedQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/feed' }).use(AuthPlugin).get(
 		'/',
 		({ auth, query }) => {
@@ -17,7 +17,7 @@ function createFeedQueriesRouter(services: QueriesRouterServices) {
 		},
 		{
 			response: {
-				200: t.Array(t.Any()), // FeedItem schema can be complex, using t.Any() for brevity
+				200: t.Array(feedPoemSchema), // FeedItem schema can be complex, using t.Any() for brevity
 				404: appErrorSchema,
 				409: appErrorSchema,
 			},

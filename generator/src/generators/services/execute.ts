@@ -59,7 +59,7 @@ export function syncServices(ctx: SyncServicesParams) {
 		const params = s.params
 			.map((p) =>
 				Object.entries(p)
-					 
+
 					.map(([key, type]) => `${key}: ${type}`)
 					.join(', '),
 			)
