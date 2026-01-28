@@ -6,3 +6,5 @@ src/generic-subdomains/persistance/prisma/generated
 cloc.json
 depcruise.json
 /.vscode
+
+aicontext.md
