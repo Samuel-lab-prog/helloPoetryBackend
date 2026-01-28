@@ -9,8 +9,8 @@ export function classifyIsolation(
 export function classifyDomainSize(
 	domainPercent: number,
 ): 'GOOD' | 'OK' | 'FAIL' {
-	if (domainPercent <= 0.45) return 'GOOD';
-	if (domainPercent <= 0.6) return 'OK';
+	if (domainPercent <= 0.2) return 'GOOD';
+	if (domainPercent <= 0.3) return 'OK';
 	return 'FAIL';
 }
 
