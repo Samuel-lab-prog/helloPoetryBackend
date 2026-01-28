@@ -5,8 +5,10 @@ import { dirname, join } from 'path';
 const filePaths = [
 	join('adapters/http/queries', 'Services.ts'),
 	join('adapters/http/queries', 'QueriesRouter.ts'),
+	join('adapters/http/queries', 'QueriesRouter.test.ts'),
 	join('adapters/http/commands', 'Services.ts'),
 	join('adapters/http/commands', 'CommandsRouter.ts'),
+	join('adapters/http/commands', 'CommandsRouter.test.ts'),
 	join('adapters/schemas', 'Index.ts'),
 
 	join('infra/queries-repository', 'Repository.ts'),

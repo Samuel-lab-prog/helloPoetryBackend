@@ -1,7 +1,7 @@
 import type { userQueriesRepository } from '../../../ports/QueriesRepository';
 import type { FullUser } from '../read-models/FullUser';
 import { UserNotFoundError, CrossUserDataAccessError } from '../errors';
-import type { userRole } from '../read-models/Enums';
+import type { UserRole } from '../read-models/Enums';
 import { canAccessUserInfo } from '../policies/policies';
 
 interface Dependencies {
@@ -11,7 +11,7 @@ interface Dependencies {
 interface GetUserParams {
 	targetId: number;
 	requesterId: number;
-	requesterRole: userRole;
+	requesterRole: UserRole;
 }
 
 export function getUserFactory({ userQueriesRepository }: Dependencies) {
