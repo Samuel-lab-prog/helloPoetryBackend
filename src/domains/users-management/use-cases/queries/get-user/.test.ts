@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { getUserFactory } from './execute';
@@ -8,7 +7,7 @@ import * as policies from '../policies/policies';
 
 import type { userQueriesRepository } from '../../../ports/QueriesRepository';
 import type { FullUser } from '../read-models/FullUser';
-import type { userRole } from '../../../use-cases/queries/read-models/Enums';
+import type { UserRole } from '../../../use-cases/queries/read-models/Enums';
 
 mock.module('../policies/policies', () => ({
 	canAccessUserInfo: mock(() => true),
@@ -58,7 +57,7 @@ describe('getUserFactory', () => {
 		const result = await getUser({
 			targetId: 1,
 			requesterId: 1,
-			requesterRole: 'user' as userRole,
+			requesterRole: 'user' as UserRole,
 		});
 
 		expect(policies.canAccessUserInfo).toHaveBeenCalledWith({
@@ -80,7 +79,7 @@ describe('getUserFactory', () => {
 			getUser({
 				targetId: 2,
 				requesterId: 1,
-				requesterRole: 'user' as userRole,
+				requesterRole: 'user' as UserRole,
 			}),
 		).rejects.toBeInstanceOf(CrossUserDataAccessError);
 
@@ -99,7 +98,7 @@ describe('getUserFactory', () => {
 			getUser({
 				targetId: 999,
 				requesterId: 1,
-				requesterRole: 'admin' as userRole,
+				requesterRole: 'admin' as UserRole,
 			}),
 		).rejects.toBeInstanceOf(UserNotFoundError);
 
@@ -119,7 +118,7 @@ describe('getUserFactory', () => {
 			getUser({
 				targetId: 1,
 				requesterId: 1,
-				requesterRole: 'admin' as userRole,
+				requesterRole: 'admin' as UserRole,
 			}),
 		).rejects.toThrow('db exploded');
 	});

@@ -48,6 +48,7 @@ export default defineConfig([
 			'max-lines-per-function': 'off',
 			'max-nested-callbacks': 'off',
 			'max-params': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
 		},
 	},
 	{

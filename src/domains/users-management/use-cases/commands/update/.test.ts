@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { updateUserFactory } from './execute';

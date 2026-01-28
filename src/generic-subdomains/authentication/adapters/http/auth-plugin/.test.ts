@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-await */
 import { describe, it, expect, mock } from 'bun:test';
 import { Elysia } from 'elysia';
