@@ -4,33 +4,34 @@ import type { FriendsContractForRecomendationEngine } from '@Domains/feed-engine
 
 async function getFollowedUserIds(userId: number): Promise<number[]> {
 	return await withPrismaErrorHandling(async () => {
-		const result = await prisma.friendship.findMany({
+		const friendships = await prisma.friendship.findMany({
 			where: {
-				userAId: userId,
-				status: 'accepted',
-				OR: [{ userBId: userId, status: 'accepted' }],
+				OR: [{ userAId: userId }, { userBId: userId }],
 			},
 			select: {
-				id: true,
+				userAId: true,
+				userBId: true,
 			},
 		});
-		return result.map((item) => item.id);
+
+		return friendships.map((f) =>
+			f.userAId === userId ? f.userBId : f.userAId,
+		);
 	});
 }
 
 async function getBlockedUserIds(userId: number): Promise<number[]> {
 	return await withPrismaErrorHandling(async () => {
-		const result = await prisma.friendship.findMany({
+		const blocked = await prisma.blockedFriend.findMany({
 			where: {
-				userAId: userId,
-				status: 'blocked',
-				OR: [{ userBId: userId, status: 'blocked' }],
+				blockerId: userId,
 			},
 			select: {
-				id: true,
+				blockedId: true,
 			},
 		});
-		return result.map((item) => item.id);
+
+		return blocked.map((b) => b.blockedId);
 	});
 }
 

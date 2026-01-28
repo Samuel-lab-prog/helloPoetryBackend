@@ -20,3 +20,30 @@ export class FriendshipAlreadyExistsError extends DomainError {
 		);
 	}
 }
+
+export class RequestAlreadySentError extends DomainError {
+	public constructor() {
+		super('CONFLICT', 'A friend request has already been sent to this user.');
+	}
+}
+
+export class FriendRequestBlockedError extends DomainError {
+	public constructor() {
+		super(
+			'FORBIDDEN_USER_OPERATION',
+			'Cannot send a friend request due to a blocking relationship.',
+		);
+	}
+}
+
+export class RequestNotFoundError extends DomainError {
+	public constructor() {
+		super('NOT_FOUND', 'Friend request not found.');
+	}
+}
+
+export class FriendshipNotFoundError extends DomainError {
+	public constructor() {
+		super('NOT_FOUND', 'Friendship not found.');
+	}
+}

@@ -1,2 +1,3 @@
 export * from './FriendshipRecord';
-export * from './FriendshipStatusSnapshot';
+export * from './BlockedFriendRecord';
+export * from './FriendRequestRecord';
