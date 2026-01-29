@@ -1,8 +1,6 @@
 import type { PoemLike, PoemComment } from '../use-cases/commands/models/Index';
 
 export interface CommandsRepository {
-	existsPoemLike(params: { userId: number; poemId: number }): Promise<boolean>;
-
 	findPoemLike(params: {
 		userId: number;
 		poemId: number;

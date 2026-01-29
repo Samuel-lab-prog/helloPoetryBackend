@@ -6,27 +6,6 @@ import type {
 	PoemComment,
 } from '../../use-cases/commands/models/Index';
 
-export function existsPoemLike(params: {
-	userId: number;
-	poemId: number;
-}): Promise<boolean> {
-	const { userId, poemId } = params;
-
-	return withPrismaErrorHandling(async () => {
-		const like = await prisma.poemLike.findUnique({
-			where: {
-				userId_poemId: {
-					userId,
-					poemId,
-				},
-			},
-			select: { userId: true },
-		});
-
-		return like !== null;
-	});
-}
-
 export function createPoemLike(params: {
 	userId: number;
 	poemId: number;
@@ -121,7 +100,6 @@ export function deletePoemComment(params: {
 
 export const commandsRepository: CommandsRepository = {
 	findPoemLike,
-	existsPoemLike,
 	createPoemLike,
 	deletePoemLike,
 	createPoemComment,

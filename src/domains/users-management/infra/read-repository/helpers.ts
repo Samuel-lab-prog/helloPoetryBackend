@@ -19,10 +19,8 @@ export function extractAcceptedFriendsIds(
 	friendshipsTo: { userAId: number }[],
 ): number[] {
 	return [
-		...friendshipsFrom
-			.map((f) => f.userBId),
-		...friendshipsTo
-			.map((f) => f.userAId),
+		...friendshipsFrom.map((f) => f.userBId),
+		...friendshipsTo.map((f) => f.userAId),
 	];
 }
 

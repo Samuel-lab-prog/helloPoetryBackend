@@ -17,7 +17,7 @@ async function getPoemInteractionInfo(poemId: number) {
 		if (!poem) {
 			return {
 				exists: false,
-				authorId: null,
+				authorId: -1,
 				visibility: null,
 			};
 		}

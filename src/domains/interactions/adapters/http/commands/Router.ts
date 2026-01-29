@@ -11,16 +11,20 @@ import {
 } from './Services';
 import { appErrorSchema } from '@AppError';
 
-function createInteractionsCommandsRouter(services: CommandsRouterServices) {
+export function createInteractionsCommandsRouter(
+	services: CommandsRouterServices,
+) {
 	return new Elysia({ prefix: '/interactions' })
 		.use(AuthPlugin)
 		.post(
 			'/poems/:id/like',
-			({ auth, params }) => {
-				return services.likePoem({
+			({ auth, params, set }) => {
+				const rs = services.likePoem({
 					userId: auth.clientId,
-					poemId: Number(params.id),
+					poemId: params.id,
 				});
+				set.status = 201;
+				return rs;
 			},
 			{
 				params: t.Object({
@@ -40,11 +44,13 @@ function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 		)
 		.delete(
 			'/poems/:id/like',
-			({ auth, params }) => {
-				return services.unlikePoem({
+			({ auth, params, set }) => {
+				const rs = services.unlikePoem({
 					userId: auth.clientId,
-					poemId: Number(params.id),
+					poemId: params.id,
 				});
+				set.status = 200;
+				return rs;
 			},
 			{
 				params: t.Object({
@@ -63,12 +69,14 @@ function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 		)
 		.post(
 			'/poems/:id/comments',
-			({ auth, params, body }) => {
-				return services.commentPoem({
+			({ auth, params, body, set }) => {
+				const rs = services.commentPoem({
 					userId: auth.clientId,
 					poemId: params.id,
 					content: body.content,
 				});
+				set.status = 200;
+				return rs;
 			},
 			{
 				params: t.Object({
@@ -96,11 +104,12 @@ function createInteractionsCommandsRouter(services: CommandsRouterServices) {
 		)
 		.delete(
 			'/comments/:id',
-			({ auth, params }) => {
-				return services.deleteComment({
+			async ({ auth, params, set }) => {
+				await services.deleteComment({
 					userId: auth.clientId,
 					commentId: params.id,
 				});
+				set.status = 204;
 			},
 			{
 				params: t.Object({

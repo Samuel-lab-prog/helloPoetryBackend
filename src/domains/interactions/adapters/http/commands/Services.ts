@@ -11,6 +11,7 @@ import {
 	deleteCommentFactory,
 } from '../../../use-cases/commands/Index';
 import { poemsServicesForInteractions } from '@SharedKernel/contracts/poems/Index';
+import { friendsServicesForInteractions } from '@SharedKernel/contracts/friends/Index';
 
 export interface CommandsRouterServices {
 	likePoem(params: { userId: number; poemId: number }): Promise<PoemLike>;
@@ -27,6 +28,8 @@ export const commandsRouterServices: CommandsRouterServices = {
 	likePoem: likePoemFactory({
 		commandsRepository,
 		poemsContract: poemsServicesForInteractions,
+		friendsServices: friendsServicesForInteractions,
+		queriesRepository,
 	}),
 	unlikePoem: unlikePoemFactory({
 		commandsRepository,

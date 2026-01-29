@@ -1,6 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { FriendsContractForRecomendationEngine } from '@Domains/feed-engine/ports/FriendsServices';
+import type { FriendsContractForInteractions } from '@Domains/interactions/ports/FriendsServices';
 
 async function getFollowedUserIds(userId: number): Promise<number[]> {
 	return await withPrismaErrorHandling(async () => {
@@ -35,8 +36,39 @@ async function getBlockedUserIds(userId: number): Promise<number[]> {
 	});
 }
 
+async function areFriends(userAId: number, userBId: number): Promise<boolean> {
+	return await withPrismaErrorHandling(async () => {
+		const friendship = await prisma.friendship.findFirst({
+			where: {
+				OR: [
+					{ userAId, userBId },
+					{ userAId: userBId, userBId: userAId },
+				],
+			},
+		});
+		return friendship !== null;
+	});
+}
+
+async function areBlocked(userAId: number, userBId: number): Promise<boolean> {
+	return await withPrismaErrorHandling(async () => {
+		const blocked = await prisma.blockedFriend.findFirst({
+			where: {
+				blockerId: userAId,
+				blockedId: userBId,
+			},
+		});
+		return blocked !== null;
+	});
+}
+
 export const friendsServicesForRecomendationEngine: FriendsContractForRecomendationEngine =
 	{
 		getFollowedUserIds,
 		getBlockedUserIds,
 	};
+
+export const friendsServicesForInteractions: FriendsContractForInteractions = {
+	areFriends,
+	areBlocked,
+};

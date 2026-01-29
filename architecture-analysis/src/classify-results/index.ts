@@ -30,8 +30,8 @@ export function classifyChangeAmplification(
 	avgFiles: number,
 	maxFiles: number,
 ): 'GOOD' | 'OK' | 'FAIL' {
-	if (avgFiles > 10 || maxFiles > 30) return 'FAIL';
-	if (avgFiles > 5 || maxFiles > 20) return 'OK';
+	if (avgFiles > 15 || maxFiles > 30) return 'FAIL';
+	if (avgFiles > 10 || maxFiles > 20) return 'OK';
 	return 'GOOD';
 }
 

@@ -8,7 +8,7 @@ interface Dependencies {
 	poemsContract: PoemsContractForInteractions;
 }
 
-export interface CommentPoemParams {
+interface CommentPoemParams {
 	userId: number;
 	poemId: number;
 	content: string;
@@ -22,16 +22,23 @@ export function commentPoemFactory({
 		params: CommentPoemParams,
 	): Promise<PoemComment> {
 		const { userId, poemId, content } = params;
-		if (!content.trim()) {
+
+		const trimmedContent = content.trim();
+
+		if (!trimmedContent) {
 			throw new EmptyCommentError();
 		}
 
-		const poemResult = await poemsContract.getPoemInteractionInfo(poemId);
+		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 
-		if (!poemResult.exists) {
+		if (!poemInfo.exists) {
 			throw new PoemNotFoundError();
 		}
 
-		return commandsRepository.createPoemComment({ userId, poemId, content });
+		return commandsRepository.createPoemComment({
+			userId,
+			poemId,
+			content: trimmedContent,
+		});
 	};
 }

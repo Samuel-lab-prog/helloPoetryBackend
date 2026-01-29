@@ -7,7 +7,7 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-export interface DeleteCommentParams {
+interface DeleteCommentParams {
 	userId: number;
 	commentId: number;
 }
@@ -20,16 +20,23 @@ export function deleteCommentFactory({
 		params: DeleteCommentParams,
 	): Promise<void> {
 		const { userId, commentId } = params;
-		const comment = await queriesRepository.selectCommentById({ commentId });
+
+		const comment = await queriesRepository.selectCommentById({
+			commentId,
+		});
 
 		if (!comment) {
 			throw new CommentNotFoundError();
 		}
 
-		if (comment.userId !== userId) {
+		const isOwner = comment.userId === userId;
+
+		if (!isOwner) {
 			throw new NotCommentOwnerError();
 		}
 
-		await commandsRepository.deletePoemComment({ commentId });
+		return commandsRepository.deletePoemComment({
+			commentId,
+		});
 	};
 }

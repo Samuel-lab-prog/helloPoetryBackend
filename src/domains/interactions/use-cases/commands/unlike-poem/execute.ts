@@ -8,7 +8,7 @@ interface Dependencies {
 	poemsContract: PoemsContractForInteractions;
 }
 
-export interface UnlikePoemParams {
+interface UnlikePoemParams {
 	userId: number;
 	poemId: number;
 }
@@ -37,11 +37,9 @@ export function unlikePoemFactory({
 			throw new LikeNotFoundError();
 		}
 
-		const removedLike = await commandsRepository.deletePoemLike({
+		return commandsRepository.deletePoemLike({
 			userId,
 			poemId,
 		});
-
-		return removedLike;
 	};
 }
