@@ -2,6 +2,7 @@ import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
 import { QueriesRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
 import { prisma } from '@PrismaClient';
+import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 const {
 	selectUserByEmail,
@@ -48,9 +49,8 @@ const EXOTIC_USER: InsertUser = {
 };
 
 beforeEach(async () => {
-	await prisma.friendship.deleteMany();
-	await prisma.poem.deleteMany();
-	await prisma.user.deleteMany();
+	await clearDatabase();
+
 	await prisma.user.createMany({
 		data: DEFAULT_USERS,
 	});

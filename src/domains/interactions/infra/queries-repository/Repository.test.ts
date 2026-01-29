@@ -5,16 +5,14 @@ import {
 	findCommentsByPoemId,
 	existsPoemLike,
 } from './Repository';
+import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 describe('QueriesRepository - Comments & Likes', () => {
 	let user: any;
 	let poem: any;
 
 	beforeEach(async () => {
-		await prisma.poemLike.deleteMany();
-		await prisma.comment.deleteMany();
-		await prisma.poem.deleteMany();
-		await prisma.user.deleteMany();
+		await clearDatabase();
 
 		user = await prisma.user.create({
 			data: {

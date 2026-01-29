@@ -16,7 +16,7 @@ export function selectActiveBanByUserId(params: {
 		return prisma.userSanction.findFirst({
 			where: {
 				userId,
-				type: 'BAN',
+				type: 'ban',
 				endAt: null,
 			},
 			select: {
@@ -40,7 +40,7 @@ export function selectActiveSuspensionByUserId(params: {
 		return prisma.userSanction.findFirst({
 			where: {
 				userId,
-				type: 'SUSPENSION',
+				type: 'suspension',
 				endAt: null,
 			},
 			select: {

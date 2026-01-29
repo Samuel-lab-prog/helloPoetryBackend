@@ -1,4 +1,5 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { UserBan } from '../models/Index';
 import {
 	UserNotFoundError,
@@ -6,7 +7,6 @@ import {
 	InsufficientPermissionsError,
 	CannotBanSelfError,
 } from '../Errors';
-import type { QueriesRepository } from '@Domains/moderation/ports/QueriesRepository';
 import type { UsersContract } from '@SharedKernel/contracts/users/Index';
 
 interface Dependencies {
@@ -14,7 +14,6 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 	usersContract: UsersContract;
 }
-
 export interface BanUserParams {
 	userId: number;
 	reason: string;

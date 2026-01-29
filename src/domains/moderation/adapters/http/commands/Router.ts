@@ -9,7 +9,9 @@ import {
 } from './Services';
 import { appErrorSchema } from '@AppError';
 
-function createModerationCommandsRouter(services: CommandsRouterServices) {
+export function createModerationCommandsRouter(
+	services: CommandsRouterServices,
+) {
 	return new Elysia({ prefix: '/moderation' })
 		.use(AuthPlugin)
 		.post(

@@ -20,7 +20,7 @@ export function createBan(params: {
 				userId,
 				moderatorId,
 				reason,
-				type: 'BAN',
+				type: 'ban',
 			},
 			select: {
 				id: true,
@@ -47,7 +47,7 @@ export function createSuspension(params: {
 				userId,
 				moderatorId,
 				reason,
-				type: 'SUSPENSION',
+				type: 'suspension',
 			},
 			select: {
 				id: true,

@@ -3,6 +3,8 @@ import { CommandsRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
 import { prisma } from '@PrismaClient';
 
+import { clearDatabase } from '../../../../generic-subdomains/utils/ClearDatabase';
+
 const { insertUser, softDeleteUser, updateUser } = CommandsRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
@@ -42,9 +44,7 @@ const EXOTIC_USER: InsertUser = {
 };
 
 beforeEach(async () => {
-	await prisma.friendship.deleteMany();
-	await prisma.poem.deleteMany();
-	await prisma.user.deleteMany();
+	await clearDatabase();
 	await prisma.user.createMany({
 		data: DEFAULT_USERS,
 	});
