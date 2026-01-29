@@ -1,4 +1,5 @@
 import { commandsRepository } from '../../../infra/commands-repository/Repository';
+import { queriesRepository } from '../../../infra/queries-repository/Repository';
 import type { FriendRequest } from '../../../use-cases/commands/models/Index';
 import {
 	sendFriendRequestFactory,
@@ -34,17 +35,22 @@ export interface CommandsRouterServices {
 export const commandsRouterServices: CommandsRouterServices = {
 	sendFriendRequest: sendFriendRequestFactory({
 		commandsRepository,
+		queriesRepository,
 	}),
 	acceptFriendRequest: acceptFriendRequestFactory({
 		commandsRepository,
+		queriesRepository,
 	}),
 	rejectFriendRequest: rejectFriendRequestFactory({
 		commandsRepository,
+		queriesRepository,
 	}),
 	blockFriendRequest: blockFriendRequestFactory({
 		commandsRepository,
+		queriesRepository,
 	}),
 	deleteFriend: deleteFriendFactory({
 		commandsRepository,
+		queriesRepository,
 	}),
 };

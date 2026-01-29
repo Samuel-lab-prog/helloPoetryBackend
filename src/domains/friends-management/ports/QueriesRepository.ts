@@ -1,6 +1,8 @@
-import type { FriendshipRecord } from '../use-cases/queries/models/Index';
-import type { FriendRequestRecord } from '../use-cases/queries/models/Index';
-import type { BlockedFriendRecord } from '../use-cases/queries/models/Index';
+import type {
+	FriendRequestRecord,
+	BlockedFriendRecord,
+	FriendshipRecord,
+} from '../use-cases/queries/models/Index';
 
 export interface QueriesRepository {
 	findFriendshipBetweenUsers(params: {

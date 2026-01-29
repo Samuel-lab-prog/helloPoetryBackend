@@ -7,9 +7,6 @@ import type {
 	BlockedFriendRecord,
 } from '../../use-cases/queries/models/Index';
 
-/**
- * Normalize IDs so user1Id < user2Id
- */
 function normalizePair(a: number, b: number): [number, number] {
 	return a < b ? [a, b] : [b, a];
 }

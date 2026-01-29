@@ -47,7 +47,6 @@ export async function resolveFriendship(
 
 	return relation
 		? {
-				status: relation.status,
 				isRequester: relation.userAId === requesterId,
 			}
 		: undefined;

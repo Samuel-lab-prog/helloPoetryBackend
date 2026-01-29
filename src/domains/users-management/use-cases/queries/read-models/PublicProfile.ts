@@ -1,5 +1,4 @@
 import type { UserRole, UserStatus } from './Enums';
-import type { FriendshipStatus } from '@SharedKernel/Enums';
 
 export type PublicProfile = {
 	id: number;
@@ -17,7 +16,6 @@ export type PublicProfile = {
 	};
 
 	friendship?: {
-		status: FriendshipStatus;
 		isRequester: boolean;
 	};
 };

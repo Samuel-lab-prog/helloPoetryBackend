@@ -28,12 +28,10 @@ export function rejectFriendRequestFactory({
 	): Promise<FriendRequest> {
 		const { fromUserId, toUserId } = params;
 
-		// 1️⃣ Não pode rejeitar a si mesmo
 		if (fromUserId === toUserId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
-		// 2️⃣ Checa se já existe amizade
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: fromUserId,
 			user2Id: toUserId,
@@ -42,7 +40,6 @@ export function rejectFriendRequestFactory({
 			throw new FriendshipAlreadyExistsError();
 		}
 
-		// 3️⃣ Checa se existe request pendente
 		const request = await queriesRepository.findFriendRequest({
 			requesterId: fromUserId,
 			addresseeId: toUserId,
@@ -51,7 +48,6 @@ export function rejectFriendRequestFactory({
 			throw new RequestNotFoundError();
 		}
 
-		// 4️⃣ Checa se há bloqueio
 		const blocked = await queriesRepository.findBlockedRelationship(
 			fromUserId,
 			toUserId,

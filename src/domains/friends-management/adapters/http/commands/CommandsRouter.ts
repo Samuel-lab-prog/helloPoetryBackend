@@ -15,11 +15,13 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 		.use(AuthPlugin)
 		.post(
 			'/:id',
-			({ auth, params }) => {
-				return services.sendFriendRequest({
+			async ({ auth, params, set }) => {
+				const result = await services.sendFriendRequest({
 					requesterId: auth.clientId,
 					targetUserId: params.id,
 				});
+				set.status = 201;
+				return result;
 			},
 			{
 				response: {

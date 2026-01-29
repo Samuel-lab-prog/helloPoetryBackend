@@ -41,11 +41,11 @@ export const publicProfileSelect = {
 	},
 
 	friendshipsFrom: {
-		select: { id: true, status: true },
+		select: { id: true },
 	},
 
 	friendshipsTo: {
-		select: { id: true, status: true },
+		select: { id: true },
 	},
 } as const;
 
@@ -72,11 +72,11 @@ export const privateProfileSelect = {
 	},
 
 	friendshipsFrom: {
-		select: { id: true, status: true, userAId: true, userBId: true },
+		select: { id: true, userAId: true, userBId: true },
 	},
 
 	friendshipsTo: {
-		select: { id: true, status: true, userAId: true, userBId: true },
+		select: { id: true, userAId: true, userBId: true },
 	},
 } as const;
 

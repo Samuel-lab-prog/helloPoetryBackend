@@ -14,7 +14,6 @@ import { userQueriesRouter } from './domains/users-management/adapters/http/quer
 import { userCommandsRouter } from './domains/users-management/adapters/http/commands/UsersCommandsRouter';
 import { poemsQueriesRouter } from './domains/poems-management/adapters/http/queries/UserQueriesRouter';
 import { poemsCommandsRouter } from './domains/poems-management/adapters/http/commands/QueriesRouter';
-import { friendsQueriesRouter } from '@Domains/friends-management/adapters/http/queries/QueriesRouter';
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/http/commands/CommandsRouter';
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/http/commands/CommandsRouter';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/http/queries/QueriesRouter';
@@ -67,7 +66,6 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(userCommandsRouter)
 	.use(poemsQueriesRouter)
 	.use(poemsCommandsRouter)
-	.use(friendsQueriesRouter)
 	.use(friendsCommandsRouter)
 	.use(interactionsCommandsRouter)
 	.use(interactionsQueriesRouter)

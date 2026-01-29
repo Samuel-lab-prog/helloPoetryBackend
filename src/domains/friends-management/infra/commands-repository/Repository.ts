@@ -11,46 +11,49 @@ export const commandsRepository: CommandsRepository = {
 	deleteFriend,
 };
 
-export function acceptFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
-}): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
-	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.friendship.updateManyAndReturn({
-			where: {
-				userAId: fromUserId,
-				userBId: toUserId,
-				status: 'pending',
-			},
-			data: {
-				status: 'accepted',
-			},
-			select: { status: true },
-		});
-		return { fromUserId, toUserId, status: rs[0]!.status };
-	});
-}
-
 export function createFriendRequest(params: {
 	fromUserId: number;
 	toUserId: number;
 }): Promise<FriendRequest> {
 	const { fromUserId, toUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
-		const result = await prisma.friendship.create({
+		await prisma.friendshipRequest.create({
 			data: {
-				userAId: fromUserId,
-				userBId: toUserId,
-				status: 'pending',
+				requesterId: fromUserId,
+				addresseeId: toUserId,
 			},
-			select: { status: true },
 		});
-		return {
-			fromUserId,
-			toUserId,
-			status: result.status,
-		};
+
+		return { fromUserId, toUserId };
+	});
+}
+
+export function acceptFriendRequest(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<FriendRequest> {
+	const { fromUserId, toUserId } = params;
+
+	return withPrismaErrorHandling(async () => {
+		await prisma.$transaction([
+			prisma.friendshipRequest.delete({
+				where: {
+					requesterId_addresseeId: {
+						requesterId: fromUserId,
+						addresseeId: toUserId,
+					},
+				},
+			}),
+			prisma.friendship.create({
+				data: {
+					userAId: fromUserId,
+					userBId: toUserId,
+				},
+			}),
+		]);
+
+		return { fromUserId, toUserId };
 	});
 }
 
@@ -59,42 +62,57 @@ export function rejectFriendRequest(params: {
 	toUserId: number;
 }): Promise<FriendRequest> {
 	const { fromUserId, toUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
-		const result = await prisma.friendship.updateManyAndReturn({
+		await prisma.friendshipRequest.delete({
 			where: {
-				userAId: fromUserId,
-				userBId: toUserId,
-				status: 'pending',
-			},
-			data: {
-				status: 'rejected',
+				requesterId_addresseeId: {
+					requesterId: fromUserId,
+					addresseeId: toUserId,
+				},
 			},
 		});
-		return {
-			fromUserId,
-			toUserId,
-			status: result[0]!.status,
-		};
+
+		return { fromUserId, toUserId };
 	});
 }
 
+/**
+ * BLOCK USER (also removes friendship and requests)
+ */
 export function blockFriendRequest(params: {
 	fromUserId: number;
 	toUserId: number;
 }): Promise<FriendRequest> {
 	const { fromUserId, toUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.friendship.updateManyAndReturn({
-			where: {
-				userAId: fromUserId,
-				userBId: toUserId,
-			},
-			data: {
-				status: 'blocked',
-			},
-			select: { status: true },
-		});
-		return { fromUserId, toUserId, status: rs[0]!.status };
+		await prisma.$transaction([
+			prisma.friendshipRequest.deleteMany({
+				where: {
+					OR: [
+						{ requesterId: fromUserId, addresseeId: toUserId },
+						{ requesterId: toUserId, addresseeId: fromUserId },
+					],
+				},
+			}),
+			prisma.friendship.deleteMany({
+				where: {
+					OR: [
+						{ userAId: fromUserId, userBId: toUserId },
+						{ userAId: toUserId, userBId: fromUserId },
+					],
+				},
+			}),
+			prisma.blockedFriend.create({
+				data: {
+					blockerId: fromUserId,
+					blockedId: toUserId,
+				},
+			}),
+		]);
+
+		return { fromUserId, toUserId };
 	});
 }
 
@@ -103,13 +121,17 @@ export function deleteFriend(params: {
 	toUserId: number;
 }): Promise<{ fromUserId: number; toUserId: number }> {
 	const { fromUserId, toUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
 		await prisma.friendship.deleteMany({
 			where: {
-				userAId: toUserId,
-				userBId: fromUserId,
+				OR: [
+					{ userAId: fromUserId, userBId: toUserId },
+					{ userAId: toUserId, userBId: fromUserId },
+				],
 			},
 		});
+
 		return { fromUserId, toUserId };
 	});
 }
