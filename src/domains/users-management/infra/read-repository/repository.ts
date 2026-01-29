@@ -111,12 +111,10 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			},
 			friendshipRequests: [
 				...user.friendshipsFrom.map((f) => ({
-					status: f.status,
 					isRequester: true,
 					userId: f.userBId,
 				})),
 				...user.friendshipsTo.map((f) => ({
-					status: f.status,
 					isRequester: false,
 					userId: f.userAId,
 				})),

@@ -15,15 +15,13 @@ export function extractFriendsIds(
 }
 
 export function extractAcceptedFriendsIds(
-	friendshipsFrom: { userBId: number; status: string }[],
-	friendshipsTo: { userAId: number; status: string }[],
+	friendshipsFrom: { userBId: number }[],
+	friendshipsTo: { userAId: number }[],
 ): number[] {
 	return [
 		...friendshipsFrom
-			.filter((f) => f.status === 'accepted')
 			.map((f) => f.userBId),
 		...friendshipsTo
-			.filter((f) => f.status === 'accepted')
 			.map((f) => f.userAId),
 	];
 }
