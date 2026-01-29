@@ -50,7 +50,6 @@ const EXOTIC_USER: InsertUser = {
 
 beforeEach(async () => {
 	await clearDatabase();
-
 	await prisma.user.createMany({
 		data: DEFAULT_USERS,
 	});

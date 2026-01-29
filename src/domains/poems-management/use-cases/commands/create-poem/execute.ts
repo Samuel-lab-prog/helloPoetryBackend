@@ -8,7 +8,7 @@ interface Dependencies {
 	slugService: SlugService;
 }
 
-export interface CreatePoemParams {
+interface CreatePoemParams {
 	data: CreatePoem;
 	meta: {
 		requesterId: number;

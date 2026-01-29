@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterAll } from 'bun:test';
 import { prisma } from '@PrismaClient';
 
 import { queriesRepository } from './Repository';
+import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 describe('QueriesRepository (Prisma)', () => {
 	const USERS = [
@@ -32,14 +33,7 @@ describe('QueriesRepository (Prisma)', () => {
 	];
 
 	beforeEach(async () => {
-		await prisma.blockedFriend.deleteMany();
-		await prisma.friendshipRequest.deleteMany();
-		await prisma.friendship.deleteMany();
-		await prisma.comment.deleteMany();
-		await prisma.poemLike.deleteMany();
-		await prisma.poem.deleteMany();
-		await prisma.user.deleteMany();
-
+		await clearDatabase();
 		await prisma.user.createMany({ data: USERS });
 	});
 

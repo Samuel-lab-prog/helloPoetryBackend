@@ -8,6 +8,7 @@ import {
 	blockFriendRequest,
 	deleteFriend,
 } from './Repository';
+import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 describe('CommandsRepository (Prisma)', () => {
 	const USERS = [
@@ -38,11 +39,7 @@ describe('CommandsRepository (Prisma)', () => {
 	];
 
 	beforeEach(async () => {
-		await prisma.blockedFriend.deleteMany();
-		await prisma.friendship.deleteMany();
-		await prisma.friendshipRequest.deleteMany();
-		await prisma.user.deleteMany();
-
+		await clearDatabase();
 		await prisma.user.createMany({ data: USERS });
 	});
 

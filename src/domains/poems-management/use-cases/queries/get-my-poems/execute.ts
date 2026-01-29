@@ -7,7 +7,7 @@ interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
 
-export interface GetMyPoemsParams {
+interface GetMyPoemsParams {
 	requesterId: number;
 }
 

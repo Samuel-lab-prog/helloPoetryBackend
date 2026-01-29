@@ -42,11 +42,9 @@ export const authorPoemSelect = {
 			nickname: true,
 			avatarUrl: true,
 			friendshipsTo: {
-				where: { status: 'accepted' },
 				select: { userAId: true },
 			},
 			friendshipsFrom: {
-				where: { status: 'accepted' },
 				select: { userBId: true },
 			},
 		},
