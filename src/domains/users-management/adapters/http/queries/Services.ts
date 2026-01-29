@@ -1,25 +1,25 @@
-import { QueriesRepository } from '../../../infra/read-repository/repository';
+import { queriesRepository } from '../../../infra/read-repository/repository';
 
 import {
 	getUserFactory,
 	getPublicProfileFactory,
 	getPrivateProfileFactory,
 	getUsersFactory,
-} from '../../../use-cases/queries/index';
+} from '../../../use-cases/queries/Index';
 
 import type {
 	FullUser,
 	PrivateProfile,
 	PublicProfile,
-	userRole,
+	UserRole,
 	SelectUsersPage,
-} from '../../../use-cases/queries/read-models/index';
+} from '../../../use-cases/queries/models/Index';
 
 export interface UsersQueriesRouterServices {
 	getUser: (params: {
 		targetId: number;
 		requesterId: number;
-		requesterRole: userRole;
+		requesterRole: UserRole;
 	}) => Promise<FullUser>;
 	getPublicProfile: (
 		id: number,
@@ -28,7 +28,7 @@ export interface UsersQueriesRouterServices {
 	getPrivateProfile: (id: number) => Promise<PrivateProfile>;
 	getUsers: (params: {
 		navigationOptions: {
-			limit: number;
+			limit?: number;
 			cursor?: number;
 		};
 		sortOptions: {
@@ -40,14 +40,14 @@ export interface UsersQueriesRouterServices {
 }
 
 export const usersQueriesServices: UsersQueriesRouterServices = {
-	getUser: getUserFactory({ userQueriesRepository: QueriesRepository }),
+	getUser: getUserFactory({ queriesRepository: queriesRepository }),
 	getPublicProfile: getPublicProfileFactory({
-		userQueriesRepository: QueriesRepository,
+		queriesRepository: queriesRepository,
 	}),
 	getPrivateProfile: getPrivateProfileFactory({
-		userQueriesRepository: QueriesRepository,
+		queriesRepository: queriesRepository,
 	}),
 	getUsers: getUsersFactory({
-		userQueriesRepository: QueriesRepository,
+		queriesRepository: queriesRepository,
 	}),
 };

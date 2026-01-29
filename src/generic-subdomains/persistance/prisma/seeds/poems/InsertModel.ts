@@ -1,7 +1,7 @@
 import type {
-	poemStatus,
-	poemVisibility,
-	poemModerationStatus,
+	PoemStatus,
+	PoemVisibility,
+	PoemModerationStatus,
 } from '@Domains/poems-management/use-cases/queries/read-models/Enums';
 
 export type InsertPoem = {
@@ -12,9 +12,9 @@ export type InsertPoem = {
 	isCommentable?: boolean;
 	tags: string[];
 
-	status?: poemStatus;
-	visibility?: poemVisibility;
-	moderationStatus?: poemModerationStatus;
+	status?: PoemStatus;
+	visibility?: PoemVisibility;
+	moderationStatus?: PoemModerationStatus;
 
 	authorId: number;
 };

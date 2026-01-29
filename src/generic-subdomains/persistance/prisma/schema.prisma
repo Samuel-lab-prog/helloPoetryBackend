@@ -39,8 +39,7 @@ model User {
   friendshipRequests   FriendshipRequest[] @relation("FriendshipRequestRequester")
   friendshipAddressees FriendshipRequest[] @relation("FriendshipRequestAddressee")
 
-  blockedBy BlockedFriend[] @relation("BlockedByUser")
-
+  blockedBy      BlockedFriend[] @relation("BlockedByUser")
   blockedFriends BlockedFriend[] @relation("BlockedUser")
 }
 
@@ -56,7 +55,7 @@ enum userStatus {
   suspended
 }
 
-// Should be careful with the order of userAId and userBId to avoid duplicates
+// Be careful with the order of userAId and userBId to avoid duplicates
 model Friendship {
   id        Int      @id @default(autoincrement())
   userAId   Int
@@ -214,7 +213,7 @@ model UserSanction {
   type        SanctionType
   reason      String
   startAt     DateTime     @default(now())
-  endAt       DateTime? // null means permanent sanction
+  endAt       DateTime? // Null means permanent sanction
   moderatorId Int
 
   user      User @relation("SanctionedUser", fields: [userId], references: [id])

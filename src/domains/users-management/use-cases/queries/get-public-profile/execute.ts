@@ -1,19 +1,17 @@
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { PublicProfile } from '../read-models/PublicProfile';
-import { ProfileNotFoundError } from '../errors';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { PublicProfile } from '../models/PublicProfile';
+import { ProfileNotFoundError } from '../Errors';
 
 interface Dependencies {
-	userQueriesRepository: userQueriesRepository;
+	queriesRepository: QueriesRepository;
 }
 
-export function getPublicProfileFactory({
-	userQueriesRepository,
-}: Dependencies) {
+export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPublicProfile(
 		id: number,
 		requesterId?: number,
 	): Promise<PublicProfile> {
-		const profile = await userQueriesRepository.selectPublicProfile(
+		const profile = await queriesRepository.selectPublicProfile(
 			id,
 			requesterId,
 		);

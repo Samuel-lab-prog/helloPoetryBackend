@@ -1,14 +1,14 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { createUserFactory } from './execute';
-import { UserCreationError } from '../errors';
+import { UserCreationError } from '../Errors';
 
-import type { UserCommandsRepository } from '../../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { HashServices } from '../../../ports/HashSerices';
-import type { CreateUser } from '../commands-models/Create';
+import type { CreateUser } from '../models/Create';
 
 describe('createUserFactory', () => {
-	let userCommandsRepository: UserCommandsRepository;
+	let userCommandsRepository: CommandsRepository;
 	let hashServices: HashServices;
 
 	const fakeUser: CreateUser = {

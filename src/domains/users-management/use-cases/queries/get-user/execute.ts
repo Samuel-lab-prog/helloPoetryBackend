@@ -1,11 +1,11 @@
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { FullUser } from '../read-models/FullUser';
-import { UserNotFoundError, CrossUserDataAccessError } from '../errors';
-import type { UserRole } from '../read-models/Enums';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { FullUser } from '../models/FullUser';
+import { UserNotFoundError, CrossUserDataAccessError } from '../Errors';
+import type { UserRole } from '../models/Enums';
 import { canAccessUserInfo } from '../policies/policies';
 
 interface Dependencies {
-	userQueriesRepository: userQueriesRepository;
+	queriesRepository: QueriesRepository;
 }
 
 interface GetUserParams {
@@ -14,14 +14,14 @@ interface GetUserParams {
 	requesterRole: UserRole;
 }
 
-export function getUserFactory({ userQueriesRepository }: Dependencies) {
+export function getUserFactory({ queriesRepository }: Dependencies) {
 	return async function getUser(params: GetUserParams): Promise<FullUser> {
 		const canAccess = canAccessUserInfo(params);
 		if (!canAccess) {
 			throw new CrossUserDataAccessError();
 		}
 
-		const user = await userQueriesRepository.selectUserById(params.targetId);
+		const user = await queriesRepository.selectUserById(params.targetId);
 		if (!user) {
 			throw new UserNotFoundError();
 		}

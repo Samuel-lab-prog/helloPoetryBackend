@@ -1,41 +1,44 @@
 import { t } from 'elysia';
-import type { PrivateProfile } from '../../use-cases/queries/read-models/PrivateProfile';
+import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 import {
-	UserRoleEnumSchema,
-	UserStatusEnumSchema,
-	UserFriendshipStatusEnumSchema,
-} from './fields/Enums';
+	AvatarUrlSchema,
+	BioSchema,
+	EmailSchema,
+	NameSchema,
+	NicknameSchema,
+} from './fields/UserFieldsSchemas';
 
 export const UserPrivateProfileSchema = t.Object({
-	id: t.Number(),
-	nickname: t.String(),
-	name: t.String(),
-	bio: t.String(),
-	avatarUrl: t.String(),
+	id: idSchema,
+	nickname: NicknameSchema,
+	name: NameSchema,
+	bio: BioSchema,
+	avatarUrl: AvatarUrlSchema,
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
-	email: t.String(),
-	emailVerifiedAt: t.Nullable(t.Date()),
-	friendsIds: t.Array(t.Number()),
+	email: EmailSchema,
+	emailVerifiedAt: t.Nullable(DateSchema),
+	friendsIds: t.Array(idSchema),
 
 	stats: t.Object({
-		poemsCount: t.Number(),
-		commentsCount: t.Number(),
-		friendsCount: t.Number(),
-		poemsIds: t.Array(t.Number()),
+		poemsIds: t.Array(idSchema),
+		friendsIds: t.Array(idSchema),
+		commentsIds: t.Array(idSchema),
 	}),
 
-	friendshipRequests: t.Array(
+	friendshipRequestsSent: t.Array(
 		t.Object({
-			status: UserFriendshipStatusEnumSchema,
-			isRequester: t.Boolean(),
-			userId: t.Number(),
+			addresseeId: idSchema,
+			addresseeNickname: NicknameSchema,
+			addresseeAvatarUrl: t.Nullable(AvatarUrlSchema),
+		}),
+	),
+	friendshipRequestsReceived: t.Array(
+		t.Object({
+			requesterId: idSchema,
+			requesterNickname: NicknameSchema,
+			requesterAvatarUrl: t.Nullable(AvatarUrlSchema),
 		}),
 	),
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertUserPrivateProfile = _AssertExtends<
-	typeof UserPrivateProfileSchema.static,
-	PrivateProfile
->;

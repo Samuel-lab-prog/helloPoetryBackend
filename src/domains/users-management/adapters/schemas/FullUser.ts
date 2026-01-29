@@ -1,22 +1,25 @@
 import { t } from 'elysia';
-import type { FullUser } from '../../use-cases/queries/read-models/index';
-
+import { idSchema, DateSchema } from '@SharedKernel/Schemas';
 import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import {
+	AvatarUrlSchema,
+	BioSchema,
+	EmailSchema,
+	NameSchema,
+	NicknameSchema,
+} from './fields/UserFieldsSchemas';
 
 export const FullUserSchema = t.Object({
-	id: t.Number(),
-	nickname: t.String(),
-	name: t.String(),
-	email: t.String(),
-	bio: t.String(),
-	avatarUrl: t.String(),
+	id: idSchema,
+	nickname: NicknameSchema,
+	name: NameSchema,
+	email: EmailSchema,
+	bio: BioSchema,
+	avatarUrl: AvatarUrlSchema,
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
-	friendsIds: t.Array(t.Number()),
-	createdAt: t.Date(),
-	updatedAt: t.Date(),
-	emailVerifiedAt: t.Nullable(t.Date()),
+	friendsIds: t.Array(idSchema),
+	createdAt: DateSchema,
+	updatedAt: DateSchema,
+	emailVerifiedAt: t.Nullable(DateSchema),
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertFullUser = _AssertExtends<typeof FullUserSchema.static, FullUser>;

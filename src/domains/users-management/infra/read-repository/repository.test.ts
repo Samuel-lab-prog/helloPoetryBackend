@@ -1,6 +1,6 @@
 import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
-import { QueriesRepository } from './repository';
-import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
+import { queriesRepository } from './repository';
+import type { InsertUser } from '../../use-cases/commands/models/Insert';
 import { prisma } from '@PrismaClient';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
@@ -10,7 +10,7 @@ const {
 	selectUserByNickname,
 	selectPublicProfile,
 	selectPrivateProfile,
-} = QueriesRepository;
+} = queriesRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
 	{
@@ -122,7 +122,7 @@ describe('Users Repository', () => {
 		describe('selectAuthUserByEmail', () => {
 			it('returns auth credentials when email exists', async () => {
 				const email = DEFAULT_USERS[2]!.email;
-				const user = await QueriesRepository.selectAuthUserByEmail(email);
+				const user = await queriesRepository.selectAuthUserByEmail(email);
 				expect(user).toMatchObject({
 					email,
 					passwordHash: DEFAULT_USERS[2]!.passwordHash,
@@ -130,7 +130,7 @@ describe('Users Repository', () => {
 			});
 
 			it('returns null when email does not exist', async () => {
-				const user = await QueriesRepository.selectAuthUserByEmail(
+				const user = await queriesRepository.selectAuthUserByEmail(
 					'invalid@example.com',
 				);
 				expect(user).toBeNull();

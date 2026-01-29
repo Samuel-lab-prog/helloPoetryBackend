@@ -1,16 +1,14 @@
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { PrivateProfile } from '../read-models/PrivateProfile';
-import { ProfileNotFoundError } from '../errors';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { PrivateProfile } from '../models/PrivateProfile';
+import { ProfileNotFoundError } from '../Errors';
 
 interface Dependencies {
-	userQueriesRepository: userQueriesRepository;
+	queriesRepository: QueriesRepository;
 }
 
-export function getPrivateProfileFactory({
-	userQueriesRepository,
-}: Dependencies) {
+export function getPrivateProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPrivateProfile(id: number): Promise<PrivateProfile> {
-		const profile = await userQueriesRepository.selectPrivateProfile(id);
+		const profile = await queriesRepository.selectPrivateProfile(id);
 		if (!profile) {
 			throw new ProfileNotFoundError();
 		}

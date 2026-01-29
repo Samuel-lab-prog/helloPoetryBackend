@@ -2,9 +2,13 @@ import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
 
-import { CreateUserSchema, UpdateUserSchema, idSchema } from '../../schemas';
+import {
+	CreateUserSchema,
+	UpdateUserSchema,
+	idSchema,
+} from '../../schemas/Index';
 
-import { type UsersCommandsServices, usersCommandsServices } from './Services';
+import { type UsersCommandsServices, commandsServices } from './Services';
 
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	return new Elysia({ prefix: '/users' })
@@ -51,6 +55,4 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			},
 		);
 }
-export const userCommandsRouter = createUsersCommandsRouter(
-	usersCommandsServices,
-);
+export const userCommandsRouter = createUsersCommandsRouter(commandsServices);

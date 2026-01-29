@@ -1,20 +1,20 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { getUserFactory } from './execute';
-import { UserNotFoundError, CrossUserDataAccessError } from '../errors';
+import { UserNotFoundError, CrossUserDataAccessError } from '../Errors';
 
 import * as policies from '../policies/policies';
 
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { FullUser } from '../read-models/FullUser';
-import type { UserRole } from '../../../use-cases/queries/read-models/Enums';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { FullUser } from '../models/FullUser';
+import type { UserRole } from '../../../use-cases/queries/models/Enums';
 
 mock.module('../policies/policies', () => ({
 	canAccessUserInfo: mock(() => true),
 }));
 
 describe('getUserFactory', () => {
-	let userQueriesRepository: userQueriesRepository;
+	let queriesRepository: QueriesRepository;
 
 	const fakeUser: FullUser = {
 		id: 1,
@@ -32,7 +32,7 @@ describe('getUserFactory', () => {
 	};
 
 	beforeEach(() => {
-		userQueriesRepository = {
+		queriesRepository = {
 			selectPrivateProfile: mock(),
 			selectPublicProfile: mock(),
 			selectAuthUserByEmail: mock(),
@@ -48,11 +48,9 @@ describe('getUserFactory', () => {
 	it('should return user when access is allowed', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
-		userQueriesRepository.selectUserById = mock(() =>
-			Promise.resolve(fakeUser),
-		);
+		queriesRepository.selectUserById = mock(() => Promise.resolve(fakeUser));
 
-		const getUser = getUserFactory({ userQueriesRepository });
+		const getUser = getUserFactory({ queriesRepository });
 
 		const result = await getUser({
 			targetId: 1,
@@ -66,14 +64,14 @@ describe('getUserFactory', () => {
 			requesterRole: 'user',
 		});
 
-		expect(userQueriesRepository.selectUserById).toHaveBeenCalledWith(1);
+		expect(queriesRepository.selectUserById).toHaveBeenCalledWith(1);
 		expect(result).toEqual(fakeUser);
 	});
 
 	it('should throw CrossUserDataAccessError when access is denied', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(false);
 
-		const getUser = getUserFactory({ userQueriesRepository });
+		const getUser = getUserFactory({ queriesRepository });
 
 		await expect(
 			getUser({
@@ -84,15 +82,15 @@ describe('getUserFactory', () => {
 		).rejects.toBeInstanceOf(CrossUserDataAccessError);
 
 		expect(policies.canAccessUserInfo).toHaveBeenCalled();
-		expect(userQueriesRepository.selectUserById).not.toHaveBeenCalled();
+		expect(queriesRepository.selectUserById).not.toHaveBeenCalled();
 	});
 
 	it('should throw UserNotFoundError when user does not exist', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
-		userQueriesRepository.selectUserById = mock(() => Promise.resolve(null));
+		queriesRepository.selectUserById = mock(() => Promise.resolve(null));
 
-		const getUser = getUserFactory({ userQueriesRepository });
+		const getUser = getUserFactory({ queriesRepository });
 
 		await expect(
 			getUser({
@@ -102,17 +100,17 @@ describe('getUserFactory', () => {
 			}),
 		).rejects.toBeInstanceOf(UserNotFoundError);
 
-		expect(userQueriesRepository.selectUserById).toHaveBeenCalledWith(999);
+		expect(queriesRepository.selectUserById).toHaveBeenCalledWith(999);
 	});
 
 	it('should propagate unexpected repository errors', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
-		userQueriesRepository.selectUserById = mock(() =>
+		queriesRepository.selectUserById = mock(() =>
 			Promise.reject(new Error('db exploded')),
 		);
 
-		const getUser = getUserFactory({ userQueriesRepository });
+		const getUser = getUserFactory({ queriesRepository });
 
 		await expect(
 			getUser({

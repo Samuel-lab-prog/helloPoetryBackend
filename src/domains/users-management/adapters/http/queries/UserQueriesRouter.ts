@@ -5,13 +5,13 @@ import { AuthPlugin } from '@AuthPlugin';
 import {
 	FullUserSchema,
 	UserPublicProfileSchema,
-	UserPrivateProfileSchema,
 	idSchema,
 	UsersPageSchema,
 	orderDirectionSchema,
 	orderUsersBySchema,
 	paginationLimitSchema,
-} from '../../schemas/index';
+	UserPrivateProfileSchema,
+} from '../../schemas/Index';
 
 import {
 	usersQueriesServices,

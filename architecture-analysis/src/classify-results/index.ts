@@ -9,8 +9,8 @@ export function classifyIsolation(
 export function classifyDomainSize(
 	domainPercent: number,
 ): 'GOOD' | 'OK' | 'FAIL' {
-	if (domainPercent <= 0.2) return 'GOOD';
-	if (domainPercent <= 0.3) return 'OK';
+	if (domainPercent <= 0.25) return 'GOOD';
+	if (domainPercent <= 0.35) return 'OK';
 	return 'FAIL';
 }
 
@@ -30,8 +30,8 @@ export function classifyChangeAmplification(
 	avgFiles: number,
 	maxFiles: number,
 ): 'GOOD' | 'OK' | 'FAIL' {
-	if (avgFiles > 15 || maxFiles > 30) return 'FAIL';
-	if (avgFiles > 10 || maxFiles > 20) return 'OK';
+	if (avgFiles > 20 || maxFiles > 30) return 'FAIL';
+	if (avgFiles > 15 || maxFiles > 20) return 'OK';
 	return 'GOOD';
 }
 

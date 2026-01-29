@@ -8,6 +8,11 @@ export const idSchema = t.Number({
 	...makeValidationError('ID must be a positive integer'),
 });
 
+export const emailSchema = t.String({
+	format: 'email',
+	example: 'user@example.com',
+});
+
 export const orderDirectionSchema = t.UnionEnum(['asc', 'desc']);
 
 export const paginationLimitSchema = t.Number({

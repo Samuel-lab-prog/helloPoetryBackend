@@ -1,14 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test';
 
 import { getPublicProfileFactory } from './execute';
-import { ProfileNotFoundError } from '../errors';
+import { ProfileNotFoundError } from '../Errors';
 
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { PublicProfile } from '../read-models/PublicProfile';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { PublicProfile } from '../../queries/models/Index';
 
 describe('getPublicProfileFactory', () => {
-	let userQueriesRepository: userQueriesRepository;
-
+	let queriesRepository: QueriesRepository;
 	const fakePublicProfile: PublicProfile = {
 		id: 1,
 		nickname: 'samuel',
@@ -22,14 +21,12 @@ describe('getPublicProfileFactory', () => {
 			commentsCount: 25,
 			friendsCount: 5,
 		},
-		friendship: {
-			status: 'accepted',
-			isRequester: false,
-		},
+		isFriend: false,
+		isBlocked: false,
 	};
 
 	beforeEach(() => {
-		userQueriesRepository = {
+		queriesRepository = {
 			selectPrivateProfile: vi.fn(),
 			selectPublicProfile: vi.fn(),
 			selectAuthUserByEmail: vi.fn(),
@@ -41,17 +38,17 @@ describe('getPublicProfileFactory', () => {
 	});
 
 	it('should return public profile without requesterId', async () => {
-		userQueriesRepository.selectPublicProfile = vi
+		queriesRepository.selectPublicProfile = vi
 			.fn()
 			.mockResolvedValue(fakePublicProfile);
 
 		const getPublicProfile = getPublicProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		const result = await getPublicProfile(1);
 
-		expect(userQueriesRepository.selectPublicProfile).toHaveBeenCalledWith(
+		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(
 			1,
 			undefined,
 		);
@@ -59,48 +56,44 @@ describe('getPublicProfileFactory', () => {
 	});
 
 	it('should return public profile with requesterId', async () => {
-		userQueriesRepository.selectPublicProfile = vi.fn().mockResolvedValue({
+		queriesRepository.selectPublicProfile = vi.fn().mockResolvedValue({
 			...fakePublicProfile,
 			isFriend: true,
 		});
 
 		const getPublicProfile = getPublicProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
-		const result = await getPublicProfile(1, 42);
+		await getPublicProfile(1, 42);
 
-		expect(userQueriesRepository.selectPublicProfile).toHaveBeenCalledWith(
-			1,
-			42,
-		);
-		expect(result.friendship.status).toBe('accepted');
+		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(1, 42);
 	});
 
 	it('should throw ProfileNotFoundError when profile does not exist', async () => {
-		userQueriesRepository.selectPublicProfile = vi.fn().mockResolvedValue(null);
+		queriesRepository.selectPublicProfile = vi.fn().mockResolvedValue(null);
 
 		const getPublicProfile = getPublicProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		await expect(getPublicProfile(999)).rejects.toBeInstanceOf(
 			ProfileNotFoundError,
 		);
 
-		expect(userQueriesRepository.selectPublicProfile).toHaveBeenCalledWith(
+		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(
 			999,
 			undefined,
 		);
 	});
 
 	it('should propagate unexpected repository errors', async () => {
-		userQueriesRepository.selectPublicProfile = vi
+		queriesRepository.selectPublicProfile = vi
 			.fn()
 			.mockRejectedValue(new Error('database down'));
 
 		const getPublicProfile = getPublicProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		await expect(getPublicProfile(1)).rejects.toThrow('database down');

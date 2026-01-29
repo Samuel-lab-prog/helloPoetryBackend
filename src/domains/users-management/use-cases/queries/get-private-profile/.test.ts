@@ -1,14 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test';
 
 import { getPrivateProfileFactory } from './execute';
-import { ProfileNotFoundError } from '../errors';
+import { ProfileNotFoundError } from '../Errors';
 
-import type { userQueriesRepository } from '../../../ports/QueriesRepository';
-import type { PrivateProfile } from '../read-models/PrivateProfile';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { PrivateProfile } from '../models/Index';
 
 describe('getPrivateProfileFactory', () => {
-	let userQueriesRepository: userQueriesRepository;
-
+	let queriesRepository: QueriesRepository;
 	const fakeProfile: PrivateProfile = {
 		id: 1,
 		nickname: 'samuel',
@@ -21,22 +20,31 @@ describe('getPrivateProfileFactory', () => {
 		emailVerifiedAt: new Date('2023-01-03T00:00:00Z'),
 		friendsIds: [2, 3, 4],
 		stats: {
-			poemsCount: 10,
-			commentsCount: 25,
-			friendsCount: 5,
+			commentsIds: [
+				1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+				21, 22, 23, 24, 25,
+			],
+			friendsIds: [2, 3, 4, 5],
 			poemsIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 		},
-		friendshipRequests: [
+		friendshipRequestsReceived: [
 			{
-				status: 'pending',
-				isRequester: true,
-				userId: 2,
+				requesterId: 5,
+				requesterNickname: 'alice',
+				requesterAvatarUrl: 'http://avatar.url/alice.png',
+			},
+		],
+		friendshipRequestsSent: [
+			{
+				adresseeId: 6,
+				adreseeNickname: 'bob',
+				adresseeAvatarUrl: 'http://avatar.url/bob.png',
 			},
 		],
 	};
 
 	beforeEach(() => {
-		userQueriesRepository = {
+		queriesRepository = {
 			selectPrivateProfile: vi.fn(),
 			selectAuthUserByEmail: vi.fn(),
 			selectUserByEmail: vi.fn(),
@@ -48,45 +56,41 @@ describe('getPrivateProfileFactory', () => {
 	});
 
 	it('should return private profile when it exists', async () => {
-		userQueriesRepository.selectPrivateProfile = vi
+		queriesRepository.selectPrivateProfile = vi
 			.fn()
 			.mockResolvedValue(fakeProfile);
 
 		const getPrivateProfile = getPrivateProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		const result = await getPrivateProfile(1);
 
-		expect(userQueriesRepository.selectPrivateProfile).toHaveBeenCalledWith(1);
+		expect(queriesRepository.selectPrivateProfile).toHaveBeenCalledWith(1);
 		expect(result).toEqual(fakeProfile);
 	});
 
 	it('should throw ProfileNotFoundError when profile does not exist', async () => {
-		userQueriesRepository.selectPrivateProfile = vi
-			.fn()
-			.mockResolvedValue(null);
+		queriesRepository.selectPrivateProfile = vi.fn().mockResolvedValue(null);
 
 		const getPrivateProfile = getPrivateProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		await expect(getPrivateProfile(999)).rejects.toBeInstanceOf(
 			ProfileNotFoundError,
 		);
 
-		expect(userQueriesRepository.selectPrivateProfile).toHaveBeenCalledWith(
-			999,
-		);
+		expect(queriesRepository.selectPrivateProfile).toHaveBeenCalledWith(999);
 	});
 
 	it('should propagate unexpected repository errors', async () => {
-		userQueriesRepository.selectPrivateProfile = vi
+		queriesRepository.selectPrivateProfile = vi
 			.fn()
 			.mockRejectedValue(new Error('database down'));
 
 		const getPrivateProfile = getPrivateProfileFactory({
-			userQueriesRepository,
+			queriesRepository,
 		});
 
 		await expect(getPrivateProfile(1)).rejects.toThrow('database down');

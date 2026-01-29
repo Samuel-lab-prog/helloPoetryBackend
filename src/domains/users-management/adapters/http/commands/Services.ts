@@ -1,7 +1,7 @@
-import type { CreateUser } from '../../../use-cases/commands/commands-models/Create';
-import type { UpdateUserData } from '../../../use-cases/commands/commands-models/Update';
+import type { CreateUser } from '../../../use-cases/commands/models/Create';
+import type { UpdateUserData } from '../../../use-cases/commands/models/Update';
 
-import { CommandsRepository } from '../../../infra/commands-repository/repository';
+import { commandsRepository } from '../../../infra/commands-repository/repository';
 import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
 
 import {
@@ -18,12 +18,12 @@ export interface UsersCommandsServices {
 	) => Promise<{ id: number }>;
 }
 
-export const usersCommandsServices: UsersCommandsServices = {
+export const commandsServices: UsersCommandsServices = {
 	createUser: createUserFactory({
-		userCommandsRepository: CommandsRepository,
+		userCommandsRepository: commandsRepository,
 		hashServices: BcryptHashService,
 	}),
 	updateUser: updateUserFactory({
-		userCommandsRepository: CommandsRepository,
+		userCommandsRepository: commandsRepository,
 	}),
 };

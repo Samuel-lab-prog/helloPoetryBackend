@@ -1,32 +1,28 @@
+/* eslint-disable no-useless-assignment */
 import { prisma } from '@PrismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type {
-	userQueriesRepository,
+	QueriesRepository,
 	SelectUsersParams,
 } from '../../ports/QueriesRepository';
 
 import type {
 	PublicProfile,
 	PrivateProfile,
-	ClientAuthCredentials,
+	UserAuthCredentials,
 	SelectUsersPage,
-} from '../../use-cases/queries';
+} from '../../use-cases/queries/Index';
 
 import {
 	authUserSelect,
-	publicProfileSelect,
 	privateProfileSelect,
 	previewUserSelect,
+	publicProfileSelect,
 } from './selectsModels';
 
-import {
-	extractAcceptedFriendsIds,
-	extractFriendsIds,
-	resolveFriendship,
-	selectFullUser,
-} from './helpers';
+import { selectFullUser } from './helpers';
 
 const selectUserById = (id: number) => selectFullUser({ id });
 
@@ -36,7 +32,7 @@ const selectUserByNickname = (nickname: string) => selectFullUser({ nickname });
 
 function selectAuthUserByEmail(
 	email: string,
-): Promise<ClientAuthCredentials | null> {
+): Promise<UserAuthCredentials | null> {
 	return withPrismaErrorHandling(() =>
 		prisma.user.findUnique({
 			where: { email },
@@ -47,7 +43,7 @@ function selectAuthUserByEmail(
 
 function selectPublicProfile(
 	id: number,
-	requesterId?: number,
+	requesterId: number,
 ): Promise<PublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findUnique({
@@ -57,7 +53,25 @@ function selectPublicProfile(
 
 		if (!user) return null;
 
-		const friendship = await resolveFriendship(requesterId, user.id);
+		const stats = {
+			poemsCount: user.poems.length,
+			commentsCount: user.comments.length,
+			friendsCount: user.friendshipsFrom.length + user.friendshipsTo.length,
+		};
+
+		let isFriend = false;
+		let isBlocked = false;
+		let isRequester = false;
+
+		isFriend =
+			user.friendshipsFrom.some((f) => f.userBId === requesterId) ||
+			user.friendshipsTo.some((f) => f.userAId === requesterId);
+
+		isBlocked =
+			user.blockedFriends.some((b) => b.blockedId === requesterId) ||
+			user.blockedBy.some((b) => b.blockerId === requesterId);
+
+		isRequester = user.id === requesterId;
 
 		return {
 			id: user.id,
@@ -67,12 +81,10 @@ function selectPublicProfile(
 			avatarUrl: user.avatarUrl,
 			role: user.role,
 			status: user.status,
-			stats: {
-				poemsCount: user.poems.length,
-				commentsCount: user.comments.length,
-				friendsCount: user.friendshipsFrom.length + user.friendshipsTo.length,
-			},
-			friendship,
+			stats,
+			isFriend,
+			isBlocked,
+			isRequester,
 		};
 	});
 }
@@ -86,39 +98,47 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 
 		if (!user) return null;
 
-		const acceptedFriendsIds = extractAcceptedFriendsIds(
-			user.friendshipsFrom,
-			user.friendshipsTo,
-		);
+		const friendsIds = [
+			...user.friendshipsFrom.map((f) => f.userBId),
+			...user.friendshipsTo.map((f) => f.userAId),
+		];
+
+		const stats = {
+			poemsIds: user.poems.map((p) => p.id),
+			commentsIds: user.comments.map((c) => c.id),
+			friendsIds,
+		};
+
+		const friendshipRequestsSent = user.friendshipRequests
+			.filter((r) => r.requesterId === user.id)
+			.map((r) => ({
+				addresseeId: r.addresseeId,
+				addresseeNickname: r.addressee.nickname,
+				addresseeAvatarUrl: r.addressee.avatarUrl,
+			}));
+
+		const friendshipRequestsReceived = user.friendshipRequests
+			.filter((r) => r.addresseeId === user.id)
+			.map((r) => ({
+				requesterId: r.requesterId,
+				requesterNickname: r.requester.nickname,
+				requesterAvatarUrl: r.requester.avatarUrl,
+			}));
 
 		return {
 			id: user.id,
 			nickname: user.nickname,
 			name: user.name,
-			bio: user.bio ?? null,
-			avatarUrl: user.avatarUrl ?? null,
+			bio: user.bio,
+			avatarUrl: user.avatarUrl,
 			role: user.role,
 			status: user.status,
 			email: user.email,
-			emailVerifiedAt: user.emailVerifiedAt ?? null,
-			friendsIds: extractFriendsIds(user.friendshipsFrom, user.friendshipsTo),
-			stats: {
-				poemsCount: user.poems.length,
-				commentsCount: user.comments.length,
-				friendsCount: acceptedFriendsIds.length,
-				poemsIds: user.poems.map((p) => p.id),
-				friendsIds: acceptedFriendsIds,
-			},
-			friendshipRequests: [
-				...user.friendshipsFrom.map((f) => ({
-					isRequester: true,
-					userId: f.userBId,
-				})),
-				...user.friendshipsTo.map((f) => ({
-					isRequester: false,
-					userId: f.userAId,
-				})),
-			],
+			emailVerifiedAt: user.emailVerifiedAt,
+			friendsIds,
+			stats,
+			friendshipRequestsSent,
+			friendshipRequestsReceived,
 		};
 	});
 }
@@ -163,7 +183,7 @@ function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
 	});
 }
 
-export const QueriesRepository: userQueriesRepository = {
+export const queriesRepository: QueriesRepository = {
 	selectUserById,
 	selectUserByEmail,
 	selectUserByNickname,

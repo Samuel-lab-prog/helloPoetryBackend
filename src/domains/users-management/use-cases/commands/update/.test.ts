@@ -1,19 +1,19 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { updateUserFactory } from './execute';
-import { UserUpdateError, CrossUserUpdateError } from '../errors';
+import { UserUpdateError, CrossUserUpdateError } from '../Errors';
 
 import * as policies from '../policies/policies';
 
-import type { UserCommandsRepository } from '../../../ports/CommandsRepository';
-import type { UpdateUserData } from '../commands-models/Update';
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { UpdateUserData } from '../models/Update';
 
 mock.module('../policies/policies', () => ({
 	canUpdateData: mock(() => true),
 }));
 
 describe('updateUserFactory', () => {
-	let userCommandsRepository: UserCommandsRepository;
+	let userCommandsRepository: CommandsRepository;
 
 	beforeEach(() => {
 		userCommandsRepository = {

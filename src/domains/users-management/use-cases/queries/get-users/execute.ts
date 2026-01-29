@@ -1,25 +1,28 @@
 import type {
-	userQueriesRepository,
+	QueriesRepository,
 	SortOptions,
-	NavigationOptions,
 } from '../../../ports/QueriesRepository';
-import type { SelectUsersPage } from './../read-models/UsersPage';
+import type { SelectUsersPage } from '../models/UsersPage';
 
 interface Dependencies {
-	userQueriesRepository: userQueriesRepository;
+	queriesRepository: QueriesRepository;
 }
 
 interface GetUsersParams {
-	navigationOptions: NavigationOptions;
+	navigationOptions: {
+		limit?: number;
+		cursor?: number;
+	};
 	sortOptions: SortOptions;
 	nicknameSearch?: string;
 }
 
-export function getUsersFactory({ userQueriesRepository }: Dependencies) {
+const DEFAULT_LIMIT = 20;
+export function getUsersFactory({ queriesRepository }: Dependencies) {
 	return function getUsers(params: GetUsersParams): Promise<SelectUsersPage> {
-		return userQueriesRepository.selectUsers({
+		return queriesRepository.selectUsers({
 			navigationOptions: {
-				limit: params.navigationOptions.limit ?? 20,
+				limit: params.navigationOptions.limit ?? DEFAULT_LIMIT,
 				cursor: params.navigationOptions.cursor,
 			},
 			sortOptions: params.sortOptions,

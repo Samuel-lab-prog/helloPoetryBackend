@@ -1,5 +1,4 @@
 import { t } from 'elysia';
-import type { CreateUser } from '../../use-cases/commands/commands-models/Create';
 import {
 	NicknameSchema,
 	EmailSchema,
@@ -17,9 +16,3 @@ export const CreateUserSchema = t.Object({
 	bio: BioSchema,
 	avatarUrl: AvatarUrlSchema,
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertCreateUser = _AssertExtends<
-	typeof CreateUserSchema.static,
-	CreateUser
->;

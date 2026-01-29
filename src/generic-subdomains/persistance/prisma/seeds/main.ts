@@ -1,13 +1,12 @@
 import { seedUsers } from './users/Execute';
-import { seedPoems } from './poems/Execute';
+import { green } from 'kleur/colors';
 
 async function main() {
 	console.log('Starting database seeding...');
 	try {
-		const users = await seedUsers();
-		const authorId = users[0]!.id;
-		await seedPoems({ authorId });
-		console.log('Database seeding completed! ✅');
+		await seedUsers();
+		// You can add more seed functions here as needed
+		console.log(green('✅ Database seeding completed!'));
 	} catch (error) {
 		console.error('Error during database seeding:', error);
 		process.exit(1);

@@ -1,15 +1,17 @@
-import type { PrivateProfile } from '../use-cases/queries/read-models/PrivateProfile';
-import type { PublicProfile } from '../use-cases/queries/read-models/PublicProfile';
-import type { ClientAuthCredentials } from '../use-cases/queries/read-models/ClientAuth';
-import type { FullUser } from '../use-cases/queries/read-models/FullUser';
-import type { SelectUsersPage } from '../use-cases/queries/read-models/UsersPage';
-import type { userStatus } from '../use-cases/queries/read-models/Enums';
+import type {
+	PrivateProfile,
+	PublicProfile,
+	FullUser,
+	UserAuthCredentials,
+	SelectUsersPage,
+	UserStatus,
+} from '../use-cases/queries/models/Index';
 
-export interface userQueriesRepository {
+export interface QueriesRepository {
 	selectUserById(id: number): Promise<FullUser | null>;
 	selectUserByNickname(nickname: string): Promise<FullUser | null>;
 	selectUserByEmail(email: string): Promise<FullUser | null>;
-	selectAuthUserByEmail(email: string): Promise<ClientAuthCredentials | null>;
+	selectAuthUserByEmail(email: string): Promise<UserAuthCredentials | null>;
 	selectPublicProfile(
 		id: number,
 		requesterId?: number,
@@ -25,7 +27,7 @@ export type NavigationOptions = {
 
 export type FilterOptions = {
 	searchNickname?: string;
-	status?: userStatus;
+	status?: UserStatus;
 };
 
 export type SortOptions = {

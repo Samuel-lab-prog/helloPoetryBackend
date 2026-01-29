@@ -1,9 +1,11 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
-import type { UserCommandsRepository } from '../../ports/CommandsRepository';
-import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
-import type { UpdateUserData } from '../../use-cases/commands/commands-models/Update';
+import type { CommandsRepository } from '../../ports/CommandsRepository';
+import type {
+	UpdateUserData,
+	InsertUser,
+} from '../../use-cases/commands/models/index';
 
 function insertUser(user: InsertUser): Promise<{ id: number } | null> {
 	return withPrismaErrorHandling(() => {
@@ -44,7 +46,7 @@ function updateUser(
 	});
 }
 
-export const CommandsRepository: UserCommandsRepository = {
+export const commandsRepository: CommandsRepository = {
 	insertUser,
 	softDeleteUser,
 	updateUser,

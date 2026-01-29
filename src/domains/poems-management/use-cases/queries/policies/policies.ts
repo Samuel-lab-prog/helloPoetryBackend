@@ -1,6 +1,6 @@
 import type {
-	poemStatus,
-	poemVisibility,
+	PoemStatus,
+	PoemVisibility,
 } from '../../queries/read-models/Enums';
 
 type ViewerContext = {
@@ -16,8 +16,8 @@ type AuthorContext = {
 
 type PoemContext = {
 	id: number;
-	status: poemStatus;
-	visibility: poemVisibility;
+	status: PoemStatus;
+	visibility: PoemVisibility;
 };
 
 export type PoemPolicyContext = {

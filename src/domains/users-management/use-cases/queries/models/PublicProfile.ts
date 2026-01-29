@@ -1,6 +1,6 @@
 import type { UserRole, UserStatus } from './Enums';
 
-export type PrivateProfile = {
+export type PublicProfile = {
 	id: number;
 	nickname: string;
 	name: string;
@@ -8,19 +8,14 @@ export type PrivateProfile = {
 	avatarUrl: string;
 	role: UserRole;
 	status: UserStatus;
-	friendsIds: number[];
-	email: string;
-	emailVerifiedAt: Date | null;
 
 	stats: {
 		poemsCount: number;
 		commentsCount: number;
 		friendsCount: number;
-		poemsIds: number[];
 	};
 
-	friendshipRequests: {
-		isRequester: boolean;
-		userId: number;
-	}[];
+	isFriend: boolean;
+	isBlocked: boolean;
+	isRequester?: boolean;
 };

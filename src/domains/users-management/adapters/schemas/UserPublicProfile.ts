@@ -1,18 +1,20 @@
 import { t } from 'elysia';
-import type { PublicProfile } from '../../use-cases/queries/read-models/index';
 
+import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import { idSchema } from '@SharedKernel/Schemas';
 import {
-	UserRoleEnumSchema,
-	UserStatusEnumSchema,
-	UserFriendshipStatusEnumSchema,
-} from './fields/Enums';
+	AvatarUrlSchema,
+	BioSchema,
+	NameSchema,
+	NicknameSchema,
+} from './fields/UserFieldsSchemas';
 
 export const UserPublicProfileSchema = t.Object({
-	id: t.Number(),
-	nickname: t.String(),
-	name: t.String(),
-	bio: t.String(),
-	avatarUrl: t.String(),
+	id: idSchema,
+	nickname: NicknameSchema,
+	name: NameSchema,
+	bio: BioSchema,
+	avatarUrl: AvatarUrlSchema,
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
 
@@ -24,14 +26,7 @@ export const UserPublicProfileSchema = t.Object({
 
 	friendship: t.Optional(
 		t.Object({
-			status: UserFriendshipStatusEnumSchema,
 			isRequester: t.Boolean(),
 		}),
 	),
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertUserPublicProfile = _AssertExtends<
-	typeof UserPublicProfileSchema.static,
-	PublicProfile
->;

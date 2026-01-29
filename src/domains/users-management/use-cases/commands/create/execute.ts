@@ -1,10 +1,10 @@
-import type { UserCommandsRepository } from '../../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { HashServices } from '../../../ports/HashSerices';
-import type { CreateUser } from '../commands-models/Create';
-import { UserCreationError } from '../errors';
+import type { CreateUser } from '../models/Create';
+import { UserCreationError } from '../Errors';
 
 interface Dependencies {
-	userCommandsRepository: UserCommandsRepository;
+	userCommandsRepository: CommandsRepository;
 	hashServices: HashServices;
 }
 

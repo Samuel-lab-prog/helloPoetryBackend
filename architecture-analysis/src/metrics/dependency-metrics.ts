@@ -10,11 +10,14 @@ const IGNORED_MODULES_PREFIXES = [
 	'node_modules/',
 	'internal/',
 	'/index.ts',
+	'/Index.ts',
 
 	// technical/shared infrastructure
 	'src/persistance/',
 	'src/generic-subdomains/persistance/',
 	'src/generic-subdomains/utils/prisma',
+	'src/shared-kernel/Schemas',
+	'src/generic-subdomains/authentication',
 ];
 
 /**
@@ -40,7 +43,11 @@ function isFanInException(modulePath: string): boolean {
 }
 
 function isEntryPoint(modulePath: string): boolean {
-	return modulePath.endsWith('/index.ts') || modulePath === 'src/index.ts';
+	return (
+		modulePath.endsWith('/index.ts') ||
+		modulePath === 'src/index.ts' ||
+		modulePath.endsWith('/Index.ts')
+	);
 }
 
 export type FanMetric = {

@@ -1,10 +1,10 @@
-import type { UserCommandsRepository } from '../../../ports/CommandsRepository';
-import type { UpdateUserData } from '../commands-models/Update';
-import { UserUpdateError, CrossUserUpdateError } from '../errors';
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { UpdateUserData } from '../models/Update';
+import { UserUpdateError, CrossUserUpdateError } from '../Errors';
 import { canUpdateData } from '../policies/policies';
 
 interface Dependencies {
-	userCommandsRepository: UserCommandsRepository;
+	userCommandsRepository: CommandsRepository;
 }
 
 export function updateUserFactory({ userCommandsRepository }: Dependencies) {

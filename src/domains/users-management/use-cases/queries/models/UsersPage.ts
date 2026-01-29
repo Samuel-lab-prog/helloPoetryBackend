@@ -1,4 +1,4 @@
-import type { UserPreview } from './Preview';
+import type { UserPreview } from './UserPreview';
 
 export type SelectUsersPage = {
 	users: UserPreview[];

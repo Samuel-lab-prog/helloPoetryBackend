@@ -1,4 +1,4 @@
-import type { ClientAuthCredentials } from '../../use-cases/queries/read-models/ClientAuth';
+import type { UserAuthCredentials } from '../../use-cases/queries/models/Index';
 
 export const fullUserSelect = {
 	id: true,
@@ -29,24 +29,13 @@ export const publicProfileSelect = {
 	role: true,
 	status: true,
 
-	poems: {
-		where: {
-			deletedAt: null,
-		},
-		select: { id: true },
-	},
+	poems: { select: { id: true } },
+	comments: { select: { id: true } },
 
-	comments: {
-		select: { id: true },
-	},
-
-	friendshipsFrom: {
-		select: { id: true },
-	},
-
-	friendshipsTo: {
-		select: { id: true },
-	},
+	friendshipsFrom: { select: { userBId: true } },
+	friendshipsTo: { select: { userAId: true } },
+	blockedFriends: { select: { blockedId: true } },
+	blockedBy: { select: { blockerId: true } },
 } as const;
 
 export const privateProfileSelect = {
@@ -54,29 +43,25 @@ export const privateProfileSelect = {
 	nickname: true,
 	name: true,
 	bio: true,
-	email: true,
-	emailVerifiedAt: true,
 	avatarUrl: true,
 	role: true,
 	status: true,
+	email: true,
+	emailVerifiedAt: true,
 
-	poems: {
-		where: {
-			deletedAt: null,
+	poems: { select: { id: true } },
+	comments: { select: { id: true } },
+
+	friendshipsFrom: { select: { userBId: true } },
+	friendshipsTo: { select: { userAId: true } },
+
+	friendshipRequests: {
+		select: {
+			requesterId: true,
+			addresseeId: true,
+			requester: { select: { nickname: true, avatarUrl: true } },
+			addressee: { select: { nickname: true, avatarUrl: true } },
 		},
-		select: { id: true },
-	},
-
-	comments: {
-		select: { id: true },
-	},
-
-	friendshipsFrom: {
-		select: { id: true, userAId: true, userBId: true },
-	},
-
-	friendshipsTo: {
-		select: { id: true, userAId: true, userBId: true },
 	},
 } as const;
 
@@ -86,7 +71,7 @@ export const authUserSelect = {
 	passwordHash: true,
 	role: true,
 	status: true,
-} as const satisfies Record<keyof ClientAuthCredentials, boolean>;
+} as const satisfies Record<keyof UserAuthCredentials, boolean>;
 
 export const previewUserSelect = {
 	id: true,

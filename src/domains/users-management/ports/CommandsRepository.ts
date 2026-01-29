@@ -1,7 +1,9 @@
-import type { InsertUser } from '../use-cases/commands/commands-models/Insert';
-import type { UpdateUserData } from '../use-cases/commands/commands-models/Update';
+import type {
+	InsertUser,
+	UpdateUserData,
+} from '../use-cases/commands/models/index';
 
-export interface UserCommandsRepository {
+export interface CommandsRepository {
 	insertUser(user: InsertUser): Promise<{ id: number } | null>;
 	updateUser(
 		userId: number,

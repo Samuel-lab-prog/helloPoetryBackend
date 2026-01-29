@@ -1,11 +1,11 @@
 import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
-import { CommandsRepository } from './repository';
-import type { InsertUser } from '../../use-cases/commands/commands-models/Insert';
+import { commandsRepository } from './repository';
+import type { InsertUser } from '../../use-cases/commands/models/Insert';
 import { prisma } from '@PrismaClient';
 
 import { clearDatabase } from '../../../../generic-subdomains/utils/ClearDatabase';
 
-const { insertUser, softDeleteUser, updateUser } = CommandsRepository;
+const { insertUser, softDeleteUser, updateUser } = commandsRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
 	{

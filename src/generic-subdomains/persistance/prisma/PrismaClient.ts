@@ -7,11 +7,9 @@ if (process.env.NODE_ENV === 'prod') {
 	url = `${process.env.PROD_DB_URL}`;
 } else if (process.env.NODE_ENV === 'dev') {
 	url = `${process.env.DEV_DB_URL}`;
-}
-else if (process.env.NODE_ENV === 'test') {
+} else if (process.env.NODE_ENV === 'test') {
 	url = `${process.env.TEST_DB_URL}`;
-}
-else {
+} else {
 	throw new Error('NODE_ENV is not set to a valid value');
 }
 const connectionString = url;

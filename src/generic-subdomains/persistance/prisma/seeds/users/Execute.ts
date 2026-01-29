@@ -1,5 +1,6 @@
 import { prisma } from '../../PrismaClient';
 import { createUserSeeds } from './Factory';
+import { green } from 'kleur/colors';
 
 export async function seedUsers() {
 	const usersData = await createUserSeeds();
@@ -11,10 +12,10 @@ export async function seedUsers() {
 
 	const users = await prisma.user.findMany({
 		where: {
-			nickname: { in: ['normaluser', 'autoruser', 'moderatoruser'] },
+			nickname: { in: ['normaluser', 'authoruser', 'moderatoruser'] },
 		},
 		select: { id: true, nickname: true },
 	});
-	console.log('Users seeded successfully!');
+	console.log(green(' ✅ Users seeded successfully!'));
 	return users;
 }

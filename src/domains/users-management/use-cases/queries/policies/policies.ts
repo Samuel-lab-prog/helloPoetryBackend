@@ -1,8 +1,8 @@
-import type { userRole } from '../../../use-cases/queries/read-models/Enums';
+import type { UserRole } from '../models/Enums';
 
 type PolicyInput = {
 	requesterId: number;
-	requesterRole: userRole;
+	requesterRole: UserRole;
 	targetId: number;
 };
 

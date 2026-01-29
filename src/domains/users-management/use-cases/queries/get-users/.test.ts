@@ -3,7 +3,7 @@ import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { getUsersFactory } from './execute';
 
 import type {
-	userQueriesRepository,
+	QueriesRepository,
 	NavigationOptions,
 	SortOptions,
 } from '../../../ports/QueriesRepository';
@@ -11,7 +11,7 @@ import type {
 import type { SelectUsersPage } from './../index';
 
 describe('getUsersFactory', () => {
-	let userQueriesRepository: userQueriesRepository;
+	let queriesRepository: QueriesRepository;
 
 	const fakeResult: SelectUsersPage = {
 		users: [
@@ -27,7 +27,7 @@ describe('getUsersFactory', () => {
 	};
 
 	beforeEach(() => {
-		userQueriesRepository = {
+		queriesRepository = {
 			selectPrivateProfile: mock(),
 			selectPublicProfile: mock(),
 			selectAuthUserByEmail: mock(),
@@ -39,7 +39,7 @@ describe('getUsersFactory', () => {
 	});
 
 	it('should call selectUsers with default limit when not provided', async () => {
-		const getUsers = getUsersFactory({ userQueriesRepository });
+		const getUsers = getUsersFactory({ queriesRepository });
 
 		const navigationOptions: NavigationOptions = {
 			cursor: undefined,
@@ -56,7 +56,7 @@ describe('getUsersFactory', () => {
 			sortOptions,
 		});
 
-		expect(userQueriesRepository.selectUsers).toHaveBeenCalledWith({
+		expect(queriesRepository.selectUsers).toHaveBeenCalledWith({
 			navigationOptions: {
 				limit: 10,
 				cursor: undefined,
@@ -72,7 +72,7 @@ describe('getUsersFactory', () => {
 	});
 
 	it('should pass custom limit and cursor when provided', async () => {
-		const getUsers = getUsersFactory({ userQueriesRepository });
+		const getUsers = getUsersFactory({ queriesRepository });
 
 		const navigationOptions: NavigationOptions = {
 			limit: 10,
@@ -89,7 +89,7 @@ describe('getUsersFactory', () => {
 			sortOptions,
 		});
 
-		expect(userQueriesRepository.selectUsers).toHaveBeenCalledWith({
+		expect(queriesRepository.selectUsers).toHaveBeenCalledWith({
 			navigationOptions: {
 				limit: 10,
 				cursor: 5,
@@ -103,7 +103,7 @@ describe('getUsersFactory', () => {
 	});
 
 	it('should include nickname search when provided', async () => {
-		const getUsers = getUsersFactory({ userQueriesRepository });
+		const getUsers = getUsersFactory({ queriesRepository });
 
 		await getUsers({
 			navigationOptions: {
@@ -117,7 +117,7 @@ describe('getUsersFactory', () => {
 			nicknameSearch: 'sam',
 		});
 
-		expect(userQueriesRepository.selectUsers).toHaveBeenCalledWith({
+		expect(queriesRepository.selectUsers).toHaveBeenCalledWith({
 			navigationOptions: {
 				limit: 10,
 				cursor: undefined,
@@ -134,11 +134,11 @@ describe('getUsersFactory', () => {
 	});
 
 	it('should propagate repository errors', async () => {
-		userQueriesRepository.selectUsers = mock(() =>
+		queriesRepository.selectUsers = mock(() =>
 			Promise.reject(new Error('db failure')),
 		);
 
-		const getUsers = getUsersFactory({ userQueriesRepository });
+		const getUsers = getUsersFactory({ queriesRepository });
 
 		await expect(
 			getUsers({
