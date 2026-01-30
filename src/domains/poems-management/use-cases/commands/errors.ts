@@ -8,3 +8,9 @@ export class PoemCreationDeniedError extends DomainError {
 		);
 	}
 }
+
+export class PoemAlreadyExistsError extends DomainError {
+	constructor() {
+		super('CONFLICT', 'You already have a poem with the same title');
+	}
+}

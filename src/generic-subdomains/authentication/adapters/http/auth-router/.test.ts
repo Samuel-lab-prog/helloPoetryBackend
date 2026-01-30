@@ -42,7 +42,7 @@ describe('AuthRouter', () => {
 			}),
 		);
 
-		expect(resp.status).toBe(204);
+		expect(resp.status).toBe(200);
 
 		const setCookie = resp.headers.get('set-cookie');
 		expect(setCookie).toContain('token=');

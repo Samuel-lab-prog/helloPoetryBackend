@@ -36,11 +36,10 @@ export function createAuthRouter(services: AuthControllerServices) {
 			cookie.token!.value = result.token;
 			setUpCookieTokenOptions(cookie.token!);
 
-
 			auth.clientId = result.client.id;
 			auth.clientRole = result.client.role;
 			auth.clientStatus = result.client.status;
-			return result.client
+			return result.client;
 		},
 		{
 			body: loginSchema,

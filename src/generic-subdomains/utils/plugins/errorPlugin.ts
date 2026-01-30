@@ -174,6 +174,11 @@ function convertDomainError(error: DomainError): AppError {
 				errorMessages: [message],
 				statusCode: 404,
 			});
+		case 'CONFLICT':
+			return new AppError({
+				errorMessages: [message],
+				statusCode: 409,
+			});
 		case 'INVALID_CREDENTIALS':
 			return new AppError({
 				errorMessages: [message],

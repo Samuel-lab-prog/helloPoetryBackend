@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
-import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas';
+import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas/Index';
 
 import { type QueriesRouterServices, queriesRouterServices } from './Services';
 import { appErrorSchema } from '@AppError';

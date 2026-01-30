@@ -6,7 +6,7 @@ import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type { InsertPoem } from '../../use-cases/commands/models/Index';
 
 function insertPoem(data: InsertPoem): Promise<{ id: number }> {
-	return withPrismaErrorHandling(async () => {
+	return withPrismaErrorHandling(() => {
 		const tags =
 			data.tags && data.tags.length > 0
 				? data.tags.map((tag) => ({
@@ -15,7 +15,7 @@ function insertPoem(data: InsertPoem): Promise<{ id: number }> {
 					}))
 				: [];
 
-		const rs = await prisma.poem.create({
+		return prisma.poem.create({
 			select: {
 				id: true,
 			},
@@ -36,8 +36,6 @@ function insertPoem(data: InsertPoem): Promise<{ id: number }> {
 				}),
 			},
 		});
-
-		return { id: rs.id };
 	});
 }
 

@@ -2,14 +2,17 @@ import { commandsRepository } from '../../../infra/commands-repository/Repositor
 import { slugifyService } from '../../../infra/slug-service/execute';
 
 import { createPoemFactory } from '../../../use-cases/commands/Index';
-import { type CreatePoem } from '../../../use-cases/commands/models/Index';
+import type { CreatePoem } from '../../../use-cases/commands/models/Index';
+
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 export interface CommandsRouterServices {
 	createPoem: (params: {
 		data: CreatePoem;
 		meta: {
 			requesterId: number;
-			requesterStatus: 'active' | 'suspended' | 'banned';
+			requesterStatus: UserStatus;
+			requesterRole: UserRole;
 		};
 	}) => Promise<{ id: number }>;
 }

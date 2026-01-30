@@ -29,6 +29,7 @@ describe('createPoem use case', () => {
 	const meta = {
 		requesterId: 1,
 		requesterStatus: 'active' as const,
+		requesterRole: 'moderator' as const,
 	};
 
 	it('should successfully create a poem (happy path)', async () => {
