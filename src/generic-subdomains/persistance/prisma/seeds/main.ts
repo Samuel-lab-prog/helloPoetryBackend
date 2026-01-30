@@ -1,5 +1,11 @@
 import { seedUsers } from './users/Execute';
 import { seedPoems } from './poems/Execute';
+import { seedFriends } from './friends/Execute';
+import { seedFriendRequests } from './friends-requests/Execute';
+import { seedComments } from './comments/Execute';
+import { seedPoemLikes } from './poem-likes/Execute';
+import { seedCommentLikes } from './comment-likes/Execute';
+
 import { green } from 'kleur/colors';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 import { prisma } from '../PrismaClient';
@@ -10,18 +16,36 @@ async function main() {
 	try {
 		await clearDatabase();
 
-		const USERS_AMOUNT = 20;
-		const POEMS_AMOUNT = 100;
+		const USERS_AMOUNT = 30;
+		const POEMS_AMOUNT = 140;
+		const FRIENDS_AMOUNT = 70;
+		const FRIEND_REQUESTS_AMOUNT = 80;
+		const COMMENTS_AMOUNT = 300;
+		const POEM_LIKES_AMOUNT = 1000;
+		const COMMENT_LIKES_AMOUNT = 1000;
 
+		/* USERS */
 		await seedUsers(USERS_AMOUNT);
-
-		const users = await prisma.user.findMany({
-			select: { id: true },
-		});
-
+		const users = await prisma.user.findMany({ select: { id: true } });
 		const userIds = users.map((u) => u.id);
 
+		/* POEMS */
 		await seedPoems(userIds, POEMS_AMOUNT);
+		const poems = await prisma.poem.findMany({ select: { id: true } });
+		const poemIds = poems.map((p) => p.id);
+
+		/* COMMENTS */
+		await seedComments(userIds, poemIds, COMMENTS_AMOUNT);
+		const comments = await prisma.comment.findMany({ select: { id: true } });
+		const commentIds = comments.map((c) => c.id);
+
+		/* SOCIAL GRAPH */
+		await seedFriends(userIds, FRIENDS_AMOUNT);
+		await seedFriendRequests(userIds, FRIEND_REQUESTS_AMOUNT);
+
+		/* LIKES */
+		await seedPoemLikes(userIds, poemIds, POEM_LIKES_AMOUNT);
+		await seedCommentLikes(userIds, commentIds, COMMENT_LIKES_AMOUNT);
 
 		console.log(green('✅ Database seeding completed!'));
 	} catch (error) {
