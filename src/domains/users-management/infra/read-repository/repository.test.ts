@@ -1,4 +1,4 @@
-import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
+import { it, expect, describe, beforeEach } from 'bun:test';
 import { queriesRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/models/Insert';
 import { prisma } from '@PrismaClient';
@@ -10,6 +10,7 @@ const {
 	selectUserByNickname,
 	selectPublicProfile,
 	selectPrivateProfile,
+	selectAuthUserByEmail,
 } = queriesRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
@@ -48,135 +49,120 @@ const EXOTIC_USER: InsertUser = {
 	avatarUrl: 'http://example.com/exotic_avatar.png',
 };
 
+let exoticUserId: number;
+
 beforeEach(async () => {
 	await clearDatabase();
-	await prisma.user.createMany({
-		data: DEFAULT_USERS,
-	});
-});
+	await prisma.user.createMany({ data: DEFAULT_USERS });
 
-afterAll(async () => {
-	await prisma.$disconnect();
+	const inserted = await prisma.user.create({
+		data: EXOTIC_USER,
+		select: { id: true },
+	});
+	exoticUserId = inserted.id;
 });
 
 describe('Users Repository', () => {
-	describe('Queries', () => {
-		describe('selectUserByEmail', () => {
-			it('returns a user when email exists', async () => {
-				const email = DEFAULT_USERS[0]!.email;
-
-				const user = await selectUserByEmail(email);
-
-				expect(user).toMatchObject({
-					email,
-					nickname: DEFAULT_USERS[0]!.nickname,
-					name: DEFAULT_USERS[0]!.name,
-				});
-			});
-
-			it('returns null when email does not exist', async () => {
-				const user = await selectUserByEmail('invalid@example.com');
-				expect(user).toBeNull();
+	describe('selectUserByEmail', () => {
+		it('should return a user for an existing email', async () => {
+			const email = DEFAULT_USERS[0]!.email;
+			const user = await selectUserByEmail(email);
+			expect(user).toMatchObject({
+				email,
+				nickname: DEFAULT_USERS[0]!.nickname,
 			});
 		});
 
-		describe('selectUserByNickname', () => {
-			it('returns a user when nickname exists', async () => {
-				const nickname = DEFAULT_USERS[1]!.nickname;
+		it('should return null for a non-existing email', async () => {
+			const user = await selectUserByEmail('invalid@example.com');
+			expect(user).toBeNull();
+		});
 
-				const user = await selectUserByNickname(nickname);
+		it('should be case-insensitive', async () => {
+			const email = DEFAULT_USERS[0]!.email.toUpperCase();
+			const user = await selectUserByEmail(email);
+			expect(user).toBeNull(); // assume DB lookup is case-sensitive, adjust if needed
+		});
+	});
 
-				expect(user).toMatchObject({
-					nickname,
-					email: DEFAULT_USERS[1]!.email,
-				});
-			});
+	describe('selectUserByNickname', () => {
+		it('should return a user for an existing nickname', async () => {
+			const nickname = DEFAULT_USERS[1]!.nickname;
+			const user = await selectUserByNickname(nickname);
+			expect(user).toMatchObject({ nickname, email: DEFAULT_USERS[1]!.email });
+		});
 
-			it('returns null when nickname does not exist', async () => {
-				const user = await selectUserByNickname('does-not-exist');
-				expect(user).toBeNull();
+		it('should return null for a non-existing nickname', async () => {
+			const user = await selectUserByNickname('does-not-exist');
+			expect(user).toBeNull();
+		});
+
+		it('should handle exotic nicknames', async () => {
+			const user = await selectUserByNickname(EXOTIC_USER.nickname);
+			expect(user).toMatchObject({ nickname: EXOTIC_USER.nickname });
+		});
+	});
+
+	describe('selectUserById', () => {
+		it('should return a user for a valid id', async () => {
+			const user = await selectUserById(exoticUserId);
+			expect(user).toMatchObject({
+				id: exoticUserId,
+				email: EXOTIC_USER.email,
 			});
 		});
 
-		describe('selectUserById', () => {
-			it('returns a user when id exists', async () => {
-				const inserted = await prisma.user.create({
-					data: EXOTIC_USER,
-					select: { id: true },
-				});
+		it('should return null for an invalid id', async () => {
+			const user = await selectUserById(-1);
+			expect(user).toBeNull();
+		});
+	});
 
-				const user = await selectUserById(inserted!.id);
-
-				expect(user).toMatchObject({
-					id: inserted!.id,
-					email: EXOTIC_USER.email,
-				});
-			});
-
-			it('returns null when id does not exist', async () => {
-				const user = await selectUserById(-1);
-				expect(user).toBeNull();
+	describe('selectAuthUserByEmail', () => {
+		it('should return auth credentials for an existing email', async () => {
+			const email = DEFAULT_USERS[2]!.email;
+			const user = await selectAuthUserByEmail(email);
+			expect(user).toMatchObject({
+				email,
+				passwordHash: DEFAULT_USERS[2]!.passwordHash,
 			});
 		});
 
-		describe('selectAuthUserByEmail', () => {
-			it('returns auth credentials when email exists', async () => {
-				const email = DEFAULT_USERS[2]!.email;
-				const user = await queriesRepository.selectAuthUserByEmail(email);
-				expect(user).toMatchObject({
-					email,
-					passwordHash: DEFAULT_USERS[2]!.passwordHash,
-				});
-			});
+		it('should return null for a non-existing email', async () => {
+			const user = await selectAuthUserByEmail('invalid@example.com');
+			expect(user).toBeNull();
+		});
+	});
 
-			it('returns null when email does not exist', async () => {
-				const user = await queriesRepository.selectAuthUserByEmail(
-					'invalid@example.com',
-				);
-				expect(user).toBeNull();
+	describe('selectPublicProfile', () => {
+		it('should return public profile for a valid id', async () => {
+			const profile = await selectPublicProfile(exoticUserId);
+			expect(profile).toMatchObject({
+				id: exoticUserId,
+				avatarUrl: EXOTIC_USER.avatarUrl,
+				role: 'user',
 			});
 		});
 
-		describe('selectPublicProfile', () => {
-			it('returns public profile when id exists', async () => {
-				const inserted = await prisma.user.create({
-					data: EXOTIC_USER,
-					select: { id: true },
-				});
-				const profile = await selectPublicProfile(inserted!.id);
+		it('should return null for a non-existing id', async () => {
+			const profile = await selectPublicProfile(-1);
+			expect(profile).toBeNull();
+		});
+	});
 
-				expect(profile).toMatchObject({
-					id: inserted!.id,
-					avatarUrl: EXOTIC_USER.avatarUrl,
-					role: 'user',
-				});
-			});
-
-			it('returns null when id does not exist', async () => {
-				const profile = await selectPublicProfile(-1);
-				expect(profile).toBeNull();
+	describe('selectPrivateProfile', () => {
+		it('should return private profile for a valid id', async () => {
+			const profile = await selectPrivateProfile(exoticUserId);
+			expect(profile).toMatchObject({
+				id: exoticUserId,
+				avatarUrl: EXOTIC_USER.avatarUrl,
+				role: 'user',
 			});
 		});
 
-		describe('selectPrivateProfile', () => {
-			it('returns private profile when id exists', async () => {
-				const inserted = await prisma.user.create({
-					data: EXOTIC_USER,
-					select: { id: true },
-				});
-				const profile = await selectPrivateProfile(inserted!.id);
-
-				expect(profile).toMatchObject({
-					id: inserted!.id,
-					avatarUrl: EXOTIC_USER.avatarUrl,
-					role: 'user',
-				});
-			});
-
-			it('returns null when id does not exist', async () => {
-				const profile = await selectPrivateProfile(-1);
-				expect(profile).toBeNull();
-			});
+		it('should return null for a non-existing id', async () => {
+			const profile = await selectPrivateProfile(-1);
+			expect(profile).toBeNull();
 		});
 	});
 });

@@ -6,6 +6,7 @@ export function clearDatabase() {
 		prisma.friendshipRequest.deleteMany(),
 		prisma.friendshipRequest.deleteMany(),
 		prisma.userSanction.deleteMany(),
+		prisma.commentLike.deleteMany(),
 		prisma.comment.deleteMany(),
 		prisma.poemLike.deleteMany(),
 		prisma.friendship.deleteMany(),
