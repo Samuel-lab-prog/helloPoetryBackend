@@ -10,6 +10,7 @@ import {
 	commandsRouterServices,
 } from './Services';
 import { appErrorSchema } from '@AppError';
+import { PoemCommentSchema } from '../../schemas/PoemCommentSchema';
 
 export function createInteractionsCommandsRouter(
 	services: CommandsRouterServices,
@@ -31,7 +32,7 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				response: {
-					200: PoemLikeSchema,
+					201: PoemLikeSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
@@ -49,7 +50,7 @@ export function createInteractionsCommandsRouter(
 					userId: auth.clientId,
 					poemId: params.id,
 				});
-				set.status = 200;
+				set.status = 204;
 				return rs;
 			},
 			{
@@ -57,7 +58,7 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				response: {
-					200: PoemLikeSchema,
+					204: t.Void(),
 					404: appErrorSchema,
 				},
 				detail: {
@@ -75,7 +76,7 @@ export function createInteractionsCommandsRouter(
 					poemId: params.id,
 					content: body.content,
 				});
-				set.status = 200;
+				set.status = 201;
 				return rs;
 			},
 			{
@@ -83,16 +84,10 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				body: t.Object({
-					content: t.String(),
+					content: PoemCommentSchema['properties']['content'],
 				}),
 				response: {
-					200: t.Object({
-						id: idSchema,
-						content: t.String(),
-						userId: idSchema,
-						poemId: idSchema,
-						createdAt: t.Date(),
-					}),
+					201: PoemCommentSchema,
 					404: appErrorSchema,
 				},
 				detail: {

@@ -5,7 +5,6 @@ export const NicknameSchema = t.String({
 	minLength: 3,
 	example: 'poetrylover',
 	pattern: '^[a-zA-Z0-9_]+$',
-	readOnly: true,
 	...makeValidationError(
 		'Nickname must be at least 3 characters long and contain only letters, numbers, and underscores',
 	),
@@ -22,15 +21,14 @@ export const NameSchema = t.String({
 
 export const EmailSchema = t.String({
 	format: 'email',
-	example: 'ana.clara@email.com',
-	readOnly: true,
+	example: 'ana@gmail.com',
 	...makeValidationError('Invalid email address'),
 });
 
 export const PasswordSchema = t.String({
 	minLength: 8,
 	maxLength: 40,
-	example: 'strongPassword123',
+	example: 'ana12345',
 	...makeValidationError(
 		'Password must be at least 8 characters long and at most 40 characters long',
 	),

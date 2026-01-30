@@ -2,20 +2,16 @@ import { prisma } from '../../PrismaClient';
 import { createUserSeeds } from './Factory';
 import { green } from 'kleur/colors';
 
-export async function seedUsers() {
-	const usersData = await createUserSeeds();
+export async function seedUsers(quantity: number) {
+	const users = await createUserSeeds(quantity);
 
-	await prisma.user.createMany({
-		data: usersData,
-		skipDuplicates: true,
-	});
+	await Promise.all(
+		users.map((user) =>
+			prisma.user.create({
+				data: user,
+			}),
+		),
+	);
 
-	const users = await prisma.user.findMany({
-		where: {
-			nickname: { in: ['normaluser', 'authoruser', 'moderatoruser'] },
-		},
-		select: { id: true, nickname: true },
-	});
 	console.log(green('✅ Users seeded successfully!'));
-	return users;
 }
