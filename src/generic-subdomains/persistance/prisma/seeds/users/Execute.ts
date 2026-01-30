@@ -16,6 +16,6 @@ export async function seedUsers() {
 		},
 		select: { id: true, nickname: true },
 	});
-	console.log(green(' ✅ Users seeded successfully!'));
+	console.log(green('✅ Users seeded successfully!'));
 	return users;
 }

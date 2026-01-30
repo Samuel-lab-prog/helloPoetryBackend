@@ -10,7 +10,7 @@ export const emailSchema = t.String({
 export const passwordSchema = t.String({
 	minLength: 8,
 	maxLength: 30,
-	example: 'normaluserpassword',
+	example: 'normalpassword',
 	...makeValidationError('Password must be between 8 and 30 characters'),
 });
 

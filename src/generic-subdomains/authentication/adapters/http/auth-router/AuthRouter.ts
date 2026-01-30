@@ -30,22 +30,28 @@ export function createAuthRouter(services: AuthControllerServices) {
 
 	return new Elysia({ prefix: '/auth' }).use(SetupPlugin).post(
 		'/login',
-		async ({ body, cookie, set, auth }) => {
+		async ({ body, cookie, auth }) => {
 			const result = await login(body.email, body.password);
 
 			cookie.token!.value = result.token;
 			setUpCookieTokenOptions(cookie.token!);
 
-			set.status = 204;
 
 			auth.clientId = result.client.id;
 			auth.clientRole = result.client.role;
 			auth.clientStatus = result.client.status;
+			return result.client
 		},
 		{
 			body: loginSchema,
 			response: {
-				204: t.Void(),
+				200: t.Object({
+					id: t.Number(),
+					role: t.String(),
+					status: t.String(),
+				}),
+			},
+			errors: {
 				401: appErrorSchema,
 				400: appErrorSchema,
 				422: appErrorSchema,
