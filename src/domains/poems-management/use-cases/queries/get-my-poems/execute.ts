@@ -1,5 +1,5 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { MyPoem } from '../read-models/MyPoem';
+import type { MyPoem } from '../models/MyPoem';
 
 import { canViewPoem } from '../policies/policies';
 

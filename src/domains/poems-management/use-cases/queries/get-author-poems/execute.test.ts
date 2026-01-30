@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { getAuthorPoemsFactory } from './execute';
 import { canViewPoem } from '../policies/policies';
-import type { AuthorPoem } from '../read-models/AuthorPoem';
+import type { AuthorPoem } from '../models/AuthorPoem';
 
 let poemQueriesRepository: any;
 let getAuthorPoems: ReturnType<typeof getAuthorPoemsFactory>;

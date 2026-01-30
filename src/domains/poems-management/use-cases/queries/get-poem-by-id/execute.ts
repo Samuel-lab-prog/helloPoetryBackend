@@ -1,8 +1,8 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import { PoemNotFoundError, PoemAccessDeniedError } from '../errors';
 import { canViewPoem } from '../policies/policies';
-import type { MyPoem } from '../read-models/MyPoem';
-import type { AuthorPoem } from '../read-models/AuthorPoem';
+import type { MyPoem } from '../models/MyPoem';
+import type { AuthorPoem } from '../models/AuthorPoem';
 import { toAuthorPoem, toMyPoem } from '../dtos';
 
 interface Dependencies {

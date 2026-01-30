@@ -1,7 +1,4 @@
-import type {
-	PoemStatus,
-	PoemVisibility,
-} from '../../queries/read-models/Enums';
+import type { PoemStatus, PoemVisibility } from '../models/Enums';
 
 type ViewerContext = {
 	id?: number;

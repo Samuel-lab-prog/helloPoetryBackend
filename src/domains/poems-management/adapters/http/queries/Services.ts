@@ -6,7 +6,7 @@ import {
 	getPoemFactory,
 	type MyPoem,
 	type AuthorPoem,
-} from '../../../use-cases/queries/index';
+} from '../../../use-cases/queries/Index';
 
 export interface QueriesRouterServices {
 	getMyPoems: (params: { requesterId: number }) => Promise<MyPoem[]>;

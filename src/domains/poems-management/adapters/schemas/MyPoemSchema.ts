@@ -1,5 +1,4 @@
 import { t } from 'elysia';
-import type { MyPoem } from '../../use-cases/queries/index';
 import {
 	PoemContentSchema,
 	PoemTitleSchema,
@@ -7,8 +6,7 @@ import {
 	PoemSlugSchema,
 	PoemTagsSchema,
 } from './fields/PoemFieldsSchemas';
-
-import { idSchema } from './parameters/IdSchema';
+import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 
 import {
 	PoemVisibilityEnumSchema,
@@ -26,8 +24,8 @@ export const MyPoemSchema = t.Object({
 	visibility: PoemVisibilityEnumSchema,
 	moderationStatus: PoemModerationStatusEnumSchema,
 
-	createdAt: t.Date(),
-	updatedAt: t.Date(),
+	createdAt: DateSchema,
+	updatedAt: DateSchema,
 
 	isCommentable: t.Boolean(),
 	content: PoemContentSchema,
@@ -38,6 +36,3 @@ export const MyPoemSchema = t.Object({
 		commentsCount: t.Number(),
 	}),
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertCreateUser = _AssertExtends<typeof MyPoemSchema.static, MyPoem>;

@@ -9,7 +9,7 @@ import type {
 	MyPoem,
 	AuthorPoem,
 	FullPoem,
-} from '../../use-cases/queries/index';
+} from '../../use-cases/queries/Index';
 
 function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {

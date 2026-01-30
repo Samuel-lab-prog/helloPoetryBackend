@@ -1,6 +1,6 @@
-import type { FullPoem } from '../read-models/FullPoem';
-import type { AuthorPoem } from '../read-models/AuthorPoem';
-import type { MyPoem } from '../read-models/MyPoem';
+import type { FullPoem } from '../models/FullPoem';
+import type { AuthorPoem } from '../models/AuthorPoem';
+import type { MyPoem } from '../models/MyPoem';
 
 export function toAuthorPoem(fullPoem: FullPoem): AuthorPoem {
 	return {

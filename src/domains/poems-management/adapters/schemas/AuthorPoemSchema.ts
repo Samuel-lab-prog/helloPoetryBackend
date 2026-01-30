@@ -1,22 +1,25 @@
 import { t } from 'elysia';
 import { idSchema } from './parameters/IdSchema';
 import { PoemContentSchema, PoemTitleSchema } from './fields/PoemFieldsSchemas';
+import { PoemStatusEnumSchema, PoemVisibilityEnumSchema } from '../schemas/fields/Enums';
+
+import { DateSchema } from '@SharedKernel/Schemas';
 
 export const AuthorPoemSchema = t.Object({
 	id: idSchema,
 	title: PoemTitleSchema,
+	status: PoemStatusEnumSchema,
 	content: PoemContentSchema,
-	status: t.String(),
-	visibility: t.String(),
+	visibility: PoemVisibilityEnumSchema,
 
-	createdAt: t.Date(),
+	createdAt: DateSchema,
 
 	author: t.Object({
 		id: idSchema,
 		name: t.String(),
 		nickname: t.String(),
 		avatarUrl: t.String(),
-		friendsIds: t.Array(t.Number()),
+		friendsIds: t.Array(idSchema),
 	}),
 
 	stats: t.Object({

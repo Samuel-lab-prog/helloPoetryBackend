@@ -2,7 +2,7 @@ import type {
 	PoemStatus,
 	PoemVisibility,
 	PoemModerationStatus,
-} from '@Domains/poems-management/use-cases/queries/read-models/Enums';
+} from '@Domains/poems-management/use-cases/queries/models/Enums';
 
 export type InsertPoem = {
 	title: string;

@@ -1,5 +1,5 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { AuthorPoem } from '../read-models/AuthorPoem';
+import type { AuthorPoem } from '../models/AuthorPoem';
 import { canViewPoem } from '../policies/policies';
 
 interface Dependencies {
