@@ -165,4 +165,41 @@ describe('Users Repository', () => {
 			expect(profile).toBeNull();
 		});
 	});
+	describe('selectUsers', () => {
+		it('should return a paginated list of users', async () => {
+			const result = await queriesRepository.selectUsers({
+				navigationOptions: { limit: 2 },
+				filterOptions: {},
+				sortOptions: { orderBy: 'id', orderDirection: 'asc' },
+			});
+			expect(result.users.length).toBe(2);
+			expect(result.hasMore).toBe(true);
+			expect(result.nextCursor).toBeDefined();
+		});
+
+		it('should apply searchNickname filter', async () => {
+			const result = await queriesRepository.selectUsers({
+				navigationOptions: { limit: 10 },
+				filterOptions: { searchNickname: 'second' },
+				sortOptions: { orderBy: 'id', orderDirection: 'asc' },
+			});
+			expect(result.users.length).toBe(1);
+			expect(result.users[0]!.nickname).toBe('seconduser');
+		});
+
+		it('should apply status filter', async () => {
+			// First, update a user's status
+			await prisma.user.update({
+				where: { nickname: 'testuser' },
+				data: { status: 'banned' },
+			});
+			const result = await queriesRepository.selectUsers({
+				navigationOptions: { limit: 10 },
+				filterOptions: { status: 'banned' },
+				sortOptions: { orderBy: 'id', orderDirection: 'asc' },
+			});
+			expect(result.users.length).toBe(1);
+			expect(result.users[0]!.nickname).toBe('testuser');
+		});
+	});
 });

@@ -29,4 +29,8 @@ export const UserPublicProfileSchema = t.Object({
 			isRequester: t.Boolean(),
 		}),
 	),
+
+	isFriend: t.Boolean(),
+	isBlocked: t.Boolean(),
+	isRequester: t.Optional(t.Boolean()),
 });

@@ -25,9 +25,7 @@ import {
 import { selectFullUser } from './helpers';
 
 const selectUserById = (id: number) => selectFullUser({ id });
-
 const selectUserByEmail = (email: string) => selectFullUser({ email });
-
 const selectUserByNickname = (nickname: string) => selectFullUser({ nickname });
 
 function selectAuthUserByEmail(
