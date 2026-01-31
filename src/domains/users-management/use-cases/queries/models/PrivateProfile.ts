@@ -29,4 +29,6 @@ export type PrivateProfile = {
 		requesterNickname: string;
 		requesterAvatarUrl: string | null;
 	}[];
+
+	blockedUsersIds: number[];
 };

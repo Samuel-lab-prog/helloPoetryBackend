@@ -141,6 +141,7 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			stats,
 			friendshipRequestsSent,
 			friendshipRequestsReceived,
+			blockedUsersIds: user.blockedFriends.map((b) => b.blockedId),
 		};
 	});
 }

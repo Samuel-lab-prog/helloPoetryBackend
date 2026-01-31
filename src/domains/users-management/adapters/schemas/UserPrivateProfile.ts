@@ -41,4 +41,5 @@ export const UserPrivateProfileSchema = t.Object({
 			requesterAvatarUrl: t.Nullable(AvatarUrlSchema),
 		}),
 	),
+	blockedUsersIds: t.Array(idSchema),
 });

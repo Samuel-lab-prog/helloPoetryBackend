@@ -1,7 +1,7 @@
 import { defineUseCases } from './src/DefineUseCases';
 
 export default defineUseCases({
-	domain: 'feed-engine',
+	domain: 'friends-management',
 
 	useCases: [
 		{

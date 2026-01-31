@@ -99,6 +99,48 @@ export async function acceptFriendRequest(to: TestUser, fromUserId: number) {
 }
 
 /**
+ * Reject a friend request
+ */
+export async function rejectFriendRequest(to: TestUser, fromUserId: number) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/friends/reject/${fromUserId}`, {
+			method: 'PATCH',
+			headers: { Cookie: to.cookie },
+		}),
+	);
+	if (res.status !== 200) throw new Error('Failed to reject friend request');
+	return await res.json();
+}
+
+/**
+ * Block another user
+ */
+export async function blockUser(by: TestUser, targetUserId: number) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/friends/block/${targetUserId}`, {
+			method: 'PATCH',
+			headers: { Cookie: by.cookie },
+		}),
+	);
+	if (res.status !== 200) throw new Error('Failed to block user');
+	return await res.json();
+}
+
+/**
+ * Cancel a sent friend request
+ */
+export async function cancelFriendRequest(from: TestUser, toUserId: number) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/friends/cancel/${toUserId}`, {
+			method: 'DELETE',
+			headers: { Cookie: from.cookie },
+		}),
+	);
+	if (res.status !== 200) throw new Error('Failed to cancel friend request');
+	return await res.json();
+}
+
+/**
  * Get the authenticated user's profile
  */
 export async function getMe(user: TestUser) {

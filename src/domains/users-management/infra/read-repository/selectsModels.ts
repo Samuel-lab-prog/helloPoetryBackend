@@ -70,6 +70,8 @@ export const privateProfileSelect = {
 		},
 	},
 
+	blockedFriends: { select: { blockedId: true } },
+
 	friendshipAddressees: {
 		select: {
 			requesterId: true,
