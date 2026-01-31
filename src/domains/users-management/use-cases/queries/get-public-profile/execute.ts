@@ -9,7 +9,7 @@ interface Dependencies {
 export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPublicProfile(
 		id: number,
-		requesterId?: number,
+		requesterId: number,
 	): Promise<PublicProfile> {
 		const profile = await queriesRepository.selectPublicProfile(
 			id,

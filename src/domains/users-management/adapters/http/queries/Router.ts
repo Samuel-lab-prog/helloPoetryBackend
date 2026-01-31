@@ -56,10 +56,11 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 			},
 		)
+		.use(AuthPlugin)
 		.get(
 			'/:id/profile',
-			({ params, query }) => {
-				return services.getPublicProfile(params.id, query.requesterId);
+			({ params, auth }) => {
+				return services.getPublicProfile(params.id, auth.clientId);
 			},
 			{
 				response: {
@@ -70,9 +71,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				params: t.Object({
 					id: idSchema,
 				}),
-				query: t.Object({
-					requesterId: t.Optional(idSchema),
-				}),
+
 				detail: {
 					summary: 'Get User Public Profile',
 					description: 'Returns a user public profile by their ID.',
@@ -80,7 +79,6 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
 		.get(
 			'/me',
 			({ auth }) => {

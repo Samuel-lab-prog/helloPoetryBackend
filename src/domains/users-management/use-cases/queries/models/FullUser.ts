@@ -11,7 +11,6 @@ export type FullUser = {
 	role: UserRole;
 	status: UserStatus;
 
-	friendsIds: number[];
 	createdAt: Date;
 	updatedAt: Date;
 	emailVerifiedAt: Date | null;

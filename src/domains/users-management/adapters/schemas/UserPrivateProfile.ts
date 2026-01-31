@@ -19,12 +19,11 @@ export const UserPrivateProfileSchema = t.Object({
 	status: UserStatusEnumSchema,
 	email: EmailSchema,
 	emailVerifiedAt: t.Nullable(DateSchema),
-	friendsIds: t.Array(idSchema),
 
 	stats: t.Object({
 		poemsIds: t.Array(idSchema),
-		friendsIds: t.Array(idSchema),
 		commentsIds: t.Array(idSchema),
+		friendsIds: t.Array(idSchema),
 	}),
 
 	friendshipRequestsSent: t.Array(
@@ -34,6 +33,7 @@ export const UserPrivateProfileSchema = t.Object({
 			addresseeAvatarUrl: t.Nullable(AvatarUrlSchema),
 		}),
 	),
+
 	friendshipRequestsReceived: t.Array(
 		t.Object({
 			requesterId: idSchema,

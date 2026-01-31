@@ -1,7 +1,11 @@
-/* eslint-disable no-useless-assignment */
 import { prisma } from '@PrismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import {
+	ACTIVE_USER_WHERE,
+	selectFullUser,
+	USER_ORDER_FIELDS,
+} from './helpers';
 
 import type {
 	QueriesRepository,
@@ -22,11 +26,14 @@ import {
 	publicProfileSelect,
 } from './selectsModels';
 
-import { selectFullUser } from './helpers';
+const selectUserById = (id: number) =>
+	selectFullUser({ id, ...ACTIVE_USER_WHERE });
 
-const selectUserById = (id: number) => selectFullUser({ id });
-const selectUserByEmail = (email: string) => selectFullUser({ email });
-const selectUserByNickname = (nickname: string) => selectFullUser({ nickname });
+const selectUserByEmail = (email: string) =>
+	selectFullUser({ email, ...ACTIVE_USER_WHERE });
+
+const selectUserByNickname = (nickname: string) =>
+	selectFullUser({ nickname, ...ACTIVE_USER_WHERE });
 
 function selectAuthUserByEmail(
 	email: string,
@@ -44,32 +51,32 @@ function selectPublicProfile(
 	requesterId: number,
 ): Promise<PublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
-		const user = await prisma.user.findUnique({
-			where: { id },
+		const user = await prisma.user.findFirst({
+			where: { id, ...ACTIVE_USER_WHERE },
 			select: publicProfileSelect,
 		});
 
 		if (!user) return null;
 
+		const friendsIds = [
+			...user.friendshipsFrom.map((f) => f.userBId),
+			...user.friendshipsTo.map((f) => f.userAId),
+		];
+
 		const stats = {
 			poemsCount: user.poems.length,
 			commentsCount: user.comments.length,
-			friendsCount: user.friendshipsFrom.length + user.friendshipsTo.length,
+			friendsCount: friendsIds.length,
 		};
+		const isFriend = friendsIds.includes(requesterId);
 
-		let isFriend = false;
-		let isBlocked = false;
-		let isRequester = false;
+		const hasBlockedRequester = user.blockedFriends.some(
+			(b) => b.blockedId === requesterId,
+		);
 
-		isFriend =
-			user.friendshipsFrom.some((f) => f.userBId === requesterId) ||
-			user.friendshipsTo.some((f) => f.userAId === requesterId);
-
-		isBlocked =
-			user.blockedFriends.some((b) => b.blockedId === requesterId) ||
-			user.blockedBy.some((b) => b.blockerId === requesterId);
-
-		isRequester = user.id === requesterId;
+		const isBlockedByRequester = user.blockedBy.some(
+			(b) => b.blockerId === requesterId,
+		);
 
 		return {
 			id: user.id,
@@ -81,16 +88,17 @@ function selectPublicProfile(
 			status: user.status,
 			stats,
 			isFriend,
-			isBlocked,
-			isRequester,
+			hasBlockedRequester,
+			isBlockedByRequester,
+			isFriendRequester: user.id === requesterId,
 		};
 	});
 }
 
 function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 	return withPrismaErrorHandling(async () => {
-		const user = await prisma.user.findUnique({
-			where: { id },
+		const user = await prisma.user.findFirst({
+			where: { id, ...ACTIVE_USER_WHERE },
 			select: privateProfileSelect,
 		});
 
@@ -107,21 +115,17 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			friendsIds,
 		};
 
-		const friendshipRequestsSent = user.friendshipRequests
-			.filter((r) => r.requesterId === user.id)
-			.map((r) => ({
-				addresseeId: r.addresseeId,
-				addresseeNickname: r.addressee.nickname,
-				addresseeAvatarUrl: r.addressee.avatarUrl,
-			}));
+		const friendshipRequestsSent = user.friendshipRequests.map((r) => ({
+			addresseeId: r.addresseeId,
+			addresseeNickname: r.addressee.nickname,
+			addresseeAvatarUrl: r.addressee.avatarUrl,
+		}));
 
-		const friendshipRequestsReceived = user.friendshipRequests
-			.filter((r) => r.addresseeId === user.id)
-			.map((r) => ({
-				requesterId: r.requesterId,
-				requesterNickname: r.requester.nickname,
-				requesterAvatarUrl: r.requester.avatarUrl,
-			}));
+		const friendshipRequestsReceived = user.friendshipAddressees.map((r) => ({
+			requesterId: r.requesterId,
+			requesterNickname: r.requester.nickname,
+			requesterAvatarUrl: r.requester.avatarUrl,
+		}));
 
 		return {
 			id: user.id,
@@ -149,7 +153,12 @@ function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
 			sortOptions: { orderBy, orderDirection },
 		} = params;
 
+		if (!(orderBy in USER_ORDER_FIELDS)) {
+			throw new Error('Invalid order field');
+		}
+
 		const where: UserWhereInput = {
+			...ACTIVE_USER_WHERE,
 			...(searchNickname && {
 				nickname: {
 					contains: searchNickname,
@@ -166,7 +175,9 @@ function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
 				cursor: { id: cursor },
 				skip: 1,
 			}),
-			orderBy: { [orderBy]: orderDirection },
+			orderBy: {
+				[orderBy]: orderDirection,
+			},
 			select: previewUserSelect,
 		});
 

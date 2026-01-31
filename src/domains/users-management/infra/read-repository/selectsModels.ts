@@ -10,12 +10,6 @@ export const fullUserSelect = {
 	createdAt: true,
 	updatedAt: true,
 	emailVerifiedAt: true,
-	friendshipsTo: {
-		select: { userAId: true },
-	},
-	friendshipsFrom: {
-		select: { userBId: true },
-	},
 } as const;
 
 export const publicProfileSelect = {
@@ -30,8 +24,14 @@ export const publicProfileSelect = {
 	poems: { select: { id: true } },
 	comments: { select: { id: true } },
 
-	friendshipsFrom: { select: { userBId: true } },
-	friendshipsTo: { select: { userAId: true } },
+	friendshipsFrom: {
+		select: { userBId: true },
+	},
+
+	friendshipsTo: {
+		select: { userAId: true },
+	},
+
 	blockedFriends: { select: { blockedId: true } },
 	blockedBy: { select: { blockerId: true } },
 } as const;
@@ -50,15 +50,35 @@ export const privateProfileSelect = {
 	poems: { select: { id: true } },
 	comments: { select: { id: true } },
 
-	friendshipsFrom: { select: { userBId: true } },
-	friendshipsTo: { select: { userAId: true } },
+	friendshipsFrom: {
+		select: { userBId: true },
+	},
+
+	friendshipsTo: {
+		select: { userAId: true },
+	},
 
 	friendshipRequests: {
 		select: {
-			requesterId: true,
 			addresseeId: true,
-			requester: { select: { nickname: true, avatarUrl: true } },
-			addressee: { select: { nickname: true, avatarUrl: true } },
+			addressee: {
+				select: {
+					nickname: true,
+					avatarUrl: true,
+				},
+			},
+		},
+	},
+
+	friendshipAddressees: {
+		select: {
+			requesterId: true,
+			requester: {
+				select: {
+					nickname: true,
+					avatarUrl: true,
+				},
+			},
 		},
 	},
 } as const;

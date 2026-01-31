@@ -3,16 +3,6 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import { fullUserSelect } from './selectsModels';
 
-function extractFriendsIds(
-	friendshipsFrom: { userBId: number }[],
-	friendshipsTo: { userAId: number }[],
-): number[] {
-	return [
-		...friendshipsFrom.map((f) => f.userBId),
-		...friendshipsTo.map((f) => f.userAId),
-	];
-}
-
 type UserUniqueWhere =
 	| { id: number }
 	| { email: string }
@@ -32,6 +22,16 @@ export async function selectFullUser(
 
 	return {
 		...user,
-		friendsIds: extractFriendsIds(user.friendshipsFrom, user.friendshipsTo),
 	};
 }
+
+export const ACTIVE_USER_WHERE = {
+	deletedAt: null,
+	status: 'active',
+} as const;
+
+export const USER_ORDER_FIELDS = {
+	id: true,
+	createdAt: true,
+	nickname: true,
+} as const;

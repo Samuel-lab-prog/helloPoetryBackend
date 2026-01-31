@@ -16,6 +16,7 @@ export type PublicProfile = {
 	};
 
 	isFriend: boolean;
-	isBlocked: boolean;
-	isRequester?: boolean;
+	hasBlockedRequester: boolean;
+	isBlockedByRequester: boolean;
+	isFriendRequester: boolean;
 };

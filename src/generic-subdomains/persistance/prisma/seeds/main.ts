@@ -16,13 +16,13 @@ async function main() {
 	try {
 		await clearDatabase();
 
-		const USERS_AMOUNT = 30;
-		const POEMS_AMOUNT = 140;
-		const FRIENDS_AMOUNT = 70;
-		const FRIEND_REQUESTS_AMOUNT = 80;
-		const COMMENTS_AMOUNT = 300;
-		const POEM_LIKES_AMOUNT = 1000;
-		const COMMENT_LIKES_AMOUNT = 1000;
+		const USERS_AMOUNT = 200;
+		const POEMS_AMOUNT = 1200;
+		const FRIENDS_AMOUNT = 3000;
+		const FRIEND_REQUESTS_AMOUNT = 800;
+		const COMMENTS_AMOUNT = 3000;
+		const POEM_LIKES_AMOUNT = 10000;
+		const COMMENT_LIKES_AMOUNT = 10000;
 
 		/* USERS */
 		await seedUsers(USERS_AMOUNT);
