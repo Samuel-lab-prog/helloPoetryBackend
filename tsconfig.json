@@ -20,6 +20,7 @@
 			"@AuthPlugin": [
 				"./generic-subdomains/authentication/adapters/http/auth-plugin/AuthPlugin.ts"
 			],
+			"@ClearDatabase": ["./generic-subdomains/utils/ClearDatabase.ts"],
 
 			"@PrismaErrorHandler": [
 				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"

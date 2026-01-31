@@ -2,7 +2,7 @@ import { it, expect, describe, beforeEach } from 'bun:test';
 import { queriesRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/models/Insert';
 import { prisma } from '@PrismaClient';
-import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
+import { clearDatabase } from '@ClearDatabase';
 
 const {
 	selectUserByEmail,

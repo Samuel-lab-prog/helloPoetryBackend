@@ -3,7 +3,7 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import { fullUserSelect } from './selectsModels';
 
-export function extractFriendsIds(
+function extractFriendsIds(
 	friendshipsFrom: { userBId: number }[],
 	friendshipsTo: { userAId: number }[],
 ): number[] {

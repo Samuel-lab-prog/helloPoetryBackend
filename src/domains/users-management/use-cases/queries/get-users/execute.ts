@@ -18,11 +18,15 @@ interface GetUsersParams {
 }
 
 const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
 export function getUsersFactory({ queriesRepository }: Dependencies) {
 	return function getUsers(params: GetUsersParams): Promise<SelectUsersPage> {
 		return queriesRepository.selectUsers({
 			navigationOptions: {
-				limit: params.navigationOptions.limit ?? DEFAULT_LIMIT,
+				limit: Math.min(
+					params.navigationOptions.limit ?? DEFAULT_LIMIT,
+					MAX_LIMIT,
+				),
 				cursor: params.navigationOptions.cursor,
 			},
 			sortOptions: params.sortOptions,

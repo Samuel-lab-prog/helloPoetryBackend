@@ -1,13 +1,10 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
-
 import { getUsersFactory } from './execute';
-
 import type {
 	QueriesRepository,
 	NavigationOptions,
 	SortOptions,
 } from '../../../ports/QueriesRepository';
-
 import type { SelectUsersPage } from './../index';
 
 describe('getUsersFactory', () => {
@@ -38,8 +35,10 @@ describe('getUsersFactory', () => {
 		};
 	});
 
+	const makeSut = () => getUsersFactory({ queriesRepository });
+
 	it('should call selectUsers with default limit when not provided', async () => {
-		const getUsers = getUsersFactory({ queriesRepository });
+		const getUsers = makeSut();
 
 		const navigationOptions: NavigationOptions = {
 			cursor: undefined,
@@ -72,7 +71,7 @@ describe('getUsersFactory', () => {
 	});
 
 	it('should pass custom limit and cursor when provided', async () => {
-		const getUsers = getUsersFactory({ queriesRepository });
+		const getUsers = makeSut();
 
 		const navigationOptions: NavigationOptions = {
 			limit: 10,
@@ -102,10 +101,10 @@ describe('getUsersFactory', () => {
 		});
 	});
 
-	it('should include nickname search when provided', async () => {
-		const getUsers = getUsersFactory({ queriesRepository });
+	it('should include nickname search when provided', () => {
+		const getUsers = makeSut();
 
-		await getUsers({
+		getUsers({
 			navigationOptions: {
 				limit: 10,
 				cursor: undefined,
@@ -133,14 +132,14 @@ describe('getUsersFactory', () => {
 		});
 	});
 
-	it('should propagate repository errors', async () => {
+	it('should propagate repository errors', () => {
 		queriesRepository.selectUsers = mock(() =>
 			Promise.reject(new Error('db failure')),
 		);
 
-		const getUsers = getUsersFactory({ queriesRepository });
+		const getUsers = makeSut();
 
-		await expect(
+		expect(
 			getUsers({
 				navigationOptions: {
 					limit: 20,
@@ -152,5 +151,33 @@ describe('getUsersFactory', () => {
 				},
 			}),
 		).rejects.toThrow('db failure');
+	});
+
+	it('should use default limit when provided limit exceeds maximum', () => {
+		const getUsers = makeSut();
+		getUsers({
+			navigationOptions: {
+				limit: 150,
+				cursor: undefined,
+			},
+			sortOptions: {
+				orderBy: 'createdAt',
+				orderDirection: 'desc',
+			},
+		});
+		expect(queriesRepository.selectUsers).toHaveBeenCalledWith({
+			navigationOptions: {
+				limit: 100,
+				cursor: undefined,
+			},
+			sortOptions: {
+				orderBy: 'createdAt',
+				orderDirection: 'desc',
+			},
+			filterOptions: {
+				status: 'active',
+				searchNickname: undefined,
+			},
+		});
 	});
 });

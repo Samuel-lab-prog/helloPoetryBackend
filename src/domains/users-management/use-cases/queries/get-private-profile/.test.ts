@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test';
-
 import { getPrivateProfileFactory } from './execute';
 import { ProfileNotFoundError } from '../Errors';
-
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { PrivateProfile } from '../models/Index';
 
@@ -36,12 +34,14 @@ describe('getPrivateProfileFactory', () => {
 		],
 		friendshipRequestsSent: [
 			{
-				adresseeId: 6,
-				adreseeNickname: 'bob',
-				adresseeAvatarUrl: 'http://avatar.url/bob.png',
+				addresseeId: 6,
+				addresseeNickname: 'bob',
+				addresseeAvatarUrl: 'http://avatar.url/bob.png',
 			},
 		],
 	};
+
+	const makeSut = () => getPrivateProfileFactory({ queriesRepository });
 
 	beforeEach(() => {
 		queriesRepository = {
@@ -60,9 +60,7 @@ describe('getPrivateProfileFactory', () => {
 			.fn()
 			.mockResolvedValue(fakeProfile);
 
-		const getPrivateProfile = getPrivateProfileFactory({
-			queriesRepository,
-		});
+		const getPrivateProfile = makeSut();
 
 		const result = await getPrivateProfile(1);
 
@@ -70,29 +68,23 @@ describe('getPrivateProfileFactory', () => {
 		expect(result).toEqual(fakeProfile);
 	});
 
-	it('should throw ProfileNotFoundError when profile does not exist', async () => {
+	it('should throw ProfileNotFoundError when profile does not exist', () => {
 		queriesRepository.selectPrivateProfile = vi.fn().mockResolvedValue(null);
 
-		const getPrivateProfile = getPrivateProfileFactory({
-			queriesRepository,
-		});
+		const getPrivateProfile = makeSut();
 
-		await expect(getPrivateProfile(999)).rejects.toBeInstanceOf(
-			ProfileNotFoundError,
-		);
+		expect(getPrivateProfile(999)).rejects.toBeInstanceOf(ProfileNotFoundError);
 
 		expect(queriesRepository.selectPrivateProfile).toHaveBeenCalledWith(999);
 	});
 
-	it('should propagate unexpected repository errors', async () => {
+	it('should propagate unexpected repository errors', () => {
 		queriesRepository.selectPrivateProfile = vi
 			.fn()
 			.mockRejectedValue(new Error('database down'));
 
-		const getPrivateProfile = getPrivateProfileFactory({
-			queriesRepository,
-		});
+		const getPrivateProfile = makeSut();
 
-		await expect(getPrivateProfile(1)).rejects.toThrow('database down');
+		expect(getPrivateProfile(1)).rejects.toThrow('database down');
 	});
 });

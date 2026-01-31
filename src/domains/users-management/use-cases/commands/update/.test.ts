@@ -1,7 +1,11 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { updateUserFactory } from './execute';
-import { UserUpdateError, CrossUserUpdateError } from '../Errors';
+import {
+	UserUpdateError,
+	CrossUserUpdateError,
+	UserNotFoundError,
+} from '../Errors';
 
 import * as policies from '../policies/policies';
 
@@ -13,10 +17,10 @@ mock.module('../policies/policies', () => ({
 }));
 
 describe('updateUserFactory', () => {
-	let userCommandsRepository: CommandsRepository;
+	let commandsRepository: CommandsRepository;
 
 	beforeEach(() => {
-		userCommandsRepository = {
+		commandsRepository = {
 			insertUser: mock(),
 			updateUser: mock(),
 			softDeleteUser: mock(),
@@ -25,12 +29,20 @@ describe('updateUserFactory', () => {
 		(policies.canUpdateData as any).mockReset();
 	});
 
+	const makeSut = () => updateUserFactory({ commandsRepository });
+
+	// ------------------------
+	// SUCCESS
+	// ------------------------
+
 	it('should update user when policy allows', async () => {
 		(policies.canUpdateData as any).mockReturnValue(true);
 
-		userCommandsRepository.updateUser = mock(() => Promise.resolve({ id: 2 }));
+		commandsRepository.updateUser = mock(() =>
+			Promise.resolve({ ok: true as const, id: 2 }),
+		);
 
-		const updateUser = updateUserFactory({ userCommandsRepository });
+		const updateUser = makeSut();
 
 		const data: UpdateUserData = {
 			name: 'Updated name',
@@ -44,14 +56,20 @@ describe('updateUserFactory', () => {
 			targetId: 2,
 		});
 
-		expect(userCommandsRepository.updateUser).toHaveBeenCalledWith(2, data);
+		expect(commandsRepository.updateUser).toHaveBeenCalledTimes(1);
+		expect(commandsRepository.updateUser).toHaveBeenCalledWith(2, data);
+
 		expect(result).toEqual({ id: 2 });
 	});
+
+	// ------------------------
+	// POLICY
+	// ------------------------
 
 	it('should throw CrossUserUpdateError when policy denies access', async () => {
 		(policies.canUpdateData as any).mockReturnValue(false);
 
-		const updateUser = updateUserFactory({ userCommandsRepository });
+		const updateUser = makeSut();
 
 		await expect(updateUser(1, 2, { name: 'hack' })).rejects.toBeInstanceOf(
 			CrossUserUpdateError,
@@ -62,22 +80,64 @@ describe('updateUserFactory', () => {
 			targetId: 2,
 		});
 
-		expect(userCommandsRepository.updateUser).not.toHaveBeenCalled();
+		expect(commandsRepository.updateUser).not.toHaveBeenCalled();
 	});
 
-	it('should throw UserUpdateError when repository returns null', async () => {
+	// ------------------------
+	// DOMAIN ERRORS
+	// ------------------------
+
+	it('should throw UserUpdateError when user does not exist', () => {
 		(policies.canUpdateData as any).mockReturnValue(true);
 
-		userCommandsRepository.updateUser = mock(() => Promise.resolve(null));
+		commandsRepository.updateUser = mock(() =>
+			Promise.resolve({
+				ok: false as const,
+				failureReason: 'NOT_FOUND' as const,
+			}),
+		);
 
-		const updateUser = updateUserFactory({ userCommandsRepository });
+		const updateUser = makeSut();
+
+		expect(updateUser(1, 2, { bio: 'fail' })).rejects.toBeInstanceOf(
+			UserNotFoundError,
+		);
+
+		expect(commandsRepository.updateUser).toHaveBeenCalledWith(2, {
+			bio: 'fail',
+		});
+	});
+
+	it('should throw UserUpdateError on unknown failure', async () => {
+		(policies.canUpdateData as any).mockReturnValue(true);
+
+		commandsRepository.updateUser = mock(() =>
+			Promise.resolve({
+				ok: false as const,
+				failureReason: 'DB_ERROR' as const,
+			}),
+		);
+
+		const updateUser = makeSut();
 
 		await expect(updateUser(1, 2, { bio: 'fail' })).rejects.toBeInstanceOf(
 			UserUpdateError,
 		);
+	});
 
-		expect(userCommandsRepository.updateUser).toHaveBeenCalledWith(2, {
-			bio: 'fail',
-		});
+	// ------------------------
+	// TECHNICAL ERRORS
+	// ------------------------
+
+	it('should propagate repository errors', async () => {
+		(policies.canUpdateData as any).mockReturnValue(true);
+
+		commandsRepository.updateUser = mock(() =>
+			Promise.reject(new Error('db down')),
+		);
+
+		const updateUser = makeSut();
+
+		await expect(updateUser(1, 2, { name: 'x' })).rejects.toThrow('db down');
 	});
 });

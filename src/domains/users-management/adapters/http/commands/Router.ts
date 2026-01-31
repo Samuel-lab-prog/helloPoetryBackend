@@ -14,13 +14,17 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	return new Elysia({ prefix: '/users' })
 		.post(
 			'/',
-			({ body }) => {
-				return services.createUser(body);
+			async ({ body, set }) => {
+				const result = await services.createUser(body);
+				set.status = 201;
+				return result;
 			},
 			{
 				body: CreateUserSchema,
 				response: {
-					201: t.Object({ id: idSchema }),
+					201: t.Object({
+						id: idSchema,
+					}),
 					409: appErrorSchema,
 				},
 				detail: {

@@ -1,5 +1,3 @@
-import type { UserAuthCredentials } from '../../use-cases/queries/models/Index';
-
 export const fullUserSelect = {
 	id: true,
 	nickname: true,
@@ -71,7 +69,7 @@ export const authUserSelect = {
 	passwordHash: true,
 	role: true,
 	status: true,
-} as const satisfies Record<keyof UserAuthCredentials, boolean>;
+} as const;
 
 export const previewUserSelect = {
 	id: true,

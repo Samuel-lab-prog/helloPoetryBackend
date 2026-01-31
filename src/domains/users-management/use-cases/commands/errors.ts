@@ -1,14 +1,32 @@
 import { DomainError } from '@DomainError';
 
 export class UserCreationError extends DomainError {
+	constructor(message: string) {
+		super('OPERATION_FAILED', message);
+	}
+}
+
+export class UserNotFoundError extends DomainError {
 	constructor() {
-		super('OPERATION_FAILED', 'Error: Failed to create new user');
+		super('NOT_FOUND', 'Error: User not found');
+	}
+}
+
+export class UserCreationConflictError extends DomainError {
+	constructor(message: string) {
+		super('CONFLICT', message);
 	}
 }
 
 export class UserUpdateError extends DomainError {
-	constructor() {
-		super('OPERATION_FAILED', 'Error: Failed to update user');
+	constructor(message: string) {
+		super('OPERATION_FAILED', message);
+	}
+}
+
+export class UserUpdateConflictError extends DomainError {
+	constructor(message: string) {
+		super('CONFLICT', message);
 	}
 }
 

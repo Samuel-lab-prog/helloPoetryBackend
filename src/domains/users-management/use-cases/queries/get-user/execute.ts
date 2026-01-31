@@ -25,7 +25,6 @@ export function getUserFactory({ queriesRepository }: Dependencies) {
 		if (!user) {
 			throw new UserNotFoundError();
 		}
-
 		return user;
 	};
 }

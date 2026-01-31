@@ -1,11 +1,10 @@
-import { it, expect, describe, beforeEach, afterAll } from 'bun:test';
+import { it, expect, describe, beforeEach } from 'bun:test';
 import { commandsRepository } from './repository';
 import type { InsertUser } from '../../use-cases/commands/models/Insert';
 import { prisma } from '@PrismaClient';
+import { clearDatabase } from '@ClearDatabase';
 
-import { clearDatabase } from '../../../../generic-subdomains/utils/ClearDatabase';
-
-const { insertUser, softDeleteUser, updateUser } = commandsRepository;
+const { insertUser, updateUser, softDeleteUser } = commandsRepository;
 
 const DEFAULT_USERS: InsertUser[] = [
 	{
@@ -23,14 +22,6 @@ const DEFAULT_USERS: InsertUser[] = [
 		passwordHash: 'anotherhashedpassword',
 		bio: 'This is the second test user.',
 		avatarUrl: 'http://example.com/avatar2.png',
-	},
-	{
-		nickname: 'thirduser',
-		email: 'thirduser@example.com',
-		name: 'Third User',
-		passwordHash: 'yetanotherhashedpassword',
-		bio: 'This is the third test user.',
-		avatarUrl: 'http://example.com/avatar3.png',
 	},
 ];
 
@@ -50,70 +41,110 @@ beforeEach(async () => {
 	});
 });
 
-afterAll(async () => {
-	await prisma.$disconnect();
-});
+describe('CommandsRepository', () => {
+	// ----------------------------------
+	// INSERT
+	// ----------------------------------
 
-describe('Users Repository', () => {
-	describe('Commands', () => {
-		describe('insertUser', () => {
-			it('persists and returns the created user id', async () => {
-				const user = await insertUser(EXOTIC_USER);
+	describe('insertUser', () => {
+		it('returns ok:true and id when successful', async () => {
+			const result = await insertUser(EXOTIC_USER);
 
-				expect(user).toMatchObject({
-					id: expect.any(Number),
-				});
-			});
-
-			it('throws when nickname already exists', async () => {
-				await expect(
-					insertUser({
-						...EXOTIC_USER,
-						nickname: DEFAULT_USERS[0]!.nickname,
-					}),
-				).rejects.toThrow();
-			});
-
-			it('throws when email already exists', async () => {
-				await expect(
-					insertUser({
-						...EXOTIC_USER,
-						email: DEFAULT_USERS[0]!.email,
-					}),
-				).rejects.toThrow();
+			expect(result.ok).toBe(true);
+			expect(result).toMatchObject({
+				ok: true,
+				id: expect.any(Number),
 			});
 		});
+
+		it('returns DUPLICATE_EMAIL when email already exists', async () => {
+			const result = await insertUser({
+				...EXOTIC_USER,
+				email: DEFAULT_USERS[0]!.email,
+			});
+
+			expect(result).toMatchObject({
+				ok: false,
+				failureReason: 'DUPLICATE_EMAIL',
+			});
+		});
+
+		it('returns DUPLICATE_NICKNAME when nickname already exists', async () => {
+			const result = await insertUser({
+				...EXOTIC_USER,
+				nickname: DEFAULT_USERS[0]!.nickname,
+			});
+
+			expect(result).toMatchObject({
+				ok: false,
+				failureReason: 'DUPLICATE_NICKNAME',
+			});
+		});
+	});
+
+	// ----------------------------------
+	// UPDATE
+	// ----------------------------------
+
+	describe('updateUser', () => {
+		it('returns ok:true when update succeeds', async () => {
+			const inserted = await insertUser(EXOTIC_USER);
+			expect(inserted.ok).toBe(true);
+
+			if (!inserted.ok) {
+				throw new Error('Expected insertion to succeed');
+			}
+
+			const result = await updateUser(inserted.id, {
+				name: 'Updated Name',
+				bio: 'Updated bio',
+			});
+
+			expect(result).toMatchObject({
+				ok: true,
+				id: inserted.id,
+			});
+		});
+
+		it('returns DB_ERROR when user does not exist', async () => {
+			const result = await updateUser(-1, {
+				bio: 'Should fail',
+			});
+
+			expect(result).toMatchObject({
+				ok: false,
+				failureReason: 'DB_ERROR',
+			});
+		});
+
+		// ----------------------------------
+		// SOFT DELETE
+		// ----------------------------------
 
 		describe('softDeleteUser', () => {
-			it('marks user as deleted', async () => {
+			it('returns ok:true when user is soft deleted', async () => {
 				const inserted = await insertUser(EXOTIC_USER);
+				expect(inserted.ok).toBe(true);
 
-				const deletedUser = await softDeleteUser(inserted!.id);
+				if (!inserted.ok) {
+					throw new Error('Expected insertion to succeed');
+				}
 
-				expect(deletedUser?.id).toBe(inserted!.id);
-			});
+				const result = await softDeleteUser(inserted.id);
 
-			it('throws when user does not exist', async () => {
-				await expect(softDeleteUser(-1)).rejects.toThrow();
-			});
-		});
-
-		describe('updateUser', () => {
-			it('updates mutable fields of an existing user', async () => {
-				const inserted = await insertUser(EXOTIC_USER);
-
-				const updatedUser = await updateUser(inserted!.id, {
-					bio: 'Updated bio',
-					name: 'Updated Name',
-				});
-
-				expect(updatedUser).toMatchObject({
-					id: inserted!.id,
+				expect(result).toMatchObject({
+					ok: true,
+					id: inserted.id,
 				});
 			});
 
-			it('throws when user does not exist', async () => {
-				await expect(updateUser(-1, { bio: 'Should fail' })).rejects.toThrow();
+			it('returns DB_ERROR when user does not exist', async () => {
+				const result = await softDeleteUser(-1);
+
+				expect(result).toMatchObject({
+					ok: false,
+					failureReason: 'DB_ERROR',
+				});
 			});
 		});
 	});

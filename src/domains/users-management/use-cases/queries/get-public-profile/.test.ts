@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'bun:test';
-
 import { getPublicProfileFactory } from './execute';
 import { ProfileNotFoundError } from '../Errors';
-
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { PublicProfile } from '../../queries/models/Index';
 
@@ -37,17 +35,15 @@ describe('getPublicProfileFactory', () => {
 		};
 	});
 
+	const makeSut = () => getPublicProfileFactory({ queriesRepository });
+
 	it('should return public profile without requesterId', async () => {
 		queriesRepository.selectPublicProfile = vi
 			.fn()
 			.mockResolvedValue(fakePublicProfile);
-
-		const getPublicProfile = getPublicProfileFactory({
-			queriesRepository,
-		});
+		const getPublicProfile = makeSut();
 
 		const result = await getPublicProfile(1);
-
 		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(
 			1,
 			undefined,
@@ -61,41 +57,26 @@ describe('getPublicProfileFactory', () => {
 			isFriend: true,
 		});
 
-		const getPublicProfile = getPublicProfileFactory({
-			queriesRepository,
-		});
-
+		const getPublicProfile = makeSut();
 		await getPublicProfile(1, 42);
-
 		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(1, 42);
 	});
 
-	it('should throw ProfileNotFoundError when profile does not exist', async () => {
+	it('should throw ProfileNotFoundError when profile does not exist', () => {
 		queriesRepository.selectPublicProfile = vi.fn().mockResolvedValue(null);
-
-		const getPublicProfile = getPublicProfileFactory({
-			queriesRepository,
-		});
-
-		await expect(getPublicProfile(999)).rejects.toBeInstanceOf(
-			ProfileNotFoundError,
-		);
-
+		const getPublicProfile = makeSut();
+		expect(getPublicProfile(999)).rejects.toBeInstanceOf(ProfileNotFoundError);
 		expect(queriesRepository.selectPublicProfile).toHaveBeenCalledWith(
 			999,
 			undefined,
 		);
 	});
 
-	it('should propagate unexpected repository errors', async () => {
+	it('should propagate unexpected repository errors', () => {
 		queriesRepository.selectPublicProfile = vi
 			.fn()
 			.mockRejectedValue(new Error('database down'));
-
-		const getPublicProfile = getPublicProfileFactory({
-			queriesRepository,
-		});
-
-		await expect(getPublicProfile(1)).rejects.toThrow('database down');
+		const getPublicProfile = makeSut();
+		expect(getPublicProfile(1)).rejects.toThrow('database down');
 	});
 });

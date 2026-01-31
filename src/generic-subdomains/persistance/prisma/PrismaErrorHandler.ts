@@ -5,7 +5,7 @@ import {
 	DatabaseUnknownError,
 } from '@DatabaseError';
 
-export function handlePrismaError(error: PrismaClientKnownRequestError): never {
+function handlePrismaError(error: PrismaClientKnownRequestError): never {
 	const modelName = error.meta?.modelName;
 	const metaRaw = JSON.stringify(error.meta?.driverAdapterError);
 	const field = metaRaw.match(/\\"[^_]+_([^\\"]+?)_key\\"/)?.[1];

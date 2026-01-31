@@ -1,13 +1,9 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
-
 import { getUserFactory } from './execute';
 import { UserNotFoundError, CrossUserDataAccessError } from '../Errors';
-
 import * as policies from '../policies/policies';
-
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FullUser } from '../models/FullUser';
-import type { UserRole } from '../../../use-cases/queries/models/Enums';
+import type { FullUser, UserRole } from '../models/Index';
 
 mock.module('../policies/policies', () => ({
 	canAccessUserInfo: mock(() => true),
@@ -45,12 +41,14 @@ describe('getUserFactory', () => {
 		(policies.canAccessUserInfo as any).mockReset();
 	});
 
+	const makeSut = () => getUserFactory({ queriesRepository });
+
 	it('should return user when access is allowed', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
 		queriesRepository.selectUserById = mock(() => Promise.resolve(fakeUser));
 
-		const getUser = getUserFactory({ queriesRepository });
+		const getUser = makeSut();
 
 		const result = await getUser({
 			targetId: 1,
@@ -71,7 +69,7 @@ describe('getUserFactory', () => {
 	it('should throw CrossUserDataAccessError when access is denied', async () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(false);
 
-		const getUser = getUserFactory({ queriesRepository });
+		const getUser = makeSut();
 
 		await expect(
 			getUser({
@@ -85,14 +83,14 @@ describe('getUserFactory', () => {
 		expect(queriesRepository.selectUserById).not.toHaveBeenCalled();
 	});
 
-	it('should throw UserNotFoundError when user does not exist', async () => {
+	it('should throw UserNotFoundError when user does not exist', () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
 		queriesRepository.selectUserById = mock(() => Promise.resolve(null));
 
-		const getUser = getUserFactory({ queriesRepository });
+		const getUser = makeSut();
 
-		await expect(
+		expect(
 			getUser({
 				targetId: 999,
 				requesterId: 1,
@@ -103,16 +101,16 @@ describe('getUserFactory', () => {
 		expect(queriesRepository.selectUserById).toHaveBeenCalledWith(999);
 	});
 
-	it('should propagate unexpected repository errors', async () => {
+	it('should propagate unexpected repository errors', () => {
 		(policies.canAccessUserInfo as any).mockReturnValue(true);
 
 		queriesRepository.selectUserById = mock(() =>
 			Promise.reject(new Error('db exploded')),
 		);
 
-		const getUser = getUserFactory({ queriesRepository });
+		const getUser = makeSut();
 
-		await expect(
+		expect(
 			getUser({
 				targetId: 1,
 				requesterId: 1,
