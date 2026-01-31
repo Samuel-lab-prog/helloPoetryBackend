@@ -9,6 +9,8 @@ export const commandsRepository: CommandsRepository = {
 	rejectFriendRequest,
 	blockFriendRequest,
 	deleteFriend,
+	cancelFriendRequest,
+	unblockFriendRequest,
 };
 
 export function createFriendRequest(params: {
@@ -132,6 +134,42 @@ export function deleteFriend(params: {
 			},
 		});
 
+		return { fromUserId, toUserId };
+	});
+}
+
+export function cancelFriendRequest(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<FriendRequest> {
+	const { fromUserId, toUserId } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.friendshipRequest.delete({
+			where: {
+				requesterId_addresseeId: {
+					requesterId: fromUserId,
+					addresseeId: toUserId,
+				},
+			},
+		});
+		return { fromUserId, toUserId };
+	});
+}
+
+export function unblockFriendRequest(params: {
+	fromUserId: number;
+	toUserId: number;
+}): Promise<FriendRequest> {
+	const { fromUserId, toUserId } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.blockedFriend.delete({
+			where: {
+				blockerId_blockedId: {
+					blockerId: fromUserId,
+					blockedId: toUserId,
+				},
+			},
+		});
 		return { fromUserId, toUserId };
 	});
 }

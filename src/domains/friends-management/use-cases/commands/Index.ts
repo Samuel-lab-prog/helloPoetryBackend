@@ -3,3 +3,5 @@ export * from './accept-friend-request/execute';
 export * from './reject-friend-request/execute';
 export * from './block-friend-request/execute';
 export * from './delete-friend/execute';
+export * from './cancel-friend-request/execute';
+export * from './unblock-user/execute';

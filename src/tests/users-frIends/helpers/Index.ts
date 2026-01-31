@@ -112,6 +112,18 @@ export async function rejectFriendRequest(to: TestUser, fromUserId: number) {
 	return await res.json();
 }
 
+export async function unblockUser(by: TestUser, targetUserId: number) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/friends/unblock/${targetUserId}`, {
+			method: 'PATCH',
+			headers: { Cookie: by.cookie },
+		}),
+	);
+	if (res.status !== 200) throw new Error('Failed to unblock user');
+	const resJson = await res.json();
+	return resJson;
+}
+
 /**
  * Block another user
  */
@@ -123,7 +135,8 @@ export async function blockUser(by: TestUser, targetUserId: number) {
 		}),
 	);
 	if (res.status !== 200) throw new Error('Failed to block user');
-	return await res.json();
+	const resJson = await res.json();
+	return resJson;
 }
 
 /**
@@ -140,6 +153,16 @@ export async function cancelFriendRequest(from: TestUser, toUserId: number) {
 	return await res.json();
 }
 
+export async function deleteFriend(user: TestUser, friendUserId: number) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/friends/delete/${friendUserId}`, {
+			method: 'DELETE',
+			headers: { Cookie: user.cookie },
+		}),
+	);
+	if (res.status !== 200) throw new Error('Failed to delete friend');
+	return await res.json();
+}
 /**
  * Get the authenticated user's profile
  */

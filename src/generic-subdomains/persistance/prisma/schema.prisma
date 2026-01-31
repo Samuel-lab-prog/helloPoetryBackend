@@ -39,8 +39,9 @@ model User {
   friendshipRequests   FriendshipRequest[] @relation("FriendshipRequestRequester")
   friendshipAddressees FriendshipRequest[] @relation("FriendshipRequestAddressee")
 
-  blockedBy      BlockedFriend[] @relation("BlockedByUser")
-  blockedFriends BlockedFriend[] @relation("BlockedUser")
+  blockedFriends BlockedFriend[] @relation("BlockedByUser") 
+blockedBy      BlockedFriend[] @relation("BlockedUser")   
+
 }
 
 enum userRole {

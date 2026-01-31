@@ -21,4 +21,12 @@ export interface CommandsRepository {
 		fromUserId: number;
 		toUserId: number;
 	}): Promise<{ fromUserId: number; toUserId: number }>;
+	cancelFriendRequest(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<FriendRequest>;
+	unblockFriendRequest(params: {
+		fromUserId: number;
+		toUserId: number;
+	}): Promise<FriendRequest>;
 }

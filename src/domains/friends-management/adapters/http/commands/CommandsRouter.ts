@@ -116,7 +116,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 		)
 		.delete(
-			'/:id',
+			'/delete/:id',
 			({ auth, params }) => {
 				return services.deleteFriend({
 					fromUserId: auth.clientId,
@@ -139,6 +139,54 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Delete Friend',
 					description:
 						'Deletes the friendship between the authenticated user and the specified user.',
+					tags: ['Friends Management'],
+				},
+			},
+		)
+		.delete(
+			'/cancel/:id',
+			({ auth, params }) => {
+				return services.cancelFriendRequest({
+					fromUserId: auth.clientId,
+					toUserId: params.id,
+				});
+			},
+			{
+				response: {
+					200: SendFriendRequestSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Cancel Friend Request',
+					description:
+						'Cancels a previously sent friend request from the authenticated user to the specified user.',
+					tags: ['Friends Management'],
+				},
+			},
+		)
+		.patch(
+			'/unblock/:id',
+			({ auth, params }) => {
+				return services.unblockFriendRequest({
+					fromUserId: auth.clientId,
+					toUserId: params.id,
+				});
+			},
+			{
+				response: {
+					200: SendFriendRequestSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Unblock User',
+					description:
+						'Unblocks a previously blocked user for the authenticated user.',
 					tags: ['Friends Management'],
 				},
 			},

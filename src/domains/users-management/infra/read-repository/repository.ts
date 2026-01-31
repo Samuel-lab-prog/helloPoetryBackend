@@ -99,7 +99,10 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findFirst({
 			where: { id, ...ACTIVE_USER_WHERE },
-			select: privateProfileSelect,
+			select: {
+				...privateProfileSelect,
+				blockedFriends: { select: { blockedId: true } },
+			},
 		});
 
 		if (!user) return null;
@@ -126,7 +129,6 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			requesterNickname: r.requester.nickname,
 			requesterAvatarUrl: r.requester.avatarUrl,
 		}));
-
 		return {
 			id: user.id,
 			nickname: user.nickname,

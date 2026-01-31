@@ -5,20 +5,10 @@ export default defineUseCases({
 
 	useCases: [
 		{
-			name: 'get-feed',
+			name: 'cancel-friend-request',
 			type: 'query',
 
-			dataModels: [
-				{
-					name: 'FeedItem',
-					properties: {
-						id: 'number',
-						authorId: 'number',
-						content: 'string',
-						createdAt: 'string',
-					},
-				},
-			],
+			dataModels: [],
 
 			errors: [],
 

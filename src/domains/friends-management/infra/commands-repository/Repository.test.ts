@@ -7,6 +7,7 @@ import {
 	rejectFriendRequest,
 	blockFriendRequest,
 	deleteFriend,
+	cancelFriendRequest,
 } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
@@ -219,6 +220,33 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			expect(friendship).toBe(null);
+		});
+	});
+
+	describe('cancelFriendRequest', () => {
+		it('deletes friend request and returns params', async () => {
+			const users = await prisma.user.findMany();
+			await prisma.friendshipRequest.create({
+				data: {
+					requesterId: users[0]!.id,
+					addresseeId: users[1]!.id,
+				},
+			});
+			const result = await cancelFriendRequest({
+				fromUserId: users[0]!.id,
+				toUserId: users[1]!.id,
+			});
+			const request = await prisma.friendshipRequest.findFirst({
+				where: {
+					requesterId: users[0]!.id,
+					addresseeId: users[1]!.id,
+				},
+			});
+			expect(result).toEqual({
+				fromUserId: users[0]!.id,
+				toUserId: users[1]!.id,
+			});
+			expect(request).toBe(null);
 		});
 	});
 });

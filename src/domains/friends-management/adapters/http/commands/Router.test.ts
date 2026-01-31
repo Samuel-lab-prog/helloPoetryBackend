@@ -18,6 +18,8 @@ const acceptFriendRequest = mock(async (p) => p);
 const rejectFriendRequest = mock(async (p) => p);
 const blockFriendRequest = mock(async (p) => p);
 const deleteFriend = mock(async (p) => p);
+const cancelFriendRequest = mock(async (p) => p);
+const unblockFriendRequest = mock(async (p) => p);
 
 function createApp() {
 	return new Elysia().use(
@@ -27,6 +29,8 @@ function createApp() {
 			rejectFriendRequest,
 			blockFriendRequest,
 			deleteFriend,
+			cancelFriendRequest,
+			unblockFriendRequest,
 		}),
 	);
 }
@@ -125,11 +129,11 @@ describe('FriendsCommandsRouter', () => {
 		});
 	});
 
-	it('DELETE /friends/:id -> deletes friend', async () => {
+	it('DELETE /friends/delete/:id -> deletes friend', async () => {
 		const app = createApp();
 
 		const resp = await app.handle(
-			jsonRequest(`${PREFIX}/50`, {
+			jsonRequest(`${PREFIX}/delete/50`, {
 				method: 'DELETE',
 			}),
 		);
