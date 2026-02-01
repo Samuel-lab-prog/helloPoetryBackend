@@ -38,12 +38,15 @@ function findFriendRequest(params: {
 	);
 }
 
-function findBlockedRelationship(
-	userId1: number,
-	userId2: number,
-): Promise<BlockedFriendRecord | null> {
+function findBlockedRelationship({
+	userId1,
+	userId2,
+}: {
+	userId1: number;
+	userId2: number;
+}): Promise<BlockedFriendRecord | null> {
 	return withPrismaErrorHandling(() =>
-		prisma.blockedFriend.findFirst({
+		prisma.blockedUser.findFirst({
 			where: {
 				OR: [
 					{ blockerId: userId1, blockedId: userId2 },

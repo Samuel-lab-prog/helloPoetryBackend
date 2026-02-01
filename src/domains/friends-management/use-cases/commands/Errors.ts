@@ -6,7 +6,7 @@ export class UserNotFoundError extends DomainError {
 	}
 }
 
-export class CannotSendRequestToYourselfError extends DomainError {
+export class SelfReferenceError extends DomainError {
 	public constructor() {
 		super('VALIDATION', 'You cannot send a friend request to yourself.');
 	}
@@ -27,7 +27,7 @@ export class RequestAlreadySentError extends DomainError {
 	}
 }
 
-export class FriendRequestBlockedError extends DomainError {
+export class UserBlockedError extends DomainError {
 	public constructor() {
 		super(
 			'FORBIDDEN',

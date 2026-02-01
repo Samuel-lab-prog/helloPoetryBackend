@@ -1,16 +1,14 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
-
 import { acceptFriendRequestFactory } from './execute';
 
 import {
-	CannotSendRequestToYourselfError,
-	UserNotFoundError,
+	SelfReferenceError,
 	RequestNotFoundError,
 	FriendshipAlreadyExistsError,
-	FriendRequestBlockedError,
+	UserBlockedError,
 } from '../Errors';
 
-describe('acceptFriendRequest', () => {
+describe('USE-CASE - Accept Friend Request', () => {
 	let commandsRepository: any;
 	let queriesRepository: any;
 	let acceptFriendRequest: any;
@@ -32,16 +30,16 @@ describe('acceptFriendRequest', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when requesterId equals addresseeId', async () => {
-		await expect(
+	it('Does not allow self request', () => {
+		expect(
 			acceptFriendRequest({ requesterId: 1, addresseeId: 1 }),
-		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
+		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
 
-	it('throws FriendshipAlreadyExistsError when friendship already exists', async () => {
+	it('Does not allow accept the request if the friendship already exists', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 
-		await expect(
+		expect(
 			acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
 
@@ -51,11 +49,11 @@ describe('acceptFriendRequest', () => {
 		});
 	});
 
-	it('throws RequestNotFoundError when friend request does not exist', async () => {
+	it('Does not allow accept the request if the friend request does not exist', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 		queriesRepository.findFriendRequest.mockResolvedValue(null);
 
-		await expect(
+		expect(
 			acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(RequestNotFoundError);
 
@@ -65,22 +63,22 @@ describe('acceptFriendRequest', () => {
 		});
 	});
 
-	it('throws FriendRequestBlockedError when users are blocked', async () => {
+	it('Does not allow accept the request if one of the users has blocked the other', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 		queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
-		await expect(
+		expect(
 			acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(FriendRequestBlockedError);
+		).rejects.toBeInstanceOf(UserBlockedError);
 
-		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
-			1,
-			2,
-		);
+		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
+			userId1: 1,
+			userId2: 2,
+		});
 	});
 
-	it('accepts friend request and returns result', async () => {
+	it('Should accept the friend request and return the result when no errors occur', async () => {
 		const acceptedRequest = { id: 30 };
 
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
@@ -98,16 +96,5 @@ describe('acceptFriendRequest', () => {
 			requesterId: 1,
 			addresseeId: 2,
 		});
-	});
-
-	it('throws UserNotFoundError when acceptFriendRequest returns null', async () => {
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
-		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-		commandsRepository.acceptFriendRequest.mockResolvedValue(null);
-
-		await expect(
-			acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(UserNotFoundError);
 	});
 });

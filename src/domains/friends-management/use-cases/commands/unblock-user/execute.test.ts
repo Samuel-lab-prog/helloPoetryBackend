@@ -4,7 +4,7 @@ import { unblockFriendRequestFactory } from './execute';
 
 import {
 	BlockedRelationshipNotFoundError,
-	CannotSendRequestToYourselfError,
+	SelfReferenceError,
 } from '../Errors';
 
 describe('unblockFriendRequest', () => {
@@ -27,10 +27,10 @@ describe('unblockFriendRequest', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when requester equals target', async () => {
+	it('throws SelfReferenceError when requester equals target', async () => {
 		await expect(
 			unblockFriendRequest({ requesterId: 1, addresseeId: 1 }),
-		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
+		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
 
 	it('throws BlockedRelationshipNotFoundError when users are not blocked', () => {

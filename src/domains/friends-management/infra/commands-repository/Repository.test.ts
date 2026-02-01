@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { prisma } from '@PrismaClient';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
-describe('CommandsRepository (Prisma)', () => {
+describe('Repository - Friends Management', () => {
 	const USERS = [
 		{
 			nickname: 'user1',
@@ -43,10 +43,6 @@ describe('CommandsRepository (Prisma)', () => {
 		await prisma.user.createMany({ data: USERS });
 	});
 
-	afterAll(async () => {
-		await prisma.$disconnect();
-	});
-
 	describe('createFriendRequest', () => {
 		it('creates friend request and returns params', async () => {
 			const users = await prisma.user.findMany();
@@ -76,7 +72,7 @@ describe('CommandsRepository (Prisma)', () => {
 	});
 
 	describe('acceptFriendRequest', () => {
-		it('deletes request, creates friendship, and returns params', async () => {
+		it('Should delte the friend request, create friendship, and return params', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendshipRequest.create({
@@ -174,7 +170,7 @@ describe('CommandsRepository (Prisma)', () => {
 
 			const request = await prisma.friendshipRequest.findFirst();
 			const friendship = await prisma.friendship.findFirst();
-			const block = await prisma.blockedFriend.findFirst({
+			const block = await prisma.blockedUser.findFirst({
 				where: {
 					blockerId: users[0]!.id,
 					blockedId: users[1]!.id,

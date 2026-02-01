@@ -2,7 +2,7 @@ import { prisma } from '@PrismaClient';
 
 export function clearDatabase() {
 	return prisma.$transaction([
-		prisma.blockedFriend.deleteMany(),
+		prisma.blockedUser.deleteMany(),
 		prisma.friendshipRequest.deleteMany(),
 		prisma.friendshipRequest.deleteMany(),
 		prisma.userSanction.deleteMany(),

@@ -23,7 +23,7 @@ async function getFollowedUserIds(userId: number): Promise<number[]> {
 
 async function getBlockedUserIds(userId: number): Promise<number[]> {
 	return await withPrismaErrorHandling(async () => {
-		const blocked = await prisma.blockedFriend.findMany({
+		const blocked = await prisma.blockedUser.findMany({
 			where: {
 				blockerId: userId,
 			},
@@ -52,7 +52,7 @@ async function areFriends(userAId: number, userBId: number): Promise<boolean> {
 
 async function areBlocked(userAId: number, userBId: number): Promise<boolean> {
 	return await withPrismaErrorHandling(async () => {
-		const blocked = await prisma.blockedFriend.findFirst({
+		const blocked = await prisma.blockedUser.findFirst({
 			where: {
 				blockerId: userAId,
 				blockedId: userBId,

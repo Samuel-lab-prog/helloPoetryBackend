@@ -1,9 +1,9 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import {
-	CannotSendRequestToYourselfError,
+	SelfReferenceError,
 	FriendshipNotFoundError,
-	FriendRequestBlockedError,
+	UserBlockedError,
 } from '../Errors';
 
 interface Dependencies {
@@ -26,7 +26,7 @@ export function deleteFriendFactory({
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
-			throw new CannotSendRequestToYourselfError();
+			throw new SelfReferenceError();
 		}
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
@@ -37,12 +37,12 @@ export function deleteFriendFactory({
 			throw new FriendshipNotFoundError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship(
-			requesterId,
-			addresseeId,
-		);
+		const blocked = await queriesRepository.findBlockedRelationship({
+			userId1: requesterId,
+			userId2: addresseeId,
+		});
 		if (blocked) {
-			throw new FriendRequestBlockedError();
+			throw new UserBlockedError();
 		}
 		await commandsRepository.deleteFriend({
 			user1Id: requesterId,

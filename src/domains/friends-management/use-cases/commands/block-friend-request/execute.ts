@@ -1,10 +1,7 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
-import {
-	CannotSendRequestToYourselfError,
-	FriendRequestBlockedError,
-} from '../Errors';
+import { SelfReferenceError, UserBlockedError } from '../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -26,16 +23,16 @@ export function blockFriendRequestFactory({
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
-			throw new CannotSendRequestToYourselfError();
+			throw new SelfReferenceError();
 		}
 
-		const alreadyBlocked = await queriesRepository.findBlockedRelationship(
-			requesterId,
-			addresseeId,
-		);
+		const alreadyBlocked = await queriesRepository.findBlockedRelationship({
+			userId1: requesterId,
+			userId2: addresseeId,
+		});
 
 		if (alreadyBlocked) {
-			throw new FriendRequestBlockedError(); // 403
+			throw new UserBlockedError(); // 403
 		}
 
 		// Remove friendship if exists

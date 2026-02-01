@@ -2,7 +2,7 @@ import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
-	CannotSendRequestToYourselfError,
+	SelfReferenceError,
 	BlockedRelationshipNotFoundError,
 } from '../Errors';
 
@@ -26,13 +26,13 @@ export function unblockFriendRequestFactory({
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
-			throw new CannotSendRequestToYourselfError();
+			throw new SelfReferenceError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship(
-			requesterId,
-			addresseeId,
-		);
+		const blocked = await queriesRepository.findBlockedRelationship({
+			userId1: requesterId,
+			userId2: addresseeId,
+		});
 
 		if (!blocked) {
 			throw new BlockedRelationshipNotFoundError();

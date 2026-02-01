@@ -70,7 +70,7 @@ function selectPublicProfile(
 		};
 		const isFriend = friendsIds.includes(requesterId);
 
-		const hasBlockedRequester = user.blockedFriends.some(
+		const hasBlockedRequester = user.blockedUsers.some(
 			(b) => b.blockedId === requesterId,
 		);
 
@@ -101,7 +101,7 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			where: { id, ...ACTIVE_USER_WHERE },
 			select: {
 				...privateProfileSelect,
-				blockedFriends: { select: { blockedId: true } },
+				blockedUsers: { select: { blockedId: true } },
 			},
 		});
 
@@ -143,7 +143,7 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 			stats,
 			friendshipRequestsSent,
 			friendshipRequestsReceived,
-			blockedUsersIds: user.blockedFriends.map((b) => b.blockedId),
+			blockedUsersIds: user.blockedUsers.map((b) => b.blockedId),
 		};
 	});
 }

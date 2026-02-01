@@ -8,7 +8,7 @@ import {
 	type CommandsRouterServices,
 } from './Services';
 import { idSchema } from '@SharedKernel/Schemas';
-import { SendFriendRequestSchema } from '../../schemas/Index';
+import { FriendRequestSchema } from '../../schemas/Index';
 
 export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/friends' })
@@ -25,7 +25,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					201: SendFriendRequestSchema,
+					201: FriendRequestSchema,
 					409: appErrorSchema,
 				},
 				params: t.Object({
@@ -50,7 +50,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: SendFriendRequestSchema,
+					200: FriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -75,7 +75,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: SendFriendRequestSchema,
+					200: FriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -100,7 +100,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: SendFriendRequestSchema,
+					200: FriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -153,7 +153,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: SendFriendRequestSchema,
+					200: FriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -177,7 +177,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: SendFriendRequestSchema,
+					200: FriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({

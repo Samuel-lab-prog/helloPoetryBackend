@@ -26,7 +26,7 @@ function insertPoem(data: InsertPoem): Promise<{ id: number }> {
 				excerpt: data.excerpt,
 				isCommentable: data.isCommentable ?? true,
 				authorId: data.authorId,
-				toUserId: data.addresseeId,
+				addresseeId: data.addresseeId,
 				toPoemId: data.toPoemId,
 
 				...(tags.length > 0 && {

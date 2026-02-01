@@ -113,17 +113,17 @@ describe('QueriesRepository (Prisma)', () => {
 		it('returns block when user1 blocked user2', async () => {
 			const users = await prisma.user.findMany();
 
-			await prisma.blockedFriend.create({
+			await prisma.blockedUser.create({
 				data: {
 					blockerId: users[0]!.id,
 					blockedId: users[1]!.id,
 				},
 			});
 
-			const result = await queriesRepository.findBlockedRelationship(
-				users[0]!.id,
-				users[1]!.id,
-			);
+			const result = await queriesRepository.findBlockedRelationship({
+				userId1: users[0]!.id,
+				userId2: users[1]!.id,
+			});
 
 			expect(result).toMatchObject({
 				blockerId: users[0]!.id,
@@ -134,17 +134,17 @@ describe('QueriesRepository (Prisma)', () => {
 		it('returns block when user2 blocked user1', async () => {
 			const users = await prisma.user.findMany();
 
-			await prisma.blockedFriend.create({
+			await prisma.blockedUser.create({
 				data: {
 					blockerId: users[1]!.id,
 					blockedId: users[0]!.id,
 				},
 			});
 
-			const result = await queriesRepository.findBlockedRelationship(
-				users[0]!.id,
-				users[1]!.id,
-			);
+			const result = await queriesRepository.findBlockedRelationship({
+				userId1: users[0]!.id,
+				userId2: users[1]!.id,
+			});
 
 			expect(result).toMatchObject({
 				blockerId: users[1]!.id,
@@ -155,10 +155,10 @@ describe('QueriesRepository (Prisma)', () => {
 		it('returns null when no block exists', async () => {
 			const users = await prisma.user.findMany();
 
-			const result = await queriesRepository.findBlockedRelationship(
-				users[0]!.id,
-				users[1]!.id,
-			);
+			const result = await queriesRepository.findBlockedRelationship({
+				userId1: users[0]!.id,
+				userId2: users[1]!.id,
+			});
 
 			expect(result).toBe(null);
 		});

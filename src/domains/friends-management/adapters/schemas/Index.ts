@@ -1,1 +1,1 @@
-export * from './SendFriendRequest';
+export * from './FriendRequest';

@@ -14,8 +14,8 @@ export interface QueriesRepository {
 		requesterId: number;
 		addresseeId: number;
 	}): Promise<FriendRequestRecord | null>;
-	findBlockedRelationship(
-		userId1: number,
-		userId2: number,
-	): Promise<BlockedFriendRecord | null>;
+	findBlockedRelationship(params: {
+		userId1: number;
+		userId2: number;
+	}): Promise<BlockedFriendRecord | null>;
 }

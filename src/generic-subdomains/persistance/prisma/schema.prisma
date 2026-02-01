@@ -39,8 +39,8 @@ model User {
   friendshipRequests   FriendshipRequest[] @relation("FriendshipRequestRequester")
   friendshipAddressees FriendshipRequest[] @relation("FriendshipRequestAddressee")
 
-  blockedFriends BlockedFriend[] @relation("BlockedByUser") 
-blockedBy      BlockedFriend[] @relation("BlockedUser")   
+  blockedUsers BlockedUser[] @relation("BlockedByUser") 
+blockedBy      BlockedUser[] @relation("BlockedUser")   
 
 }
 
@@ -81,7 +81,7 @@ model FriendshipRequest {
   @@unique([requesterId, addresseeId])
 }
 
-model BlockedFriend {
+model BlockedUser {
   id        Int      @id @default(autoincrement())
   blockerId Int
   blockedId Int
@@ -155,7 +155,7 @@ model Poem {
   isCommentable Boolean @default(true)
 
   addresseeId Int?
-  toUser   User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
+  addresseedUser   User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
 
   toPoemId    Int?
   toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])

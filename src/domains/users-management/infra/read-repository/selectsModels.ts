@@ -32,7 +32,7 @@ export const publicProfileSelect = {
 		select: { userAId: true },
 	},
 
-	blockedFriends: { select: { blockedId: true } },
+	blockedUsers: { select: { blockedId: true } },
 	blockedBy: { select: { blockerId: true } },
 } as const;
 
@@ -70,7 +70,7 @@ export const privateProfileSelect = {
 		},
 	},
 
-	blockedFriends: { select: { blockedId: true } },
+	blockedUsers: { select: { blockedId: true } },
 
 	friendshipAddressees: {
 		select: {

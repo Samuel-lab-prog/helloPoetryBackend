@@ -3,9 +3,9 @@ import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { deleteFriendFactory } from './execute';
 
 import {
-	CannotSendRequestToYourselfError,
+	SelfReferenceError,
 	FriendshipNotFoundError,
-	FriendRequestBlockedError,
+	UserBlockedError,
 } from '../Errors';
 
 describe('deleteFriend', () => {
@@ -29,10 +29,10 @@ describe('deleteFriend', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when requesterId equals addresseeId', async () => {
+	it('throws SelfReferenceError when requesterId equals addresseeId', async () => {
 		await expect(
 			deleteFriend({ requesterId: 1, addresseeId: 1 }),
-		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
+		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
 
 	it('throws FriendshipNotFoundError when friendship does not exist', async () => {
@@ -48,13 +48,13 @@ describe('deleteFriend', () => {
 		});
 	});
 
-	it('throws FriendRequestBlockedError when users are blocked', async () => {
+	it('throws UserBlockedError when users are blocked', async () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
 		await expect(
 			deleteFriend({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(FriendRequestBlockedError);
+		).rejects.toBeInstanceOf(UserBlockedError);
 
 		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
 			1,

@@ -3,11 +3,11 @@ import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { sendFriendRequestFactory } from './execute';
 
 import {
-	CannotSendRequestToYourselfError,
+	SelfReferenceError,
 	UserNotFoundError,
 	FriendshipAlreadyExistsError,
 	RequestAlreadySentError,
-	FriendRequestBlockedError,
+	UserBlockedError,
 } from '../Errors';
 
 describe('sendFriendRequest', () => {
@@ -33,23 +33,23 @@ describe('sendFriendRequest', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when requester equals target', async () => {
+	it('throws SelfReferenceError when requester equals target', async () => {
 		await expect(
 			sendFriendRequest({ requesterId: 1, addresseeId: 1 }),
-		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
+		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
 
-	it('throws FriendRequestBlockedError when users are blocked', async () => {
+	it('throws UserBlockedError when users are blocked', async () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
 		await expect(
 			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(FriendRequestBlockedError);
+		).rejects.toBeInstanceOf(UserBlockedError);
 
-		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
-			1,
-			2,
-		);
+		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
+			userId1: 1,
+			userId2: 2,
+		});
 	});
 
 	it('throws FriendshipAlreadyExistsError when friendship already exists', async () => {

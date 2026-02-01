@@ -2,11 +2,10 @@ import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
-	CannotSendRequestToYourselfError,
-	UserNotFoundError,
+	SelfReferenceError,
 	RequestNotFoundError,
 	FriendshipAlreadyExistsError,
-	FriendRequestBlockedError,
+	UserBlockedError,
 } from '../Errors';
 
 interface Dependencies {
@@ -29,29 +28,32 @@ export function acceptFriendRequestFactory({
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
-			throw new CannotSendRequestToYourselfError();
+			throw new SelfReferenceError();
 		}
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
+
 		if (friendship) {
 			throw new FriendshipAlreadyExistsError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship(
-			requesterId,
-			addresseeId,
-		);
+		const blocked = await queriesRepository.findBlockedRelationship({
+			userId1: requesterId,
+			userId2: addresseeId,
+		});
+
 		if (blocked) {
-			throw new FriendRequestBlockedError();
+			throw new UserBlockedError();
 		}
 
 		const request = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
+
 		if (!request) {
 			throw new RequestNotFoundError();
 		}
@@ -60,10 +62,6 @@ export function acceptFriendRequestFactory({
 			requesterId,
 			addresseeId,
 		});
-
-		if (!result) {
-			throw new UserNotFoundError();
-		}
 
 		return result;
 	};

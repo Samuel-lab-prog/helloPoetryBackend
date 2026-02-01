@@ -108,7 +108,7 @@ export function blockFriendRequest(params: {
 					],
 				},
 			}),
-			prisma.blockedFriend.create({
+			prisma.blockedUser.create({
 				data: {
 					blockerId: requesterId,
 					blockedId: addresseeId,
@@ -147,7 +147,7 @@ export function unblockFriendRequest(params: {
 	const { requesterId, addresseeId } = params;
 	return withPrismaErrorHandling(async () => {
 		await prisma.$transaction([
-			prisma.blockedFriend.delete({
+			prisma.blockedUser.delete({
 				where: {
 					blockerId_blockedId: {
 						blockerId: requesterId,

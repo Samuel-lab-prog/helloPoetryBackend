@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach, afterAll } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { prisma } from '@PrismaClient';
 import { queriesRepository } from './repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 beforeEach(async () => {
 	await clearDatabase();
-});
-
-afterAll(async () => {
-	await prisma.$disconnect();
 });
 
 describe('queriesRepository (Prisma)', () => {
