@@ -10,11 +10,13 @@ import type {
 	UpdateUserData,
 	InsertUser,
 } from '../../use-cases/commands/models/Index';
+import type { FullUser } from '@Domains/users-management/use-cases/queries/Index';
+import { fullUserSelect } from '../read-repository/selectsModels';
 
 async function insertUser(
 	user: InsertUser,
 ): Promise<
-	{ ok: true; id: number } | { ok: false; failureReason: FailureReasons }
+	{ ok: true; data: FullUser } | { ok: false; failureReason: FailureReasons }
 > {
 	try {
 		const result = await withPrismaErrorHandling(() => {
@@ -27,11 +29,11 @@ async function insertUser(
 					bio: user.bio,
 					avatarUrl: user.avatarUrl,
 				},
-				select: { id: true },
+				select: fullUserSelect,
 			});
 		});
 
-		return { ok: true, id: result.id };
+		return { ok: true, data: result };
 	} catch (error: unknown) {
 		if (error instanceof DatabaseError) {
 			if (error.message.includes('email')) {
@@ -56,18 +58,18 @@ async function updateUser(
 	userId: number,
 	userData: UpdateUserData,
 ): Promise<
-	{ ok: true; id: number } | { ok: false; failureReason: FailureReasons }
+	{ data: FullUser; ok: true } | { ok: false; failureReason: FailureReasons }
 > {
 	try {
 		const result = await withPrismaErrorHandling(() => {
 			return prisma.user.update({
 				where: { id: userId },
 				data: userData,
-				select: { id: true },
+				select: fullUserSelect,
 			});
 		});
 
-		return { ok: true, id: result.id };
+		return { ok: true, data: result };
 	} catch (error: unknown) {
 		if (error instanceof DatabaseError) {
 			if (error.message.includes('not found')) {
@@ -92,18 +94,18 @@ async function updateUser(
 async function softDeleteUser(
 	id: number,
 ): Promise<
-	{ ok: true; id: number } | { ok: false; failureReason: FailureReasons }
+	{ ok: true; data: FullUser } | { ok: false; failureReason: FailureReasons }
 > {
 	try {
 		const result = await withPrismaErrorHandling(() => {
 			return prisma.user.update({
 				where: { id },
 				data: { deletedAt: new Date() },
-				select: { id: true },
+				select: fullUserSelect,
 			});
 		});
 
-		return { ok: true, id: result.id };
+		return { ok: true, data: result };
 	} catch (error: unknown) {
 		if (error instanceof DatabaseError) {
 			return { ok: false, failureReason: 'NOT_FOUND' };

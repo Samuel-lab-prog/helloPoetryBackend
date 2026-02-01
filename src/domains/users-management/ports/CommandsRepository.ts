@@ -2,6 +2,7 @@ import type {
 	InsertUser,
 	UpdateUserData,
 } from '../use-cases/commands/models/Index';
+import type { FullUser } from '../use-cases/queries/models/FullUser';
 
 export type FailureReasons =
 	| 'DB_ERROR'
@@ -19,20 +20,20 @@ export interface CommandsRepository {
 	insertUser(
 		user: InsertUser,
 	): Promise<
-		| { id: number; ok: true }
+		| { data: FullUser; ok: true }
 		| { ok: false; failureReason: CommandResult['failureReason'] }
 	>;
 	updateUser(
 		userId: number,
 		userData: UpdateUserData,
 	): Promise<
-		| { id: number; ok: true }
+		| { data: FullUser; ok: true }
 		| { ok: false; failureReason: CommandResult['failureReason'] }
 	>;
 	softDeleteUser(
 		id: number,
 	): Promise<
-		| { id: number; ok: true }
+		| { data: FullUser; ok: true }
 		| { ok: false; failureReason: CommandResult['failureReason'] }
 	>;
 }

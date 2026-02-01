@@ -6,6 +6,7 @@ import {
 	CreateUserSchema,
 	UpdateUserSchema,
 	idSchema,
+	FullUserSchema,
 } from '../../schemas/Index';
 
 import { type UsersCommandsServices, commandsServices } from './Services';
@@ -22,9 +23,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			{
 				body: CreateUserSchema,
 				response: {
-					201: t.Object({
-						id: idSchema,
-					}),
+					201: FullUserSchema,
 					409: appErrorSchema,
 				},
 				detail: {
@@ -46,7 +45,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				}),
 				body: UpdateUserSchema,
 				response: {
-					200: t.Object({ id: idSchema }),
+					200: FullUserSchema,
 					403: appErrorSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,

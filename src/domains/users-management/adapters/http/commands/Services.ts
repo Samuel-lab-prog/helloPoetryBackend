@@ -10,14 +10,15 @@ import {
 	updateUserFactory,
 	createUserFactory,
 } from '../../../use-cases/commands/Index';
+import type { FullUser } from '@Domains/users-management/use-cases/queries/models/Index';
 
 export interface UsersCommandsServices {
-	createUser: (data: CreateUser) => Promise<{ id: number }>;
+	createUser: (data: CreateUser) => Promise<FullUser>;
 	updateUser: (
 		requesterId: number,
 		targetId: number,
 		data: UpdateUserData,
-	) => Promise<{ id: number }>;
+	) => Promise<FullUser>;
 }
 
 export const commandsServices: UsersCommandsServices = {

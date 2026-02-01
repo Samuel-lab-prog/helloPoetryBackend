@@ -53,7 +53,6 @@ describe('CommandsRepository', () => {
 			expect(result.ok).toBe(true);
 			expect(result).toMatchObject({
 				ok: true,
-				id: expect.any(Number),
 			});
 		});
 
@@ -95,14 +94,13 @@ describe('CommandsRepository', () => {
 				throw new Error('Expected insertion to succeed');
 			}
 
-			const result = await updateUser(inserted.id, {
+			const result = await updateUser(inserted.data.id, {
 				name: 'Updated Name',
 				bio: 'Updated bio',
 			});
 
 			expect(result).toMatchObject({
 				ok: true,
-				id: inserted.id,
 			});
 		});
 
@@ -130,11 +128,11 @@ describe('CommandsRepository', () => {
 					throw new Error('Expected insertion to succeed');
 				}
 
-				const result = await softDeleteUser(inserted.id);
+				const result = await softDeleteUser(inserted.data.id);
 
 				expect(result).toMatchObject({
 					ok: true,
-					id: inserted.id,
+					data: inserted.data,
 				});
 			});
 

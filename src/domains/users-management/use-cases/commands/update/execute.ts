@@ -1,4 +1,5 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { FullUser } from '../../queries/models/FullUser';
 import type { UpdateUserData } from '../models/Update';
 import {
 	UserUpdateError,
@@ -17,7 +18,7 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 		requesterId: number,
 		targetId: number,
 		data: UpdateUserData,
-	): Promise<{ id: number }> {
+	): Promise<FullUser> {
 		if (!canUpdateData({ requesterId, targetId })) {
 			throw new CrossUserUpdateError();
 		}
@@ -39,6 +40,6 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 			throw new UserUpdateError('Failed to update user');
 		}
 
-		return { id: result.id };
+		return result.data;
 	};
 }

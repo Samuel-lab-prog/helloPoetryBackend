@@ -2,6 +2,7 @@ import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { HashServices } from '../../../ports/HashSerices';
 import type { CreateUser } from '../models/Create';
 import { UserCreationError, UserCreationConflictError } from '../Errors';
+import type { FullUser } from '../../queries/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -12,7 +13,7 @@ export function createUserFactory({
 	commandsRepository,
 	hashServices,
 }: Dependencies) {
-	return async function createUser(data: CreateUser): Promise<{ id: number }> {
+	return async function createUser(data: CreateUser): Promise<FullUser> {
 		const hashedPassword = await hashServices.hash(data.password);
 		const result = await commandsRepository.insertUser({
 			...data,
@@ -27,6 +28,6 @@ export function createUserFactory({
 			}
 			throw new UserCreationError('Failed to create new user');
 		}
-		return { id: result.id };
+		return result.data;
 	};
 }

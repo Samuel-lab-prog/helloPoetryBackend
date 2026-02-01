@@ -1,15 +1,14 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 import {
-	createUser,
-	loginUser,
 	sendFriendRequest,
 	acceptFriendRequest,
 	getMyPrivateProfile,
 	cancelFriendRequest,
 	rejectFriendRequest,
-	type TestUser,
 } from './Helpers';
+import { createUser, type TestUser, loginUser } from '../Helpers';
+
 import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
 import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
 import type { AppError } from '@AppError';
