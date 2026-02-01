@@ -9,7 +9,6 @@ export interface QueriesRepository {
 		user1Id: number;
 		user2Id: number;
 	}): Promise<FriendshipRecord | null>;
-
 	findFriendRequest(params: {
 		requesterId: number;
 		addresseeId: number;

@@ -26,7 +26,7 @@ export interface CommandsRepository {
 		addresseeId: number;
 	}): Promise<FriendRequest>;
 
-	unblockFriendRequest(params: {
+	unblockUser(params: {
 		requesterId: number;
 		addresseeId: number;
 	}): Promise<FriendRequest>;

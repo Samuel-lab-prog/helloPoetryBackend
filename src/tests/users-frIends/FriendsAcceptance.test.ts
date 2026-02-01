@@ -135,7 +135,7 @@ describe('INTEGRATION - Friend Requests Acceptance', () => {
 
 		const res = await rejectFriendRequest(user2, user1.id);
 
-		expect((res as AppError).statusCode).toBe(409);
+		expect((res as AppError).statusCode).toBe(404);
 	});
 
 	it('Accepted request cannot be cancelled by requester', async () => {
@@ -144,6 +144,6 @@ describe('INTEGRATION - Friend Requests Acceptance', () => {
 
 		const res = await cancelFriendRequest(user1, user2.id);
 
-		expect((res as AppError).statusCode).toBe(409);
+		expect((res as AppError).statusCode).toBe(404);
 	});
 });

@@ -11,7 +11,7 @@ export const commandsRepository: CommandsRepository = {
 	deleteFriend,
 	deleteFriendRequestIfExists,
 	cancelFriendRequest,
-	unblockFriendRequest,
+	unblockUser,
 };
 
 export function createFriendRequest(params: {
@@ -140,7 +140,7 @@ export function cancelFriendRequest(params: {
 	});
 }
 
-export function unblockFriendRequest(params: {
+export function unblockUser(params: {
 	requesterId: number;
 	addresseeId: number;
 }): Promise<FriendRequest> {

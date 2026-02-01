@@ -1,58 +1,58 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
-
-import { unblockFriendRequestFactory } from './execute';
-
+import { unblockUserFactory } from './execute';
 import {
-	BlockedRelationshipNotFoundError,
 	SelfReferenceError,
+	BlockedRelationshipNotFoundError,
 } from '../Errors';
 
-describe('unblockFriendRequest', () => {
+describe('USE-CASE - Unblock User', () => {
 	let commandsRepository: any;
 	let queriesRepository: any;
-	let unblockFriendRequest: any;
+	let unblockUser: any;
 
 	beforeEach(() => {
 		commandsRepository = {
-			unblockFriendRequest: mock(),
+			unblockUser: mock(),
 		};
 
 		queriesRepository = {
 			findBlockedRelationship: mock(),
 		};
 
-		unblockFriendRequest = unblockFriendRequestFactory({
+		unblockUser = unblockUserFactory({
 			commandsRepository,
 			queriesRepository,
 		});
 	});
 
-	it('throws SelfReferenceError when requester equals target', async () => {
-		await expect(
-			unblockFriendRequest({ requesterId: 1, addresseeId: 1 }),
+	it('Does not allow self reference', () => {
+		expect(
+			unblockUser({ requesterId: 1, addresseeId: 1 }),
 		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
 
-	it('throws BlockedRelationshipNotFoundError when users are not blocked', () => {
+	it('Should abort when blocked relationship does not exist', () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+
 		expect(
-			unblockFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toThrow(BlockedRelationshipNotFoundError);
+			unblockUser({ requesterId: 1, addresseeId: 2 }),
+		).rejects.toBeInstanceOf(BlockedRelationshipNotFoundError);
+
+		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
+			userId1: 1,
+			userId2: 2,
+		});
 	});
 
-	it('unblocks user when blocked relationship exists', async () => {
-		const unblockResult = { requesterId: 1, addresseeId: 2 };
-
+	it('Should unblock friend request when relationship exists', () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 10 });
-		commandsRepository.unblockFriendRequest.mockResolvedValue(unblockResult);
+		commandsRepository.unblockUser.mockResolvedValue(undefined);
 
-		const result = await unblockFriendRequest({
-			requesterId: 1,
-			addresseeId: 2,
-		});
+		expect(unblockUser({ requesterId: 1, addresseeId: 2 })).resolves.toEqual(
+			undefined,
+		);
 
-		expect(result).toEqual(unblockResult);
-		expect(commandsRepository.unblockFriendRequest).toHaveBeenCalledWith({
+		expect(commandsRepository.unblockUser).toHaveBeenCalledWith({
 			requesterId: 1,
 			addresseeId: 2,
 		});

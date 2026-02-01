@@ -11,17 +11,17 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-interface UnblockFriendRequestParams {
+interface UnblockUserParams {
 	requesterId: number;
 	addresseeId: number;
 }
 
-export function unblockFriendRequestFactory({
+export function unblockUserFactory({
 	commandsRepository,
 	queriesRepository,
 }: Dependencies) {
-	return async function unblockFriendRequest(
-		params: UnblockFriendRequestParams,
+	return async function unblockUser(
+		params: UnblockUserParams,
 	): Promise<FriendRequest> {
 		const { requesterId, addresseeId } = params;
 
@@ -38,7 +38,7 @@ export function unblockFriendRequestFactory({
 			throw new BlockedRelationshipNotFoundError();
 		}
 
-		return commandsRepository.unblockFriendRequest({
+		return commandsRepository.unblockUser({
 			requesterId,
 			addresseeId,
 		});

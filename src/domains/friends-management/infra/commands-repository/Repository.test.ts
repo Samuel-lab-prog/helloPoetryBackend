@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { prisma } from '@PrismaClient';
-
 import {
 	createFriendRequest,
 	acceptFriendRequest,
@@ -8,10 +7,11 @@ import {
 	cancelFriendRequest,
 	blockUser,
 	deleteFriend,
+	unblockUser,
 } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
-describe('Repository - Friends Management', () => {
+describe('REPOSITORY - Friends Management', () => {
 	const USERS = [
 		{
 			nickname: 'user1',
@@ -214,6 +214,33 @@ describe('Repository - Friends Management', () => {
 				blockerId: users[0]!.id,
 				blockedId: users[1]!.id,
 			});
+		});
+	});
+
+	describe('unblockUser', () => {
+		it('Should remove the block and return params', async () => {
+			const users = await prisma.user.findMany();
+			await prisma.blockedUser.create({
+				data: {
+					blockerId: users[0]!.id,
+					blockedId: users[1]!.id,
+				},
+			});
+			const result = await unblockUser({
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
+			});
+			const block = await prisma.blockedUser.findFirst({
+				where: {
+					blockerId: users[0]!.id,
+					blockedId: users[1]!.id,
+				},
+			});
+			expect(result).toEqual({
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
+			});
+			expect(block).toBe(null);
 		});
 	});
 

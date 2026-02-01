@@ -169,7 +169,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 		.patch(
 			'/unblock/:id',
 			({ auth, params }) => {
-				return services.unblockFriendRequest({
+				return services.unblockUser({
 					requesterId: auth.clientId,
 					addresseeId: params.id,
 				});
