@@ -9,7 +9,7 @@ import type {
 import type {
 	UpdateUserData,
 	InsertUser,
-} from '../../use-cases/commands/models/index';
+} from '../../use-cases/commands/models/Index';
 
 async function insertUser(
 	user: InsertUser,

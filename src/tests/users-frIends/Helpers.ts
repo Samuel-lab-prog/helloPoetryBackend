@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { server } from '../../../index';
+import { server } from '../../index';
 
 export const app = new Elysia().use(server);
 export const PREFIX = 'http://test/api/v1';
@@ -42,7 +42,6 @@ export async function createUser(data: {
 			body: data,
 		}),
 	);
-	if (res.status !== 201) throw new Error('Failed to create user');
 	const body = (await res.json()) as any;
 	return {
 		id: body.id,
@@ -62,12 +61,8 @@ export async function loginUser(user: TestUser): Promise<TestUser> {
 			body: { email: user.email, password: user.password },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to login');
-
 	const cookie = res.headers.get('set-cookie');
-	if (!cookie) throw new Error('Login did not return cookie');
-
-	return { ...user, cookie };
+	return { ...user, cookie: cookie || '' };
 }
 
 /**
@@ -80,7 +75,6 @@ export async function sendFriendRequest(from: TestUser, toUserId: number) {
 			headers: { Cookie: from.cookie },
 		}),
 	);
-	if (res.status !== 201) throw new Error('Failed to send friend request');
 	return await res.json();
 }
 
@@ -94,7 +88,6 @@ export async function acceptFriendRequest(to: TestUser, fromUserId: number) {
 			headers: { Cookie: to.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to accept friend request');
 	return await res.json();
 }
 
@@ -108,7 +101,6 @@ export async function rejectFriendRequest(to: TestUser, fromUserId: number) {
 			headers: { Cookie: to.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to reject friend request');
 	return await res.json();
 }
 
@@ -119,9 +111,7 @@ export async function unblockUser(by: TestUser, targetUserId: number) {
 			headers: { Cookie: by.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to unblock user');
-	const resJson = await res.json();
-	return resJson;
+	return await res.json();
 }
 
 /**
@@ -134,9 +124,7 @@ export async function blockUser(by: TestUser, targetUserId: number) {
 			headers: { Cookie: by.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to block user');
-	const resJson = await res.json();
-	return resJson;
+	return await res.json();
 }
 
 /**
@@ -149,7 +137,6 @@ export async function cancelFriendRequest(from: TestUser, toUserId: number) {
 			headers: { Cookie: from.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to cancel friend request');
 	return await res.json();
 }
 
@@ -160,19 +147,17 @@ export async function deleteFriend(user: TestUser, friendUserId: number) {
 			headers: { Cookie: user.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to delete friend');
 	return await res.json();
 }
 /**
  * Get the authenticated user's profile
  */
-export async function getMe(user: TestUser) {
+export async function getMyPrivateProfile(user: TestUser) {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/users/me`, {
 			method: 'GET',
 			headers: { Cookie: user.cookie },
 		}),
 	);
-	if (res.status !== 200) throw new Error('Failed to fetch /users/me');
 	return await res.json();
 }

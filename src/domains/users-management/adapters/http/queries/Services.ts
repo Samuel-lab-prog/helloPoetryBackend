@@ -21,10 +21,7 @@ export interface UsersQueriesRouterServices {
 		requesterId: number;
 		requesterRole: UserRole;
 	}) => Promise<FullUser>;
-	getPublicProfile: (
-		id: number,
-		requesterId?: number,
-	) => Promise<PublicProfile>;
+	getPublicProfile: (id: number, requesterId: number) => Promise<PublicProfile>;
 	getPrivateProfile: (id: number) => Promise<PrivateProfile>;
 	getUsers: (params: {
 		navigationOptions: {

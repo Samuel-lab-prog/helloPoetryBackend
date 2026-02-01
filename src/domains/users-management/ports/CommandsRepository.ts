@@ -1,7 +1,7 @@
 import type {
 	InsertUser,
 	UpdateUserData,
-} from '../use-cases/commands/models/index';
+} from '../use-cases/commands/models/Index';
 
 export type FailureReasons =
 	| 'DB_ERROR'
