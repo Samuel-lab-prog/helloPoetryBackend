@@ -65,16 +65,17 @@ export function rejectFriendRequest(params: {
 	addresseeId: number;
 }): Promise<FriendRequest> {
 	const { requesterId, addresseeId } = params;
-
 	return withPrismaErrorHandling(async () => {
-		await prisma.friendshipRequest.delete({
-			where: {
-				requesterId_addresseeId: {
-					requesterId,
-					addresseeId,
+		await prisma.$transaction([
+			prisma.friendshipRequest.delete({
+				where: {
+					requesterId_addresseeId: {
+						requesterId,
+						addresseeId,
+					},
 				},
-			},
-		});
+			}),
+		]);
 
 		return { requesterId, addresseeId };
 	});
@@ -125,14 +126,16 @@ export function cancelFriendRequest(params: {
 }): Promise<FriendRequest> {
 	const { requesterId, addresseeId } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.friendshipRequest.delete({
-			where: {
-				requesterId_addresseeId: {
-					requesterId: requesterId,
-					addresseeId: addresseeId,
+		await prisma.$transaction([
+			prisma.friendshipRequest.delete({
+				where: {
+					requesterId_addresseeId: {
+						requesterId: requesterId,
+						addresseeId: addresseeId,
+					},
 				},
-			},
-		});
+			}),
+		]);
 		return { requesterId, addresseeId };
 	});
 }
@@ -143,14 +146,16 @@ export function unblockFriendRequest(params: {
 }): Promise<FriendRequest> {
 	const { requesterId, addresseeId } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.blockedFriend.delete({
-			where: {
-				blockerId_blockedId: {
-					blockerId: requesterId,
-					blockedId: addresseeId,
+		await prisma.$transaction([
+			prisma.blockedFriend.delete({
+				where: {
+					blockerId_blockedId: {
+						blockerId: requesterId,
+						blockedId: addresseeId,
+					},
 				},
-			},
-		});
+			}),
+		]);
 		return { requesterId, addresseeId };
 	});
 }
@@ -161,16 +166,19 @@ export function deleteFriend(params: {
 }): Promise<void> {
 	const { user1Id, user2Id } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.friendship.deleteMany({
-			where: {
-				OR: [
-					{ userAId: user1Id, userBId: user2Id },
-					{ userAId: user2Id, userBId: user1Id },
-				],
-			},
-		});
+		await prisma.$transaction([
+			prisma.friendshipRequest.deleteMany({
+				where: {
+					OR: [
+						{ requesterId: user1Id, addresseeId: user2Id },
+						{ requesterId: user2Id, addresseeId: user1Id },
+					],
+				},
+			}),
+		]);
 	});
 }
+
 export function deleteFriendRequestIfExists(params: {
 	requesterId: number;
 	addresseeId: number;
