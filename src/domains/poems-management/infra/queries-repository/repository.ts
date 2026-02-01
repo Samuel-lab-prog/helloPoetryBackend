@@ -88,7 +88,7 @@ function selectPoemById(poemId: number): Promise<FullPoem | null> {
 				avatarUrl: poem.author.avatarUrl,
 				friendsIds,
 			},
-			dedicatedToUser: poem.toUser ?? null,
+			dedicatedToUser: poem.addresseedUser ?? null,
 			dedicatedToPoem: poem.toPoem ?? null,
 			tags: poem.tags,
 			stats: {

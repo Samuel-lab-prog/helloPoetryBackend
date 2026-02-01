@@ -5,7 +5,7 @@ import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
 	rejectFriendRequestFactory,
-	blockFriendRequestFactory,
+	blockUserFactory,
 	deleteFriendFactory,
 	cancelFriendRequestFactory,
 	unblockFriendRequestFactory,
@@ -24,7 +24,7 @@ export interface CommandsRouterServices {
 		requesterId: number;
 		addresseeId: number;
 	}): Promise<FriendRequest>;
-	blockFriendRequest(params: {
+	blockUser(params: {
 		requesterId: number;
 		addresseeId: number;
 	}): Promise<FriendRequest>;
@@ -55,7 +55,7 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 	}),
-	blockFriendRequest: blockFriendRequestFactory({
+	blockUser: blockUserFactory({
 		commandsRepository,
 		queriesRepository,
 	}),

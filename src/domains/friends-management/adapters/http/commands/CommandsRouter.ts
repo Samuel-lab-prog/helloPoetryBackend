@@ -93,7 +93,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 		.patch(
 			'/block/:id',
 			({ auth, params }) => {
-				return services.blockFriendRequest({
+				return services.blockUser({
 					requesterId: auth.clientId,
 					addresseeId: params.id,
 				});
@@ -108,9 +108,9 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 				}),
 				status: 200,
 				detail: {
-					summary: 'Block Friend Request',
+					summary: 'Block User',
 					description:
-						'Blocks a friend request from the specified user to the authenticated user.',
+						'Blocks a user for the authenticated user.',
 					tags: ['Friends Management'],
 				},
 			},
