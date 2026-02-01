@@ -1,10 +1,9 @@
-import { describe, it, expect, beforeEach, afterAll } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { prisma } from '@PrismaClient';
-
 import { queriesRepository } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
-describe('QueriesRepository (Prisma)', () => {
+describe('REPOSITORY - Friends Management', () => {
 	const USERS = [
 		{
 			nickname: 'user1',
@@ -37,12 +36,8 @@ describe('QueriesRepository (Prisma)', () => {
 		await prisma.user.createMany({ data: USERS });
 	});
 
-	afterAll(async () => {
-		await prisma.$disconnect();
-	});
-
 	describe('findFriendshipBetweenUsers', () => {
-		it('returns friendship when exists regardless of order', async () => {
+		it('Should find friendship regardless of user order', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendship.create({
@@ -76,7 +71,7 @@ describe('QueriesRepository (Prisma)', () => {
 	});
 
 	describe('findFriendRequest', () => {
-		it('returns friend request when exists', async () => {
+		it('Should find friend request regardless of user order', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendshipRequest.create({
@@ -97,7 +92,7 @@ describe('QueriesRepository (Prisma)', () => {
 			});
 		});
 
-		it('returns null when friend request does not exist', async () => {
+		it('Should return null when friend request does not exist', async () => {
 			const users = await prisma.user.findMany();
 
 			const result = await queriesRepository.findFriendRequest({
@@ -110,7 +105,7 @@ describe('QueriesRepository (Prisma)', () => {
 	});
 
 	describe('findBlockedRelationship', () => {
-		it('returns block when user1 blocked user2', async () => {
+		it('Should find block regardless of user order', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.blockedUser.create({
@@ -131,7 +126,7 @@ describe('QueriesRepository (Prisma)', () => {
 			});
 		});
 
-		it('returns block when user2 blocked user1', async () => {
+		it('Should find block regardless of user order', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.blockedUser.create({
@@ -152,7 +147,7 @@ describe('QueriesRepository (Prisma)', () => {
 			});
 		});
 
-		it('returns null when no block exists', async () => {
+		it('Should return null when no block exists', async () => {
 			const users = await prisma.user.findMany();
 
 			const result = await queriesRepository.findBlockedRelationship({

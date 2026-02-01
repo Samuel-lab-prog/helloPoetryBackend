@@ -1,13 +1,7 @@
 import { t } from 'elysia';
-import type { FriendRequest } from '../../use-cases/commands/models/Index';
+import { idSchema } from '@SharedKernel/Schemas';
 
 export const FriendRequestSchema = t.Object({
-	requesterId: t.Number(),
-	addresseeId: t.Number(),
+	requesterId: idSchema,
+	addresseeId: idSchema,
 });
-
-type _AssertExtends<_T extends _U, _U> = true;
-type _AssertCreateUser = _AssertExtends<
-	typeof FriendRequestSchema.static,
-	FriendRequest
->;

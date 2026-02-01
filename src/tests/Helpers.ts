@@ -27,9 +27,6 @@ export function jsonRequest(
 	});
 }
 
-/**
- * Create a user via API
- */
 export async function createUser(data: {
 	email: string;
 	password: string;
@@ -53,9 +50,6 @@ export async function createUser(data: {
 	};
 }
 
-/**
- * Log in a user and return the HTTP cookie
- */
 export async function loginUser(user: TestUser): Promise<TestUser> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/auth/login`, {

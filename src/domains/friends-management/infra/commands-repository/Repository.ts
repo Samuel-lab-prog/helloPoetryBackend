@@ -81,9 +81,6 @@ export function rejectFriendRequest(params: {
 	});
 }
 
-/**
- * BLOCK USER (also removes friendship and requests)
- */
 export function blockUser(params: {
 	requesterId: number;
 	addresseeId: number;
