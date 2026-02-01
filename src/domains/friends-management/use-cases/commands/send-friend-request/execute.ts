@@ -3,7 +3,6 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	SelfReferenceError,
-	UserNotFoundError,
 	FriendshipAlreadyExistsError,
 	RequestAlreadySentError,
 	UserBlockedError,
@@ -36,6 +35,7 @@ export function sendFriendRequestFactory({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
+
 		if (blocked) {
 			throw new UserBlockedError();
 		}
@@ -44,6 +44,7 @@ export function sendFriendRequestFactory({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
+
 		if (friendship) {
 			throw new FriendshipAlreadyExistsError();
 		}
@@ -52,6 +53,7 @@ export function sendFriendRequestFactory({
 			requesterId,
 			addresseeId,
 		});
+
 		if (existingOutgoingRequest) {
 			throw new RequestAlreadySentError();
 		}
@@ -65,9 +67,6 @@ export function sendFriendRequestFactory({
 				requesterId: addresseeId,
 				addresseeId: requesterId,
 			});
-			if (!accepted) {
-				throw new UserNotFoundError();
-			}
 			return accepted;
 		}
 
@@ -75,10 +74,6 @@ export function sendFriendRequestFactory({
 			requesterId,
 			addresseeId,
 		});
-
-		if (!result) {
-			throw new UserNotFoundError();
-		}
 
 		return result;
 	};

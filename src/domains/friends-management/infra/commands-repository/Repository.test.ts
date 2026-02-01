@@ -45,7 +45,7 @@ describe('Repository - Friends Management', () => {
 	});
 
 	describe('createFriendRequest', () => {
-		it('creates friend request and returns params', async () => {
+		it('Should create friend request and return params', async () => {
 			const users = await prisma.user.findMany();
 
 			const result = await createFriendRequest({
@@ -73,7 +73,7 @@ describe('Repository - Friends Management', () => {
 	});
 
 	describe('acceptFriendRequest', () => {
-		it('Should delte the friend request, create friendship, and return params', async () => {
+		it('Should delete the friend request, create friendship, and return params', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendshipRequest.create({
