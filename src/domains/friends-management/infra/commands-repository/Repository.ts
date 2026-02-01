@@ -14,68 +14,68 @@ export const commandsRepository: CommandsRepository = {
 };
 
 export function createFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 
 	return withPrismaErrorHandling(async () => {
 		await prisma.friendshipRequest.create({
 			data: {
-				requesterId: fromUserId,
-				addresseeId: toUserId,
+				requesterId,
+				addresseeId,
 			},
 		});
 
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
 export function acceptFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 
 	return withPrismaErrorHandling(async () => {
 		await prisma.$transaction([
 			prisma.friendshipRequest.delete({
 				where: {
 					requesterId_addresseeId: {
-						requesterId: fromUserId,
-						addresseeId: toUserId,
+						requesterId,
+						addresseeId,
 					},
 				},
 			}),
 			prisma.friendship.create({
 				data: {
-					userAId: fromUserId,
-					userBId: toUserId,
+					userAId: requesterId,
+					userBId: addresseeId,
 				},
 			}),
 		]);
 
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
 export function rejectFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 
 	return withPrismaErrorHandling(async () => {
 		await prisma.friendshipRequest.delete({
 			where: {
 				requesterId_addresseeId: {
-					requesterId: fromUserId,
-					addresseeId: toUserId,
+					requesterId,
+					addresseeId,
 				},
 			},
 		});
 
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
@@ -83,93 +83,93 @@ export function rejectFriendRequest(params: {
  * BLOCK USER (also removes friendship and requests)
  */
 export function blockFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 
 	return withPrismaErrorHandling(async () => {
 		await prisma.$transaction([
 			prisma.friendshipRequest.deleteMany({
 				where: {
 					OR: [
-						{ requesterId: fromUserId, addresseeId: toUserId },
-						{ requesterId: toUserId, addresseeId: fromUserId },
+						{ requesterId, addresseeId },
+						{ requesterId: addresseeId, addresseeId: requesterId },
 					],
 				},
 			}),
 			prisma.friendship.deleteMany({
 				where: {
 					OR: [
-						{ userAId: fromUserId, userBId: toUserId },
-						{ userAId: toUserId, userBId: fromUserId },
+						{ userAId: requesterId, userBId: addresseeId },
+						{ userAId: addresseeId, userBId: requesterId },
 					],
 				},
 			}),
 			prisma.blockedFriend.create({
 				data: {
-					blockerId: fromUserId,
-					blockedId: toUserId,
+					blockerId: requesterId,
+					blockedId: addresseeId,
 				},
 			}),
 		]);
 
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
 export function deleteFriend(params: {
-	fromUserId: number;
-	toUserId: number;
-}): Promise<{ fromUserId: number; toUserId: number }> {
-	const { fromUserId, toUserId } = params;
+	requesterId: number;
+	addresseeId: number;
+}): Promise<{ requesterId: number; addresseeId: number }> {
+	const { requesterId, addresseeId } = params;
 
 	return withPrismaErrorHandling(async () => {
 		await prisma.friendship.deleteMany({
 			where: {
 				OR: [
-					{ userAId: fromUserId, userBId: toUserId },
-					{ userAId: toUserId, userBId: fromUserId },
+					{ userAId: requesterId, userBId: addresseeId },
+					{ userAId: addresseeId, userBId: requesterId },
 				],
 			},
 		});
 
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
 export function cancelFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 	return withPrismaErrorHandling(async () => {
 		await prisma.friendshipRequest.delete({
 			where: {
 				requesterId_addresseeId: {
-					requesterId: fromUserId,
-					addresseeId: toUserId,
+					requesterId: requesterId,
+					addresseeId: addresseeId,
 				},
 			},
 		});
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }
 
 export function unblockFriendRequest(params: {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }): Promise<FriendRequest> {
-	const { fromUserId, toUserId } = params;
+	const { requesterId, addresseeId } = params;
 	return withPrismaErrorHandling(async () => {
 		await prisma.blockedFriend.delete({
 			where: {
 				blockerId_blockedId: {
-					blockerId: fromUserId,
-					blockedId: toUserId,
+					blockerId: requesterId,
+					blockedId: addresseeId,
 				},
 			},
 		});
-		return { fromUserId, toUserId };
+		return { requesterId, addresseeId };
 	});
 }

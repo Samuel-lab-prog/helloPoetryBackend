@@ -72,14 +72,14 @@ describe('FriendsCommandsRouter', () => {
 		expect(resp.status).toBe(200);
 
 		expect(await resp.json()).toEqual({
-			fromUserId: 9,
-			toUserId: 7,
+			requesterId: 9,
+			addresseeId: 7,
 		});
 
 		expect(acceptFriendRequest).toHaveBeenCalledTimes(1);
 		expect(acceptFriendRequest).toHaveBeenCalledWith({
-			fromUserId: 9,
-			toUserId: 7,
+			requesterId: 9,
+			addresseeId: 7,
 		});
 	});
 
@@ -95,14 +95,14 @@ describe('FriendsCommandsRouter', () => {
 		expect(resp.status).toBe(200);
 
 		expect(await resp.json()).toEqual({
-			fromUserId: 9,
-			toUserId: 7,
+			requesterId: 9,
+			addresseeId: 7,
 		});
 
 		expect(rejectFriendRequest).toHaveBeenCalledTimes(1);
 		expect(rejectFriendRequest).toHaveBeenCalledWith({
-			fromUserId: 9,
-			toUserId: 7,
+			requesterId: 9,
+			addresseeId: 7,
 		});
 	});
 
@@ -118,14 +118,14 @@ describe('FriendsCommandsRouter', () => {
 		expect(resp.status).toBe(200);
 
 		expect(await resp.json()).toEqual({
-			fromUserId: 7,
-			toUserId: 33,
+			requesterId: 7,
+			addresseeId: 33,
 		});
 
 		expect(blockFriendRequest).toHaveBeenCalledTimes(1);
 		expect(blockFriendRequest).toHaveBeenCalledWith({
-			fromUserId: 7,
-			toUserId: 33,
+			requesterId: 7,
+			addresseeId: 33,
 		});
 	});
 
@@ -141,14 +141,14 @@ describe('FriendsCommandsRouter', () => {
 		expect(resp.status).toBe(200);
 
 		expect(await resp.json()).toEqual({
-			fromUserId: 7,
-			toUserId: 50,
+			requesterId: 7,
+			addresseeId: 50,
 		});
 
 		expect(deleteFriend).toHaveBeenCalledTimes(1);
 		expect(deleteFriend).toHaveBeenCalledWith({
-			fromUserId: 7,
-			toUserId: 50,
+			requesterId: 7,
+			addresseeId: 50,
 		});
 	});
 });

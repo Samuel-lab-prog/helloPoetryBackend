@@ -2,31 +2,31 @@ import type { FriendRequest } from '../use-cases/commands/models/Index';
 
 export interface CommandsRepository {
 	rejectFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 	createFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 	acceptFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 	blockFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 	deleteFriend(params: {
-		fromUserId: number;
-		toUserId: number;
-	}): Promise<{ fromUserId: number; toUserId: number }>;
+		requesterId: number;
+		addresseeId: number;
+	}): Promise<{ requesterId: number; addresseeId: number }>;
 	cancelFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 	unblockFriendRequest(params: {
-		fromUserId: number;
-		toUserId: number;
+		requesterId: number;
+		addresseeId: number;
 	}): Promise<FriendRequest>;
 }

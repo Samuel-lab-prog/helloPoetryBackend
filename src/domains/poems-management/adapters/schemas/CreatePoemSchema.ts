@@ -16,5 +16,5 @@ export const CreatePoemBodySchema = t.Object({
 	tags: t.Optional(t.Array(t.String({ examples: ['nature', 'love', 'life'] }))),
 	isCommentable: t.Optional(t.Boolean()),
 	toPoemId: t.Optional(idSchema),
-	toUserId: t.Optional(idSchema),
+	addresseeId: t.Optional(idSchema),
 });

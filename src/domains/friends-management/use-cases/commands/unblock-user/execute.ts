@@ -12,8 +12,8 @@ interface Dependencies {
 }
 
 interface UnblockFriendRequestParams {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }
 
 export function unblockFriendRequestFactory({
@@ -23,20 +23,23 @@ export function unblockFriendRequestFactory({
 	return async function unblockFriendRequest(
 		params: UnblockFriendRequestParams,
 	): Promise<FriendRequest> {
-		const { fromUserId, toUserId } = params;
+		const { requesterId, addresseeId } = params;
 
-		if (fromUserId === toUserId) {
+		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
 		const blocked = await queriesRepository.findBlockedRelationship(
-			fromUserId,
-			toUserId,
+			requesterId,
+			addresseeId,
 		);
 		if (!blocked) {
 			throw new FriendRequestBlockedError();
 		}
 
-		return commandsRepository.unblockFriendRequest({ fromUserId, toUserId });
+		return commandsRepository.unblockFriendRequest({
+			requesterId,
+			addresseeId,
+		});
 	};
 }

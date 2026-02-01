@@ -7,6 +7,6 @@ export type InsertPoem = {
 	tags?: string[];
 	authorId: number;
 	isCommentable?: boolean;
-	toUserId?: number;
+	addresseeId?: number;
 	toPoemId?: number;
 };

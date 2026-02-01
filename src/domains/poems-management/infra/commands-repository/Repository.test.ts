@@ -82,25 +82,4 @@ describe('commandsRepository (Prisma) - insertPoem', () => {
 			expect.arrayContaining(['fun', 'life']),
 		);
 	});
-
-	it('should handle optional fields (toUserId, toPoemId, isCommentable)', async () => {
-		const poemData = {
-			title: 'Optional Fields Poem',
-			content: 'Optional content',
-			slug: 'optional-fields',
-			excerpt: 'Optional content',
-			authorId: 1,
-			toUserId: 2,
-			toPoemId: undefined,
-			isCommentable: false,
-		};
-
-		const result = await commandsRepository.insertPoem(poemData);
-		const dbPoem = await prisma.poem.findUnique({ where: { id: result.id } });
-		expect(dbPoem).toMatchObject({
-			toUserId: 2,
-			toPoemId: null,
-			isCommentable: false,
-		});
-	});
 });

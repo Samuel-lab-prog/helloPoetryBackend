@@ -1,4 +1,4 @@
 export type FriendRequest = {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 };

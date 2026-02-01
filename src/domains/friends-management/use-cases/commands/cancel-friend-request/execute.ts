@@ -12,8 +12,8 @@ interface Dependencies {
 }
 
 interface CancelFriendRequestParams {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }
 
 export function cancelFriendRequestFactory({
@@ -23,20 +23,18 @@ export function cancelFriendRequestFactory({
 	return async function cancelFriendRequest(
 		params: CancelFriendRequestParams,
 	): Promise<FriendRequest> {
-		const { fromUserId, toUserId } = params;
-
-		if (fromUserId === toUserId) {
+		const { requesterId, addresseeId } = params;
+		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
 		const request = await queriesRepository.findFriendRequest({
-			requesterId: fromUserId,
-			addresseeId: toUserId,
+			requesterId,
+			addresseeId,
 		});
-
 		if (!request) {
 			throw new RequestNotFoundError();
 		}
-		return commandsRepository.cancelFriendRequest({ fromUserId, toUserId });
+		return commandsRepository.cancelFriendRequest({ requesterId, addresseeId });
 	};
 }

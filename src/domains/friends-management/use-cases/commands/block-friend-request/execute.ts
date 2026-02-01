@@ -13,8 +13,8 @@ interface Dependencies {
 }
 
 interface BlockFriendRequestParams {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }
 
 export function blockFriendRequestFactory({
@@ -24,28 +24,28 @@ export function blockFriendRequestFactory({
 	return async function blockFriendRequest(
 		params: BlockFriendRequestParams,
 	): Promise<FriendRequest> {
-		const { fromUserId, toUserId } = params;
+		const { requesterId, addresseeId } = params;
 
-		if (fromUserId === toUserId) {
+		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: fromUserId,
-			user2Id: toUserId,
+			user1Id: requesterId,
+			user2Id: addresseeId,
 		});
 		if (friendship) {
 			throw new FriendshipAlreadyExistsError();
 		}
 
 		const blocked = await queriesRepository.findBlockedRelationship(
-			fromUserId,
-			toUserId,
+			requesterId,
+			addresseeId,
 		);
 		if (blocked) {
 			throw new FriendRequestBlockedError();
 		}
 
-		return commandsRepository.blockFriendRequest({ fromUserId, toUserId });
+		return commandsRepository.blockFriendRequest({ requesterId, addresseeId });
 	};
 }

@@ -16,7 +16,7 @@ interface Dependencies {
 
 interface SendFriendRequestParams {
 	requesterId: number;
-	targetUserId: number;
+	addresseeId: number;
 }
 
 export function sendFriendRequestFactory({
@@ -26,15 +26,15 @@ export function sendFriendRequestFactory({
 	return async function sendFriendRequest(
 		params: SendFriendRequestParams,
 	): Promise<FriendRequest> {
-		const { requesterId, targetUserId } = params;
+		const { requesterId, addresseeId } = params;
 
-		if (requesterId === targetUserId) {
+		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
 		const blocked = await queriesRepository.findBlockedRelationship(
 			requesterId,
-			targetUserId,
+			addresseeId,
 		);
 		if (blocked) {
 			throw new FriendRequestBlockedError();
@@ -42,20 +42,20 @@ export function sendFriendRequestFactory({
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
-			user2Id: targetUserId,
+			user2Id: addresseeId,
 		});
 		if (friendship) {
 			throw new FriendshipAlreadyExistsError();
 		}
 
 		const existingIncomingRequest = await queriesRepository.findFriendRequest({
-			requesterId: targetUserId,
+			requesterId: addresseeId,
 			addresseeId: requesterId,
 		});
 		if (existingIncomingRequest) {
 			const accepted = await commandsRepository.acceptFriendRequest({
-				fromUserId: targetUserId,
-				toUserId: requesterId,
+				requesterId: addresseeId,
+				addresseeId: requesterId,
 			});
 			if (!accepted) throw new UserNotFoundError();
 			return accepted;
@@ -63,15 +63,15 @@ export function sendFriendRequestFactory({
 
 		const existingRequest = await queriesRepository.findFriendRequest({
 			requesterId,
-			addresseeId: targetUserId,
+			addresseeId,
 		});
 		if (existingRequest) {
 			throw new RequestAlreadySentError();
 		}
 
 		const result = await commandsRepository.createFriendRequest({
-			fromUserId: requesterId,
-			toUserId: targetUserId,
+			requesterId,
+			addresseeId,
 		});
 
 		if (!result) {

@@ -29,9 +29,9 @@ describe('deleteFriend', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when fromUserId equals toUserId', async () => {
+	it('throws CannotSendRequestToYourselfError when requesterId equals addresseeId', async () => {
 		await expect(
-			deleteFriend({ fromUserId: 1, toUserId: 1 }),
+			deleteFriend({ requesterId: 1, addresseeId: 1 }),
 		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
 	});
 
@@ -39,7 +39,7 @@ describe('deleteFriend', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 
 		await expect(
-			deleteFriend({ fromUserId: 1, toUserId: 2 }),
+			deleteFriend({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendshipNotFoundError);
 
 		expect(queriesRepository.findFriendshipBetweenUsers).toHaveBeenCalledWith({
@@ -53,7 +53,7 @@ describe('deleteFriend', () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
 		await expect(
-			deleteFriend({ fromUserId: 1, toUserId: 2 }),
+			deleteFriend({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendRequestBlockedError);
 
 		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
@@ -63,18 +63,18 @@ describe('deleteFriend', () => {
 	});
 
 	it('deletes friendship and returns result', async () => {
-		const resultValue = { fromUserId: 1, toUserId: 2 };
+		const resultValue = { requesterId: 1, addresseeId: 2 };
 
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
 		commandsRepository.deleteFriend.mockResolvedValue(resultValue);
 
-		const result = await deleteFriend({ fromUserId: 1, toUserId: 2 });
+		const result = await deleteFriend({ requesterId: 1, addresseeId: 2 });
 
 		expect(result).toEqual(resultValue);
 		expect(commandsRepository.deleteFriend).toHaveBeenCalledWith({
-			fromUserId: 1,
-			toUserId: 2,
+			requesterId: 1,
+			addresseeId: 2,
 		});
 	});
 });

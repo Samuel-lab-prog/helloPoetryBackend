@@ -154,8 +154,8 @@ model Poem {
   content       String
   isCommentable Boolean @default(true)
 
-  toUserId Int?
-  toUser   User? @relation("PoemToUserDedications", fields: [toUserId], references: [id])
+  addresseeId Int?
+  toUser   User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
 
   toPoemId    Int?
   toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])

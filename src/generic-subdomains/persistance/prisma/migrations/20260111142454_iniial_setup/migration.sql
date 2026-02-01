@@ -88,7 +88,7 @@ CREATE TABLE "Poem" (
     "excerpt" TEXT,
     "content" TEXT NOT NULL,
     "isCommentable" BOOLEAN NOT NULL DEFAULT true,
-    "toUserId" INTEGER,
+    "addresseeId" INTEGER,
     "toPoemId" INTEGER,
     "status" "poemStatus" NOT NULL DEFAULT 'published',
     "visibility" "poemVisibility" NOT NULL DEFAULT 'public',
@@ -178,7 +178,7 @@ ALTER TABLE "PoemLike" ADD CONSTRAINT "PoemLike_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "PoemLike" ADD CONSTRAINT "PoemLike_PoemId_fkey" FOREIGN KEY ("PoemId") REFERENCES "Poem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Poem" ADD CONSTRAINT "Poem_toUserId_fkey" FOREIGN KEY ("toUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Poem" ADD CONSTRAINT "Poem_toUserId_fkey" FOREIGN KEY ("addresseeId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Poem" ADD CONSTRAINT "Poem_toPoemId_fkey" FOREIGN KEY ("toPoemId") REFERENCES "Poem"("id") ON DELETE SET NULL ON UPDATE CASCADE;

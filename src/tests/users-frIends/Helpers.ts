@@ -68,9 +68,9 @@ export async function loginUser(user: TestUser): Promise<TestUser> {
 /**
  * Send a friend request from one user to another
  */
-export async function sendFriendRequest(from: TestUser, toUserId: number) {
+export async function sendFriendRequest(from: TestUser, addresseeId: number) {
 	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/${toUserId}`, {
+		jsonRequest(`${PREFIX}/friends/${addresseeId}`, {
 			method: 'POST',
 			headers: { Cookie: from.cookie },
 		}),
@@ -81,9 +81,9 @@ export async function sendFriendRequest(from: TestUser, toUserId: number) {
 /**
  * Accept a friend request
  */
-export async function acceptFriendRequest(to: TestUser, fromUserId: number) {
+export async function acceptFriendRequest(to: TestUser, requesterId: number) {
 	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/accept/${fromUserId}`, {
+		jsonRequest(`${PREFIX}/friends/accept/${requesterId}`, {
 			method: 'PATCH',
 			headers: { Cookie: to.cookie },
 		}),
@@ -94,9 +94,9 @@ export async function acceptFriendRequest(to: TestUser, fromUserId: number) {
 /**
  * Reject a friend request
  */
-export async function rejectFriendRequest(to: TestUser, fromUserId: number) {
+export async function rejectFriendRequest(to: TestUser, requesterId: number) {
 	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/reject/${fromUserId}`, {
+		jsonRequest(`${PREFIX}/friends/reject/${requesterId}`, {
 			method: 'PATCH',
 			headers: { Cookie: to.cookie },
 		}),
@@ -130,9 +130,9 @@ export async function blockUser(by: TestUser, targetUserId: number) {
 /**
  * Cancel a sent friend request
  */
-export async function cancelFriendRequest(from: TestUser, toUserId: number) {
+export async function cancelFriendRequest(from: TestUser, addresseeId: number) {
 	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/cancel/${toUserId}`, {
+		jsonRequest(`${PREFIX}/friends/cancel/${addresseeId}`, {
 			method: 'DELETE',
 			headers: { Cookie: from.cookie },
 		}),

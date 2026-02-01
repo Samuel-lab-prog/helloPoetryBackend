@@ -29,9 +29,9 @@ describe('blockFriendRequest', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when fromUserId equals toUserId', async () => {
+	it('throws CannotSendRequestToYourselfError when requesterId equals addresseeId', async () => {
 		await expect(
-			blockFriendRequest({ fromUserId: 1, toUserId: 1 }),
+			blockFriendRequest({ requesterId: 1, addresseeId: 1 }),
 		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
 	});
 
@@ -39,7 +39,7 @@ describe('blockFriendRequest', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 
 		await expect(
-			blockFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			blockFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
 
 		expect(queriesRepository.findFriendshipBetweenUsers).toHaveBeenCalledWith({
@@ -53,7 +53,7 @@ describe('blockFriendRequest', () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
 		await expect(
-			blockFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			blockFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendRequestBlockedError);
 
 		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
@@ -70,14 +70,14 @@ describe('blockFriendRequest', () => {
 		commandsRepository.blockFriendRequest.mockResolvedValue(blockedRequest);
 
 		const result = await blockFriendRequest({
-			fromUserId: 1,
-			toUserId: 2,
+			requesterId: 1,
+			addresseeId: 2,
 		});
 
 		expect(result).toEqual(blockedRequest);
 		expect(commandsRepository.blockFriendRequest).toHaveBeenCalledWith({
-			fromUserId: 1,
-			toUserId: 2,
+			requesterId: 1,
+			addresseeId: 2,
 		});
 	});
 });

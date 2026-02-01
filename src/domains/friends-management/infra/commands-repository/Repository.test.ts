@@ -53,8 +53,8 @@ describe('CommandsRepository (Prisma)', () => {
 			const users = await prisma.user.findMany();
 
 			const result = await createFriendRequest({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			const record = await prisma.friendshipRequest.findFirst({
@@ -65,8 +65,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			expect(record).toMatchObject({
@@ -88,8 +88,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			const result = await acceptFriendRequest({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			const request = await prisma.friendshipRequest.findFirst({
@@ -109,8 +109,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			expect(request).toBe(null);
@@ -130,8 +130,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			const result = await rejectFriendRequest({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			const request = await prisma.friendshipRequest.findFirst({
@@ -142,8 +142,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			expect(request).toBe(null);
@@ -169,8 +169,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			const result = await blockFriendRequest({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			const request = await prisma.friendshipRequest.findFirst();
@@ -183,8 +183,8 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			expect(request).toBe(null);
@@ -208,15 +208,15 @@ describe('CommandsRepository (Prisma)', () => {
 			});
 
 			const result = await deleteFriend({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			const friendship = await prisma.friendship.findFirst();
 
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 
 			expect(friendship).toBe(null);
@@ -233,8 +233,8 @@ describe('CommandsRepository (Prisma)', () => {
 				},
 			});
 			const result = await cancelFriendRequest({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 			const request = await prisma.friendshipRequest.findFirst({
 				where: {
@@ -243,8 +243,8 @@ describe('CommandsRepository (Prisma)', () => {
 				},
 			});
 			expect(result).toEqual({
-				fromUserId: users[0]!.id,
-				toUserId: users[1]!.id,
+				requesterId: users[0]!.id,
+				addresseeId: users[1]!.id,
 			});
 			expect(request).toBe(null);
 		});

@@ -15,8 +15,8 @@ interface Dependencies {
 }
 
 interface RejectFriendRequestParams {
-	fromUserId: number;
-	toUserId: number;
+	requesterId: number;
+	addresseeId: number;
 }
 
 export function rejectFriendRequestFactory({
@@ -26,31 +26,31 @@ export function rejectFriendRequestFactory({
 	return async function rejectFriendRequest(
 		params: RejectFriendRequestParams,
 	): Promise<FriendRequest> {
-		const { fromUserId, toUserId } = params;
+		const { requesterId, addresseeId } = params;
 
-		if (fromUserId === toUserId) {
+		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
 		}
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: fromUserId,
-			user2Id: toUserId,
+			user1Id: requesterId,
+			user2Id: addresseeId,
 		});
 		if (friendship) {
 			throw new FriendshipAlreadyExistsError();
 		}
 
 		const request = await queriesRepository.findFriendRequest({
-			requesterId: fromUserId,
-			addresseeId: toUserId,
+			requesterId: requesterId,
+			addresseeId: addresseeId,
 		});
 		if (!request) {
 			throw new RequestNotFoundError();
 		}
 
 		const blocked = await queriesRepository.findBlockedRelationship(
-			fromUserId,
-			toUserId,
+			requesterId,
+			addresseeId,
 		);
 		if (blocked) {
 			throw new FriendRequestBlockedError();
@@ -58,8 +58,8 @@ export function rejectFriendRequestFactory({
 
 		// 5️⃣ Rejeita (remove) o FriendRequest
 		const result = await commandsRepository.rejectFriendRequest({
-			fromUserId,
-			toUserId,
+			requesterId,
+			addresseeId,
 		});
 		if (!result) {
 			throw new UserNotFoundError();

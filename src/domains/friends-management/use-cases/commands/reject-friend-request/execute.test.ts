@@ -32,9 +32,9 @@ describe('rejectFriendRequest', () => {
 		});
 	});
 
-	it('throws CannotSendRequestToYourselfError when fromUserId equals toUserId', async () => {
+	it('throws CannotSendRequestToYourselfError when requesterId equals addresseeId', async () => {
 		await expect(
-			rejectFriendRequest({ fromUserId: 1, toUserId: 1 }),
+			rejectFriendRequest({ requesterId: 1, addresseeId: 1 }),
 		).rejects.toBeInstanceOf(CannotSendRequestToYourselfError);
 	});
 
@@ -42,7 +42,7 @@ describe('rejectFriendRequest', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 
 		await expect(
-			rejectFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
 
 		expect(queriesRepository.findFriendshipBetweenUsers).toHaveBeenCalledWith({
@@ -56,7 +56,7 @@ describe('rejectFriendRequest', () => {
 		queriesRepository.findFriendRequest.mockResolvedValue(null);
 
 		await expect(
-			rejectFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(RequestNotFoundError);
 
 		expect(queriesRepository.findFriendRequest).toHaveBeenCalledWith({
@@ -71,7 +71,7 @@ describe('rejectFriendRequest', () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(true);
 
 		await expect(
-			rejectFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(FriendRequestBlockedError);
 
 		expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith(
@@ -89,14 +89,14 @@ describe('rejectFriendRequest', () => {
 		commandsRepository.rejectFriendRequest.mockResolvedValue(removedRequest);
 
 		const result = await rejectFriendRequest({
-			fromUserId: 1,
-			toUserId: 2,
+			requesterId: 1,
+			addresseeId: 2,
 		});
 
 		expect(result).toEqual(removedRequest);
 		expect(commandsRepository.rejectFriendRequest).toHaveBeenCalledWith({
-			fromUserId: 1,
-			toUserId: 2,
+			requesterId: 1,
+			addresseeId: 2,
 		});
 	});
 
@@ -107,7 +107,7 @@ describe('rejectFriendRequest', () => {
 		commandsRepository.rejectFriendRequest.mockResolvedValue(null);
 
 		await expect(
-			rejectFriendRequest({ fromUserId: 1, toUserId: 2 }),
+			rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(UserNotFoundError);
 	});
 });

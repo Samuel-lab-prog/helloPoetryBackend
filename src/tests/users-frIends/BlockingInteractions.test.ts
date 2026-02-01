@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterAll, expect } from 'bun:test';
+import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 import {
 	createUser,
@@ -37,15 +37,11 @@ beforeEach(async () => {
 	user2 = await loginUser(user2);
 });
 
-afterAll(async () => {
-	await clearDatabase();
-});
-
 describe('INTEGRATION - Block Users', () => {
 	it('User1 blocks User2', async () => {
 		const blocked = (await blockUser(user1, user2.id)) as FriendRequest;
-		expect(blocked.fromUserId).toBe(user1.id);
-		expect(blocked.toUserId).toBe(user2.id);
+		expect(blocked.requesterId).toBe(user1.id);
+		expect(blocked.addresseeId).toBe(user2.id);
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});

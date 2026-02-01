@@ -18,7 +18,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			async ({ auth, params, set }) => {
 				const result = await services.sendFriendRequest({
 					requesterId: auth.clientId,
-					targetUserId: params.id,
+					addresseeId: params.id,
 				});
 				set.status = 201;
 				return result;
@@ -44,8 +44,8 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/accept/:id',
 			({ auth, params }) => {
 				return services.acceptFriendRequest({
-					fromUserId: params.id,
-					toUserId: auth.clientId,
+					requesterId: params.id,
+					addresseeId: auth.clientId,
 				});
 			},
 			{
@@ -69,8 +69,8 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/reject/:id',
 			({ auth, params }) => {
 				return services.rejectFriendRequest({
-					fromUserId: params.id,
-					toUserId: auth.clientId,
+					requesterId: params.id,
+					addresseeId: auth.clientId,
 				});
 			},
 			{
@@ -94,8 +94,8 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/block/:id',
 			({ auth, params }) => {
 				return services.blockFriendRequest({
-					fromUserId: auth.clientId,
-					toUserId: params.id,
+					requesterId: auth.clientId,
+					addresseeId: params.id,
 				});
 			},
 			{
@@ -119,15 +119,15 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/delete/:id',
 			({ auth, params }) => {
 				return services.deleteFriend({
-					fromUserId: auth.clientId,
-					toUserId: params.id,
+					requesterId: auth.clientId,
+					addresseeId: params.id,
 				});
 			},
 			{
 				response: {
 					200: t.Object({
-						fromUserId: idSchema,
-						toUserId: idSchema,
+						requesterId: idSchema,
+						addresseeId: idSchema,
 					}),
 					404: appErrorSchema,
 				},
@@ -147,8 +147,8 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/cancel/:id',
 			({ auth, params }) => {
 				return services.cancelFriendRequest({
-					fromUserId: auth.clientId,
-					toUserId: params.id,
+					requesterId: auth.clientId,
+					addresseeId: params.id,
 				});
 			},
 			{
@@ -171,8 +171,8 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			'/unblock/:id',
 			({ auth, params }) => {
 				return services.unblockFriendRequest({
-					fromUserId: auth.clientId,
-					toUserId: params.id,
+					requesterId: auth.clientId,
+					addresseeId: params.id,
 				});
 			},
 			{

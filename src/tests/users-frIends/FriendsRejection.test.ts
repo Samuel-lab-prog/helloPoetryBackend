@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterAll, expect } from 'bun:test';
+import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 import {
 	createUser,
@@ -37,15 +37,11 @@ beforeEach(async () => {
 	user2 = await loginUser(user2);
 });
 
-afterAll(async () => {
-	await clearDatabase();
-});
-
 describe('INTEGRATION - Friend Requests Rejection', () => {
 	it('User1 sends a friend request to User2', async () => {
 		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
-		expect(request.fromUserId).toBe(user1.id);
-		expect(request.toUserId).toBe(user2.id);
+		expect(request.requesterId).toBe(user1.id);
+		expect(request.addresseeId).toBe(user2.id);
 	});
 
 	it('User2 rejects the friend request from User1', async () => {
@@ -54,8 +50,8 @@ describe('INTEGRATION - Friend Requests Rejection', () => {
 			user2,
 			user1.id,
 		)) as FriendRequest;
-		expect(rejected.fromUserId).toBe(user1.id);
-		expect(rejected.toUserId).toBe(user2.id);
+		expect(rejected.requesterId).toBe(user1.id);
+		expect(rejected.addresseeId).toBe(user2.id);
 	});
 
 	it('User2 cannot reject the same friend request again', async () => {
