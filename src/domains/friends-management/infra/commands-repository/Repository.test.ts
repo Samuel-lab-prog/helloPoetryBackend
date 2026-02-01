@@ -5,8 +5,8 @@ import {
 	createFriendRequest,
 	acceptFriendRequest,
 	rejectFriendRequest,
-	blockFriendRequest,
 	cancelFriendRequest,
+	blockUser,
 } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
@@ -145,8 +145,8 @@ describe('Repository - Friends Management', () => {
 		});
 	});
 
-	describe('blockFriendRequest', () => {
-		it('removes requests, removes friendships, creates block, and returns params', async () => {
+	describe('blockUser', () => {
+		it('Should remove requests, remove friendships, create block, and return params', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendshipRequest.create({
@@ -163,7 +163,7 @@ describe('Repository - Friends Management', () => {
 				},
 			});
 
-			const result = await blockFriendRequest({
+			const result = await blockUser({
 				requesterId: users[0]!.id,
 				addresseeId: users[1]!.id,
 			});

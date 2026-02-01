@@ -8,17 +8,17 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-interface BlockFriendRequestParams {
+interface BlockUserParams {
 	requesterId: number;
 	addresseeId: number;
 }
 
-export function blockFriendRequestFactory({
+export function blockUserFactory({
 	commandsRepository,
 	queriesRepository,
 }: Dependencies) {
-	return async function blockFriendRequest(
-		params: BlockFriendRequestParams,
+	return async function blockUser(
+		params: BlockUserParams,
 	): Promise<FriendRequest> {
 		const { requesterId, addresseeId } = params;
 
@@ -32,10 +32,9 @@ export function blockFriendRequestFactory({
 		});
 
 		if (alreadyBlocked) {
-			throw new UserBlockedError(); // 403
+			throw new UserBlockedError(); 
 		}
 
-		// Remove friendship if exists
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
@@ -47,20 +46,18 @@ export function blockFriendRequestFactory({
 				user2Id: addresseeId,
 			});
 		}
-
-		// Remove pending request requester -> addressee
+		
 		await commandsRepository.deleteFriendRequestIfExists({
 			requesterId,
 			addresseeId,
 		});
 
-		// Remove pending request addressee -> requester
 		await commandsRepository.deleteFriendRequestIfExists({
 			requesterId: addresseeId,
 			addresseeId: requesterId,
 		});
 
-		return commandsRepository.blockFriendRequest({
+		return commandsRepository.blockUser({
 			requesterId,
 			addresseeId,
 		});

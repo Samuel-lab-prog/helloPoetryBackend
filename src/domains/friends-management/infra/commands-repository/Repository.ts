@@ -7,7 +7,7 @@ export const commandsRepository: CommandsRepository = {
 	createFriendRequest,
 	acceptFriendRequest,
 	rejectFriendRequest,
-	blockFriendRequest,
+	blockUser,
 	deleteFriend,
 	deleteFriendRequestIfExists,
 	cancelFriendRequest,
@@ -84,7 +84,7 @@ export function rejectFriendRequest(params: {
 /**
  * BLOCK USER (also removes friendship and requests)
  */
-export function blockFriendRequest(params: {
+export function blockUser(params: {
 	requesterId: number;
 	addresseeId: number;
 }): Promise<FriendRequest> {
