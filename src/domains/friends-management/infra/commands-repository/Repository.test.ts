@@ -192,7 +192,7 @@ describe('Repository - Friends Management', () => {
 	});
 
 	describe('cancelFriendRequest', () => {
-		it('deletes friend request and returns params', async () => {
+		it('Should delete the friend request and return params', async () => {
 			const users = await prisma.user.findMany();
 			await prisma.friendshipRequest.create({
 				data: {

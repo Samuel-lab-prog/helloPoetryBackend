@@ -3,9 +3,7 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	SelfReferenceError,
-	FriendshipAlreadyExistsError,
 	RequestNotFoundError,
-	UserBlockedError,
 } from '../Errors';
 
 interface Dependencies {
@@ -31,21 +29,11 @@ export function cancelFriendRequestFactory({
 			throw new SelfReferenceError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship({
-			userId1: requesterId,
-			userId2: addresseeId,
-		});
-		if (blocked) {
-			throw new UserBlockedError();
-		}
+		// There's no need to check for blocking relationships in both directions
+		// since if either user has blocked the other, the request cannot exist.
 
-		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: requesterId,
-			user2Id: addresseeId,
-		});
-		if (friendship) {
-			throw new FriendshipAlreadyExistsError();
-		}
+		// We also don't need to check for existing friendships, since if they were friends,
+		// there wouldn't be a pending request to cancel.
 
 		const request = await queriesRepository.findFriendRequest({
 			requesterId,
