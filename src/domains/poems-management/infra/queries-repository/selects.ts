@@ -88,7 +88,9 @@ export const fullPoemSelect = {
 			friendshipsTo: { select: { userAId: true } },
 		},
 	},
-	addresseedUser: { select: { id: true, name: true, nickname: true, avatarUrl: true } },
+	addresseedUser: {
+		select: { id: true, name: true, nickname: true, avatarUrl: true },
+	},
 	toPoem: { select: { id: true, title: true, slug: true, authorId: true } },
 	tags: { select: { id: true, name: true } },
 	_count: { select: { poemLikes: true, comments: true } },

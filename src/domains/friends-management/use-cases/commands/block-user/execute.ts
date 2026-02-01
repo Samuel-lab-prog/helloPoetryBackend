@@ -32,7 +32,7 @@ export function blockUserFactory({
 		});
 
 		if (alreadyBlocked) {
-			throw new UserBlockedError(); 
+			throw new UserBlockedError();
 		}
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
@@ -46,7 +46,7 @@ export function blockUserFactory({
 				user2Id: addresseeId,
 			});
 		}
-		
+
 		await commandsRepository.deleteFriendRequestIfExists({
 			requesterId,
 			addresseeId,

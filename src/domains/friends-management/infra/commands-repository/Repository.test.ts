@@ -123,7 +123,7 @@ describe('Repository - Friends Management', () => {
 					userBId: users[1]!.id,
 				},
 			});
-			 await deleteFriend({
+			await deleteFriend({
 				user1Id: users[0]!.id,
 				user2Id: users[1]!.id,
 			});
@@ -140,7 +140,7 @@ describe('Repository - Friends Management', () => {
 	});
 
 	describe('rejectFriendRequest', () => {
-		it('deletes friend request and returns params', async () => {
+		it('Should delete the friend request and return params', async () => {
 			const users = await prisma.user.findMany();
 
 			await prisma.friendshipRequest.create({

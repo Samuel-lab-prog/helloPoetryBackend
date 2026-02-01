@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { rejectFriendRequestFactory } from './execute';
-import {
-	SelfReferenceError,
-	RequestNotFoundError,
-} from '../Errors';
+import { SelfReferenceError, RequestNotFoundError } from '../Errors';
 
 describe('USE-CASE - Reject Friend Request', () => {
 	let commandsRepository: any;
@@ -49,6 +46,6 @@ describe('USE-CASE - Reject Friend Request', () => {
 
 		expect(
 			rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).resolves.toEqual(undefined)
+		).resolves.toEqual(undefined);
 	});
 });

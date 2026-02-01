@@ -109,8 +109,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 				status: 200,
 				detail: {
 					summary: 'Block User',
-					description:
-						'Blocks a user for the authenticated user.',
+					description: 'Blocks a user for the authenticated user.',
 					tags: ['Friends Management'],
 				},
 			},

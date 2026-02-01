@@ -1,9 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import {
-	SelfReferenceError,
-	FriendshipNotFoundError,
-} from '../Errors';
+import { SelfReferenceError, FriendshipNotFoundError } from '../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

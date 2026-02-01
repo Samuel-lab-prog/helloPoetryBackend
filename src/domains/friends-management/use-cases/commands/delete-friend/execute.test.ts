@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { deleteFriendFactory } from './execute';
-import {
-	SelfReferenceError,
-	FriendshipNotFoundError,
-} from '../Errors';
+import { SelfReferenceError, FriendshipNotFoundError } from '../Errors';
 
 describe('USE-CASE - Delete Friend', () => {
 	let commandsRepository: any;
@@ -26,7 +23,7 @@ describe('USE-CASE - Delete Friend', () => {
 	});
 
 	it('Does not allow self reference', () => {
-		 expect(
+		expect(
 			deleteFriend({ requesterId: 1, addresseeId: 1 }),
 		).rejects.toBeInstanceOf(SelfReferenceError);
 	});
@@ -44,11 +41,12 @@ describe('USE-CASE - Delete Friend', () => {
 		});
 	});
 
-	it('Should delete friend when no errors occur',  () => {
+	it('Should delete friend when no errors occur', () => {
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
 
-		expect(
-			deleteFriend({ requesterId: 1, addresseeId: 2 }),
-		).resolves.toEqual({ requesterId: 1, addresseeId: 2 });
+		expect(deleteFriend({ requesterId: 1, addresseeId: 2 })).resolves.toEqual({
+			requesterId: 1,
+			addresseeId: 2,
+		});
 	});
 });
