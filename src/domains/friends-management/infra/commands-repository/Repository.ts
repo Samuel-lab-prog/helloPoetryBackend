@@ -167,11 +167,11 @@ export function deleteFriend(params: {
 	const { user1Id, user2Id } = params;
 	return withPrismaErrorHandling(async () => {
 		await prisma.$transaction([
-			prisma.friendshipRequest.deleteMany({
+			prisma.friendship.deleteMany({
 				where: {
 					OR: [
-						{ requesterId: user1Id, addresseeId: user2Id },
-						{ requesterId: user2Id, addresseeId: user1Id },
+						{ userAId: user1Id, userBId: user2Id },
+						{ userAId: user2Id, userBId: user1Id },
 					],
 				},
 			}),

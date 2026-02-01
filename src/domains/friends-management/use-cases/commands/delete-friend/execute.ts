@@ -3,7 +3,6 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import {
 	SelfReferenceError,
 	FriendshipNotFoundError,
-	UserBlockedError,
 } from '../Errors';
 
 interface Dependencies {
@@ -33,21 +32,19 @@ export function deleteFriendFactory({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
+
 		if (!friendship) {
 			throw new FriendshipNotFoundError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship({
-			userId1: requesterId,
-			userId2: addresseeId,
-		});
-		if (blocked) {
-			throw new UserBlockedError();
-		}
+		// No need for check if has a blocking relationship in both directions,
+		// since if either user has blocked the other, they cannot be friends.
+
 		await commandsRepository.deleteFriend({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
+
 		return { requesterId, addresseeId };
 	};
 }

@@ -7,6 +7,7 @@ import {
 	rejectFriendRequest,
 	cancelFriendRequest,
 	blockUser,
+	deleteFriend,
 } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
@@ -110,6 +111,31 @@ describe('Repository - Friends Management', () => {
 
 			expect(request).toBe(null);
 			expect(friendship).not.toBe(null);
+		});
+	});
+
+	describe('deleteFriend', () => {
+		it('Should delete friendship and return params', async () => {
+			const users = await prisma.user.findMany();
+			await prisma.friendship.create({
+				data: {
+					userAId: users[0]!.id,
+					userBId: users[1]!.id,
+				},
+			});
+			 await deleteFriend({
+				user1Id: users[0]!.id,
+				user2Id: users[1]!.id,
+			});
+			const friendship = await prisma.friendship.findFirst({
+				where: {
+					OR: [
+						{ userAId: users[0]!.id, userBId: users[1]!.id },
+						{ userAId: users[1]!.id, userBId: users[0]!.id },
+					],
+				},
+			});
+			expect(friendship).toBe(null);
 		});
 	});
 
