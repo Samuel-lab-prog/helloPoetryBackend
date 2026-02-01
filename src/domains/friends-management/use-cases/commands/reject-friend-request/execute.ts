@@ -4,8 +4,6 @@ import type { FriendRequest } from '../models/Index';
 import {
 	SelfReferenceError,
 	RequestNotFoundError,
-	UserBlockedError,
-	FriendshipAlreadyExistsError,
 } from '../Errors';
 
 interface Dependencies {
@@ -31,26 +29,17 @@ export function rejectFriendRequestFactory({
 			throw new SelfReferenceError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship({
-			userId1: requesterId,
-			userId2: addresseeId,
-		});
-		if (blocked) {
-			throw new UserBlockedError();
-		}
+		// No need to check if blocking relation exists here, since blocking a user
+		// automatically removes any pending friend requests between the users
 
-		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: requesterId,
-			user2Id: addresseeId,
-		});
-		if (friendship) {
-			throw new FriendshipAlreadyExistsError();
-		}
+		// We also do not need to check for existing friendship here,
+		// since a friend request cannot exist if a friendship already exists
 
 		const request = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
+
 		if (!request) {
 			throw new RequestNotFoundError();
 		}

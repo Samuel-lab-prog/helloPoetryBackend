@@ -32,7 +32,6 @@ describe('USE-CASE - Cancel Friend Request', () => {
     ).rejects.toBeInstanceOf(SelfReferenceError);
   });
 
-
   it('Does not allow canceling if the request does not even exist', () => {
     queriesRepository.findFriendRequest.mockResolvedValue(null);
 
@@ -42,5 +41,12 @@ describe('USE-CASE - Cancel Friend Request', () => {
 
   });
 
-
+  it('Should cancel the friend request and return the result when no errors occur', () => {
+    const cancelledRequest = { id: 10, requesterId: 1, addresseeId: 2 };
+    queriesRepository.findFriendRequest.mockResolvedValue(cancelledRequest);
+    commandsRepository.cancelFriendRequest.mockResolvedValue(cancelledRequest);
+    expect(
+      cancelFriendRequest({ requesterId: 1, addresseeId: 2 }),
+    ).resolves.toEqual(cancelledRequest);
+  });
 });
