@@ -11,6 +11,7 @@ const ALLOWED_ROOT_NAMESPACES = new Set([
 	'domains',
 	'generic-subdomains',
 	'shared-kernel',
+	'tests',
 ]);
 
 function extractRootNamespace(path: string): string | null {
