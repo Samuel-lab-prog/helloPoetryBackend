@@ -2,54 +2,53 @@ import Elysia from 'elysia';
 import { log } from '../logger';
 import { SetupPlugin } from './setupPlugin';
 
+/* ---------------------------------- */
+/* Logger Plugin */
+/* ---------------------------------- */
+
 export const LoggerPlugin = new Elysia()
 	.use(SetupPlugin)
 
 	.onStart(() => {
-		log.info(`🚀 Server started at http://localhost:5000/api/v1/docs`);
+		log.info('🚀 Server started at http://localhost:5000/api/v1/docs');
 	})
 
 	.onRequest(({ store }) => {
-		const reqId = crypto.randomUUID();
-		store.reqId = reqId;
+		store.reqId = crypto.randomUUID();
 		store.reqInitiatedAt = performance.now();
 	})
 
 	.onAfterResponse(
 		{ as: 'scoped' },
 		({ store, auth, request, set, responseValue }) => {
-			if (request.url.includes('/docs')) {
-				return;
-			}
-			const authMs = store.authTiming || 0;
+			if (request.url.includes('/docs')) return;
+
+			const url = new URL(request.url);
+			const path = url.pathname;
+			const segments = path.split('/').filter(Boolean);
+
 			const totalMs = Math.round(performance.now() - store.reqInitiatedAt);
 
-			const reqId = store.reqId || 'unknown';
-			const method = request.method;
-			const path = request.url.substring(request.url.indexOf('/', 8));
-			const statusCode = set.status || 200;
-			const sizeBytes = getResponseSize(responseValue);
-			const contentType = set.headers['content-type'] || 'unknown';
-			const isAuthenticated = !!auth.clientId || false;
-			const userId = auth.clientId || 'guest';
-			const role = auth.clientRole || 'guest';
+			const authMs = store.authTiming || 0;
 
 			log.info(
 				{
 					request: {
-						reqId,
-						method,
+						reqId: store.reqId ?? 'unknown',
+						method: request.method,
 						path,
+						segments,
+						targetId: extractNumericSegment(segments),
 					},
 					response: {
-						statusCode,
-						sizeBytes,
-						contentType,
+						statusCode: set.status ?? 200,
+						sizeBytes: getResponseSize(responseValue),
+						contentType: set.headers['content-type'] ?? 'unknown',
 					},
 					auth: {
-						isAuthenticated,
-						userId,
-						role,
+						isAuthenticated: !!auth.clientId,
+						userId: auth.clientId ?? 'guest',
+						role: auth.clientRole ?? 'guest',
 					},
 					timings: {
 						totalMs,
@@ -58,12 +57,25 @@ export const LoggerPlugin = new Elysia()
 				},
 				'Incoming request completed',
 			);
-			store.authTiming = 0; // reset for next request
+
+			store.authTiming = 0;
 		},
 	);
 
+/* ---------------------------------- */
+/* Helpers */
+/* ---------------------------------- */
+
+function extractNumericSegment(segments: string[]): number | undefined {
+	const candidate = segments.at(-1);
+	if (!candidate) return undefined;
+
+	const parsed = Number(candidate);
+	return Number.isInteger(parsed) ? parsed : undefined;
+}
+
 function getResponseSize(response: unknown): number {
-	if (response === null) return 0;
+	if (response === null || response === undefined) return 0;
 
 	if (typeof response === 'string') {
 		return Buffer.byteLength(response);
@@ -79,8 +91,7 @@ function getResponseSize(response: unknown): number {
 	}
 
 	try {
-		const json = JSON.stringify(response);
-		return Buffer.byteLength(json);
+		return Buffer.byteLength(JSON.stringify(response));
 	} catch {
 		return 0;
 	}

@@ -8,7 +8,7 @@ export class UserNotFoundError extends DomainError {
 
 export class CannotSendRequestToYourselfError extends DomainError {
 	public constructor() {
-		super('VALIDATION_FAILED', 'You cannot send a friend request to yourself.');
+		super('VALIDATION', 'You cannot send a friend request to yourself.');
 	}
 }
 
@@ -30,7 +30,7 @@ export class RequestAlreadySentError extends DomainError {
 export class FriendRequestBlockedError extends DomainError {
 	public constructor() {
 		super(
-			'FORBIDDEN_USER_OPERATION',
+			'FORBIDDEN',
 			'Cannot send a friend request due to a blocking relationship.',
 		);
 	}

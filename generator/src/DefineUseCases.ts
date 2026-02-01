@@ -58,7 +58,7 @@ type FunctionDefinition<DataModels> = {
 
 type ErrorType =
 	| 'NOT_FOUND'
-	| 'VALIDATION_FAILED'
+	| 'VALIDATION'
 	| 'UNAUTHORIZED'
 	| 'CONFLICT'
 	| 'INTERNAL_SERVER_ERROR'

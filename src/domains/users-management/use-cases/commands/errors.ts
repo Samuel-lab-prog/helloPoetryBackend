@@ -2,7 +2,7 @@ import { DomainError } from '@DomainError';
 
 export class UserCreationError extends DomainError {
 	constructor(message: string) {
-		super('OPERATION_FAILED', message);
+		super('INTERNAL_SERVER_ERROR', message);
 	}
 }
 
@@ -20,7 +20,7 @@ export class UserCreationConflictError extends DomainError {
 
 export class UserUpdateError extends DomainError {
 	constructor(message: string) {
-		super('OPERATION_FAILED', message);
+		super('INTERNAL_SERVER_ERROR', message);
 	}
 }
 
@@ -32,9 +32,6 @@ export class UserUpdateConflictError extends DomainError {
 
 export class CrossUserUpdateError extends DomainError {
 	constructor() {
-		super(
-			'FORBIDDEN_USER_OPERATION',
-			'Error: Cannot update data of another user',
-		);
+		super('FORBIDDEN', 'Error: Cannot update data of another user');
 	}
 }

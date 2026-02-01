@@ -2,13 +2,13 @@ import { DomainError } from '@DomainError';
 
 export class InvalidCredentialsError extends DomainError {
 	constructor() {
-		super('INVALID_CREDENTIALS', 'Unauthorized: Invalid email or password');
+		super('UNAUTHORIZED', 'Unauthorized: Invalid email or password');
 	}
 }
 
 export class InvalidTokenError extends DomainError {
 	constructor() {
-		super('INVALID_TOKEN', 'Unauthorized: Invalid or expired token');
+		super('BAD_REQUEST', 'Unauthorized: Invalid or expired token');
 	}
 }
 

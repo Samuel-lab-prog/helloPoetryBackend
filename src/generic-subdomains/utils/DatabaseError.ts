@@ -1,49 +1,41 @@
-const databaseErrors = {
-	NOT_FOUND: 'Database entity not found',
-	FORBIDDEN_USER_OPERATION: 'Invalid operation on database entity',
-	CONFLICT: 'Database entity conflict error',
-	UNKNOWN: 'Unknown database error occurred',
-};
+import type { AppErrorCode } from '@AppError';
 
 export class DatabaseError extends Error {
-	type: keyof typeof databaseErrors;
+	type: AppErrorCode;
 	override message: string;
 
-	constructor(type: keyof typeof databaseErrors, message: string) {
-		super(databaseErrors[type]);
+	constructor(type: AppErrorCode, message: string) {
+		super(message);
 		this.name = 'DatabaseError';
 		this.type = type;
-		this.message = message || databaseErrors[type];
+		this.message = message;
 	}
 }
 
 export class DatabaseNotFoundError extends DatabaseError {
 	constructor(message?: string) {
-		super('NOT_FOUND', message || databaseErrors.NOT_FOUND);
+		super('NOT_FOUND', message || 'Database entity not found');
 		this.name = 'DatabaseNotFoundError';
 	}
 }
 
 export class DatabaseForbiddenUserOperationError extends DatabaseError {
 	constructor(message?: string) {
-		super(
-			'FORBIDDEN_USER_OPERATION',
-			message || databaseErrors.FORBIDDEN_USER_OPERATION,
-		);
+		super('FORBIDDEN', message || 'Invalid operation on database entity');
 		this.name = 'DatabaseForbiddenUserOperationError';
 	}
 }
 
 export class DatabaseConflictError extends DatabaseError {
 	constructor(message?: string) {
-		super('CONFLICT', message || databaseErrors.CONFLICT);
+		super('CONFLICT', message || 'Database entity conflict error');
 		this.name = 'DatabaseConflictError';
 	}
 }
 
 export class DatabaseUnknownError extends DatabaseError {
 	constructor(message?: string) {
-		super('UNKNOWN', message || databaseErrors.UNKNOWN);
+		super('UNKNOWN', message || 'Unknown database error occurred');
 		this.name = 'DatabaseUnknownError';
 	}
 }

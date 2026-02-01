@@ -15,7 +15,7 @@ export class UserNotFoundError extends DomainError {
 export class CrossUserDataAccessError extends DomainError {
 	constructor() {
 		super(
-			'FORBIDDEN_USER_OPERATION',
+			'FORBIDDEN',
 			'Forbidden operation: Cannot access private user data of another user',
 		);
 	}

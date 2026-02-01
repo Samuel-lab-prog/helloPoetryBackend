@@ -7,7 +7,8 @@ export const cookieTokenSchema = t.Cookie(
 			error: () => {
 				throw new AppError({
 					statusCode: 401,
-					errorMessages: ['Authentication cookie is missing or invalid'],
+					message: 'Authentication cookie is missing or invalid',
+					code: 'UNAUTHORIZED',
 				});
 			},
 		}),
@@ -16,7 +17,8 @@ export const cookieTokenSchema = t.Cookie(
 		error: () => {
 			throw new AppError({
 				statusCode: 401,
-				errorMessages: ['Authentication cookie is missing or invalid'],
+				message: 'Authentication cookie is missing or invalid',
+				code: 'UNAUTHORIZED',
 			});
 		},
 	},

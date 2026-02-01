@@ -9,7 +9,7 @@ export class PoemNotFoundError extends DomainError {
 export class PoemAccessDeniedError extends DomainError {
 	constructor() {
 		super(
-			'FORBIDDEN_USER_OPERATION',
+			'FORBIDDEN',
 			'Forbidden operation: You do not have access to this poem',
 		);
 	}
@@ -17,10 +17,7 @@ export class PoemAccessDeniedError extends DomainError {
 
 export class PoemNotPublicError extends DomainError {
 	constructor() {
-		super(
-			'FORBIDDEN_USER_OPERATION',
-			'Forbidden operation: Poem is not public',
-		);
+		super('FORBIDDEN', 'Forbidden operation: Poem is not public');
 	}
 }
 

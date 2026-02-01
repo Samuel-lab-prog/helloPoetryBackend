@@ -1,58 +1,128 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Elysia from 'elysia';
-import { AppError } from '../AppError.ts';
+import { AppError, type AppErrorCode } from '../AppError.ts';
 import { DomainError } from '../DomainError.ts';
 import { DatabaseError } from '@DatabaseError';
 import { log } from '../logger.ts';
 import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
 
+/* ---------------------------------- */
+/* Normalization */
+/* ---------------------------------- */
+
 function normalizeError(code: unknown, error: unknown): AppError {
-	if (error instanceof AppError) {
-		return error;
-	}
-
-	if (error instanceof DomainError) {
-		return convertDomainError(error);
-	}
-
-	if (error instanceof DatabaseError) {
-		return convertDatabaseError(error);
-	}
+	if (error instanceof AppError) return error;
+	if (error instanceof DomainError) return convertDomainError(error);
+	if (error instanceof DatabaseError) return convertDatabaseError(error);
 
 	const normalizedCode = typeof code === 'string' ? code : 'UNKNOWN';
-	return convertElysiaError(normalizedCode, error);
+	return convertElysiaError(normalizedCode);
 }
+
+/* ---------------------------------- */
+/* Converters */
+/* ---------------------------------- */
 
 function convertDatabaseError(error: DatabaseError): AppError {
 	switch (error.type) {
 		case 'NOT_FOUND':
 			return new AppError({
 				statusCode: 404,
-				errorMessages: [error.message],
+				message: error.message,
+				code: 'NOT_FOUND',
 			});
+
 		case 'CONFLICT':
 			return new AppError({
 				statusCode: 409,
-				errorMessages: [error.message],
+				message: error.message,
+				code: 'CONFLICT',
 			});
-		case 'FORBIDDEN_USER_OPERATION':
+
+		case 'FORBIDDEN':
 			return new AppError({
 				statusCode: 403,
-				errorMessages: [error.message],
+				message: error.message,
+				code: 'FORBIDDEN',
 			});
-		case 'UNKNOWN':
+
 		default:
 			return new AppError({
 				statusCode: 500,
-				errorMessages: [error.message],
+				message: error.message,
+				code: 'INTERNAL_SERVER_ERROR',
 			});
 	}
 }
+
+function convertElysiaError(code: string): AppError {
+	switch (code) {
+		case 'NOT_FOUND':
+			return new AppError({
+				statusCode: 404,
+				message: 'Not Found: resource not found',
+				code: 'NOT_FOUND',
+			});
+
+		case 'PARSE':
+			return new AppError({
+				statusCode: 400,
+				message: 'Bad request: Failed to parse request body.',
+				code: 'BAD_REQUEST',
+			});
+
+		case 'VALIDATION':
+			return new AppError({
+				statusCode: 422,
+				message: 'Validation failed',
+				code: 'VALIDATION',
+			});
+
+		case 'INVALID_COOKIE_SIGNATURE':
+			return new AppError({
+				statusCode: 401,
+				message: 'Invalid cookie signature',
+				code: 'UNAUTHORIZED',
+			});
+
+		default:
+			return new AppError({
+				statusCode: 500,
+				message: 'Internal server error',
+				code: 'INTERNAL_SERVER_ERROR',
+			});
+	}
+}
+
+function convertDomainError(error: DomainError): AppError {
+	return new AppError({
+		message: error.message,
+		statusCode: domainStatusMap[error.type] ?? 400,
+		code: error.type as AppErrorCode,
+	});
+}
+
+const domainStatusMap: Record<AppErrorCode, number> = {
+	NOT_FOUND: 404,
+	CONFLICT: 409,
+	UNAUTHORIZED: 401,
+	VALIDATION: 400,
+	FORBIDDEN: 403,
+	BAD_REQUEST: 400,
+	GONE: 410,
+	INTERNAL_SERVER_ERROR: 500,
+	UNKNOWN: 500,
+};
+
+/* ---------------------------------- */
+/* Logging */
+/* ---------------------------------- */
 
 function logError(
 	context: ReturnType<typeof buildErrorContext>,
 	status: number,
 	message: string,
+	code: AppErrorCode,
 ) {
 	log.error(
 		{
@@ -60,33 +130,65 @@ function logError(
 			response: {
 				status,
 				message,
+				code,
 			},
 		},
 		'An error occurred while processing the request',
 	);
 }
 
+/* ---------------------------------- */
+/* Context Builder */
+/* ---------------------------------- */
+
 function buildErrorContext(request: Request, ctx: SetupPluginContext) {
-	const path = request.url.substring(request.url.indexOf('/', 8));
-	const { store, auth } = ctx;
+	const url = new URL(request.url);
+	const path = url.pathname;
+
+	const segments = path.split('/').filter(Boolean);
+
+	/**
+	 * Example:
+	 * /api/v1/friends/accept/263
+	 * segments => ['api','v1','friends','accept','263']
+	 */
+	const targetId = extractNumericSegment(segments);
 
 	return {
 		request: {
-			reqId: store.reqId,
+			reqId: ctx.store.reqId,
 			method: request.method,
 			path,
+			segments,
+			targetId,
 		},
 		auth: {
-			isAuthenticated: !!auth.clientId,
-			userId: auth.clientId,
-			role: auth.clientRole,
+			isAuthenticated: !!ctx.auth.clientId,
+			userId: ctx.auth.clientId,
+			role: ctx.auth.clientRole,
 		},
 		timings: {
-			totalMs: performance.now() - store.reqInitiatedAt,
-			authMs: store.authTiming,
+			totalMs: performance.now() - ctx.store.reqInitiatedAt,
+			authMs: ctx.store.authTiming,
 		},
 	};
 }
+
+/* ---------------------------------- */
+/* Helpers */
+/* ---------------------------------- */
+
+function extractNumericSegment(segments: string[]): number | undefined {
+	const candidate = segments.at(-1);
+	if (!candidate) return undefined;
+
+	const parsed = Number(candidate);
+	return Number.isInteger(parsed) ? parsed : undefined;
+}
+
+/* ---------------------------------- */
+/* Handler */
+/* ---------------------------------- */
 
 type HandleErrorContext = {
 	set: any;
@@ -105,102 +207,22 @@ function handleError(ctx: HandleErrorContext) {
 
 	set.status = appError.statusCode;
 
-	logError(context, appError.statusCode, appError.message);
+	logError(context, appError.statusCode, appError.message, appError.code);
 
 	return sendAppError(appError);
 }
 
 function sendAppError(err: AppError) {
 	return {
-		errorMessages: err.errorMessages,
+		message: err.message,
 		statusCode: err.statusCode,
+		code: err.code,
 	};
 }
 
-function convertElysiaError(code: string, error: unknown): AppError {
-	const originalErrorMessage =
-		error instanceof Error ? error.message : 'No error message available';
-	switch (code) {
-		case 'NOT_FOUND':
-			return new AppError({
-				statusCode: 404,
-				errorMessages: ['Not Found: resource not found', originalErrorMessage],
-			});
-		case 'PARSE':
-			return new AppError({
-				statusCode: 400,
-				errorMessages: [
-					'Bad request: Failed to parse request body. Please ensure it is valid JSON and all required fields are present.',
-				],
-			});
-		case 'VALIDATION':
-			return new AppError({
-				statusCode: 422,
-				errorMessages: [
-					'Unprocessable entity: validation failed',
-					originalErrorMessage,
-				],
-			});
-		case 'INVALID_COOKIE_SIGNATURE':
-			return new AppError({
-				statusCode: 401,
-				errorMessages: [
-					'Unauthorized: invalid cookie signature',
-					originalErrorMessage,
-				],
-			});
-		case 'INVALID_FILE_TYPE':
-			return new AppError({
-				statusCode: 400,
-				errorMessages: ['Bad request: invalid file type', originalErrorMessage],
-			});
-		case 'INTERNAL_SERVER_ERROR':
-		case 'UNKNOWN':
-		default:
-			return new AppError({
-				statusCode: 500,
-				errorMessages: ['Internal server error', originalErrorMessage],
-			});
-	}
-}
-
-function convertDomainError(error: DomainError): AppError {
-	const message = error.message;
-	const type = error.type;
-
-	switch (type) {
-		case 'NOT_FOUND':
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 404,
-			});
-		case 'CONFLICT':
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 409,
-			});
-		case 'INVALID_CREDENTIALS':
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 401,
-			});
-		case 'VALIDATION_FAILED':
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 400,
-			});
-		case 'FORBIDDEN_USER_OPERATION':
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 403,
-			});
-		default:
-			return new AppError({
-				errorMessages: [message],
-				statusCode: 400,
-			});
-	}
-}
+/* ---------------------------------- */
+/* Plugin */
+/* ---------------------------------- */
 
 export const ErrorPlugin = new Elysia()
 	.use(SetupPlugin)

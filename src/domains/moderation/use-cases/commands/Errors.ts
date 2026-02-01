@@ -14,16 +14,13 @@ export class UserAlreadyBannedError extends DomainError {
 
 export class CannotBanSelfError extends DomainError {
 	public constructor() {
-		super('FORBIDDEN_USER_OPERATION', 'A moderator cannot ban themselves.');
+		super('FORBIDDEN', 'A moderator cannot ban themselves.');
 	}
 }
 
 export class InsufficientPermissionsError extends DomainError {
 	public constructor() {
-		super(
-			'FORBIDDEN_USER_OPERATION',
-			'You do not have permission to ban users.',
-		);
+		super('FORBIDDEN', 'You do not have permission to ban users.');
 	}
 }
 
@@ -35,6 +32,6 @@ export class UserAlreadySuspendedError extends DomainError {
 
 export class CannotSuspendSelfError extends DomainError {
 	public constructor() {
-		super('FORBIDDEN_USER_OPERATION', 'A moderator cannot suspend themselves.');
+		super('FORBIDDEN', 'A moderator cannot suspend themselves.');
 	}
 }
