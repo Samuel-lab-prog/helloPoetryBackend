@@ -6,6 +6,8 @@ import {
 	sendFriendRequest,
 	acceptFriendRequest,
 	getMyPrivateProfile,
+	cancelFriendRequest,
+	rejectFriendRequest,
 	type TestUser,
 } from './Helpers';
 import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
@@ -37,23 +39,26 @@ beforeEach(async () => {
 	user2 = await loginUser(user2);
 });
 
-describe('INTEGRATION - Friends Requests acceptance', () => {
+describe('INTEGRATION - Friend Requests Acceptance', () => {
 	it('User1 sends a friend request to User2', async () => {
 		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
 	});
 
 	it('User1 cannot send a duplicate friend request', async () => {
-		const firstReq = await sendFriendRequest(user1, user2.id);
+		await sendFriendRequest(user1, user2.id);
 		const secondReq = await sendFriendRequest(user1, user2.id);
-		expect(firstReq).not.toEqual(secondReq);
-		expect((secondReq as AppError).statusCode).toEqual(409);
+
+		expect((secondReq as AppError).statusCode).toBe(409);
 	});
 
 	it('User1 sees the sent friend request in users/me', async () => {
 		await sendFriendRequest(user1, user2.id);
+
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+
 		expect(
 			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
 		).toBe(true);
@@ -61,7 +66,9 @@ describe('INTEGRATION - Friends Requests acceptance', () => {
 
 	it('User2 sees the received friend request in users/me', async () => {
 		await sendFriendRequest(user1, user2.id);
+
 		const me = (await getMyPrivateProfile(user2)) as PrivateProfile;
+
 		expect(
 			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
 		).toBe(true);
@@ -69,19 +76,75 @@ describe('INTEGRATION - Friends Requests acceptance', () => {
 
 	it('User2 accepts the friend request from User1', async () => {
 		await sendFriendRequest(user1, user2.id);
+
 		const accepted = (await acceptFriendRequest(
 			user2,
 			user1.id,
 		)) as FriendRequest;
+
 		expect(accepted.requesterId).toBe(user1.id);
 		expect(accepted.addresseeId).toBe(user2.id);
 	});
 
+	it('Requester cannot accept its own friend request', async () => {
+		await sendFriendRequest(user1, user2.id);
+
+		const res = await acceptFriendRequest(user1, user2.id);
+
+		expect((res as AppError).statusCode).toBe(404);
+	});
+
 	it('User2 cannot accept the same friend request again', async () => {
 		await sendFriendRequest(user1, user2.id);
-		const firstReq = await acceptFriendRequest(user2, user1.id);
+		await acceptFriendRequest(user2, user1.id);
+
 		const secondReq = await acceptFriendRequest(user2, user1.id);
-		expect(firstReq).not.toEqual(secondReq);
-		expect((secondReq as AppError).statusCode).toEqual(409);
+
+		expect((secondReq as AppError).statusCode).toBe(409);
+	});
+
+	it('Accepted request disappears from both inboxes', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await acceptFriendRequest(user2, user1.id);
+
+		const me1 = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me2 = (await getMyPrivateProfile(user2)) as PrivateProfile;
+
+		expect(
+			me1.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
+		).toBe(false);
+
+		expect(
+			me2.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
+		).toBe(false);
+	});
+
+	it('Accepting creates friendship for both users', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await acceptFriendRequest(user2, user1.id);
+
+		const me1 = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me2 = (await getMyPrivateProfile(user2)) as PrivateProfile;
+
+		expect(me1.stats.friendsIds.includes(user2.id)).toBe(true);
+		expect(me2.stats.friendsIds.includes(user1.id)).toBe(true);
+	});
+
+	it('Accepted request cannot be rejected later', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await acceptFriendRequest(user2, user1.id);
+
+		const res = await rejectFriendRequest(user2, user1.id);
+
+		expect((res as AppError).statusCode).toBe(409);
+	});
+
+	it('Accepted request cannot be cancelled by requester', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await acceptFriendRequest(user2, user1.id);
+
+		const res = await cancelFriendRequest(user1, user2.id);
+
+		expect((res as AppError).statusCode).toBe(409);
 	});
 });

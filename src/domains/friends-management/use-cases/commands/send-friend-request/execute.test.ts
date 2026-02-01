@@ -66,12 +66,25 @@ describe('sendFriendRequest', () => {
 		});
 	});
 
+	it('throws RequestAlreadySentError when outgoing request already exists', async () => {
+		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
+		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
+		queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 30 });
+
+		await expect(
+			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+		).rejects.toBeInstanceOf(RequestAlreadySentError);
+	});
+
 	it('accepts existing incoming request and returns accepted request', async () => {
 		const acceptedRequest = { id: 50 };
 
 		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 20 });
+		queriesRepository.findFriendRequest
+			.mockResolvedValueOnce(null)
+			.mockResolvedValueOnce({ id: 20 });
+
 		commandsRepository.acceptFriendRequest.mockResolvedValue(acceptedRequest);
 
 		const result = await sendFriendRequest({
@@ -89,24 +102,15 @@ describe('sendFriendRequest', () => {
 	it('throws UserNotFoundError when accepting incoming request fails', async () => {
 		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
 		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 20 });
+		queriesRepository.findFriendRequest
+			.mockResolvedValueOnce(null)
+			.mockResolvedValueOnce({ id: 20 });
+
 		commandsRepository.acceptFriendRequest.mockResolvedValue(null);
 
 		await expect(
 			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 		).rejects.toBeInstanceOf(UserNotFoundError);
-	});
-
-	it('throws RequestAlreadySentError when outgoing request already exists', async () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest
-			.mockResolvedValueOnce(null)
-			.mockResolvedValueOnce({ id: 30 });
-
-		await expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(RequestAlreadySentError);
 	});
 
 	it('creates friend request and returns it', async () => {

@@ -3,7 +3,9 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	CannotSendRequestToYourselfError,
+	FriendshipAlreadyExistsError,
 	RequestNotFoundError,
+	FriendRequestBlockedError,
 } from '../Errors';
 
 interface Dependencies {
@@ -24,8 +26,25 @@ export function cancelFriendRequestFactory({
 		params: CancelFriendRequestParams,
 	): Promise<FriendRequest> {
 		const { requesterId, addresseeId } = params;
+
 		if (requesterId === addresseeId) {
 			throw new CannotSendRequestToYourselfError();
+		}
+
+		const blocked = await queriesRepository.findBlockedRelationship(
+			requesterId,
+			addresseeId,
+		);
+		if (blocked) {
+			throw new FriendRequestBlockedError();
+		}
+
+		const friendship = await queriesRepository.findFriendshipBetweenUsers({
+			user1Id: requesterId,
+			user2Id: addresseeId,
+		});
+		if (friendship) {
+			throw new FriendshipAlreadyExistsError();
 		}
 
 		const request = await queriesRepository.findFriendRequest({
@@ -35,6 +54,10 @@ export function cancelFriendRequestFactory({
 		if (!request) {
 			throw new RequestNotFoundError();
 		}
-		return commandsRepository.cancelFriendRequest({ requesterId, addresseeId });
+
+		return commandsRepository.cancelFriendRequest({
+			requesterId,
+			addresseeId,
+		});
 	};
 }

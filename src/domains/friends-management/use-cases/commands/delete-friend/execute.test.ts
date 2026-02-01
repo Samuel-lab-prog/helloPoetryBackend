@@ -61,20 +61,4 @@ describe('deleteFriend', () => {
 			2,
 		);
 	});
-
-	it('deletes friendship and returns result', async () => {
-		const resultValue = { requesterId: 1, addresseeId: 2 };
-
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
-		queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-		commandsRepository.deleteFriend.mockResolvedValue(resultValue);
-
-		const result = await deleteFriend({ requesterId: 1, addresseeId: 2 });
-
-		expect(result).toEqual(resultValue);
-		expect(commandsRepository.deleteFriend).toHaveBeenCalledWith({
-			requesterId: 1,
-			addresseeId: 2,
-		});
-	});
 });

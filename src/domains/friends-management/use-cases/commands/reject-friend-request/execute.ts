@@ -3,7 +3,6 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	CannotSendRequestToYourselfError,
-	UserNotFoundError,
 	RequestNotFoundError,
 	FriendRequestBlockedError,
 	FriendshipAlreadyExistsError,
@@ -32,6 +31,14 @@ export function rejectFriendRequestFactory({
 			throw new CannotSendRequestToYourselfError();
 		}
 
+		const blocked = await queriesRepository.findBlockedRelationship(
+			requesterId,
+			addresseeId,
+		);
+		if (blocked) {
+			throw new FriendRequestBlockedError();
+		}
+
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
@@ -41,30 +48,16 @@ export function rejectFriendRequestFactory({
 		}
 
 		const request = await queriesRepository.findFriendRequest({
-			requesterId: requesterId,
-			addresseeId: addresseeId,
+			requesterId,
+			addresseeId,
 		});
 		if (!request) {
 			throw new RequestNotFoundError();
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship(
-			requesterId,
-			addresseeId,
-		);
-		if (blocked) {
-			throw new FriendRequestBlockedError();
-		}
-
-		// 5️⃣ Rejeita (remove) o FriendRequest
-		const result = await commandsRepository.rejectFriendRequest({
+		return commandsRepository.rejectFriendRequest({
 			requesterId,
 			addresseeId,
 		});
-		if (!result) {
-			throw new UserNotFoundError();
-		}
-
-		return result;
 	};
 }

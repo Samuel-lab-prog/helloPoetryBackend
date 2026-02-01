@@ -3,7 +3,6 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	CannotSendRequestToYourselfError,
-	FriendshipAlreadyExistsError,
 	FriendRequestBlockedError,
 } from '../Errors';
 
@@ -30,22 +29,43 @@ export function blockFriendRequestFactory({
 			throw new CannotSendRequestToYourselfError();
 		}
 
+		const alreadyBlocked = await queriesRepository.findBlockedRelationship(
+			requesterId,
+			addresseeId,
+		);
+
+		if (alreadyBlocked) {
+			throw new FriendRequestBlockedError(); // 403
+		}
+
+		// Remove friendship if exists
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
+
 		if (friendship) {
-			throw new FriendshipAlreadyExistsError();
+			await commandsRepository.deleteFriend({
+				user1Id: requesterId,
+				user2Id: addresseeId,
+			});
 		}
 
-		const blocked = await queriesRepository.findBlockedRelationship(
+		// Remove pending request requester -> addressee
+		await commandsRepository.deleteFriendRequestIfExists({
 			requesterId,
 			addresseeId,
-		);
-		if (blocked) {
-			throw new FriendRequestBlockedError();
-		}
+		});
 
-		return commandsRepository.blockFriendRequest({ requesterId, addresseeId });
+		// Remove pending request addressee -> requester
+		await commandsRepository.deleteFriendRequestIfExists({
+			requesterId: addresseeId,
+			addresseeId: requesterId,
+		});
+
+		return commandsRepository.blockFriendRequest({
+			requesterId,
+			addresseeId,
+		});
 	};
 }

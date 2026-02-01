@@ -9,6 +9,7 @@ export const commandsRepository: CommandsRepository = {
 	rejectFriendRequest,
 	blockFriendRequest,
 	deleteFriend,
+	deleteFriendRequestIfExists,
 	cancelFriendRequest,
 	unblockFriendRequest,
 };
@@ -118,26 +119,6 @@ export function blockFriendRequest(params: {
 	});
 }
 
-export function deleteFriend(params: {
-	requesterId: number;
-	addresseeId: number;
-}): Promise<{ requesterId: number; addresseeId: number }> {
-	const { requesterId, addresseeId } = params;
-
-	return withPrismaErrorHandling(async () => {
-		await prisma.friendship.deleteMany({
-			where: {
-				OR: [
-					{ userAId: requesterId, userBId: addresseeId },
-					{ userAId: addresseeId, userBId: requesterId },
-				],
-			},
-		});
-
-		return { requesterId, addresseeId };
-	});
-}
-
 export function cancelFriendRequest(params: {
 	requesterId: number;
 	addresseeId: number;
@@ -171,5 +152,36 @@ export function unblockFriendRequest(params: {
 			},
 		});
 		return { requesterId, addresseeId };
+	});
+}
+
+export function deleteFriend(params: {
+	user1Id: number;
+	user2Id: number;
+}): Promise<void> {
+	const { user1Id, user2Id } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.friendship.deleteMany({
+			where: {
+				OR: [
+					{ userAId: user1Id, userBId: user2Id },
+					{ userAId: user2Id, userBId: user1Id },
+				],
+			},
+		});
+	});
+}
+export function deleteFriendRequestIfExists(params: {
+	requesterId: number;
+	addresseeId: number;
+}): Promise<void> {
+	const { requesterId, addresseeId } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.friendshipRequest.deleteMany({
+			where: {
+				requesterId,
+				addresseeId,
+			},
+		});
 	});
 }

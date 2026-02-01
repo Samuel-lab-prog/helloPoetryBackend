@@ -48,6 +48,14 @@ export function sendFriendRequestFactory({
 			throw new FriendshipAlreadyExistsError();
 		}
 
+		const existingOutgoingRequest = await queriesRepository.findFriendRequest({
+			requesterId,
+			addresseeId,
+		});
+		if (existingOutgoingRequest) {
+			throw new RequestAlreadySentError();
+		}
+
 		const existingIncomingRequest = await queriesRepository.findFriendRequest({
 			requesterId: addresseeId,
 			addresseeId: requesterId,
@@ -57,16 +65,10 @@ export function sendFriendRequestFactory({
 				requesterId: addresseeId,
 				addresseeId: requesterId,
 			});
-			if (!accepted) throw new UserNotFoundError();
+			if (!accepted) {
+				throw new UserNotFoundError();
+			}
 			return accepted;
-		}
-
-		const existingRequest = await queriesRepository.findFriendRequest({
-			requesterId,
-			addresseeId,
-		});
-		if (existingRequest) {
-			throw new RequestAlreadySentError();
 		}
 
 		const result = await commandsRepository.createFriendRequest({

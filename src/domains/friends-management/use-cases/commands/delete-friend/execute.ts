@@ -44,7 +44,10 @@ export function deleteFriendFactory({
 		if (blocked) {
 			throw new FriendRequestBlockedError();
 		}
-
-		return commandsRepository.deleteFriend({ requesterId, addresseeId });
+		await commandsRepository.deleteFriend({
+			user1Id: requesterId,
+			user2Id: addresseeId,
+		});
+		return { requesterId, addresseeId };
 	};
 }

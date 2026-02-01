@@ -7,6 +7,7 @@ import {
 	rejectFriendRequest,
 	getMyPrivateProfile,
 	type TestUser,
+	acceptFriendRequest,
 } from './Helpers';
 import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
 import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
@@ -40,32 +41,46 @@ beforeEach(async () => {
 describe('INTEGRATION - Friend Requests Rejection', () => {
 	it('User1 sends a friend request to User2', async () => {
 		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
 	});
 
 	it('User2 rejects the friend request from User1', async () => {
 		await sendFriendRequest(user1, user2.id);
+
 		const rejected = (await rejectFriendRequest(
 			user2,
 			user1.id,
 		)) as FriendRequest;
+
 		expect(rejected.requesterId).toBe(user1.id);
 		expect(rejected.addresseeId).toBe(user2.id);
 	});
 
 	it('User2 cannot reject the same friend request again', async () => {
 		await sendFriendRequest(user1, user2.id);
-		const firstReq = await rejectFriendRequest(user2, user1.id);
+
+		await rejectFriendRequest(user2, user1.id);
 		const secondReq = await rejectFriendRequest(user2, user1.id);
-		expect(firstReq).not.toEqual(secondReq);
+
 		expect((secondReq as AppError).statusCode).toEqual(404);
+	});
+
+	it('Requester cannot reject its own friend request', async () => {
+		await sendFriendRequest(user1, user2.id);
+
+		const res = await rejectFriendRequest(user1, user2.id);
+
+		expect((res as AppError).statusCode).toEqual(404);
 	});
 
 	it('Rejected request no longer appears in users/me for User2', async () => {
 		await sendFriendRequest(user1, user2.id);
 		await rejectFriendRequest(user2, user1.id);
+
 		const me = (await getMyPrivateProfile(user2)) as PrivateProfile;
+
 		expect(
 			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
 		).toBe(false);
@@ -74,9 +89,41 @@ describe('INTEGRATION - Friend Requests Rejection', () => {
 	it('Rejected request no longer appears in users/me for User1', async () => {
 		await sendFriendRequest(user1, user2.id);
 		await rejectFriendRequest(user2, user1.id);
+
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+
 		expect(
 			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
 		).toBe(false);
+	});
+
+	it('Rejected request cannot be accepted later', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await rejectFriendRequest(user2, user1.id);
+
+		const res = await acceptFriendRequest(user2, user1.id);
+
+		expect((res as AppError).statusCode).toEqual(404);
+	});
+
+	it('After rejection, requester can send a new friend request', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await rejectFriendRequest(user2, user1.id);
+
+		const newReq = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+
+		expect(newReq.requesterId).toBe(user1.id);
+		expect(newReq.addresseeId).toBe(user2.id);
+	});
+
+	it('Rejection does not create friendship', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await rejectFriendRequest(user2, user1.id);
+
+		const me1 = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me2 = (await getMyPrivateProfile(user2)) as PrivateProfile;
+
+		expect(me1.stats.friendsIds.includes(user2.id)).toBe(false);
+		expect(me2.stats.friendsIds.includes(user1.id)).toBe(false);
 	});
 });

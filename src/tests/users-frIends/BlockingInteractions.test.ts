@@ -6,6 +6,8 @@ import {
 	sendFriendRequest,
 	blockUser,
 	getMyPrivateProfile,
+	unblockUser,
+	acceptFriendRequest,
 	type TestUser,
 } from './Helpers';
 import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
@@ -40,40 +42,83 @@ beforeEach(async () => {
 describe('INTEGRATION - Block Users', () => {
 	it('User1 blocks User2', async () => {
 		const blocked = (await blockUser(user1, user2.id)) as FriendRequest;
+
 		expect(blocked.requesterId).toBe(user1.id);
 		expect(blocked.addresseeId).toBe(user2.id);
+
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});
 
 	it('User1 cannot block User2 multiple times', async () => {
-		const firstBlock = await blockUser(user1, user2.id);
+		await blockUser(user1, user2.id);
 		const secondBlock = await blockUser(user1, user2.id);
-		expect(firstBlock).not.toEqual(secondBlock);
-		expect((secondBlock as AppError).statusCode).toEqual(403);
+
+		expect((secondBlock as AppError).statusCode).toBe(403);
+	});
+
+	it('Blocking removes existing friendship', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await acceptFriendRequest(user2, user1.id);
+
+		await blockUser(user1, user2.id);
+
+		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		expect(me.stats.friendsIds.includes(user2.id)).toBe(false);
+		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});
 
 	it('User1 cannot send a friend request to User2 after blocking', async () => {
 		await blockUser(user1, user2.id);
+
 		const req = await sendFriendRequest(user1, user2.id);
-		expect((req as AppError).statusCode).toEqual(403);
+		expect((req as AppError).statusCode).toBe(403);
 	});
 
 	it('User2 cannot send a friend request to User1 after being blocked', async () => {
 		await blockUser(user1, user2.id);
+
 		const req = await sendFriendRequest(user2, user1.id);
-		expect((req as AppError).statusCode).toEqual(403);
+		expect((req as AppError).statusCode).toBe(403);
+	});
+
+	it('Blocked user cannot accept an old pending request', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await blockUser(user1, user2.id);
+
+		const res = await acceptFriendRequest(user2, user1.id);
+		expect((res as AppError).statusCode).toBe(403);
 	});
 
 	it('Blocked user does not appear in users/me friend list', async () => {
 		await blockUser(user1, user2.id);
+
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
 		expect(me.stats.friendsIds.includes(user2.id)).toBe(false);
 	});
 
 	it('Blocked user appears in users/me blocked list', async () => {
 		await blockUser(user1, user2.id);
+
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
+	});
+
+	it('User1 can unblock User2', async () => {
+		await blockUser(user1, user2.id);
+		await unblockUser(user1, user2.id);
+
+		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		expect(me.blockedUsersIds.includes(user2.id)).toBe(false);
+	});
+
+	it('After unblock, users can send friend request again', async () => {
+		await blockUser(user1, user2.id);
+		await unblockUser(user1, user2.id);
+
+		const req = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+
+		expect(req.requesterId).toBe(user1.id);
+		expect(req.addresseeId).toBe(user2.id);
 	});
 });

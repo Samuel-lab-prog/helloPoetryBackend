@@ -47,3 +47,12 @@ export class FriendshipNotFoundError extends DomainError {
 		super('NOT_FOUND', 'Friendship not found.');
 	}
 }
+
+export class BlockedRelationshipNotFoundError extends DomainError {
+	public constructor() {
+		super(
+			'NOT_FOUND',
+			'Cannot perform this operation due to a blocking relationship.',
+		);
+	}
+}

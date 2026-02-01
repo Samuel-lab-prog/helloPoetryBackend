@@ -3,7 +3,7 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendRequest } from '../models/Index';
 import {
 	CannotSendRequestToYourselfError,
-	FriendRequestBlockedError,
+	BlockedRelationshipNotFoundError,
 } from '../Errors';
 
 interface Dependencies {
@@ -33,8 +33,9 @@ export function unblockFriendRequestFactory({
 			requesterId,
 			addresseeId,
 		);
+
 		if (!blocked) {
-			throw new FriendRequestBlockedError();
+			throw new BlockedRelationshipNotFoundError();
 		}
 
 		return commandsRepository.unblockFriendRequest({

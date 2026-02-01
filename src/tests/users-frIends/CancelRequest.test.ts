@@ -63,4 +63,26 @@ describe('INTEGRATION - Friends Requests cancellation', () => {
 		expect(firstReq).not.toEqual(secondReq);
 		expect((secondReq as AppError).statusCode).toEqual(404);
 	});
+
+	it('User2 cannot cancel a friend request sent by User1', async () => {
+		await sendFriendRequest(user1, user2.id);
+		const result = await cancelFriendRequest(user2, user1.id);
+		expect((result as AppError).statusCode).toEqual(404);
+	});
+
+	it('User1 cannot cancel a non-existing friend request', async () => {
+		const result = await cancelFriendRequest(user1, user2.id);
+		expect((result as AppError).statusCode).toEqual(404);
+	});
+
+	it('User1 can send a new friend request after cancelling the previous one', async () => {
+		await sendFriendRequest(user1, user2.id);
+		await cancelFriendRequest(user1, user2.id);
+		const newRequest = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequest;
+		expect(newRequest.requesterId).toBe(user1.id);
+		expect(newRequest.addresseeId).toBe(user2.id);
+	});
 });

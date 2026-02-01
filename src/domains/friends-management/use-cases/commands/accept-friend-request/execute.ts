@@ -40,20 +40,20 @@ export function acceptFriendRequestFactory({
 			throw new FriendshipAlreadyExistsError();
 		}
 
-		const request = await queriesRepository.findFriendRequest({
-			requesterId: requesterId,
-			addresseeId: addresseeId,
-		});
-		if (!request) {
-			throw new RequestNotFoundError();
-		}
-
 		const blocked = await queriesRepository.findBlockedRelationship(
 			requesterId,
 			addresseeId,
 		);
 		if (blocked) {
 			throw new FriendRequestBlockedError();
+		}
+
+		const request = await queriesRepository.findFriendRequest({
+			requesterId,
+			addresseeId,
+		});
+		if (!request) {
+			throw new RequestNotFoundError();
 		}
 
 		const result = await commandsRepository.acceptFriendRequest({
