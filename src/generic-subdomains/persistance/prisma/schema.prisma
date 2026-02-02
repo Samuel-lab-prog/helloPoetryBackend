@@ -16,7 +16,7 @@ model User {
   bio          String
   avatarUrl    String
 
-  role   userRole   @default(user)
+  role   userRole   @default(author)
   status userStatus @default(active)
 
   createdAt       DateTime  @default(now())
@@ -39,15 +39,14 @@ model User {
   friendshipRequests   FriendshipRequest[] @relation("FriendshipRequestRequester")
   friendshipAddressees FriendshipRequest[] @relation("FriendshipRequestAddressee")
 
-  blockedUsers BlockedUser[] @relation("BlockedByUser") 
-blockedBy      BlockedUser[] @relation("BlockedUser")   
-
+  blockedUsers BlockedUser[] @relation("BlockedByUser")
+  blockedBy    BlockedUser[] @relation("BlockedUser")
 }
 
 enum userRole {
-  user
   author
   moderator
+  admin
 }
 
 enum userStatus {
@@ -154,16 +153,16 @@ model Poem {
   content       String
   isCommentable Boolean @default(true)
 
-  addresseeId Int?
-  addresseedUser   User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
+  addresseeId    Int?
+  addresseedUser User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
 
   toPoemId    Int?
   toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])
   dedications Poem[] @relation("PoemToPoemDedications")
 
-  status           poemStatus           @default(published)
+  status           poemStatus           @default(draft)
   visibility       poemVisibility       @default(public)
-  moderationStatus poemModerationStatus @default(approved)
+  moderationStatus poemModerationStatus @default(pending)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -191,7 +190,6 @@ model Tag {
 enum poemStatus {
   draft
   published
-  scheduled
 }
 
 enum poemVisibility {

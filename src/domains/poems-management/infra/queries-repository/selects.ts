@@ -34,6 +34,7 @@ export const authorPoemSelect = {
 	createdAt: true,
 	status: true,
 	visibility: true,
+	moderationStatus: true,
 
 	author: {
 		select: {
@@ -94,4 +95,12 @@ export const fullPoemSelect = {
 	toPoem: { select: { id: true, title: true, slug: true, authorId: true } },
 	tags: { select: { id: true, name: true } },
 	_count: { select: { poemLikes: true, comments: true } },
+} as const;
+
+export const insertPoemSelect = {
+	id: true,
+	title: true,
+	visibility: true,
+	status: true,
+	moderationStatus: true,
 } as const;

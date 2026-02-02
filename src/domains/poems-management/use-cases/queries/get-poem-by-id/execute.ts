@@ -1,16 +1,18 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import { PoemNotFoundError, PoemAccessDeniedError } from '../errors';
 import { canViewPoem } from '../policies/policies';
-import type { MyPoem } from '../models/MyPoem';
-import type { AuthorPoem } from '../models/AuthorPoem';
+import type { MyPoem, AuthorPoem } from '../models/Index';
 import { toAuthorPoem, toMyPoem } from '../dtos';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
 
 interface GetPoemParams {
-	requesterId: number;
+	requesterId?: number;
+	requesterRole?: UserRole;
+	requesterStatus?: UserStatus;
 	poemId: number;
 }
 
@@ -24,23 +26,30 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 			throw new PoemNotFoundError();
 		}
 
-		if (poem.author.id === params.requesterId) {
-			return toMyPoem(poem);
-		}
+		const isAuthor = poem.author.id === params.requesterId;
 
 		const canAccess = canViewPoem({
-			author: { id: poem.author.id, friendIds: poem.author.friendsIds },
+			author: {
+				id: poem.author.id,
+				friendIds: poem.author.friendsIds,
+				directAccess: true, // valid because this is accessed via direct link
+			},
 			poem: {
 				id: poem.id,
 				status: poem.status,
 				visibility: poem.visibility,
+				moderationStatus: poem.moderationStatus,
 			},
-			viewer: { id: params.requesterId },
+			viewer: {
+				id: params.requesterId,
+				role: params.requesterRole,
+				status: params.requesterStatus,
+			},
 		});
-
 		if (!canAccess) {
 			throw new PoemAccessDeniedError();
 		}
-		return toAuthorPoem(poem);
+
+		return isAuthor ? toMyPoem(poem) : toAuthorPoem(poem);
 	};
 }

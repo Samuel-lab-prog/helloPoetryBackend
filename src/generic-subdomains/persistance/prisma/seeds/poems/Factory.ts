@@ -47,7 +47,7 @@ function randomVisibility(): PoemVisibility {
 	return values[Math.floor(Math.random() * values.length)]!;
 }
 function randomStatus(): PoemStatus {
-	const values: PoemStatus[] = ['draft', 'published', 'scheduled'];
+	const values: PoemStatus[] = ['draft', 'published'];
 	return values[Math.floor(Math.random() * values.length)]!;
 }
 function randomModerationStatus(): PoemModerationStatus {

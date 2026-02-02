@@ -1,3 +1,4 @@
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { AuthorPoem } from '../models/AuthorPoem';
 import { canViewPoem } from '../policies/policies';
@@ -7,8 +8,10 @@ interface Dependencies {
 }
 
 interface GetAuthorPoemsParams {
-	requesterId: number;
 	authorId: number;
+	requesterId?: number;
+	requesterRole?: UserRole;
+	requesterStatus?: UserStatus;
 }
 
 export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
@@ -26,8 +29,13 @@ export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
 					id: poem.id,
 					status: poem.status,
 					visibility: poem.visibility,
+					moderationStatus: poem.moderationStatus,
 				},
-				viewer: { id: params.requesterId },
+				viewer: {
+					id: params.requesterId,
+					role: params.requesterRole,
+					status: params.requesterStatus,
+				},
 			}),
 		);
 	};

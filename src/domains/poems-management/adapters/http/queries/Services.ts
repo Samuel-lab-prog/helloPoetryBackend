@@ -1,3 +1,4 @@
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { queriesRepository } from '../../../infra/queries-repository/repository';
 
 import {
@@ -11,11 +12,15 @@ import {
 export interface QueriesRouterServices {
 	getMyPoems: (params: { requesterId: number }) => Promise<MyPoem[]>;
 	getAuthorPoems: (params: {
-		requesterId: number;
+		requesterRole?: UserRole;
+		requesterStatus?: UserStatus;
+		requesterId?: number;
 		authorId: number;
 	}) => Promise<AuthorPoem[]>;
 	getPoemById: (params: {
-		requesterId: number;
+		requesterRole?: UserRole;
+		requesterStatus?: UserStatus;
+		requesterId?: number;
 		poemId: number;
 	}) => Promise<AuthorPoem | MyPoem>;
 }

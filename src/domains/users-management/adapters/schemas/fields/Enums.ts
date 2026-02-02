@@ -6,7 +6,7 @@ export const UserStatusEnumSchema = t.UnionEnum([
 	'banned',
 ] as const);
 export const UserRoleEnumSchema = t.UnionEnum([
-	'user',
+	'admin',
 	'author',
 	'moderator',
 ] as const);

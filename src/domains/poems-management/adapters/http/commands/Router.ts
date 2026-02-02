@@ -1,16 +1,14 @@
-import { Elysia, t } from 'elysia';
+import { Elysia } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
+import { appErrorSchema } from '@AppError';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 import { CreatePoemBodySchema } from '../../schemas/CreatePoemSchema';
-
 import {
 	type CommandsRouterServices,
 	commandsRouterServices,
 } from './Services';
-
-import { appErrorSchema } from '@AppError';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-import { idSchema } from '@SharedKernel/Schemas';
+import { PoemCreationResultSchema } from '../../schemas/PoemCreationResultSchema';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/poems' }).use(AuthPlugin).post(
@@ -29,9 +27,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 		},
 		{
 			response: {
-				201: t.Object({
-					id: idSchema,
-				}),
+				201: PoemCreationResultSchema,
 				409: appErrorSchema,
 			},
 			body: CreatePoemBodySchema,

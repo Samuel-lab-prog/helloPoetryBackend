@@ -1,16 +1,17 @@
 import { prisma } from '@PrismaClient';
 
-export function clearDatabase() {
-	return prisma.$transaction([
-		prisma.blockedUser.deleteMany(),
-		prisma.friendshipRequest.deleteMany(),
-		prisma.friendshipRequest.deleteMany(),
-		prisma.userSanction.deleteMany(),
-		prisma.commentLike.deleteMany(),
-		prisma.comment.deleteMany(),
-		prisma.poemLike.deleteMany(),
-		prisma.friendship.deleteMany(),
-		prisma.poem.deleteMany(),
-		prisma.user.deleteMany(),
-	]);
+export async function clearDatabase() {
+	await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE
+      "BlockedUser",
+      "FriendshipRequest",
+      "UserSanction",
+      "CommentLike",
+      "Comment",
+      "PoemLike",
+      "Friendship",
+      "Poem",
+      "User"
+    RESTART IDENTITY CASCADE;
+  `);
 }

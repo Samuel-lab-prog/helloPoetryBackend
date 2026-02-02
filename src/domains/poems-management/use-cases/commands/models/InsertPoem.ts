@@ -1,12 +1,5 @@
-export type InsertPoem = {
-	title: string;
-	content: string;
-	slug: string;
-	excerpt: string | null;
+import type { CreatePoem } from './CreatePoem';
 
-	tags?: string[];
-	authorId: number;
-	isCommentable?: boolean;
-	addresseeId?: number;
-	toPoemId?: number;
+export type InsertPoem = CreatePoem & {
+	slug: string;
 };

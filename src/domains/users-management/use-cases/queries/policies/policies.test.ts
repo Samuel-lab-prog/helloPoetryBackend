@@ -16,7 +16,7 @@ describe('canAccessUserInfo', () => {
 	it('should allow access when requester is the target user', () => {
 		const result = canAccessUserInfo({
 			requesterId: 5,
-			requesterRole: 'user',
+			requesterRole: 'author',
 			targetId: 5,
 		});
 

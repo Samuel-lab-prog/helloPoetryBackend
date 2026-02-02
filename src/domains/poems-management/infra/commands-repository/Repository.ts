@@ -1,12 +1,18 @@
 import { prisma } from '@PrismaClient';
-import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import { withPrismaResult } from '@PrismaErrorHandler';
+import type { CommandResult } from '@SharedKernel/Types';
 
 import type { CommandsRepository } from '../../ports/CommandsRepository';
+import type {
+	InsertPoem,
+	PoemInsertResult,
+} from '../../use-cases/commands/models/Index';
+import { insertPoemSelect } from '../queries-repository/selects';
 
-import type { InsertPoem } from '../../use-cases/commands/models/Index';
-
-function insertPoem(data: InsertPoem): Promise<{ id: number }> {
-	return withPrismaErrorHandling(() => {
+function insertPoem(
+	data: InsertPoem,
+): Promise<CommandResult<PoemInsertResult>> {
+	return withPrismaResult(() => {
 		const tags =
 			data.tags && data.tags.length > 0
 				? data.tags.map((tag) => ({
@@ -16,9 +22,7 @@ function insertPoem(data: InsertPoem): Promise<{ id: number }> {
 				: [];
 
 		return prisma.poem.create({
-			select: {
-				id: true,
-			},
+			select: insertPoemSelect,
 			data: {
 				title: data.title,
 				content: data.content,
@@ -26,8 +30,10 @@ function insertPoem(data: InsertPoem): Promise<{ id: number }> {
 				excerpt: data.excerpt,
 				isCommentable: data.isCommentable ?? true,
 				authorId: data.authorId,
-				addresseeId: data.addresseeId,
-				toPoemId: data.toPoemId,
+				addresseeId: data.addresseeUserId,
+				toPoemId: data.addresseePoemId,
+				visibility: data.visibility,
+				status: data.status,
 
 				...(tags.length > 0 && {
 					tags: {

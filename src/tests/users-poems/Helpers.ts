@@ -1,24 +1,7 @@
 import { jsonRequest, type TestUser, PREFIX, app } from '../Helpers';
+import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem';
 
-export type PoemInput = {
-	title: string;
-	content: string;
-	slug: string;
-	excerpt: string | null;
-	tags?: string[];
-	authorId: number;
-	isCommentable?: boolean;
-	addresseeId?: number;
-	toPoemId?: number;
-	status?: 'draft' | 'published' | 'scheduled';
-	visibility?: 'public' | 'private' | 'friends' | 'unlisted';
-	moderationStatus?: 'pending' | 'approved' | 'rejected' | 'removed';
-};
-
-/**
- * Create a poem
- */
-export async function createPoem(user: TestUser, poem: PoemInput) {
+export async function createPoem(user: TestUser, poem: CreatePoem) {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/poems`, {
 			method: 'POST',
@@ -29,41 +12,17 @@ export async function createPoem(user: TestUser, poem: PoemInput) {
 	return await res.json();
 }
 
-/**
- * Edit a poem
- */
-export async function editPoem(
-	user: TestUser,
-	poemId: number,
-	updates: Partial<PoemInput>,
-) {
+export async function getMyPoems(user: TestUser) {
 	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/${poemId}`, {
-			method: 'PATCH',
-			headers: { Cookie: user.cookie },
-			body: updates,
-		}),
-	);
-	return await res.json();
-}
-
-/**
- * Delete a poem
- */
-export async function deletePoem(user: TestUser, poemId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/${poemId}`, {
-			method: 'DELETE',
+		jsonRequest(`${PREFIX}/poems/me`, {
+			method: 'GET',
 			headers: { Cookie: user.cookie },
 		}),
 	);
 	return await res.json();
 }
 
-/**
- * Get a poem by ID
- */
-export async function getPoem(user: TestUser, poemId: number) {
+export async function getPoemById(user: TestUser, poemId: number) {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/poems/${poemId}`, {
 			method: 'GET',
@@ -73,19 +32,9 @@ export async function getPoem(user: TestUser, poemId: number) {
 	return await res.json();
 }
 
-/**
- * List poems of a user (optionally filtered by visibility)
- */
-export async function listUserPoems(
-	user: TestUser,
-	targetUserId: number,
-	visibility?: string,
-) {
-	const url = new URL(`${PREFIX}/users/${targetUserId}/poems`);
-	if (visibility) url.searchParams.set('visibility', visibility);
-
+export async function getAuthorPoems(user: TestUser, authorId: number) {
 	const res = await app.handle(
-		jsonRequest(url.toString(), {
+		jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
 			method: 'GET',
 			headers: { Cookie: user.cookie },
 		}),

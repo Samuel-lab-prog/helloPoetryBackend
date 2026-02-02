@@ -1,7 +1,14 @@
 import { Elysia } from 'elysia';
 import { server } from '../index';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import type {
+	PoemModerationStatus,
+	PoemStatus,
+	PoemVisibility,
+	UserRole,
+	UserStatus,
+} from '@SharedKernel/Enums';
 import { prisma } from '@Prisma/PrismaClient';
+import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
 
 export const app = new Elysia().use(server);
 export const PREFIX = 'http://test/api/v1';
@@ -27,21 +34,14 @@ export function jsonRequest(
 	});
 }
 
-export async function createUser(data: {
-	email: string;
-	password: string;
-	nickname: string;
-	name: string;
-	bio: string;
-	avatarUrl: string;
-}): Promise<TestUser> {
+export async function createUser(data: CreateUser): Promise<TestUser> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/users`, {
 			method: 'POST',
 			body: data,
 		}),
 	);
-	const body = (await res.json()) as any;
+	const body = (await res.json()) as { id: number };
 	return {
 		id: body.id,
 		cookie: '',
@@ -65,12 +65,44 @@ type ToUpdate = {
 	role: UserRole;
 	status: UserStatus;
 };
-export async function updateUserStats(
+export async function updateUserStatsRaw(
 	userId: number,
 	updates: Partial<ToUpdate>,
 ) {
 	await prisma.user.update({
 		where: { id: userId },
 		data: updates,
+	});
+}
+
+export async function createFriendshipRaw(
+	requesterId: number,
+	addresseeId: number,
+) {
+	await prisma.friendship.create({
+		data: {
+			userAId: requesterId,
+			userBId: addresseeId,
+		},
+	});
+}
+
+export async function updatePoemRaw(
+	poemId: number,
+	updates: Partial<{
+		visibility: PoemVisibility;
+		status: PoemStatus;
+		moderationStatus: PoemModerationStatus;
+	}>,
+) {
+	return await prisma.poem.update({
+		where: { id: poemId },
+		data: updates,
+		select: {
+			id: true,
+			moderationStatus: true,
+			status: true,
+			visibility: true,
+		},
 	});
 }

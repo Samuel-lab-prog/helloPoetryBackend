@@ -3,7 +3,6 @@ import { t } from 'elysia';
 export const PoemStatusEnumSchema = t.UnionEnum([
 	'draft',
 	'published',
-	'scheduled',
 ] as const);
 
 export const PoemVisibilityEnumSchema = t.UnionEnum([

@@ -3,6 +3,7 @@ import type { SlugService } from '../../../ports/SlugService';
 import type { CreatePoem, InsertPoem } from '../models/Index';
 import { PoemCreationDeniedError, PoemAlreadyExistsError } from '../Errors';
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
+import type { FullPoem } from '../../queries/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -23,23 +24,26 @@ export function createPoemFactory(deps: Dependencies) {
 
 	return async function createPoem(
 		params: CreatePoemParams,
-	): Promise<{ id: number }> {
+	): Promise<FullPoem> {
 		const { data, meta } = params;
 
-		if (meta.requesterStatus !== 'active' || meta.requesterRole === 'user') {
+		if (meta.requesterStatus !== 'active') {
 			throw new PoemCreationDeniedError();
 		}
 
 		const slug = slugService.generateSlug(data.title);
 		const fullData: InsertPoem = { ...data, slug };
 
-		try {
-			return await commandsRepository.insertPoem(fullData);
-		} catch (e) {
-			if ((e as Error).message.includes('slug')) {
-				throw new PoemAlreadyExistsError();
-			}
-			throw e;
+		const result = await commandsRepository.insertPoem(fullData);
+
+		if (result.ok === true) {
+			return result.data;
 		}
+
+		if (result.ok === false && result.code === 'CONFLICT') {
+			throw new PoemAlreadyExistsError();
+		}
+
+		throw result.error;
 	};
 }

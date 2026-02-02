@@ -1,20 +1,27 @@
 import type { PoemStatus, PoemVisibility } from '../models/Enums';
+import type {
+	PoemModerationStatus,
+	UserRole,
+	UserStatus,
+} from '@SharedKernel/Enums';
 
 type ViewerContext = {
 	id?: number;
-	role?: 'user' | 'moderator' | 'author';
-	status?: 'active' | 'suspended' | 'banned';
+	role?: UserRole;
+	status?: UserStatus;
 };
 
 type AuthorContext = {
 	friendIds?: number[];
 	id: number;
+	directAccess?: boolean;
 };
 
 type PoemContext = {
 	id: number;
 	status: PoemStatus;
 	visibility: PoemVisibility;
+	moderationStatus: PoemModerationStatus;
 };
 
 export type PoemPolicyContext = {
@@ -26,28 +33,43 @@ export type PoemPolicyContext = {
 export function canViewPoem(c: PoemPolicyContext): boolean {
 	const { viewer, author, poem } = c;
 
-	if (viewer.role === 'moderator') return true;
+	const isViewerOwnAuthor = viewer.id === author.id;
+	const isViewerBanned = viewer.status === 'banned';
+	const isViewerModerator = viewer.role === 'moderator';
 
-	if (viewer.id === author.id) return true;
+	const isPoemApproved = poem.moderationStatus === 'approved';
+	const isPoemDraft = poem.status === 'draft';
+	const isPoemPrivate = poem.visibility === 'private';
 
-	if (poem.status !== 'published') {
-		return false;
+	const isDirectAccess = !!author.directAccess;
+
+	function isFriend(): boolean {
+		if (!viewer.id) return false;
+		return author.friendIds?.includes(viewer.id) === true;
 	}
 
-	if (!viewer.id) {
-		return poem.visibility === 'public' || poem.visibility === 'unlisted';
-	}
+	if (isViewerOwnAuthor) return true;
+
+	if (isViewerBanned) return false;
+
+	if (isPoemDraft) return false;
+
+	if (!isPoemApproved) return false;
+
+	if (isViewerModerator && !isPoemPrivate) return true;
 
 	switch (poem.visibility) {
 		case 'public':
-		case 'unlisted':
 			return true;
+
+		case 'unlisted':
+			return isDirectAccess;
+
+		case 'friends':
+			return isFriend();
 
 		case 'private':
 			return false;
-
-		case 'friends':
-			return author.friendIds?.includes(viewer.id) ?? false;
 
 		default:
 			return false;

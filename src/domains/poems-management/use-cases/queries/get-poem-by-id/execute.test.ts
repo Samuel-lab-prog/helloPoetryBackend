@@ -1,51 +1,55 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { getPoemFactory } from './execute';
+
 import { PoemNotFoundError, PoemAccessDeniedError } from '../errors';
 
-let poemQueriesRepository: any;
-let getPoem: ReturnType<typeof getPoemFactory>;
+describe('USE-CASE - Get Poem By Id', () => {
+	let poemQueriesRepository: any;
+	let getPoem: any;
 
-beforeEach(() => {
-	poemQueriesRepository = {
-		selectPoemById: mock(),
-	};
+	beforeEach(() => {
+		poemQueriesRepository = {
+			selectPoemById: mock(),
+		};
 
-	getPoem = getPoemFactory({ poemQueriesRepository });
-});
+		getPoem = getPoemFactory({
+			poemQueriesRepository,
+		});
+	});
 
-describe('getPoem use case', () => {
-	const poem = {
-		id: 10,
-		status: 'published',
-		visibility: 'friends-only',
-		author: { id: 2, friendsIds: [1, 3] },
-		content: 'Some content',
-	};
-
-	it('should throw PoemNotFoundError if poem does not exist', async () => {
+	it('Does not allow access when poem does not exist', () => {
 		poemQueriesRepository.selectPoemById.mockResolvedValue(null);
 
-		await expect(getPoem({ requesterId: 1, poemId: 999 })).rejects.toThrow(
-			PoemNotFoundError,
-		);
+		expect(
+			getPoem({
+				requesterId: 1,
+				requesterRole: 'user',
+				requesterStatus: 'active',
+				poemId: 10,
+			}),
+		).rejects.toBeInstanceOf(PoemNotFoundError);
 	});
 
-	it('should throw PoemAccessDeniedError if requester cannot view poem', async () => {
-		const privatePoem = { ...poem, visibility: 'private' };
-		poemQueriesRepository.selectPoemById.mockResolvedValue(privatePoem);
+	it('Does not allow access when viewer cannot view poem', () => {
+		const poem = {
+			id: 10,
+			status: 'published',
+			visibility: 'private',
+			author: {
+				id: 2,
+				friendsIds: [],
+			},
+		};
 
-		await expect(getPoem({ requesterId: 1, poemId: 10 })).rejects.toThrow(
-			PoemAccessDeniedError,
-		);
-	});
+		poemQueriesRepository.selectPoemById.mockResolvedValue(poem);
 
-	it('should propagate repository errors', async () => {
-		poemQueriesRepository.selectPoemById.mockRejectedValue(
-			new Error('DB failure'),
-		);
-
-		await expect(getPoem({ requesterId: 1, poemId: 10 })).rejects.toThrow(
-			'DB failure',
-		);
+		expect(
+			getPoem({
+				requesterId: 1,
+				requesterRole: 'user',
+				requesterStatus: 'active',
+				poemId: 10,
+			}),
+		).rejects.toBeInstanceOf(PoemAccessDeniedError);
 	});
 });

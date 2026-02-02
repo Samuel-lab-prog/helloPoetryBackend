@@ -20,6 +20,9 @@
 			"@AuthPlugin": [
 				"./generic-subdomains/authentication/adapters/http/auth-plugin/AuthPlugin.ts"
 			],
+			"@OptionalAuthPlugin": [
+				"./generic-subdomains/authentication/adapters/http/optional-auth-plugin/OptionalAuthPlugin.ts"
+			],
 			"@ClearDatabase": ["./generic-subdomains/utils/ClearDatabase.ts"],
 
 			"@PrismaErrorHandler": [
