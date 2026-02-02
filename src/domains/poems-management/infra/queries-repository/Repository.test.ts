@@ -1,13 +1,9 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeAll, afterAll } from 'bun:test';
 import { prisma } from '@PrismaClient';
 import { queriesRepository } from './repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
-beforeEach(async () => {
-	await clearDatabase();
-});
-
-describe('queriesRepository (Prisma)', () => {
+describe('REPOSITORY - Poems Management', () => {
 	const USERS = [
 		{
 			id: 1,
@@ -38,7 +34,8 @@ describe('queriesRepository (Prisma)', () => {
 		},
 	];
 
-	beforeEach(async () => {
+	beforeAll(async () => {
+		await clearDatabase();
 		await prisma.user.createMany({ data: USERS });
 
 		await prisma.friendship.createMany({
@@ -78,41 +75,55 @@ describe('queriesRepository (Prisma)', () => {
 		});
 	});
 
-	it('selectMyPoems should return poems of requester with stats', async () => {
-		const poems = await queriesRepository.selectMyPoems({ requesterId: 1 });
+	afterAll(async () => {
+		await clearDatabase();
+	});
 
+	it('selectMyPoems returns all poems authored by requester with proper stats', async () => {
+		const poems = await queriesRepository.selectMyPoems({ requesterId: 1 });
 		expect(poems.length).toBe(2);
+
 		poems.forEach((p) => {
+			expect(typeof p.id).toBe('number');
+			expect(typeof p.title).toBe('string');
+			expect(typeof p.content).toBe('string');
 			expect(p.stats).toHaveProperty('likesCount');
 			expect(p.stats).toHaveProperty('commentsCount');
 		});
 	});
 
-	it('selectAuthorPoems should return poems of author with stats and friendsIds', async () => {
+	it('selectAuthorPoems returns all poems with author info including friendsIds and stats', async () => {
 		const poems = await queriesRepository.selectAuthorPoems({ authorId: 1 });
-
 		expect(poems.length).toBe(2);
+
 		poems.forEach((p) => {
 			expect(p.author.id).toBe(1);
 			expect(Array.isArray(p.author.friendsIds)).toBe(true);
 			expect(p.stats).toHaveProperty('likesCount');
 			expect(p.stats).toHaveProperty('commentsCount');
+			expect(typeof p.title).toBe('string');
 		});
 	});
 
-	it('selectPoemById should return full poem details', async () => {
+	it('selectPoemById returns full poem details including author, stats and dedications', async () => {
 		const poem = await queriesRepository.selectPoemById(1);
-
 		expect(poem).not.toBeNull();
 		expect(poem?.id).toBe(1);
-		expect(poem?.author).toHaveProperty('friendsIds');
+		expect(poem?.title).toBe('Poem 1');
+		expect(poem?.content).toBe('Hello');
+		expect(poem?.slug).toBe('poem-1');
+
+		expect(poem?.author).toHaveProperty('id', 1);
+		expect(Array.isArray(poem?.author.friendsIds)).toBe(true);
+
 		expect(poem?.stats).toHaveProperty('likesCount');
 		expect(poem?.stats).toHaveProperty('commentsCount');
+
 		expect(poem?.dedicatedToUser).toBeNull();
 		expect(poem?.dedicatedToPoem).toBeNull();
 	});
 
-	it('selectPoemById should return null for non-existent poem', async () => {
+	it('selectPoemById returns null for non-existent poem', async () => {
 		const poem = await queriesRepository.selectPoemById(999);
 		expect(poem).toBeNull();
 	});

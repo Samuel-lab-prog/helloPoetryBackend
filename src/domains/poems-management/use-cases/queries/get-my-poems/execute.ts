@@ -26,6 +26,7 @@ export function getMyPoemsFactory({ poemQueriesRepository }: Dependencies) {
 					id: poem.id,
 					status: poem.status,
 					visibility: poem.visibility,
+					moderationStatus: poem.moderationStatus,
 				},
 				viewer: { id: params.requesterId },
 			}),

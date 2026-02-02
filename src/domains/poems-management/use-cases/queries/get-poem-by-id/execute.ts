@@ -1,8 +1,7 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import { PoemNotFoundError, PoemAccessDeniedError } from '../errors';
 import { canViewPoem } from '../policies/policies';
-import type { MyPoem, AuthorPoem } from '../models/Index';
-import { toAuthorPoem, toMyPoem } from '../dtos';
+import type { AuthorPoem } from '../models/Index';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
@@ -17,16 +16,12 @@ interface GetPoemParams {
 }
 
 export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
-	return async function getPoem(
-		params: GetPoemParams,
-	): Promise<AuthorPoem | MyPoem> {
+	return async function getPoem(params: GetPoemParams): Promise<AuthorPoem> {
 		const poem = await poemQueriesRepository.selectPoemById(params.poemId);
 
 		if (!poem) {
 			throw new PoemNotFoundError();
 		}
-
-		const isAuthor = poem.author.id === params.requesterId;
 
 		const canAccess = canViewPoem({
 			author: {
@@ -50,6 +45,6 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 			throw new PoemAccessDeniedError();
 		}
 
-		return isAuthor ? toMyPoem(poem) : toAuthorPoem(poem);
+		return poem;
 	};
 }

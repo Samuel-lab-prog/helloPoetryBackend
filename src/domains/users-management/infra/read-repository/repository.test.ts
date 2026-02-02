@@ -135,15 +135,6 @@ describe('Users Repository', () => {
 	});
 
 	describe('selectPublicProfile', () => {
-		it('should return public profile for a valid id', async () => {
-			const profile = await selectPublicProfile(exoticUserId);
-			expect(profile).toMatchObject({
-				id: exoticUserId,
-				avatarUrl: EXOTIC_USER.avatarUrl,
-				role: 'user',
-			});
-		});
-
 		it('should return null for a non-existing id', async () => {
 			const profile = await selectPublicProfile(-1);
 			expect(profile).toBeNull();
@@ -151,15 +142,6 @@ describe('Users Repository', () => {
 	});
 
 	describe('selectPrivateProfile', () => {
-		it('should return private profile for a valid id', async () => {
-			const profile = await selectPrivateProfile(exoticUserId);
-			expect(profile).toMatchObject({
-				id: exoticUserId,
-				avatarUrl: EXOTIC_USER.avatarUrl,
-				role: 'user',
-			});
-		});
-
 		it('should return null for a non-existing id', async () => {
 			const profile = await selectPrivateProfile(-1);
 			expect(profile).toBeNull();

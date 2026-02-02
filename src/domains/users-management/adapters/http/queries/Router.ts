@@ -17,6 +17,7 @@ import {
 	usersQueriesServices,
 	type UsersQueriesRouterServices,
 } from './Services';
+import type { UserRole } from '@SharedKernel/Enums';
 
 // eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
@@ -102,7 +103,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				return services.getUser({
 					targetId: params.id,
 					requesterId: auth.clientId!,
-					requesterRole: auth.clientRole as 'user' | 'author' | 'moderator',
+					requesterRole: auth.clientRole as UserRole,
 				});
 			},
 			{

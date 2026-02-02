@@ -41,12 +41,12 @@ const BIOS = [
 	'Minimalist and curious mind.',
 ];
 
-type UserRole = 'user' | 'author' | 'moderator';
+type UserRole = 'admin' | 'author' | 'moderator';
 
 function randomRole(): UserRole {
 	const roll = Math.random();
 
-	if (roll < 0.7) return 'user';
+	if (roll < 0.7) return 'admin';
 	if (roll < 0.95) return 'author';
 	return 'moderator';
 }

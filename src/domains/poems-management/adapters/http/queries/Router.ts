@@ -1,5 +1,4 @@
 import { Elysia, t } from 'elysia';
-import { OptionalAuthPlugin } from '@OptionalAuthPlugin';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas/Index';
@@ -10,7 +9,26 @@ import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
-		.use(OptionalAuthPlugin)
+		.use(AuthPlugin)
+		.get(
+			'/me',
+			({ auth }) => {
+				return services.getMyPoems({
+					requesterId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Array(MyPoemSchema),
+				},
+				detail: {
+					summary: 'Get My Poems',
+					description:
+						'Returns the list of poems authored by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
 		.get(
 			'authors/:authorId',
 			({ params, auth }) => {
@@ -48,7 +66,7 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			},
 			{
 				response: {
-					200: t.Any(),
+					200: AuthorPoemSchema,
 					403: appErrorSchema,
 				},
 				params: t.Object({
@@ -58,26 +76,6 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					summary: 'Get Poem by ID',
 					description:
 						'Returns the poem with the specified ID if the requester has access to it.',
-					tags: ['Poems Management'],
-				},
-			},
-		)
-		.use(AuthPlugin)
-		.get(
-			'/me',
-			({ auth }) => {
-				return services.getMyPoems({
-					requesterId: auth.clientId,
-				});
-			},
-			{
-				response: {
-					200: t.Array(MyPoemSchema),
-				},
-				detail: {
-					summary: 'Get My Poems',
-					description:
-						'Returns the list of poems authored by the authenticated user.',
 					tags: ['Poems Management'],
 				},
 			},

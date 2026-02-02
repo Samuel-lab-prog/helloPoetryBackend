@@ -22,7 +22,7 @@ export interface QueriesRouterServices {
 		requesterStatus?: UserStatus;
 		requesterId?: number;
 		poemId: number;
-	}) => Promise<AuthorPoem | MyPoem>;
+	}) => Promise<AuthorPoem>;
 }
 
 export const queriesRouterServices: QueriesRouterServices = {

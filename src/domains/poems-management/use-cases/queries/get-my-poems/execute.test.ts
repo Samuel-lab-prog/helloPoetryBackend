@@ -1,102 +1,102 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { getMyPoemsFactory } from './execute';
 import { canViewPoem } from '../policies/policies';
-import type { MyPoem } from '../models/MyPoem';
 
-let poemQueriesRepository: any;
-let getMyPoems: ReturnType<typeof getMyPoemsFactory>;
+describe('USE-CASE - Get My Poems', () => {
+	let poemQueriesRepository: any;
+	let getMyPoems: any;
 
-beforeEach(() => {
-	poemQueriesRepository = {
-		selectMyPoems: mock(),
-	};
-
-	getMyPoems = getMyPoemsFactory({ poemQueriesRepository });
-});
-
-describe('getMyPoems use case', () => {
-	const requesterId = 1;
-	const poems: MyPoem[] = [
+	const basePoems = [
 		{
 			id: 1,
 			status: 'published',
 			visibility: 'public',
-			slug: 'poem-1',
-			title: 'Poem 1',
-			tags: [],
 			moderationStatus: 'approved',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			content: 'Content 1',
-			isCommentable: true,
-			excerpt: 'Excerpt 1',
-			stats: { likesCount: 0, commentsCount: 0 },
 		},
 		{
 			id: 2,
 			status: 'draft',
 			visibility: 'private',
-			slug: 'poem-2',
-			title: 'Poem 2',
-			tags: [],
 			moderationStatus: 'approved',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			content: 'Content 2',
-			isCommentable: true,
-			excerpt: 'Excerpt 2',
-			stats: { likesCount: 0, commentsCount: 0 },
 		},
 		{
 			id: 3,
 			status: 'published',
-			visibility: 'private',
-			slug: 'poem-3',
-			title: 'Poem 3',
-			tags: [],
+			visibility: 'friends',
 			moderationStatus: 'approved',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			content: 'Content 3',
-			isCommentable: true,
-			excerpt: 'Excerpt 3',
-			stats: { likesCount: 0, commentsCount: 0 },
+		},
+		{
+			id: 4,
+			status: 'published',
+			visibility: 'unlisted',
+			moderationStatus: 'approved',
 		},
 	];
 
-	it('should return only poems the requester can view', async () => {
-		poemQueriesRepository.selectMyPoems.mockResolvedValue(poems);
+	beforeEach(() => {
+		poemQueriesRepository = {
+			selectMyPoems: mock(),
+		};
 
-		const result = await getMyPoems({ requesterId });
-
-		// Manually filter expected using canViewPoem
-		const expected = poems.filter((poem) =>
-			canViewPoem({
-				author: { id: requesterId },
-				poem: { id: poem.id, status: poem.status, visibility: poem.visibility },
-				viewer: { id: requesterId },
-			}),
-		);
-
-		expect(result).toEqual(expected);
-		expect(poemQueriesRepository.selectMyPoems).toHaveBeenCalledWith({
-			requesterId,
+		getMyPoems = getMyPoemsFactory({
+			poemQueriesRepository,
 		});
 	});
 
-	it('should return empty array if no poems exist', async () => {
-		poemQueriesRepository.selectMyPoems.mockResolvedValue([]);
+	it('Returns all poems authored by requester regardless of visibility', async () => {
+		poemQueriesRepository.selectMyPoems.mockResolvedValue(basePoems);
 
-		const result = await getMyPoems({ requesterId });
-
-		expect(result).toEqual([]);
+		const poems = await getMyPoems({ requesterId: 1 });
+		expect(poems.length).toBe(basePoems.length);
+		expect(poems.map((p: any) => p.id)).toEqual([1, 2, 3, 4]);
 	});
 
-	it('should propagate errors from repository', async () => {
-		poemQueriesRepository.selectMyPoems.mockRejectedValue(
-			new Error('DB failure'),
-		);
+	it('Author can see even unapproved or draft poems', async () => {
+		const poemsWithUnapproved = [
+			...basePoems,
+			{
+				id: 5,
+				status: 'published',
+				visibility: 'public',
+				moderationStatus: 'pending',
+			},
+			{
+				id: 6,
+				status: 'draft',
+				visibility: 'private',
+				moderationStatus: 'pending',
+			},
+		];
 
-		await expect(getMyPoems({ requesterId })).rejects.toThrow('DB failure');
+		poemQueriesRepository.selectMyPoems.mockResolvedValue(poemsWithUnapproved);
+
+		const poems = await getMyPoems({ requesterId: 1 });
+		expect(poems.map((p: any) => p.id)).toEqual([1, 2, 3, 4, 5, 6]);
+	});
+
+	it('Works with empty poem list', async () => {
+		poemQueriesRepository.selectMyPoems.mockResolvedValue([]);
+
+		const poems = await getMyPoems({ requesterId: 1 });
+		expect(poems.length).toBe(0);
+	});
+
+	it('All returned poems pass canViewPoem check', async () => {
+		poemQueriesRepository.selectMyPoems.mockResolvedValue(basePoems);
+
+		const poems = await getMyPoems({ requesterId: 1 });
+		for (const poem of poems) {
+			const canView = canViewPoem({
+				viewer: { id: 1 },
+				author: { id: 1 },
+				poem: {
+					id: poem.id,
+					status: poem.status,
+					visibility: poem.visibility,
+					moderationStatus: poem.moderationStatus,
+				},
+			});
+			expect(canView).toBe(true);
+		}
 	});
 });

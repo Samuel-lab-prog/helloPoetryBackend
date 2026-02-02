@@ -1,9 +1,8 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { SlugService } from '../../../ports/SlugService';
-import type { CreatePoem, InsertPoem } from '../models/Index';
+import type { CreatePoem, InsertPoem, PoemInsertResult } from '../models/Index';
 import { PoemCreationDeniedError, PoemAlreadyExistsError } from '../Errors';
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
-import type { FullPoem } from '../../queries/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -24,7 +23,7 @@ export function createPoemFactory(deps: Dependencies) {
 
 	return async function createPoem(
 		params: CreatePoemParams,
-	): Promise<FullPoem> {
+	): Promise<PoemInsertResult> {
 		const { data, meta } = params;
 
 		if (meta.requesterStatus !== 'active') {
