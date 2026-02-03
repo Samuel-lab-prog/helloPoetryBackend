@@ -6,8 +6,8 @@ import {
 
 export type CreatePoem = (typeof CreatePoemBodySchema)['static'];
 export type UpdatePoem = (typeof UpdatePoemBodySchema)['static'];
-export type PoemCreationResult = (typeof PoemCreationResultSchema)['static'];
+export type CreatePoemResult = (typeof PoemCreationResultSchema)['static'];
 export type UpdatePoemResult = UpdatePoem;
 
-export type InsertPoemDB = CreatePoem & { slug: string; authorId: number };
+export type CreatePoemDB = CreatePoem & { slug: string; authorId: number };
 export type UpdatePoemDB = UpdatePoem & { slug: string };

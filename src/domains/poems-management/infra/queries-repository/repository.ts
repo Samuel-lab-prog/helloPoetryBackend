@@ -2,10 +2,7 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/QueriesRepository';
 import { authorPoemSelect, myPoemSelect } from './Selects';
-import type {
-	MyPoem,
-	AuthorPoem,
-} from '../../use-cases/queries/Models';
+import type { MyPoem, AuthorPoem } from '../../use-cases/queries/Models';
 
 //------------------------------------------------------------------------
 // HelperS
@@ -31,7 +28,6 @@ function calculateStats(poem: {
 }
 
 //------------------------------------------------------------------------
-
 
 function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {

@@ -6,6 +6,7 @@ import {
 	PoemExcerptSchema,
 	PoemTagsCreationSchema,
 	PoemIsCommentableSchema,
+	PoemToUserIdsSchema,
 } from '../fields/PoemFieldsSchemas';
 
 import {
@@ -13,21 +14,16 @@ import {
 	PoemVisibilityEnumSchema,
 } from '../fields/Enums';
 
-import { idSchema } from '@SharedKernel/Schemas';
-
 export const UpdatePoemBodySchema = t.Object({
-	title: t.Optional(PoemTitleSchema),
-	content: t.Optional(PoemContentSchema),
-	excerpt: t.Optional(PoemExcerptSchema),
-	tags: t.Optional(PoemTagsCreationSchema),
+	title: PoemTitleSchema,
+	content: PoemContentSchema,
+	excerpt: PoemExcerptSchema,
+	tags: PoemTagsCreationSchema,
 
-	visibility: t.Optional(PoemVisibilityEnumSchema),
-	status: t.Optional(PoemStatusEnumSchema),
+	visibility: PoemVisibilityEnumSchema,
+	status: PoemStatusEnumSchema,
 
-	isCommentable: t.Optional(PoemIsCommentableSchema),
+	isCommentable: PoemIsCommentableSchema,
 
-	dedicationUserIds: t.Optional(
-		t.Array(idSchema)
-	),
+	toUserIds: t.Nullable(PoemToUserIdsSchema),
 });
-

@@ -4,16 +4,16 @@ import type { CommandResult } from '@SharedKernel/Types';
 
 import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type {
-	InsertPoemDB,
-	PoemCreationResult,
+	CreatePoemDB,
+	CreatePoemResult,
 	UpdatePoem,
 } from '../../use-cases/commands/Models';
 
 import { insertPoemSelect } from '../queries-repository/Selects';
 
 function insertPoem(
-	data: InsertPoemDB,
-): Promise<CommandResult<PoemCreationResult>> {
+	data: CreatePoemDB,
+): Promise<CommandResult<CreatePoemResult>> {
 	return withPrismaResult(() => {
 		const tags = data.tags?.length
 			? data.tags.map((tag) => ({
@@ -71,7 +71,7 @@ function updatePoem(
 						where: { name: tag },
 						create: { name: tag },
 					})),
-			  }
+				}
 			: undefined;
 
 		const dedications = data.dedicationUserIds
@@ -82,7 +82,7 @@ function updatePoem(
 							connect: { id: userId },
 						},
 					})),
-			  }
+				}
 			: undefined;
 
 		const poem = await prisma.poem.update({

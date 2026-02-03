@@ -6,9 +6,9 @@ import {
 	PoemExcerptSchema,
 	PoemTagsCreationSchema,
 	PoemIsCommentableSchema,
+	PoemToUserIdsSchema,
 } from '../fields/PoemFieldsSchemas';
 
-import { idSchema } from '@SharedKernel/Schemas';
 import {
 	PoemStatusEnumSchema,
 	PoemVisibilityEnumSchema,
@@ -26,8 +26,5 @@ export const CreatePoemBodySchema = t.Object({
 
 	isCommentable: t.Optional(PoemIsCommentableSchema),
 
-	dedicationUserIds: t.Optional(
-		t.Array(idSchema, { minItems: 1 })
-	),
+	toUserIds: t.Optional(PoemToUserIdsSchema),
 });
-

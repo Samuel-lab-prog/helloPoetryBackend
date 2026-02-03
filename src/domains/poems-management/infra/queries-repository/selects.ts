@@ -1,4 +1,4 @@
-import type { PoemSelect } from "@PrismaGenerated/models";
+import type { PoemSelect } from '@PrismaGenerated/models';
 
 export const myPoemSelect = {
 	id: true,

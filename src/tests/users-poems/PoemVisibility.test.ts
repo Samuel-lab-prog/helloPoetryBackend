@@ -21,7 +21,7 @@ import {
 
 import type {
 	CreatePoem,
-	PoemCreationResult,
+	CreatePoemResult,
 } from '@Domains/poems-management/use-cases/commands/Models';
 import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
 import type { AppError } from '@AppError';
@@ -49,8 +49,8 @@ function makePoem(
 async function createAndApprovePoem(
 	user: TestUser,
 	poem: CreatePoem,
-): Promise<PoemCreationResult> {
-	const result = (await createPoem(user, poem)) as PoemCreationResult;
+): Promise<CreatePoemResult> {
+	const result = (await createPoem(user, poem)) as CreatePoemResult;
 	await updatePoemRaw(result.id!, { moderationStatus: 'approved' });
 	return result;
 }
@@ -103,7 +103,7 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = (await createPoem(author, poem)) as PoemCreationResult;
+		const result = (await createPoem(author, poem)) as CreatePoemResult;
 
 		const denied = await getPoemById(otherUser, result.id!);
 		expect((denied as AppError).statusCode).toBe(403);
@@ -176,7 +176,7 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = (await createPoem(author, poem)) as PoemCreationResult;
+		const result = (await createPoem(author, poem)) as CreatePoemResult;
 
 		const denied = await getPoemById(otherUser, result.id!);
 		expect((denied as AppError).statusCode).toBe(403);
@@ -229,7 +229,7 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'public',
 			status: 'draft',
 		});
-		const result = (await createPoem(author, poem)) as PoemCreationResult;
+		const result = (await createPoem(author, poem)) as CreatePoemResult;
 		await updateUserStatsRaw(thirdUser.id, { role: 'moderator' });
 		const fetched = await getPoemById(thirdUser, result.id!);
 		expect((fetched as AppError).statusCode).toBe(403);
@@ -280,7 +280,7 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'friends',
 			status: 'published',
 		});
-		const result = (await createPoem(author, poem)) as PoemCreationResult;
+		const result = (await createPoem(author, poem)) as CreatePoemResult;
 		await createFriendshipRaw(author.id, otherUser.id);
 
 		const fetched = await getPoemById(otherUser, result.id!);

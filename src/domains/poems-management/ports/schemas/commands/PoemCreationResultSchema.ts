@@ -1,7 +1,14 @@
 import { t } from 'elysia';
-import { PoemTitleSchema } from '../fields/PoemFieldsSchemas';
-
-import { idSchema } from '@SharedKernel/Schemas';
+import {
+	PoemContentSchema,
+	PoemToUserIdsSchema,
+	PoemExcerptSchema,
+	PoemIsCommentableSchema,
+	PoemSlugSchema,
+	PoemTagsReadSchema,
+	PoemTitleSchema,
+} from '../fields/PoemFieldsSchemas';
+import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 
 import {
 	PoemModerationStatusEnumSchema,
@@ -11,8 +18,21 @@ import {
 
 export const PoemCreationResultSchema = t.Object({
 	id: idSchema,
+
 	title: PoemTitleSchema,
+	slug: PoemSlugSchema,
+	excerpt: t.Nullable(PoemExcerptSchema),
+	tags: PoemTagsReadSchema,
+	content: PoemContentSchema,
+
 	visibility: PoemVisibilityEnumSchema,
 	status: PoemStatusEnumSchema,
 	moderationStatus: PoemModerationStatusEnumSchema,
+
+	createdAt: DateSchema,
+	updatedAt: DateSchema,
+
+	isCommentable: PoemIsCommentableSchema,
+
+	toUserIds: t.Nullable(PoemToUserIdsSchema),
 });

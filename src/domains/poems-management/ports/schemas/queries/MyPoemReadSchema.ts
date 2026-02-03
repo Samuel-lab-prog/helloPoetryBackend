@@ -11,7 +11,7 @@ import {
 	DateSchema,
 	idSchema,
 	NonNegativeIntegerSchema,
-	UserPreviewSchema
+	UserPreviewSchema,
 } from '@SharedKernel/Schemas';
 
 import {
