@@ -4,6 +4,10 @@ export interface AuthorPoem {
 	id: number;
 	title: string;
 	content: string;
+	tags: { name: string; id: number }[];
+	excerpt: string | null;
+	slug: string;
+	isCommentable: boolean;
 	createdAt: Date;
 
 	status: PoemStatus;

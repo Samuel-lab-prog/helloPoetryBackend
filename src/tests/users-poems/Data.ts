@@ -1,4 +1,5 @@
 import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem';
+import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/UpdatePoem';
 import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
 
 export const testUsersData: CreateUser[] = [
@@ -34,20 +35,47 @@ export const testPoemsData: Omit<CreatePoem, 'authorId'>[] = [
 		content: 'The sun rises over the hills...',
 		excerpt: 'A poem about dawn.',
 		tags: ['nature', 'morning'],
-		visibility: 'public',
 	},
 	{
 		title: 'Silent Night',
 		content: 'The world sleeps under a blanket of stars...',
 		excerpt: 'A poem about night.',
 		tags: ['night', 'stars'],
-		visibility: 'public',
 	},
 	{
 		title: 'Winds of Change',
 		content: 'The winds whisper tales of old...',
 		excerpt: 'A poem about change.',
 		tags: ['change', 'wind'],
+	},
+];
+
+export const testPoemsForUpdate: UpdatePoem[] = [
+	{
+		title: 'The Dawn - Revised',
+		content: 'The golden sun ascends the hills...',
+		excerpt: 'A revised poem about dawn.',
+		tags: ['nature', 'morning', 'sunrise'],
+		isCommentable: true,
 		visibility: 'public',
+		status: 'published',
+	},
+	{
+		title: 'Silent Night - Extended',
+		content: 'The world sleeps under a blanket of stars and dreams...',
+		excerpt: 'An extended poem about night.',
+		tags: ['night', 'stars', 'dreams'],
+		isCommentable: false,
+		visibility: 'private',
+		status: 'draft',
+	},
+	{
+		title: 'Winds of Change - Final',
+		content: 'The winds whisper tales of old and new beginnings...',
+		excerpt: 'The final version of a poem about change.',
+		tags: ['change', 'wind', 'new beginnings'],
+		isCommentable: true,
+		visibility: 'public',
+		status: 'published',
 	},
 ];

@@ -1,3 +1,4 @@
+import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/UpdatePoem';
 import { jsonRequest, type TestUser, PREFIX, app } from '../Helpers';
 import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem';
 
@@ -37,6 +38,21 @@ export async function getAuthorPoems(user: TestUser, authorId: number) {
 		jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
 			method: 'GET',
 			headers: { Cookie: user.cookie },
+		}),
+	);
+	return await res.json();
+}
+
+export async function updatePoem(
+	user: TestUser,
+	poemId: number,
+	data: Partial<UpdatePoem>,
+) {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/poems/${poemId}`, {
+			method: 'PUT',
+			headers: { Cookie: user.cookie },
+			body: data,
 		}),
 	);
 	return await res.json();

@@ -14,6 +14,10 @@ export const AuthorPoemSchema = t.Object({
 	title: PoemTitleSchema,
 	content: PoemContentSchema,
 	createdAt: DateSchema,
+	excerpt: t.Nullable(t.String()),
+	tags: t.Array(t.Object({ id: idSchema, name: t.String() })),
+	slug: t.String(),
+	isCommentable: t.Boolean(),
 
 	status: PoemStatusEnumSchema,
 	visibility: PoemVisibilityEnumSchema,

@@ -31,7 +31,7 @@ beforeEach(async () => {
 	user2 = await loginUser(user2);
 });
 
-describe('INTEGRATION - Friends Requests cancellation', () => {
+describe('INTEGRATION - Friends Management', () => {
 	it('User1 sends a friend request to User2', async () => {
 		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
 		expect(request.requesterId).toBe(user1.id);

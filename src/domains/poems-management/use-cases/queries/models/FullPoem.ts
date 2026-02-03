@@ -5,7 +5,7 @@ export interface FullPoem {
 	slug: string;
 	title: string;
 	content: string;
-	excerpt?: string;
+	excerpt: string | null;
 	isCommentable: boolean;
 	createdAt: Date;
 	updatedAt: Date;

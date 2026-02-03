@@ -80,7 +80,7 @@ function selectPoemById(poemId: number): Promise<FullPoem | null> {
 
 		const poemDetails: FullPoem = {
 			...poem,
-			excerpt: poem.excerpt ?? undefined,
+			excerpt: poem.excerpt ?? null,
 			author: {
 				id: poem.author.id,
 				name: poem.author.name,

@@ -38,7 +38,7 @@ beforeEach(async () => {
 	user2 = await loginUser(user2);
 });
 
-describe('INTEGRATION - Block Users', () => {
+describe('INTEGRATION - Friends Management', () => {
 	it('User1 blocks User2', async () => {
 		const blocked = (await blockUser(user1, user2.id)) as FriendRequest;
 
