@@ -2,7 +2,7 @@ import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 import { queriesRepository } from '../../infra/queries-repository/Repository';
 import { commandsRepository } from '../../infra/commands-repository/Repository';
-import { slugifyService } from '../../infra/slug-service/execute';
+import { slugifyService } from '../../infra/slug-service/Execute';
 
 import {
 	createPoemFactory,

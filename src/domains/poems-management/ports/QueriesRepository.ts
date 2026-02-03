@@ -1,7 +1,11 @@
 import type { AuthorPoem, MyPoem } from '../use-cases/queries/Models';
 
+type PoemByIdParams = { poemId: number };
+type AuthorPoemsParams = { authorId: number };
+type MyPoemsParams = { requesterId: number };
+
 export interface QueriesRepository {
-	selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]>;
-	selectAuthorPoems(params: { authorId: number }): Promise<AuthorPoem[]>;
-	selectPoemById(params: { poemId: number }): Promise<AuthorPoem | null>;
+	selectMyPoems(params: MyPoemsParams): Promise<MyPoem[]>;
+	selectAuthorPoems(params: AuthorPoemsParams): Promise<AuthorPoem[]>;
+	selectPoemById(params: PoemByIdParams): Promise<AuthorPoem | null>;
 }

@@ -6,10 +6,13 @@ import type {
 } from '../use-cases/commands/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
+type PoemCreationParams = { poem: InsertPoemDB; };
+type UpdatePoemParams = {	
+	poemId: number;
+	poem: UpdatePoem & { slug: string };
+};
+
 export interface CommandsRepository {
-	insertPoem(poem: InsertPoemDB): Promise<CommandResult<PoemCreationResult>>;
-	updatePoem(
-		poemId: number,
-		poem: UpdatePoem & { slug: string },
-	): Promise<CommandResult<UpdatePoemResult>>;
+	insertPoem(params: PoemCreationParams): Promise<CommandResult<PoemCreationResult>>;
+	updatePoem(params: UpdatePoemParams): Promise<CommandResult<UpdatePoemResult>>;
 }
