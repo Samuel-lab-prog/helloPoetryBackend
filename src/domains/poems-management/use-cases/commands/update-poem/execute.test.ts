@@ -7,7 +7,7 @@ import {
 	CrossUpdateError,
 	PoemUpdateDeniedError,
 } from '../Errors';
-import type { UpdatePoem } from '../models/UpdatePoem';
+import type { UpdatePoem } from '../Models';
 
 let commandsRepository: any;
 let queriesRepository: any;

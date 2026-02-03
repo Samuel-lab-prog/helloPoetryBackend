@@ -19,10 +19,12 @@ import {
 	updateUserStatsRaw,
 } from '../Helpers.ts';
 
-import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem.ts';
+import type {
+	CreatePoem,
+	PoemCreationResult,
+} from '@Domains/poems-management/use-cases/commands/Models';
+import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
 import type { AppError } from '@AppError';
-import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Index.ts';
-import type { PoemInsertResult } from '@Domains/poems-management/use-cases/commands/models/PoemInsertResult.ts';
 
 let author: TestUser;
 let otherUser: TestUser;
@@ -36,7 +38,7 @@ function makePoem(
 	authorId: number,
 	overrides: Partial<CreatePoem> = {},
 	index = 0,
-): CreatePoem {
+): CreatePoem & { authorId: number } {
 	return {
 		...testPoemsData[index]!,
 		authorId,
@@ -47,8 +49,8 @@ function makePoem(
 async function createAndApprovePoem(
 	user: TestUser,
 	poem: CreatePoem,
-): Promise<PoemInsertResult> {
-	const result = (await createPoem(user, poem)) as PoemInsertResult;
+): Promise<PoemCreationResult> {
+	const result = (await createPoem(user, poem)) as PoemCreationResult;
 	await updatePoemRaw(result.id!, { moderationStatus: 'approved' });
 	return result;
 }
@@ -101,7 +103,7 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = (await createPoem(author, poem)) as PoemInsertResult;
+		const result = (await createPoem(author, poem)) as PoemCreationResult;
 
 		const denied = await getPoemById(otherUser, result.id!);
 		expect((denied as AppError).statusCode).toBe(403);
@@ -174,7 +176,7 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = (await createPoem(author, poem)) as PoemInsertResult;
+		const result = (await createPoem(author, poem)) as PoemCreationResult;
 
 		const denied = await getPoemById(otherUser, result.id!);
 		expect((denied as AppError).statusCode).toBe(403);
@@ -227,7 +229,7 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'public',
 			status: 'draft',
 		});
-		const result = (await createPoem(author, poem)) as PoemInsertResult;
+		const result = (await createPoem(author, poem)) as PoemCreationResult;
 		await updateUserStatsRaw(thirdUser.id, { role: 'moderator' });
 		const fetched = await getPoemById(thirdUser, result.id!);
 		expect((fetched as AppError).statusCode).toBe(403);
@@ -278,7 +280,7 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'friends',
 			status: 'published',
 		});
-		const result = (await createPoem(author, poem)) as PoemInsertResult;
+		const result = (await createPoem(author, poem)) as PoemCreationResult;
 		await createFriendshipRaw(author.id, otherUser.id);
 
 		const fetched = await getPoemById(otherUser, result.id!);

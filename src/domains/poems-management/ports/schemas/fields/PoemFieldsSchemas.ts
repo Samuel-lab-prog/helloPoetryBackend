@@ -1,5 +1,6 @@
 import { t } from 'elysia';
 import { makeValidationError } from '@AppError';
+import { idSchema } from '@SharedKernel/Schemas';
 
 export const PoemTitleSchema = t.String({
 	minLength: 3,
@@ -48,13 +49,21 @@ const TagNameSchema = t.String({
 	),
 });
 
-export const PoemTagsSchema = t.Array(
+export const PoemTagsCreationSchema = t.Array(TagNameSchema, {
+	maxItems: 5,
+	uniqueItems: true,
+	...makeValidationError('A poem can have up to 5 unique tags'),
+});
+
+export const PoemTagsReadSchema = t.Array(
 	t.Object({
+		id: idSchema,
 		name: TagNameSchema,
-		id: t.Number({ readOnly: true }),
 	}),
-	{
-		maxItems: 5,
-		...makeValidationError('You can specify up to 5 tags per poem'),
-	},
+	{ uniqueItems: true },
 );
+
+export const PoemIsCommentableSchema = t.Boolean({
+	example: true,
+	...makeValidationError('IsCommentable must be a boolean value'),
+});

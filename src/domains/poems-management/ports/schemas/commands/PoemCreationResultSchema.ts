@@ -1,12 +1,13 @@
 import { t } from 'elysia';
-import { PoemTitleSchema } from './fields/PoemFieldsSchemas';
+import { PoemTitleSchema } from '../fields/PoemFieldsSchemas';
 
 import { idSchema } from '@SharedKernel/Schemas';
+
 import {
 	PoemModerationStatusEnumSchema,
 	PoemStatusEnumSchema,
 	PoemVisibilityEnumSchema,
-} from './fields/Enums';
+} from '../fields/Enums';
 
 export const PoemCreationResultSchema = t.Object({
 	id: idSchema,

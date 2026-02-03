@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { getPoemFactory } from './execute';
 
-import { PoemNotFoundError, PoemAccessDeniedError } from '../errors';
+import { PoemNotFoundError, PoemAccessDeniedError } from '../Errors';
 
 describe('USE-CASE - Get Poem By Id', () => {
 	let poemQueriesRepository: any;

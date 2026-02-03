@@ -4,15 +4,15 @@ import type { CommandResult } from '@SharedKernel/Types';
 
 import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type {
-	InsertPoem,
-	PoemInsertResult,
+	InsertPoemDB,
+	PoemCreationResult,
 	UpdatePoem,
-} from '../../use-cases/commands/models/Index';
-import { insertPoemSelect } from '../queries-repository/selects';
+} from '../../use-cases/commands/Models';
+import { insertPoemSelect } from '../queries-repository/Selects';
 
 function insertPoem(
-	data: InsertPoem,
-): Promise<CommandResult<PoemInsertResult>> {
+	data: InsertPoemDB,
+): Promise<CommandResult<PoemCreationResult>> {
 	return withPrismaResult(() => {
 		const tags = data.tags?.length
 			? data.tags.map((tag) => ({
@@ -30,8 +30,8 @@ function insertPoem(
 				excerpt: data.excerpt,
 				isCommentable: data.isCommentable ?? true,
 				authorId: data.authorId,
-				addresseeId: data.addresseeUserId,
-				toPoemId: data.addresseePoemId,
+				addresseeId: data.addresseeId,
+				toPoemId: data.toPoemId,
 				visibility: data.visibility,
 				status: data.status,
 				...(tags && { tags: { connectOrCreate: tags } }),

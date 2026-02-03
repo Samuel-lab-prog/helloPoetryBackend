@@ -1,5 +1,7 @@
-import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem';
-import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/UpdatePoem';
+import type {
+	UpdatePoem,
+	CreatePoem,
+} from '@Domains/poems-management/use-cases/commands/Models';
 import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
 
 export const testUsersData: CreateUser[] = [

@@ -12,10 +12,10 @@ import {
 	updateUserStatsRaw,
 } from '../Helpers.ts';
 
-import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem.ts';
+import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/Models';
 import type { AppError } from '@AppError';
-import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Index.ts';
-import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/Index.ts';
+import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
+import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/Models.ts';
 
 let author: TestUser;
 let otherUser: TestUser;
@@ -29,7 +29,7 @@ function makePoem(
 	authorId: number,
 	overrides: Partial<CreatePoem> = {},
 	index = 0,
-): CreatePoem {
+): CreatePoem & { authorId: number } {
 	return {
 		...testPoemsData[index]!,
 		authorId,

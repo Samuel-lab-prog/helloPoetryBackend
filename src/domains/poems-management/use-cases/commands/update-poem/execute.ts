@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { SlugService } from '../../../ports/SlugService';
-import type { UpdatePoem } from '../models/Index';
+import type { UpdatePoem } from '../Models';
 import {
 	PoemAlreadyExistsError,
 	PoemNotFoundError,
@@ -39,7 +39,7 @@ export function updatePoemFactory(deps: Dependencies) {
 			throw new PoemUpdateDeniedError();
 		}
 
-		const existingPoem = await queriesRepository.selectPoemById(poemId);
+		const existingPoem = await queriesRepository.selectPoemById({ poemId });
 
 		if (!existingPoem) {
 			throw new PoemNotFoundError();

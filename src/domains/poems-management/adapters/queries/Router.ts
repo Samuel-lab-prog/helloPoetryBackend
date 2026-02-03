@@ -1,11 +1,15 @@
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
-
-import { MyPoemSchema, AuthorPoemSchema, idSchema } from '../../schemas/Index';
-
-import { type QueriesRouterServices, queriesRouterServices } from './Services';
 import { appErrorSchema } from '@AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import { idSchema } from '@SharedKernel/Schemas';
+
+import {
+	MyPoemReadSchema,
+	AuthorPoemReadSchema,
+} from '../../ports/schemas/Index';
+
+import { type QueriesRouterServices, queriesRouterServices } from './Services';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
@@ -19,7 +23,7 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			},
 			{
 				response: {
-					200: t.Array(MyPoemSchema),
+					200: t.Array(MyPoemReadSchema),
 				},
 				detail: {
 					summary: 'Get My Poems',
@@ -33,15 +37,15 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			'authors/:authorId',
 			({ params, auth }) => {
 				return services.getAuthorPoems({
-					requesterId: auth.clientId,
 					authorId: params.authorId,
+					requesterId: auth.clientId,
 					requesterRole: auth.clientRole as UserRole,
 					requesterStatus: auth.clientStatus as UserStatus,
 				});
 			},
 			{
 				response: {
-					200: t.Array(AuthorPoemSchema),
+					200: t.Array(AuthorPoemReadSchema),
 				},
 				params: t.Object({
 					authorId: idSchema,
@@ -58,15 +62,15 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			'/:poemId',
 			({ params, auth }) => {
 				return services.getPoemById({
+					poemId: params.poemId,
+					requesterId: auth.clientId,
 					requesterRole: auth.clientRole as UserRole,
 					requesterStatus: auth.clientStatus as UserStatus,
-					requesterId: auth.clientId,
-					poemId: params.poemId,
 				});
 			},
 			{
 				response: {
-					200: AuthorPoemSchema,
+					200: AuthorPoemReadSchema,
 					403: appErrorSchema,
 				},
 				params: t.Object({

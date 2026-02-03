@@ -1,6 +1,8 @@
-import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/UpdatePoem';
+import type {
+	UpdatePoem,
+	CreatePoem,
+} from '@Domains/poems-management/use-cases/commands/Models';
 import { jsonRequest, type TestUser, PREFIX, app } from '../Helpers';
-import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/models/CreatePoem';
 
 export async function createPoem(user: TestUser, poem: CreatePoem) {
 	const res = await app.handle(

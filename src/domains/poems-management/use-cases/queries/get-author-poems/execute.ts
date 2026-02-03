@@ -1,6 +1,6 @@
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { AuthorPoem } from '../models/AuthorPoem';
+import type { AuthorPoem } from '../Models';
 import { canViewPoem } from '../policies/policies';
 
 interface Dependencies {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'bun:test';
 import { prisma } from '@PrismaClient';
-import { queriesRepository } from './repository';
+import { queriesRepository } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
 describe('REPOSITORY - Poems Management', () => {
@@ -106,7 +106,7 @@ describe('REPOSITORY - Poems Management', () => {
 	});
 
 	it('selectPoemById returns full poem details including author, stats and dedications', async () => {
-		const poem = await queriesRepository.selectPoemById(1);
+		const poem = await queriesRepository.selectPoemById({ poemId: 1 });
 		expect(poem).not.toBeNull();
 		expect(poem?.id).toBe(1);
 		expect(poem?.title).toBe('Poem 1');
@@ -124,7 +124,7 @@ describe('REPOSITORY - Poems Management', () => {
 	});
 
 	it('selectPoemById returns null for non-existent poem', async () => {
-		const poem = await queriesRepository.selectPoemById(999);
+		const poem = await queriesRepository.selectPoemById({ poemId: 999 });
 		expect(poem).toBeNull();
 	});
 });

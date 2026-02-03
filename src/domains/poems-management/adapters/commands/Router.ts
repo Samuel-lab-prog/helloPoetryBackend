@@ -2,15 +2,19 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { appErrorSchema } from '@AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import { idSchema } from '@SharedKernel/Schemas';
 
-import { CreatePoemBodySchema } from '../../schemas/CreatePoemSchema';
+import {
+	UpdatePoemBodySchema,
+	PoemCreationResultSchema,
+	CreatePoemBodySchema,
+	UpdatePoemResultSchema,
+} from '../../ports/schemas/Index';
+
 import {
 	type CommandsRouterServices,
 	commandsRouterServices,
 } from './Services';
-import { PoemCreationResultSchema } from '../../schemas/PoemCreationResultSchema';
-import { UpdatePoemBodySchema } from '../../schemas/UpdatePoemSchema';
-import { idSchema } from '@SharedKernel/Schemas';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/poems' })
@@ -19,7 +23,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			'/',
 			async ({ auth, body, set }) => {
 				const rs = await services.createPoem({
-					data: { ...body, authorId: auth.clientId },
+					data: body,
 					meta: {
 						requesterId: auth.clientId,
 						requesterStatus: auth.clientStatus as UserStatus,
@@ -57,14 +61,14 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: UpdatePoemBodySchema, // TODO: Define UpdatePoemResponseSchema
+					200: UpdatePoemResultSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
 				params: t.Object({
 					id: idSchema,
 				}),
-				body: UpdatePoemBodySchema, // TODO: Define UpdatePoemBodySchema
+				body: UpdatePoemBodySchema,
 				detail: {
 					summary: 'Update Poem',
 					description:

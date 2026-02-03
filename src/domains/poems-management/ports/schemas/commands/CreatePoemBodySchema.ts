@@ -4,20 +4,28 @@ import {
 	PoemContentSchema,
 	PoemTitleSchema,
 	PoemExcerptSchema,
-} from './fields/PoemFieldsSchemas';
+	PoemTagsCreationSchema,
+	PoemIsCommentableSchema,
+} from '../fields/PoemFieldsSchemas';
 
-import { idSchema } from './parameters/IdSchema';
-import { PoemStatusEnumSchema, PoemVisibilityEnumSchema } from './fields/Enums';
+import { idSchema } from '@SharedKernel/Schemas';
+import {
+	PoemStatusEnumSchema,
+	PoemVisibilityEnumSchema,
+} from '../fields/Enums';
 
 export const CreatePoemBodySchema = t.Object({
 	title: PoemTitleSchema,
 	content: PoemContentSchema,
+
 	excerpt: t.Nullable(PoemExcerptSchema),
+	tags: t.Optional(PoemTagsCreationSchema),
+
 	visibility: t.Optional(PoemVisibilityEnumSchema),
 	status: t.Optional(PoemStatusEnumSchema),
 
-	tags: t.Optional(t.Array(t.String({ examples: ['nature', 'love', 'life'] }))),
-	isCommentable: t.Optional(t.Boolean()),
+	isCommentable: t.Optional(PoemIsCommentableSchema),
+
 	toPoemId: t.Optional(idSchema),
 	addresseeId: t.Optional(idSchema),
 });

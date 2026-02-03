@@ -1,4 +1,4 @@
-import type { PoemStatus, PoemVisibility } from '../models/Enums';
+import type { PoemStatus, PoemVisibility } from '../Models';
 import type {
 	PoemModerationStatus,
 	UserRole,

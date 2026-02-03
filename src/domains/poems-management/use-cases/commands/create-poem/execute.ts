@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { SlugService } from '../../../ports/SlugService';
-import type { CreatePoem, InsertPoem, PoemInsertResult } from '../models/Index';
+import type { CreatePoem, InsertPoemDB, PoemCreationResult } from '../Models';
 import { PoemCreationDeniedError, PoemAlreadyExistsError } from '../Errors';
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
 
@@ -23,7 +23,7 @@ export function createPoemFactory(deps: Dependencies) {
 
 	return async function createPoem(
 		params: CreatePoemParams,
-	): Promise<PoemInsertResult> {
+	): Promise<PoemCreationResult> {
 		const { data, meta } = params;
 
 		if (meta.requesterStatus !== 'active') {
@@ -31,7 +31,11 @@ export function createPoemFactory(deps: Dependencies) {
 		}
 
 		const slug = slugService.generateSlug(data.title);
-		const fullData: InsertPoem = { ...data, slug };
+		const fullData: InsertPoemDB = {
+			...data,
+			slug,
+			authorId: meta.requesterId,
+		};
 
 		const result = await commandsRepository.insertPoem(fullData);
 

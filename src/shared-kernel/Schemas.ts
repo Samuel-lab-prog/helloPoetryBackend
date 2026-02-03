@@ -27,3 +27,8 @@ export const DateSchema = t.Date({
 });
 
 export const NullableDateSchema = t.Nullable(DateSchema);
+
+export const NonNegativeIntegerSchema = t.Number({
+	minimum: 0,
+	...makeValidationError('Value must be a non-negative integer'),
+});

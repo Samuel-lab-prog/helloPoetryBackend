@@ -1,14 +1,15 @@
 import type {
-	InsertPoem,
+	InsertPoemDB,
 	UpdatePoem,
-	PoemInsertResult,
-} from '../use-cases/commands/models/Index';
+	PoemCreationResult,
+	UpdatePoemResult,
+} from '../use-cases/commands/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export interface CommandsRepository {
-	insertPoem(poem: InsertPoem): Promise<CommandResult<PoemInsertResult>>;
+	insertPoem(poem: InsertPoemDB): Promise<CommandResult<PoemCreationResult>>;
 	updatePoem(
 		poemId: number,
 		poem: UpdatePoem & { slug: string },
-	): Promise<CommandResult<UpdatePoem>>;
+	): Promise<CommandResult<UpdatePoemResult>>;
 }

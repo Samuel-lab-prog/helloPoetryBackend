@@ -3,13 +3,13 @@ import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/QueriesRepository';
 
-import { authorPoemSelect, myPoemSelect, fullPoemSelect } from './selects';
+import { authorPoemSelect, myPoemSelect, fullPoemSelect } from './Selects';
 
 import type {
 	MyPoem,
 	AuthorPoem,
 	FullPoem,
-} from '../../use-cases/queries/Index';
+} from '../../use-cases/queries/Models';
 
 function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {
@@ -64,7 +64,11 @@ function selectAuthorPoems(params: {
 	});
 }
 
-function selectPoemById(poemId: number): Promise<FullPoem | null> {
+function selectPoemById({
+	poemId,
+}: {
+	poemId: number;
+}): Promise<FullPoem | null> {
 	return withPrismaErrorHandling(async () => {
 		const poem = await prisma.poem.findUnique({
 			where: { id: poemId },

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'bun:test';
 import { prisma } from '@PrismaClient';
 import { commandsRepository } from './Repository';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
-import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/models/UpdatePoem';
+import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/Models';
 
 describe('REPOSITORY - Poems Management', () => {
 	const USERS = [
