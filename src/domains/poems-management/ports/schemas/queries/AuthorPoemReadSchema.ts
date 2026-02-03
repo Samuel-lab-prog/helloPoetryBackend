@@ -29,13 +29,13 @@ export const AuthorPoemReadSchema = t.Object({
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
 	tags: PoemTagsReadSchema,
-	
+
 	status: PoemStatusEnumSchema,
 	visibility: PoemVisibilityEnumSchema,
 	moderationStatus: PoemModerationStatusEnumSchema,
-	
+
 	isCommentable: PoemIsCommentableSchema,
-	
+
 	createdAt: DateSchema,
 	updatedAt: DateSchema,
 

@@ -27,15 +27,6 @@ export class CannotUpdatePublishedPoemError extends DomainError {
 	}
 }
 
-export class CrossUpdateError extends DomainError {
-	constructor() {
-		super(
-			'FORBIDDEN',
-			"Forbidden operation: You cannot update other user's poems",
-		);
-	}
-}
-
 export class PoemUpdateDeniedError extends DomainError {
 	constructor() {
 		super(
