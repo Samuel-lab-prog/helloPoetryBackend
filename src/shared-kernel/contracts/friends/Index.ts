@@ -62,12 +62,11 @@ async function areBlocked(userAId: number, userBId: number): Promise<boolean> {
 	});
 }
 
-export const friendsServicesForRecomendationEngine: FriendsContractForRecomendationEngine =
-	{
+export const friendsServicesForRecomendationEngine: FriendsContractForRecomendationEngine = {
 		getFollowedUserIds,
 		getBlockedUserIds,
 	};
-
+	
 export const friendsServicesForInteractions: FriendsContractForInteractions = {
 	areFriends,
 	areBlocked,

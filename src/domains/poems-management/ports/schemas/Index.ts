@@ -1,6 +1,5 @@
 export * from './queries/AuthorPoemReadSchema';
 export * from './queries/MyPoemReadSchema';
-export * from './queries/FullPoemReadSchema';
 export * from './fields/Enums';
 export * from './fields/PoemFieldsSchemas';
 export * from './parameters/OrderBySchema';
@@ -10,3 +9,4 @@ export * from './commands/PoemCreationResultSchema';
 export * from './commands/UpdatePoemBodySchema';
 export * from './commands/CreatePoemBodySchema';
 export * from './commands/UpdatePoemResultSchema';
+export * from './queries/PoemPreviewReadSchema';

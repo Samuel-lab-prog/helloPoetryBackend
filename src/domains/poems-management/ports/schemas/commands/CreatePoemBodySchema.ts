@@ -18,7 +18,7 @@ export const CreatePoemBodySchema = t.Object({
 	title: PoemTitleSchema,
 	content: PoemContentSchema,
 
-	excerpt: t.Nullable(PoemExcerptSchema),
+	excerpt: t.Optional(PoemExcerptSchema),
 	tags: t.Optional(PoemTagsCreationSchema),
 
 	visibility: t.Optional(PoemVisibilityEnumSchema),
@@ -26,6 +26,8 @@ export const CreatePoemBodySchema = t.Object({
 
 	isCommentable: t.Optional(PoemIsCommentableSchema),
 
-	toPoemId: t.Optional(idSchema),
-	addresseeId: t.Optional(idSchema),
+	dedicationUserIds: t.Optional(
+		t.Array(idSchema, { minItems: 1 })
+	),
 });
+

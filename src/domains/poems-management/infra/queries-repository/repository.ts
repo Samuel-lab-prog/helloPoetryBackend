@@ -1,15 +1,37 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-
 import type { QueriesRepository } from '../../ports/QueriesRepository';
-
-import { authorPoemSelect, myPoemSelect, fullPoemSelect } from './Selects';
-
+import { authorPoemSelect, myPoemSelect } from './Selects';
 import type {
 	MyPoem,
 	AuthorPoem,
-	FullPoem,
 } from '../../use-cases/queries/Models';
+
+//------------------------------------------------------------------------
+// HelperS
+//------------------------------------------------------------------------
+
+function getFrienIdsFromRelations(poemAuthor: {
+	friendshipsFrom: { userBId: number }[] | null;
+	friendshipsTo: { userAId: number }[] | null;
+}): number[] {
+	return [
+		...(poemAuthor.friendshipsFrom?.map((f) => f.userBId) || []),
+		...(poemAuthor.friendshipsTo?.map((f) => f.userAId) || []),
+	];
+}
+
+function calculateStats(poem: {
+	_count: { poemLikes: number; comments: number };
+}) {
+	return {
+		likesCount: poem._count.poemLikes,
+		commentsCount: poem._count.comments,
+	};
+}
+
+//------------------------------------------------------------------------
+
 
 function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {
@@ -25,10 +47,11 @@ function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 
 		return poems.map((poem) => ({
 			...poem,
-			stats: {
-				likesCount: poem._count.poemLikes,
-				commentsCount: poem._count.comments,
-			},
+			toUsers: poem.dedications.map((dedication) => ({
+				...dedication.toUser!,
+				friendIds: getFrienIdsFromRelations(dedication.toUser!),
+			})),
+			stats: calculateStats(poem),
 		}));
 	});
 }
@@ -49,16 +72,10 @@ function selectAuthorPoems(params: {
 
 		return poems.map((poem) => ({
 			...poem,
-			stats: {
-				likesCount: poem._count.poemLikes,
-				commentsCount: poem._count.comments,
-			},
+			stats: calculateStats(poem),
 			author: {
 				...poem.author,
-				friendsIds: [
-					...poem.author.friendshipsTo.map((f) => f.userAId),
-					...poem.author.friendshipsFrom.map((f) => f.userBId),
-				],
+				friendIds: getFrienIdsFromRelations(poem.author),
 			},
 		}));
 	});
@@ -68,39 +85,23 @@ function selectPoemById({
 	poemId,
 }: {
 	poemId: number;
-}): Promise<FullPoem | null> {
+}): Promise<AuthorPoem | null> {
 	return withPrismaErrorHandling(async () => {
 		const poem = await prisma.poem.findUnique({
 			where: { id: poemId },
-			select: fullPoemSelect,
+			select: authorPoemSelect,
 		});
 
 		if (!poem) return null;
 
-		const friendsIds = [
-			...(poem.author.friendshipsFrom?.map((f) => f.userBId) || []),
-			...(poem.author.friendshipsTo?.map((f) => f.userAId) || []),
-		];
-
-		const poemDetails: FullPoem = {
+		const poemDetails: AuthorPoem = {
 			...poem,
-			excerpt: poem.excerpt ?? null,
 			author: {
-				id: poem.author.id,
-				name: poem.author.name,
-				nickname: poem.author.nickname,
-				avatarUrl: poem.author.avatarUrl,
-				friendsIds,
+				...poem.author,
+				friendIds: getFrienIdsFromRelations(poem.author),
 			},
-			dedicatedToUser: poem.addresseedUser ?? null,
-			dedicatedToPoem: poem.toPoem ?? null,
-			tags: poem.tags,
-			stats: {
-				likesCount: poem._count.poemLikes,
-				commentsCount: poem._count.comments,
-			},
+			stats: calculateStats(poem),
 		};
-
 		return poemDetails;
 	});
 }

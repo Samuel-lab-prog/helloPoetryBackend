@@ -11,6 +11,7 @@ import {
 	DateSchema,
 	idSchema,
 	NonNegativeIntegerSchema,
+	UserPreviewSchema
 } from '@SharedKernel/Schemas';
 
 import {
@@ -33,6 +34,7 @@ export const MyPoemReadSchema = t.Object({
 	moderationStatus: PoemModerationStatusEnumSchema,
 
 	isCommentable: PoemIsCommentableSchema,
+	toUsers: t.Array(UserPreviewSchema),
 
 	createdAt: DateSchema,
 	updatedAt: DateSchema,

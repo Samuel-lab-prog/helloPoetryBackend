@@ -28,7 +28,7 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 		const canAccess = canViewPoem({
 			author: {
 				id: poem.author.id,
-				friendIds: poem.author.friendsIds,
+				friendIds: poem.author.friendIds,
 				directAccess: true, // valid because this is accessed via direct link
 			},
 			poem: {

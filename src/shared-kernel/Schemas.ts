@@ -32,3 +32,11 @@ export const NonNegativeIntegerSchema = t.Number({
 	minimum: 0,
 	...makeValidationError('Value must be a non-negative integer'),
 });
+
+export const UserPreviewSchema = t.Object({
+	id: idSchema,
+	name: t.String(),
+	nickname: t.String(),
+	avatarUrl: t.Nullable(t.String()),
+	friendIds: t.Array(idSchema),
+});

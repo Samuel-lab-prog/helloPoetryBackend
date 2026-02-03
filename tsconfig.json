@@ -9,6 +9,7 @@
 		"allowJs": true,
 		"baseUrl": "./src",
 		"paths": {
+			"@PrismaGenerated/*": ["./generic-subdomains/persistance/prisma/generated/*"],
 			"@Domains/*": ["./domains/*"],
 			"@Prisma/*": ["./generic-subdomains/persistance/prisma/*"],
 			"@DomainError": ["./generic-subdomains/utils/DomainError.ts"],

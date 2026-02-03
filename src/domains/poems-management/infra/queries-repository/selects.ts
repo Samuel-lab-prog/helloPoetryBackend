@@ -1,3 +1,5 @@
+import type { PoemSelect } from "@PrismaGenerated/models";
+
 export const myPoemSelect = {
 	id: true,
 	slug: true,
@@ -10,19 +12,46 @@ export const myPoemSelect = {
 	moderationStatus: true,
 	createdAt: true,
 	updatedAt: true,
+
 	tags: {
 		select: {
-			name: true,
 			id: true,
+			name: true,
 		},
 	},
+
+	dedications: {
+		select: {
+			toUser: {
+				select: {
+					id: true,
+					name: true,
+					nickname: true,
+					avatarUrl: true,
+					friendshipsFrom: {
+						select: {
+							userBId: true,
+							userAId: true,
+						},
+					},
+					friendshipsTo: {
+						select: {
+							userAId: true,
+							userBId: true,
+						},
+					},
+				},
+			},
+		},
+	},
+
 	_count: {
 		select: {
 			poemLikes: true,
 			comments: true,
 		},
 	},
-} as const;
+} as const satisfies PoemSelect;
 
 export const authorPoemSelect = {
 	id: true,
@@ -42,11 +71,17 @@ export const authorPoemSelect = {
 			name: true,
 			nickname: true,
 			avatarUrl: true,
-			friendshipsTo: {
-				select: { userAId: true },
-			},
 			friendshipsFrom: {
-				select: { userBId: true },
+				select: {
+					userBId: true,
+					userAId: true,
+				},
+			},
+			friendshipsTo: {
+				select: {
+					userAId: true,
+					userBId: true,
+				},
 			},
 		},
 	},
@@ -58,49 +93,43 @@ export const authorPoemSelect = {
 		},
 	},
 
+	dedications: {
+		select: {
+			toUser: {
+				select: {
+					id: true,
+					name: true,
+					nickname: true,
+					avatarUrl: true,
+					friendshipsFrom: {
+						select: {
+							userBId: true,
+							userAId: true,
+						},
+					},
+					friendshipsTo: {
+						select: {
+							userAId: true,
+							userBId: true,
+						},
+					},
+				},
+			},
+		},
+	},
+
 	_count: {
 		select: {
 			poemLikes: true,
 			comments: true,
 		},
 	},
-} as const;
+} as const satisfies PoemSelect;
 
-export const fullPoemSelect = {
+export const insertPoemSelect = {
 	id: true,
 	slug: true,
 	title: true,
 	content: true,
 	excerpt: true,
-	isCommentable: true,
-	createdAt: true,
-	updatedAt: true,
-	deletedAt: true,
-	status: true,
-	visibility: true,
-	moderationStatus: true,
-	author: {
-		select: {
-			id: true,
-			name: true,
-			nickname: true,
-			avatarUrl: true,
-			friendshipsFrom: { select: { userBId: true } },
-			friendshipsTo: { select: { userAId: true } },
-		},
-	},
-	addresseedUser: {
-		select: { id: true, name: true, nickname: true, avatarUrl: true },
-	},
-	toPoem: { select: { id: true, title: true, slug: true, authorId: true } },
-	tags: { select: { id: true, name: true } },
-	_count: { select: { poemLikes: true, comments: true } },
-} as const;
-
-export const insertPoemSelect = {
-	id: true,
-	title: true,
-	visibility: true,
-	status: true,
-	moderationStatus: true,
-} as const;
+} as const satisfies PoemSelect;

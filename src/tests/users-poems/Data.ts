@@ -31,7 +31,7 @@ export const testUsersData: CreateUser[] = [
 	},
 ];
 
-export const testPoemsData: Omit<CreatePoem, 'authorId'>[] = [
+export const testPoemsData: CreatePoem[] = [
 	{
 		title: 'The Dawn',
 		content: 'The sun rises over the hills...',

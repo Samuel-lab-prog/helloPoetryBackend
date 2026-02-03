@@ -3,6 +3,7 @@ import {
 	idSchema,
 	DateSchema,
 	NonNegativeIntegerSchema,
+	UserPreviewSchema,
 } from '@SharedKernel/Schemas';
 
 import {
@@ -37,15 +38,7 @@ export const AuthorPoemReadSchema = t.Object({
 
 	createdAt: DateSchema,
 
-	// We are not going to use schemas from users bounded context here to avoid unnecessary dependencies.
-	// In the future, we might consider creating a shared kernel for user basic info if needed.
-	author: t.Object({
-		id: idSchema,
-		name: t.String(),
-		nickname: t.String(),
-		avatarUrl: t.String(),
-		friendsIds: t.Array(idSchema),
-	}),
+	author: UserPreviewSchema,
 
 	stats: t.Object({
 		likesCount: NonNegativeIntegerSchema,

@@ -16,95 +16,106 @@ model User {
   bio          String
   avatarUrl    String
 
-  role   userRole   @default(author)
-  status userStatus @default(active)
+  role   UserRole   @default(author)
+  status UserStatus @default(active)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
   emailVerifiedAt DateTime?
 
-  poems           Poem[]
-  comments        Comment[]
-  commentLikes    CommentLike[]
-  poemLikes       PoemLike[]
-  friendshipsFrom Friendship[]  @relation("FriendshipUserA")
-  friendshipsTo   Friendship[]  @relation("FriendshipUserB")
+  poems Poem[]
 
-  fromPoemDedications Poem[] @relation("PoemToUserDedications")
+  comments     Comment[]
+  commentLikes CommentLike[]
+  poemLikes    PoemLike[]
 
-  userSanctions UserSanction[] @relation("ModeratorSanctions")
-  sanctions     UserSanction[] @relation("SanctionedUser")
+  friendshipsFrom Friendship[] @relation("FriendshipUserA")
+  friendshipsTo   Friendship[] @relation("FriendshipUserB")
 
   friendshipRequests   FriendshipRequest[] @relation("FriendshipRequestRequester")
   friendshipAddressees FriendshipRequest[] @relation("FriendshipRequestAddressee")
 
   blockedUsers BlockedUser[] @relation("BlockedByUser")
   blockedBy    BlockedUser[] @relation("BlockedUser")
+
+  poemDedicationsReceived PoemDedication[] @relation("UserPoemDedications")
+
+  sanctions     UserSanction[] @relation("SanctionedUser")
+  userSanctions UserSanction[] @relation("ModeratorSanctions")
 }
 
-enum userRole {
+enum UserRole {
   author
   moderator
   admin
 }
 
-enum userStatus {
+enum UserStatus {
   active
   banned
   suspended
 }
 
-// Be careful with the order of userAId and userBId to avoid duplicates
-model Friendship {
-  id        Int      @id @default(autoincrement())
-  userAId   Int
-  userBId   Int
+model Poem {
+  id            Int     @id @default(autoincrement())
+  title         String
+  slug          String
+  excerpt       String?
+  content       String
+  isCommentable Boolean @default(true)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  status           PoemStatus           @default(draft)
+  visibility       PoemVisibility       @default(public)
+  moderationStatus PoemModerationStatus @default(pending)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  tags      Tag[]
+  comments  Comment[]
+  poemLikes PoemLike[]
+
+  dedications     PoemDedication[] @relation("PoemDedications")
+
+  @@unique([authorId, slug])
+  @@index([createdAt])
+  @@index([status, visibility])
+}
+
+model PoemDedication {
+  id Int @id @default(autoincrement())
+
+  poemId Int
+  poem   Poem @relation("PoemDedications", fields: [poemId], references: [id])
+
+  toUserId Int
+  toUser   User @relation("UserPoemDedications", fields: [toUserId], references: [id])
+
   createdAt DateTime @default(now())
 
-  userA User @relation("FriendshipUserA", fields: [userAId], references: [id])
-  userB User @relation("FriendshipUserB", fields: [userBId], references: [id])
-
-  @@unique([userAId, userBId])
+  @@unique([poemId, toUserId])
+  @@index([poemId])
 }
 
-model FriendshipRequest {
-  id          Int      @id @default(autoincrement())
-  requesterId Int
-  addresseeId Int
-  createdAt   DateTime @default(now())
-
-  requester User @relation("FriendshipRequestRequester", fields: [requesterId], references: [id])
-  addressee User @relation("FriendshipRequestAddressee", fields: [addresseeId], references: [id])
-
-  @@unique([requesterId, addresseeId])
-}
-
-model BlockedUser {
-  id        Int      @id @default(autoincrement())
-  blockerId Int
-  blockedId Int
-  createdAt DateTime @default(now())
-
-  blocker User @relation("BlockedByUser", fields: [blockerId], references: [id])
-  blocked User @relation("BlockedUser", fields: [blockedId], references: [id])
-
-  @@unique([blockerId, blockedId])
-  @@index([blockerId])
-  @@index([blockedId])
-}
 
 model Comment {
   id      Int    @id @default(autoincrement())
   content String
 
   createdAt DateTime      @default(now())
-  status    commentStatus @default(visible)
+  status    CommentStatus @default(visible)
 
   authorId Int
-  author   User      @relation(fields: [authorId], references: [id])
-  poemId   Int
-  poem     Poem      @relation(fields: [poemId], references: [id])
+  author   User @relation(fields: [authorId], references: [id])
+
+  poemId Int
+  poem   Poem @relation(fields: [poemId], references: [id])
+
   parentId Int?
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies  Comment[] @relation("CommentReplies")
@@ -116,7 +127,7 @@ model Comment {
   @@index([authorId])
 }
 
-enum commentStatus {
+enum CommentStatus {
   visible
   deletedByAuthor
   deletedByModerator
@@ -145,39 +156,46 @@ model PoemLike {
   @@id([userId, poemId])
 }
 
-model Poem {
-  id            Int     @id @default(autoincrement())
-  title         String
-  slug          String
-  excerpt       String?
-  content       String
-  isCommentable Boolean @default(true)
+model Friendship {
+  id Int @id @default(autoincrement())
 
-  addresseeId    Int?
-  addresseedUser User? @relation("PoemToUserDedications", fields: [addresseeId], references: [id])
+  userAId Int
+  userBId Int
 
-  toPoemId    Int?
-  toPoem      Poem?  @relation("PoemToPoemDedications", fields: [toPoemId], references: [id])
-  dedications Poem[] @relation("PoemToPoemDedications")
+  createdAt DateTime @default(now())
 
-  status           poemStatus           @default(draft)
-  visibility       poemVisibility       @default(public)
-  moderationStatus poemModerationStatus @default(pending)
+  userA User @relation("FriendshipUserA", fields: [userAId], references: [id])
+  userB User @relation("FriendshipUserB", fields: [userBId], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  @@unique([userAId, userBId])
+}
 
-  authorId  Int
-  tags      Tag[]
-  author    User       @relation(fields: [authorId], references: [id])
-  comments  Comment[]
-  poemLikes PoemLike[]
+model FriendshipRequest {
+  id Int @id @default(autoincrement())
 
-  @@unique([authorId, slug])
-  @@index([createdAt])
-  @@index([authorId])
-  @@index([status, visibility])
+  requesterId Int
+  addresseeId Int
+
+  createdAt DateTime @default(now())
+
+  requester User @relation("FriendshipRequestRequester", fields: [requesterId], references: [id])
+  addressee User @relation("FriendshipRequestAddressee", fields: [addresseeId], references: [id])
+
+  @@unique([requesterId, addresseeId])
+}
+
+model BlockedUser {
+  id Int @id @default(autoincrement())
+
+  blockerId Int
+  blockedId Int
+
+  createdAt DateTime @default(now())
+
+  blocker User @relation("BlockedByUser", fields: [blockerId], references: [id])
+  blocked User @relation("BlockedUser", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
 }
 
 model Tag {
@@ -187,42 +205,44 @@ model Tag {
   poems Poem[]
 }
 
-enum poemStatus {
+model UserSanction {
+  id Int @id @default(autoincrement())
+
+  userId      Int
+  moderatorId Int
+
+  type   SanctionType
+  reason String
+
+  startAt DateTime  @default(now())
+  endAt   DateTime?
+
+  user      User @relation("SanctionedUser", fields: [userId], references: [id])
+  moderator User @relation("ModeratorSanctions", fields: [moderatorId], references: [id])
+
+  @@index([userId])
+}
+
+enum SanctionType {
+  suspension
+  ban
+}
+
+enum PoemStatus {
   draft
   published
 }
 
-enum poemVisibility {
+enum PoemVisibility {
   public
   private
   unlisted
   friends
 }
 
-enum poemModerationStatus {
+enum PoemModerationStatus {
   pending
   approved
   rejected
   removed
-}
-
-model UserSanction {
-  id          Int          @id @default(autoincrement())
-  userId      Int
-  type        SanctionType
-  reason      String
-  startAt     DateTime     @default(now())
-  endAt       DateTime? // Null means permanent sanction
-  moderatorId Int
-
-  user      User @relation("SanctionedUser", fields: [userId], references: [id])
-  moderator User @relation("ModeratorSanctions", fields: [moderatorId], references: [id])
-
-  @@index([userId])
-  @@index([startAt])
-}
-
-enum SanctionType {
-  suspension
-  ban
 }
