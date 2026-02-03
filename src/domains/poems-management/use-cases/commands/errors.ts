@@ -1,11 +1,8 @@
 import { DomainError } from '@DomainError';
 
 export class PoemCreationDeniedError extends DomainError {
-	constructor() {
-		super(
-			'FORBIDDEN',
-			'Forbidden operation: You do not have permission to create a poem',
-		);
+	constructor(message: string) {
+		super('FORBIDDEN', 'Forbidden operation: ' + message);
 	}
 }
 
@@ -21,17 +18,14 @@ export class PoemNotFoundError extends DomainError {
 	}
 }
 
-export class CannotUpdatePublishedPoemError extends DomainError {
-	constructor() {
-		super('FORBIDDEN', 'Cannot update a published poem');
+export class PoemUpdateDeniedError extends DomainError {
+	constructor(message: string) {
+		super('FORBIDDEN', 'Forbidden operation: ' + message);
 	}
 }
 
-export class PoemUpdateDeniedError extends DomainError {
+export class InvalidDedicatedUsersError extends DomainError {
 	constructor() {
-		super(
-			'FORBIDDEN',
-			'Forbidden operation: You do not have permission to update this poem',
-		);
+		super('BAD_REQUEST', 'One or more dedicated users are invalid or inactive');
 	}
 }

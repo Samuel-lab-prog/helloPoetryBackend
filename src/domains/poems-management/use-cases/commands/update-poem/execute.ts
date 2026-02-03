@@ -1,23 +1,23 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { SlugService } from '../../../ports/SlugService';
-import type { UpdatePoem } from '../Models';
-import {
-	PoemAlreadyExistsError,
-	PoemNotFoundError,
-	CannotUpdatePublishedPoemError,
-	CrossUpdateError,
-	PoemUpdateDeniedError,
-} from '../Errors';
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
-import type { QueriesRepository } from '@Domains/poems-management/ports/QueriesRepository';
+import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { SlugService } from '../../../ports/SlugService';
+
+import type { UpdatePoem } from '../Models';
+import { PoemAlreadyExistsError } from '../Errors';
+
+import { canUpdatePoem } from '../policies/policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
+	usersContract: UsersContract;
 	slugService: SlugService;
 }
 
-interface UpdatePoemParams {
+type UpdatePoemParams = {
 	data: UpdatePoem;
 	poemId: number;
 	meta: {
@@ -25,38 +25,36 @@ interface UpdatePoemParams {
 		requesterStatus: UserStatus;
 		requesterRole: UserRole;
 	};
-}
+};
 
 export function updatePoemFactory(deps: Dependencies) {
-	const { commandsRepository, queriesRepository, slugService } = deps;
+	const { commandsRepository, queriesRepository, slugService, usersContract } =
+		deps;
 
 	return async function updatePoem(
 		params: UpdatePoemParams,
 	): Promise<UpdatePoem> {
 		const { data, meta, poemId } = params;
 
-		if (meta.requesterStatus !== 'active') {
-			throw new PoemUpdateDeniedError();
-		}
-
-		const existingPoem = await queriesRepository.selectPoemById({ poemId });
-
-		if (!existingPoem) {
-			throw new PoemNotFoundError();
-		}
-
-		if (meta.requesterId !== existingPoem.author.id) {
-			throw new CrossUpdateError();
-		}
-
-		if (existingPoem.status === 'published') {
-			throw new CannotUpdatePublishedPoemError();
-		}
+		const authorCtx = {
+			id: meta.requesterId,
+			status: meta.requesterStatus,
+			role: meta.requesterRole,
+		};
+		await canUpdatePoem({
+			ctx: {
+				author: authorCtx,
+			},
+			usersContract,
+			toUserIds: data.toUserIds ?? [],
+			poemId,
+			queriesRepository,
+		});
 
 		const slug = slugService.generateSlug(data.title);
-		const fullData = { ...data, slug };
+		const poem = { ...data, slug };
 
-		const result = await commandsRepository.updatePoem(poemId, fullData);
+		const result = await commandsRepository.updatePoem({ poemId, poem });
 
 		if (result.ok === true) {
 			return result.data;

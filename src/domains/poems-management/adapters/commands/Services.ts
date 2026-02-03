@@ -3,6 +3,7 @@ import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { queriesRepository } from '../../infra/queries-repository/Repository';
 import { commandsRepository } from '../../infra/commands-repository/Repository';
 import { slugifyService } from '../../infra/slug-service/Execute';
+import { usersContract } from '@SharedKernel/contracts/users/Index';
 
 import {
 	createPoemFactory,
@@ -33,10 +34,12 @@ export const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
 		commandsRepository,
 		slugService: slugifyService,
+		usersContract,
 	}),
 	updatePoem: updatePoemFactory({
 		commandsRepository,
 		queriesRepository,
 		slugService: slugifyService,
+		usersContract
 	}),
 };

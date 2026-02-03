@@ -1,43 +1,57 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { SlugService } from '../../../ports/SlugService';
-import type { CreatePoem, CreatePoemDB, CreatePoemResult } from '../Models';
-import { PoemCreationDeniedError, PoemAlreadyExistsError } from '../Errors';
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
+import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+
+import type { SlugService } from '../../../ports/SlugService';
+import type { CommandsRepository } from '../../../ports/CommandsRepository';
+
+import { PoemAlreadyExistsError } from '../Errors';
+import type { CreatePoem, CreatePoemDB, CreatePoemResult } from '../Models';
+import { canCreatePoem } from '../policies/policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	slugService: SlugService;
+	usersContract: UsersContract;
 }
 
-interface CreatePoemParams {
+type CreatePoemParams = {
 	data: CreatePoem;
 	meta: {
 		requesterId: number;
 		requesterStatus: UserStatus;
 		requesterRole: UserRole;
 	};
-}
+};
 
 export function createPoemFactory(deps: Dependencies) {
-	const { commandsRepository, slugService } = deps;
+	const { commandsRepository, slugService, usersContract } = deps;
 
 	return async function createPoem(
 		params: CreatePoemParams,
 	): Promise<CreatePoemResult> {
 		const { data, meta } = params;
 
-		if (meta.requesterStatus !== 'active') {
-			throw new PoemCreationDeniedError();
-		}
+		const authorCtx = {
+			id: meta.requesterId,
+			status: meta.requesterStatus,
+			role: meta.requesterRole,
+		};
+		await canCreatePoem({
+			ctx: {
+				author: authorCtx,
+			},
+			usersContract,
+			toUserIds: data.toUserIds,
+		});
 
 		const slug = slugService.generateSlug(data.title);
-		const fullData: CreatePoemDB = {
+		const poem: CreatePoemDB = {
 			...data,
 			slug,
 			authorId: meta.requesterId,
 		};
 
-		const result = await commandsRepository.insertPoem(fullData);
+		const result = await commandsRepository.insertPoem({ poem });
 
 		if (result.ok === true) {
 			return result.data;

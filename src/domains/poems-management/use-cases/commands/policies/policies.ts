@@ -1,0 +1,98 @@
+import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+
+import {
+	InvalidDedicatedUsersError,
+	PoemCreationDeniedError,
+	PoemNotFoundError,
+	PoemUpdateDeniedError,
+} from '../Errors';
+
+type AuthorContext = {
+	status: UserStatus;
+	id?: number;
+	role?: UserRole;
+};
+
+type PoemPolicyContext = {
+	author: AuthorContext;
+};
+
+type PoemCreationPolicyParams = {
+	ctx: PoemPolicyContext;
+	usersContract: UsersContract;
+	toUserIds?: number[];
+};
+
+type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
+	poemId: number;
+	queriesRepository: QueriesRepository;
+};
+
+async function validateDedicatedUsers(
+	usersContract: UsersContract,
+	userIds?: number[],
+): Promise<boolean> {
+	if (!userIds || userIds.length === 0) {
+		return true;
+	}
+
+	const promises = userIds.map((id) => usersContract.getUserBasicInfo(id));
+	const users = await Promise.all(promises);
+
+	const invalidUser = users.find((u) => u.status !== 'active');
+	if (invalidUser) {
+		return false;
+	}
+	return true;
+}
+
+export async function canCreatePoem(
+	params: PoemCreationPolicyParams,
+): Promise<void> {
+	const { ctx, usersContract, toUserIds } = params;
+	const { author } = ctx;
+
+	if (author.status !== 'active') {
+		throw new PoemCreationDeniedError('Author is not active');
+	}
+
+	const areIdsValid = await validateDedicatedUsers(usersContract, toUserIds);
+	if (!areIdsValid) {
+		throw new InvalidDedicatedUsersError();
+	}
+}
+
+export async function canUpdatePoem(
+	params: PoemUpdatePolicyParams,
+): Promise<void> {
+	const { ctx, usersContract, toUserIds, poemId } = params;
+	const { author } = ctx;
+
+	if (author.status !== 'active') {
+		throw new PoemUpdateDeniedError('Author is not active');
+	}
+
+	const existingPoem = await params.queriesRepository.selectPoemById({
+		poemId,
+	});
+
+	if (!existingPoem) {
+		throw new PoemNotFoundError();
+	}
+
+	if (existingPoem.status === 'published') {
+		throw new PoemUpdateDeniedError('Cannot update a published poem');
+	}
+
+	if (existingPoem.moderationStatus === 'removed') {
+		throw new PoemUpdateDeniedError('Cannot update a removed poem');
+	}
+
+	const areIdsValid = await validateDedicatedUsers(usersContract, toUserIds);
+	if (!areIdsValid) {
+		throw new InvalidDedicatedUsersError();
+	}
+}
