@@ -3,10 +3,10 @@ import {
 	PoemContentSchema,
 	PoemTitleSchema,
 	PoemExcerptSchema,
-	PoemTagsCreationSchema,
 	PoemIsCommentableSchema,
 	PoemSlugSchema,
 	PoemToUserIdsSchema,
+	PoemTagsReadSchema,
 } from '../fields/PoemFieldsSchemas';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 import {
@@ -21,7 +21,7 @@ export const UpdatePoemResultSchema = t.Object({
 	slug: PoemSlugSchema,
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
-	tags: PoemTagsCreationSchema,
+	tags: PoemTagsReadSchema,
 
 	visibility: PoemVisibilityEnumSchema,
 	status: PoemStatusEnumSchema,

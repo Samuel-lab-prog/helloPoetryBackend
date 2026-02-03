@@ -6,49 +6,48 @@ import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type {
 	CreatePoemDB,
 	CreatePoemResult,
-	UpdatePoem,
+	UpdatePoemDB,
+	UpdatePoemResult,
 } from '../../use-cases/commands/Models';
 
-import { insertPoemSelect } from '../queries-repository/Selects';
+import { insertPoemSelect, updatePoemSelect } from './Selects';
 
-function insertPoem(
-	data: CreatePoemDB,
-): Promise<CommandResult<CreatePoemResult>> {
-	return withPrismaResult(() => {
-		const tags = data.tags?.length
-			? data.tags.map((tag) => ({
-					where: { name: tag },
-					create: { name: tag },
-				}))
-			: undefined;
+function connectOrCreateTags(tags?: string[]) {
+	if (!tags || tags.length === 0) {
+		return undefined;
+	}
+	const object = {
+		set: [],
+		connectOrCreate: tags.map((tag) => ({
+			where: { name: tag },
+			create: { name: tag },
+		})),
+	};
+	return object;
+}
 
-		const dedications = data.dedicationUserIds?.length
-			? data.dedicationUserIds.map((userId) => ({
-					toUser: {
-						connect: { id: userId },
-					},
-				}))
-			: undefined;
+function connectDedications(dedicationUserIds?: number[] | undefined) {
+	if (!dedicationUserIds || dedicationUserIds.length === 0) {
+		return undefined;
+	}
+	const object = dedicationUserIds.map((userId) => ({
+		toUser: {
+			connect: { id: userId },
+		},
+	}));
+	return object;
+}
 
-		return prisma.poem.create({
-			select: {
-				...insertPoemSelect,
-				visibility: true,
-				status: true,
-				moderationStatus: true,
-			},
+
+function insertPoem(poem: CreatePoemDB): Promise<CommandResult<CreatePoemResult>> {
+	return withPrismaResult(async () => {
+		const tags = connectOrCreateTags(poem.tags);
+		const dedications = connectDedications(poem.toUserIds);
+		const result = await prisma.poem.create({
+			select: insertPoemSelect,
 			data: {
-				title: data.title,
-				content: data.content,
-				slug: data.slug,
-				excerpt: data.excerpt,
-				isCommentable: data.isCommentable ?? true,
-				authorId: data.authorId,
-				visibility: data.visibility,
-				status: data.status,
-
-				...(tags && { tags: { connectOrCreate: tags } }),
-
+				...poem,
+				tags,
 				...(dedications && {
 					dedications: {
 						create: dedications,
@@ -56,64 +55,48 @@ function insertPoem(
 				}),
 			},
 		});
+
+		return {
+			...result,
+			toUserIds: result.dedications.map((dedication) => dedication.toUserId),
+		};
 	});
 }
 
 function updatePoem(
 	poemId: number,
-	data: UpdatePoem & { slug: string },
-): Promise<CommandResult<UpdatePoem>> {
+	poem: UpdatePoemDB,
+): Promise<CommandResult<UpdatePoemResult>> {
 	return withPrismaResult(async () => {
-		const tags = data.tags
+		const tags = connectOrCreateTags(poem.tags);
+
+		const dedications = poem.toUserIds
 			? {
-					set: [],
-					connectOrCreate: data.tags.map((tag) => ({
-						where: { name: tag },
-						create: { name: tag },
-					})),
-				}
+				deleteMany: {},
+				create: connectDedications(poem.toUserIds),
+			}
 			: undefined;
 
-		const dedications = data.dedicationUserIds
-			? {
-					deleteMany: {},
-					create: data.dedicationUserIds.map((userId) => ({
-						toUser: {
-							connect: { id: userId },
-						},
-					})),
-				}
-			: undefined;
-
-		const poem = await prisma.poem.update({
+		const updatedPoem = await prisma.poem.update({
 			where: { id: poemId },
 			data: {
-				title: data.title,
-				content: data.content,
-				slug: data.slug,
-				excerpt: data.excerpt,
-				isCommentable: data.isCommentable,
-				visibility: data.visibility,
-				status: data.status,
+				title: poem.title,
+				content: poem.content,
+				slug: poem.slug,
+				excerpt: poem.excerpt,
+				isCommentable: poem.isCommentable,
+				visibility: poem.visibility,
+				status: poem.status,
 
 				...(tags && { tags }),
 				...(dedications && { dedications }),
 			},
-			select: {
-				title: true,
-				content: true,
-				excerpt: true,
-				isCommentable: true,
-				visibility: true,
-				status: true,
-				slug: true,
-				tags: true,
-			},
+			select: updatePoemSelect,
 		});
 
 		return {
-			...poem,
-			tags: poem.tags.map((tag) => tag.name),
+			...updatedPoem,
+			toUserIds: updatedPoem.dedications.map((dedication) => dedication.toUserId),
 		};
 	});
 }

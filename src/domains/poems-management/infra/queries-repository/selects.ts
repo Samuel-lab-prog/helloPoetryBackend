@@ -1,71 +1,12 @@
 import type { PoemSelect } from '@PrismaGenerated/models';
 
-export const myPoemSelect = {
+const tagsSelect = {
 	id: true,
-	slug: true,
-	title: true,
-	status: true,
-	visibility: true,
-	content: true,
-	excerpt: true,
-	isCommentable: true,
-	moderationStatus: true,
-	createdAt: true,
-	updatedAt: true,
+	name: true,
+} as const;
 
-	tags: {
-		select: {
-			id: true,
-			name: true,
-		},
-	},
-
-	dedications: {
-		select: {
-			toUser: {
-				select: {
-					id: true,
-					name: true,
-					nickname: true,
-					avatarUrl: true,
-					friendshipsFrom: {
-						select: {
-							userBId: true,
-							userAId: true,
-						},
-					},
-					friendshipsTo: {
-						select: {
-							userAId: true,
-							userBId: true,
-						},
-					},
-				},
-			},
-		},
-	},
-
-	_count: {
-		select: {
-			poemLikes: true,
-			comments: true,
-		},
-	},
-} as const satisfies PoemSelect;
-
-export const authorPoemSelect = {
-	id: true,
-	slug: true,
-	title: true,
-	content: true,
-	excerpt: true,
-	isCommentable: true,
-	createdAt: true,
-	status: true,
-	visibility: true,
-	moderationStatus: true,
-
-	author: {
+const dedicationsSelect = {
+	toUser: {
 		select: {
 			id: true,
 			name: true,
@@ -85,37 +26,53 @@ export const authorPoemSelect = {
 			},
 		},
 	},
+} as const;
 
-	tags: {
-		select: {
+const countSelect = {
+	poemLikes: true,
+	comments: true,
+} as const;
+
+const authorPreviewSelect = {
 			id: true,
 			name: true,
-		},
-	},
-
-	dedications: {
-		select: {
-			toUser: {
+			nickname: true,
+			avatarUrl: true,
+			friendshipsFrom: {
 				select: {
-					id: true,
-					name: true,
-					nickname: true,
-					avatarUrl: true,
-					friendshipsFrom: {
-						select: {
-							userBId: true,
-							userAId: true,
-						},
-					},
-					friendshipsTo: {
-						select: {
-							userAId: true,
-							userBId: true,
-						},
-					},
+					userBId: true,
+					userAId: true,
 				},
 			},
-		},
+			friendshipsTo: {
+				select: {
+					userAId: true,
+					userBId: true,
+				},
+			},
+ } as const;
+
+export const myPoemSelect = {
+	id: true,
+
+	title: true,
+	slug: true,
+	excerpt: true,
+	tags: { select: tagsSelect },
+	content: true,
+	
+	visibility: true,
+	status: true,
+	moderationStatus: true,
+
+	isCommentable: true,
+
+	createdAt: true,
+	updatedAt: true,
+
+
+	dedications: {
+		select: dedicationsSelect,
 	},
 
 	_count: {
@@ -126,10 +83,31 @@ export const authorPoemSelect = {
 	},
 } as const satisfies PoemSelect;
 
-export const insertPoemSelect = {
+export const authorPoemSelect = {
 	id: true,
-	slug: true,
+
 	title: true,
-	content: true,
+	slug: true,
 	excerpt: true,
+	tags: { select: tagsSelect },
+	content: true,
+
+	status: true,
+	visibility: true,
+	moderationStatus: true,
+	
+	isCommentable: true,
+
+	updatedAt: true,
+	createdAt: true,
+
+	author: { select: authorPreviewSelect },
+
+
+	dedications: {
+		select: dedicationsSelect,
+	},
+
+	_count: { select: countSelect },
 } as const satisfies PoemSelect;
+

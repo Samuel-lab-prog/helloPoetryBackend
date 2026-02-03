@@ -6,17 +6,7 @@ import type {
 } from '../use-cases/commands/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
-type PoemCreationParams = { poem: CreatePoemDB };
-type UpdatePoemParams = {
-	poemId: number;
-	poem: UpdatePoemDB;
-};
-
 export interface CommandsRepository {
-	insertPoem(
-		params: PoemCreationParams,
-	): Promise<CommandResult<CreatePoemResult>>;
-	updatePoem(
-		params: UpdatePoemParams,
-	): Promise<CommandResult<UpdatePoemResult>>;
+	insertPoem(poem: CreatePoemDB): Promise<CommandResult<CreatePoemResult>>;
+	updatePoem(poemId: number, poem: UpdatePoemDB): Promise<CommandResult<UpdatePoemResult>>;
 }

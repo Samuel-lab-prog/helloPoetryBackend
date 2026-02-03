@@ -1,14 +1,16 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+
 import type { QueriesRepository } from '../../ports/QueriesRepository';
-import { authorPoemSelect, myPoemSelect } from './Selects';
 import type { MyPoem, AuthorPoem } from '../../use-cases/queries/Models';
 
+import { authorPoemSelect, myPoemSelect } from './Selects';
+
 //------------------------------------------------------------------------
-// HelperS
+// Helpers
 //------------------------------------------------------------------------
 
-function getFrienIdsFromRelations(poemAuthor: {
+function getFriendIdsFromRelations(poemAuthor: {
 	friendshipsFrom: { userBId: number }[] | null;
 	friendshipsTo: { userAId: number }[] | null;
 }): number[] {
@@ -43,9 +45,9 @@ function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
 
 		return poems.map((poem) => ({
 			...poem,
-			toUsers: poem.dedications.map((dedication) => ({
-				...dedication.toUser!,
-				friendIds: getFrienIdsFromRelations(dedication.toUser!),
+			toUserIds: poem.dedications.map((dedication) => ({
+				...dedication.toUser,
+				friendIds: getFriendIdsFromRelations(dedication.toUser),
 			})),
 			stats: calculateStats(poem),
 		}));
@@ -71,7 +73,7 @@ function selectAuthorPoems(params: {
 			stats: calculateStats(poem),
 			author: {
 				...poem.author,
-				friendIds: getFrienIdsFromRelations(poem.author),
+				friendIds: getFriendIdsFromRelations(poem.author),
 			},
 		}));
 	});
@@ -94,7 +96,7 @@ function selectPoemById({
 			...poem,
 			author: {
 				...poem.author,
-				friendIds: getFrienIdsFromRelations(poem.author),
+				friendIds: getFriendIdsFromRelations(poem.author),
 			},
 			stats: calculateStats(poem),
 		};
