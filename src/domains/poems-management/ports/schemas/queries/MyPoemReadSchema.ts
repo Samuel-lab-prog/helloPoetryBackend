@@ -34,7 +34,8 @@ export const MyPoemReadSchema = t.Object({
 	moderationStatus: PoemModerationStatusEnumSchema,
 
 	isCommentable: PoemIsCommentableSchema,
-	toUsers: t.Array(UserPreviewSchema),
+	
+	toUserIds: t.Array(UserPreviewSchema),
 
 	createdAt: DateSchema,
 	updatedAt: DateSchema,

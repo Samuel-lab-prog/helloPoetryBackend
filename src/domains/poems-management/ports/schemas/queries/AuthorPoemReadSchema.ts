@@ -29,17 +29,17 @@ export const AuthorPoemReadSchema = t.Object({
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
 	tags: PoemTagsReadSchema,
-
-	isCommentable: PoemIsCommentableSchema,
-
+	
 	status: PoemStatusEnumSchema,
 	visibility: PoemVisibilityEnumSchema,
 	moderationStatus: PoemModerationStatusEnumSchema,
-
+	
+	isCommentable: PoemIsCommentableSchema,
+	
 	createdAt: DateSchema,
+	updatedAt: DateSchema,
 
 	author: UserPreviewSchema,
-
 	stats: t.Object({
 		likesCount: NonNegativeIntegerSchema,
 		commentsCount: NonNegativeIntegerSchema,
