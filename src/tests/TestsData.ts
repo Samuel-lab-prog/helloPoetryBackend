@@ -4,7 +4,7 @@ import type {
 } from '@Domains/poems-management/use-cases/commands/Models';
 import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
 
-function generateTestUsersData(quantity: number): CreateUser[] {
+function generateUsersData(quantity: number): CreateUser[] {
 	const data: CreateUser[] = [];
 
 	for (let i = 1; i <= quantity; i++) {
@@ -14,14 +14,14 @@ function generateTestUsersData(quantity: number): CreateUser[] {
 			nickname: `user${i}`,
 			name: `user${i}`,
 			bio: `user${i}bio`,
-			avatarUrl: `http://example.com/avatar${i}.png`,
+			avatarUrl: 'example',
 		});
 	}
-
+	console.log('Generated Users Data:', data);
 	return data;
 }
 
-function generateTestPoemsData(quantity: number): CreatePoem[] {
+function generatePoemsData(quantity: number): CreatePoem[] {
 	const data: CreatePoem[] = [];
 	for (let i = 1; i <= quantity; i++) {
 		data.push({
@@ -29,14 +29,12 @@ function generateTestPoemsData(quantity: number): CreatePoem[] {
 			content: `This is the content of poem ${i}.`,
 			excerpt: `Excerpt of poem ${i}.`,
 			tags: [`tag${i}`, `tag${i + 1}`],
-			visibility: 'public',
-			status: 'draft',
 		});
 	}
 	return data;
 }
 
-function generateTestPoemsForUpdate(quantity: number): UpdatePoem[] {
+function generatePoemsForUpdate(quantity: number): UpdatePoem[] {
 	const data: UpdatePoem[] = [];
 	for (let i = 1; i <= quantity; i++) {
 		data.push({
@@ -52,7 +50,10 @@ function generateTestPoemsForUpdate(quantity: number): UpdatePoem[] {
 	}
 	return data;
 }
+const USERS_QUANTITY = 10;
+const POEMS_QUANTITY = 10;
+const POEMS_FOR_UPDATE_QUANTITY = 10;
 
-export const testUsersData = generateTestUsersData(3);
-export const testPoemsData = generateTestPoemsData(3);
-export const testPoemsForUpdate = generateTestPoemsForUpdate(3);
+export const usersData = generateUsersData(USERS_QUANTITY);
+export const poemsData = generatePoemsData(POEMS_QUANTITY);
+export const poemsForUpdate = generatePoemsForUpdate(POEMS_FOR_UPDATE_QUANTITY);

@@ -98,7 +98,10 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		const fetched = await getPoemById(otherUser, result.id!);
 		expect((fetched as AuthorPoem).id).toBe(result.id!);
@@ -113,7 +116,10 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		const fetched = await getPoemById(otherUser, result.id!);
 		expect((fetched as any).id).toBe(result.id!);
@@ -128,7 +134,10 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		await updateUserStatsRaw(thirdUser.id, { role: 'moderator' });
 		const fetched = await getPoemById(thirdUser, result.id!);
@@ -141,7 +150,10 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'draft',
 		});
 
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		const fetched = await getPoemById(otherUser, result.id!);
 		expect((fetched as AppError).statusCode).toBe(403);
@@ -168,7 +180,10 @@ describe('INTEGRATION - Poems Management', () => {
 			status: 'published',
 		});
 
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		await updateUserStatsRaw(otherUser.id, { status: 'banned' });
 
@@ -183,7 +198,10 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'friends',
 			status: 'published',
 		});
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		await updateUserStatsRaw(thirdUser.id, { role: 'moderator' });
 		const fetched = await getPoemById(thirdUser, result.id!);
@@ -195,7 +213,10 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'unlisted',
 			status: 'published',
 		});
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 		await updateUserStatsRaw(thirdUser.id, { role: 'moderator' });
 		const fetched = await getPoemById(thirdUser, result.id!);
 		expect((fetched as AuthorPoem).id).toBe(result.id!);
@@ -228,7 +249,10 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'private',
 			status: 'published',
 		});
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 
 		await updateUserStatsRaw(thirdUser.id, { role: 'admin' });
 		const fetched = await getPoemById(thirdUser, result.id!);
@@ -243,7 +267,10 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'friends',
 			status: 'published',
 		});
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 		await createFriendshipRaw(author.id, otherUser.id);
 
 		await updateUserStatsRaw(otherUser.id, { status: 'banned' });
@@ -269,7 +296,10 @@ describe('INTEGRATION - Poems Management', () => {
 			visibility: 'public',
 			status: 'published',
 		});
-		const result = await createAndApprovePoem(author, poem);
+		const result = (await createAndApprovePoem(
+			author,
+			poem,
+		)) as CreatePoemResult;
 		const fetched = await getPoemById(
 			{
 				id: 0,

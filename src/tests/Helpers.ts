@@ -23,7 +23,7 @@ export interface TestUser {
 export function jsonRequest(
 	url: string,
 	options: Omit<RequestInit, 'body'> & { body?: unknown } = {},
-) {
+): Request {
 	return new Request(url, {
 		...options,
 		headers: {
@@ -61,13 +61,9 @@ export async function loginUser(user: TestUser): Promise<TestUser> {
 	return { ...user, cookie: cookie || '' };
 }
 
-type ToUpdate = {
-	role: UserRole;
-	status: UserStatus;
-};
 export async function updateUserStatsRaw(
 	userId: number,
-	updates: Partial<ToUpdate>,
+	updates: Partial<{ role: UserRole; status: UserStatus }>,
 ) {
 	await prisma.user.update({
 		where: { id: userId },

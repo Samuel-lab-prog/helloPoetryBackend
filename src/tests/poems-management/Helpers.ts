@@ -3,6 +3,7 @@ import type {
 	CreatePoem,
 	CreatePoemResult,
 } from '@Domains/poems-management/use-cases/commands/Models';
+
 import {
 	jsonRequest,
 	type TestUser,
@@ -12,60 +13,64 @@ import {
 } from '../Helpers';
 import { testPoemsData, testPoemsForUpdate } from './Data';
 
-export async function createPoem(user: TestUser, poem: CreatePoem) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems`, {
-			method: 'POST',
-			headers: { Cookie: user.cookie },
-			body: poem,
-		}),
-	);
-	return await res.json();
+export async function createPoem(
+	user: TestUser,
+	poem: CreatePoem,
+): Promise<unknown> {
+	const request = jsonRequest(`${PREFIX}/poems`, {
+		method: 'POST',
+		headers: { Cookie: user.cookie },
+		body: poem,
+	});
+	const response = await app.handle(request);
+	return await response.json();
 }
 
-export async function getMyPoems(user: TestUser) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/me`, {
-			method: 'GET',
-			headers: { Cookie: user.cookie },
-		}),
-	);
-	return await res.json();
+export async function getMyPoems(user: TestUser): Promise<unknown> {
+	const request = jsonRequest(`${PREFIX}/poems/me`, {
+		method: 'GET',
+		headers: { Cookie: user.cookie },
+	});
+	const response = await app.handle(request);
+	return await response.json();
 }
 
-export async function getPoemById(user: TestUser, poemId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/${poemId}`, {
-			method: 'GET',
-			headers: { Cookie: user.cookie },
-		}),
-	);
-	return await res.json();
+export async function getPoemById(
+	user: TestUser,
+	poemId: number,
+): Promise<unknown> {
+	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
+		method: 'GET',
+		headers: { Cookie: user.cookie },
+	});
+	const response = await app.handle(request);
+	return await response.json();
 }
 
-export async function getAuthorPoems(user: TestUser, authorId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
-			method: 'GET',
-			headers: { Cookie: user.cookie },
-		}),
-	);
-	return await res.json();
+export async function getAuthorPoems(
+	user: TestUser,
+	authorId: number,
+): Promise<unknown> {
+	const request = jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
+		method: 'GET',
+		headers: { Cookie: user.cookie },
+	});
+	const response = await app.handle(request);
+	return await response.json();
 }
 
 export async function updatePoem(
 	user: TestUser,
 	poemId: number,
 	data: Partial<UpdatePoem>,
-) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/poems/${poemId}`, {
-			method: 'PUT',
-			headers: { Cookie: user.cookie },
-			body: data,
-		}),
-	);
-	return await res.json();
+): Promise<unknown> {
+	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
+		method: 'PUT',
+		headers: { Cookie: user.cookie },
+		body: data,
+	});
+	const response = await app.handle(request);
+	return await response.json();
 }
 
 export function makePoem(
@@ -93,7 +98,7 @@ export function makeUpdatedPoem(
 export async function createAndApprovePoem(
 	user: TestUser,
 	poem: CreatePoem,
-): Promise<CreatePoemResult> {
+): Promise<unknown> {
 	const result = (await createPoem(user, poem)) as CreatePoemResult;
 	await updatePoemRaw(result.id!, { moderationStatus: 'approved' });
 	return result;
