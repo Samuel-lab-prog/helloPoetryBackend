@@ -8,7 +8,15 @@ import {
 	type CommandsRouterServices,
 } from './Services';
 import { idSchema } from '@SharedKernel/Schemas';
-import { FriendRequestSchema } from '../../schemas/Index';
+import {
+	FriendRequestSchema,
+	FriendRecordSchema,
+	FriendRequestRejectionSchema,
+	CancelFriendRequestSchema,
+	RemovedFriendSchema,
+	BlockedUserSchema,
+	UnblockUserSchema,
+} from '../../ports/schemas/Index';
 
 export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/friends' })
@@ -50,7 +58,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: FriendRequestSchema,
+					200: t.Union([FriendRecordSchema, FriendRequestSchema]),
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -75,7 +83,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: FriendRequestSchema,
+					200: FriendRequestRejectionSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -100,7 +108,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: FriendRequestSchema,
+					200: BlockedUserSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -124,10 +132,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: t.Object({
-						requesterId: idSchema,
-						addresseeId: idSchema,
-					}),
+					200: RemovedFriendSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -152,7 +157,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: FriendRequestSchema,
+					200: CancelFriendRequestSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({
@@ -176,7 +181,7 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					200: FriendRequestSchema,
+					200: UnblockUserSchema,
 					404: appErrorSchema,
 				},
 				params: t.Object({

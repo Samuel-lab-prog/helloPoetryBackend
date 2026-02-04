@@ -1,7 +1,9 @@
 import { t } from 'elysia';
-import { idSchema } from '@SharedKernel/Schemas';
+import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 
 export const FriendRequestSchema = t.Object({
+	id: idSchema,
 	requesterId: idSchema,
 	addresseeId: idSchema,
+	createdAt: DateSchema,
 });

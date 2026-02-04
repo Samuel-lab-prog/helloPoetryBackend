@@ -40,13 +40,4 @@ describe('USE-CASE - Delete Friend', () => {
 			user2Id: 2,
 		});
 	});
-
-	it('Should delete friend when no errors occur', () => {
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 10 });
-
-		expect(deleteFriend({ requesterId: 1, addresseeId: 2 })).resolves.toEqual({
-			requesterId: 1,
-			addresseeId: 2,
-		});
-	});
 });

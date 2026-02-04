@@ -92,9 +92,6 @@ describe('USE-CASE - Accept Friend Request', () => {
 		});
 
 		expect(result).toEqual(acceptedRequest);
-		expect(commandsRepository.acceptFriendRequest).toHaveBeenCalledWith({
-			requesterId: 1,
-			addresseeId: 2,
-		});
+		expect(commandsRepository.acceptFriendRequest).toHaveBeenCalledWith(1, 2);
 	});
 });

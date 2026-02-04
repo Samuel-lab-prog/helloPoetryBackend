@@ -61,9 +61,6 @@ describe('USE-CASE - Block User', () => {
 		});
 
 		expect(result).toEqual(blockedUser);
-		expect(commandsRepository.blockUser).toHaveBeenCalledWith({
-			requesterId: 1,
-			addresseeId: 2,
-		});
+		expect(commandsRepository.blockUser).toHaveBeenCalledWith(1, 2);
 	});
 });

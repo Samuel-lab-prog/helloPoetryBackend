@@ -1,8 +1,8 @@
 import type {
 	FriendRequestRecord,
-	BlockedFriendRecord,
+	BlockedUserRecord,
 	FriendshipRecord,
-} from '../use-cases/queries/models/Index';
+} from '../use-cases/models/Index';
 
 export interface QueriesRepository {
 	findFriendshipBetweenUsers(params: {
@@ -16,5 +16,5 @@ export interface QueriesRepository {
 	findBlockedRelationship(params: {
 		userId1: number;
 		userId2: number;
-	}): Promise<BlockedFriendRecord | null>;
+	}): Promise<BlockedUserRecord | null>;
 }

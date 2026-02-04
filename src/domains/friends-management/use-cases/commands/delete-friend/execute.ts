@@ -1,6 +1,7 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import { SelfReferenceError, FriendshipNotFoundError } from '../Errors';
+import type { RemovedFriendRecord } from '../../models/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -18,7 +19,7 @@ export function deleteFriendFactory({
 }: Dependencies) {
 	return async function deleteFriend(
 		params: DeleteFriendParams,
-	): Promise<{ requesterId: number; addresseeId: number }> {
+	): Promise<RemovedFriendRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -37,11 +38,6 @@ export function deleteFriendFactory({
 		// No need for check if has a blocking relationship in both directions,
 		// since if either user has blocked the other, they cannot be friends.
 
-		await commandsRepository.deleteFriend({
-			user1Id: requesterId,
-			user2Id: addresseeId,
-		});
-
-		return { requesterId, addresseeId };
+		return commandsRepository.deleteFriend(requesterId, addresseeId);
 	};
 }

@@ -52,9 +52,6 @@ describe('USE-CASE - Unblock User', () => {
 			undefined,
 		);
 
-		expect(commandsRepository.unblockUser).toHaveBeenCalledWith({
-			requesterId: 1,
-			addresseeId: 2,
-		});
+		expect(commandsRepository.unblockUser).toHaveBeenCalledWith(1, 2);
 	});
 });

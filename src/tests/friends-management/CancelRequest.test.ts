@@ -3,7 +3,10 @@ import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 import { sendFriendRequest, cancelFriendRequest } from './Helpers';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
-import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
+import type {
+	CancelFriendRequestRecord,
+	FriendRequestRecord,
+} from '@Domains/friends-management/use-cases/models/Index';
 import type { AppError } from '@AppError';
 
 let user1: TestUser;
@@ -33,7 +36,10 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Friends Management', () => {
 	it('User1 sends a friend request to User2', async () => {
-		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const request = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
 	});
@@ -44,10 +50,10 @@ describe('INTEGRATION - Friends Management', () => {
 		const cancelled = (await cancelFriendRequest(
 			user1,
 			user2.id,
-		)) as FriendRequest;
+		)) as CancelFriendRequestRecord;
 
-		expect(cancelled.requesterId).toBe(user1.id);
-		expect(cancelled.addresseeId).toBe(user2.id);
+		expect(cancelled.cancellerId).toBe(user1.id);
+		expect(cancelled.cancelledId).toBe(user2.id);
 	});
 
 	it('User1 cannot cancel the same friend request again', async () => {
@@ -77,7 +83,7 @@ describe('INTEGRATION - Friends Management', () => {
 		const newRequest = (await sendFriendRequest(
 			user1,
 			user2.id,
-		)) as FriendRequest;
+		)) as FriendRequestRecord;
 		expect(newRequest.requesterId).toBe(user1.id);
 		expect(newRequest.addresseeId).toBe(user2.id);
 	});

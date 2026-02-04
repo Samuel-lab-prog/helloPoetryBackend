@@ -9,7 +9,10 @@ import {
 } from './Helpers';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
-import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
+import type {
+	FriendRequestRecord,
+	FriendshipRecord,
+} from '@Domains/friends-management/use-cases/models/Index';
 import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
 import type { AppError } from '@AppError';
 
@@ -40,7 +43,10 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Friends Management', () => {
 	it('User1 sends a friend request to User2', async () => {
-		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const request = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
@@ -79,10 +85,10 @@ describe('INTEGRATION - Friends Management', () => {
 		const accepted = (await acceptFriendRequest(
 			user2,
 			user1.id,
-		)) as FriendRequest;
+		)) as FriendshipRecord;
 
-		expect(accepted.requesterId).toBe(user1.id);
-		expect(accepted.addresseeId).toBe(user2.id);
+		expect(accepted.userAId).toBe(user1.id);
+		expect(accepted.userBId).toBe(user2.id);
 	});
 
 	it('Requester cannot accept its own friend request', async () => {

@@ -14,7 +14,7 @@ import { userQueriesRouter } from './domains/users-management/adapters/http/quer
 import { userCommandsRouter } from './domains/users-management/adapters/http/commands/Router';
 import { poemsQueriesRouter } from './domains/poems-management/adapters/queries/Router';
 import { poemsCommandsRouter } from './domains/poems-management/adapters/commands/Router';
-import { friendsCommandsRouter } from '@Domains/friends-management/adapters/http/commands/CommandsRouter';
+import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/http/commands/Router';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/http/queries/QueriesRouter';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/http/commands/Router';

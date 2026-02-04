@@ -7,7 +7,10 @@ import {
 	acceptFriendRequest,
 } from './Helpers';
 import { createUser, type TestUser, loginUser } from '../Helpers';
-import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
+import type {
+	FriendRequestRejectionRecord,
+	FriendRequestRecord,
+} from '@Domains/friends-management/use-cases/models/Index';
 import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
 import type { AppError } from '@AppError';
 
@@ -38,7 +41,10 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Friends Management', () => {
 	it('User1 sends a friend request to User2', async () => {
-		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const request = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
@@ -50,10 +56,10 @@ describe('INTEGRATION - Friends Management', () => {
 		const rejected = (await rejectFriendRequest(
 			user2,
 			user1.id,
-		)) as FriendRequest;
+		)) as FriendRequestRejectionRecord;
 
-		expect(rejected.requesterId).toBe(user1.id);
-		expect(rejected.addresseeId).toBe(user2.id);
+		expect(rejected.rejectedId).toBe(user2.id);
+		expect(rejected.rejecterId).toBe(user1.id);
 	});
 
 	it('User2 cannot reject the same friend request again', async () => {
@@ -108,7 +114,10 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1, user2.id);
 		await rejectFriendRequest(user2, user1.id);
 
-		const newReq = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const newReq = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 
 		expect(newReq.requesterId).toBe(user1.id);
 		expect(newReq.addresseeId).toBe(user2.id);

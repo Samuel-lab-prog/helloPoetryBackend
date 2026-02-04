@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequest } from '../models/Index';
+import type { BlockedUserRecord } from '../../models/Index';
 import { SelfReferenceError, UserBlockedError } from '../Errors';
 
 interface Dependencies {
@@ -19,7 +19,7 @@ export function blockUserFactory({
 }: Dependencies) {
 	return async function blockUser(
 		params: BlockUserParams,
-	): Promise<FriendRequest> {
+	): Promise<BlockedUserRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -41,25 +41,19 @@ export function blockUserFactory({
 		});
 
 		if (friendship) {
-			await commandsRepository.deleteFriend({
-				user1Id: requesterId,
-				user2Id: addresseeId,
-			});
+			await commandsRepository.deleteFriend(requesterId, addresseeId);
 		}
 
-		await commandsRepository.deleteFriendRequestIfExists({
+		await commandsRepository.deleteFriendRequestIfExists(
 			requesterId,
 			addresseeId,
-		});
+		);
 
-		await commandsRepository.deleteFriendRequestIfExists({
-			requesterId: addresseeId,
-			addresseeId: requesterId,
-		});
-
-		return commandsRepository.blockUser({
-			requesterId,
+		await commandsRepository.deleteFriendRequestIfExists(
 			addresseeId,
-		});
+			requesterId,
+		);
+
+		return commandsRepository.blockUser(requesterId, addresseeId);
 	};
 }

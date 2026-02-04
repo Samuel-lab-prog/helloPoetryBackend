@@ -1,39 +1,45 @@
-import type { FriendRequest } from '../use-cases/commands/models/Index';
+import type {
+	FriendshipRecord,
+	FriendRequestRecord,
+	CancelFriendRequestRecord,
+	FriendRequestRejectionRecord,
+	UnblockUserRecord,
+	BlockedUserRecord,
+	RemovedFriendRecord,
+} from '../use-cases/models/Index';
 
 export interface CommandsRepository {
-	createFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
+	createFriendRequest(
+		requesterId: number,
+		addresseeId: number,
+	): Promise<FriendRequestRecord>;
 
-	rejectFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
+	rejectFriendRequest(
+		rejecterId: number,
+		rejectedId: number,
+	): Promise<FriendRequestRejectionRecord>;
 
-	acceptFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
+	acceptFriendRequest(
+		accepterId: number,
+		accepteeId: number,
+	): Promise<FriendshipRecord>;
 
-	cancelFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
+	cancelFriendRequest(
+		cancellerId: number,
+		cancelledId: number,
+	): Promise<CancelFriendRequestRecord>;
 
-	blockUser(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
+	blockUser(blockerId: number, blockedId: number): Promise<BlockedUserRecord>;
 
-	unblockUser(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequest>;
-	deleteFriend(params: { user1Id: number; user2Id: number }): Promise<void>;
+	unblockUser(
+		unblockerId: number,
+		unblockedId: number,
+	): Promise<UnblockUserRecord>;
 
-	deleteFriendRequestIfExists(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<void>;
+	deleteFriend(user1Id: number, user2Id: number): Promise<RemovedFriendRecord>;
+
+	deleteFriendRequestIfExists(
+		requesterId: number,
+		addresseeId: number,
+	): Promise<void>;
 }

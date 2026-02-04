@@ -44,230 +44,171 @@ describe('REPOSITORY - Friends Management', () => {
 		await prisma.user.createMany({ data: USERS });
 	});
 
+	// ---------------------------------------------------
+
 	describe('createFriendRequest', () => {
-		it('Should create friend request and return params', async () => {
-			const users = await prisma.user.findMany();
+		it('creates friend request and returns record', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+			if (!u1 || !u2) throw new Error('Test users not found');
 
-			const result = await createFriendRequest({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
+			const result = await createFriendRequest(u1.id, u2.id);
 
-			const record = await prisma.friendshipRequest.findFirst({
-				where: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
-			});
+			expect(result.requesterId).toBe(u1.id);
+			expect(result.addresseeId).toBe(u2.id);
+			expect(result.id).toBeDefined();
+			expect(result.createdAt).toBeInstanceOf(Date);
 
-			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-
-			expect(record).toMatchObject({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
+			const record = await prisma.friendshipRequest.findFirst();
+			expect(record).not.toBeNull();
 		});
 	});
+
+	// ---------------------------------------------------
 
 	describe('acceptFriendRequest', () => {
-		it('Should delete the friend request, create friendship, and return params', async () => {
-			const users = await prisma.user.findMany();
+		it('deletes request and creates friendship', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+			if (!u1 || !u2) throw new Error('Test users not found');
 
 			await prisma.friendshipRequest.create({
-				data: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
+				data: { requesterId: u1.id, addresseeId: u2.id },
 			});
 
-			const result = await acceptFriendRequest({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
+			const result = await acceptFriendRequest(u1.id, u2.id);
 
-			const request = await prisma.friendshipRequest.findFirst({
-				where: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
-			});
+			expect(result.userAId).toBe(u1.id);
+			expect(result.userBId).toBe(u2.id);
 
-			const friendship = await prisma.friendship.findFirst({
-				where: {
-					OR: [
-						{ userAId: users[0]!.id, userBId: users[1]!.id },
-						{ userAId: users[1]!.id, userBId: users[0]!.id },
-					],
-				},
-			});
+			const request = await prisma.friendshipRequest.findFirst();
+			expect(request).toBeNull();
 
-			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-
-			expect(request).toBe(null);
-			expect(friendship).not.toBe(null);
+			const friendship = await prisma.friendship.findFirst();
+			expect(friendship).not.toBeNull();
 		});
 	});
+
+	// ---------------------------------------------------
 
 	describe('deleteFriend', () => {
-		it('Should delete friendship and return params', async () => {
-			const users = await prisma.user.findMany();
+		it('deletes friendship', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+
+			if (!u1 || !u2) throw new Error('Test users not found');
+
 			await prisma.friendship.create({
-				data: {
-					userAId: users[0]!.id,
-					userBId: users[1]!.id,
-				},
-			});
-			await deleteFriend({
-				user1Id: users[0]!.id,
-				user2Id: users[1]!.id,
-			});
-			const friendship = await prisma.friendship.findFirst({
-				where: {
-					OR: [
-						{ userAId: users[0]!.id, userBId: users[1]!.id },
-						{ userAId: users[1]!.id, userBId: users[0]!.id },
-					],
-				},
-			});
-			expect(friendship).toBe(null);
-		});
-	});
-
-	describe('rejectFriendRequest', () => {
-		it('Should delete the friend request and return params', async () => {
-			const users = await prisma.user.findMany();
-
-			await prisma.friendshipRequest.create({
-				data: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
+				data: { userAId: u1.id, userBId: u2.id },
 			});
 
-			const result = await rejectFriendRequest({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-
-			const request = await prisma.friendshipRequest.findFirst({
-				where: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
-			});
+			const result = await deleteFriend(u1.id, u2.id);
 
 			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
+				removedById: u1.id,
+				removedId: u2.id,
 			});
 
-			expect(request).toBe(null);
+			const friendship = await prisma.friendship.findFirst();
+			expect(friendship).toBeNull();
 		});
 	});
 
-	describe('blockUser', () => {
-		it('Should remove requests, remove friendships, create block, and return params', async () => {
-			const users = await prisma.user.findMany();
+	// ---------------------------------------------------
+
+	describe('rejectFriendRequest', () => {
+		it('deletes request and returns rejection record', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+
+			if (!u1 || !u2) throw new Error('Test users not found');
 
 			await prisma.friendshipRequest.create({
-				data: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
+				data: { requesterId: u1.id, addresseeId: u2.id },
 			});
 
-			await prisma.friendship.create({
-				data: {
-					userAId: users[0]!.id,
-					userBId: users[1]!.id,
-				},
-			});
+			const result = await rejectFriendRequest(u1.id, u2.id);
 
-			const result = await blockUser({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
+			expect(result).toEqual({
+				rejecterId: u1.id,
+				rejectedId: u2.id,
 			});
 
 			const request = await prisma.friendshipRequest.findFirst();
-			const friendship = await prisma.friendship.findFirst();
-			const block = await prisma.blockedUser.findFirst({
-				where: {
-					blockerId: users[0]!.id,
-					blockedId: users[1]!.id,
-				},
-			});
-
-			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-
-			expect(request).toBe(null);
-			expect(friendship).toBe(null);
-			expect(block).toMatchObject({
-				blockerId: users[0]!.id,
-				blockedId: users[1]!.id,
-			});
+			expect(request).toBeNull();
 		});
 	});
+
+	// ---------------------------------------------------
+
+	describe('blockUser', () => {
+		it('removes relations and creates block', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+			if (!u1 || !u2) throw new Error('Test users not found');
+			await prisma.friendshipRequest.create({
+				data: { requesterId: u1.id, addresseeId: u2.id },
+			});
+
+			await prisma.friendship.create({
+				data: { userAId: u1.id, userBId: u2.id },
+			});
+
+			const result = await blockUser(u1.id, u2.id);
+
+			expect(result.blockedById).toBe(u1.id);
+			expect(result.blockedUserId).toBe(u2.id);
+
+			const request = await prisma.friendshipRequest.findFirst();
+			const friendship = await prisma.friendship.findFirst();
+			const block = await prisma.blockedUser.findFirst();
+
+			expect(request).toBeNull();
+			expect(friendship).toBeNull();
+			expect(block).not.toBeNull();
+		});
+	});
+
+	// ---------------------------------------------------
 
 	describe('unblockUser', () => {
-		it('Should remove the block and return params', async () => {
-			const users = await prisma.user.findMany();
+		it('removes block', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+
+			if (!u1 || !u2) throw new Error('Test users not found');
+
 			await prisma.blockedUser.create({
-				data: {
-					blockerId: users[0]!.id,
-					blockedId: users[1]!.id,
-				},
+				data: { blockerId: u1.id, blockedId: u2.id },
 			});
-			const result = await unblockUser({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-			const block = await prisma.blockedUser.findFirst({
-				where: {
-					blockerId: users[0]!.id,
-					blockedId: users[1]!.id,
-				},
-			});
+
+			const result = await unblockUser(u1.id, u2.id);
+
 			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
+				unblockerId: u1.id,
+				unblockedId: u2.id,
 			});
-			expect(block).toBe(null);
+
+			const block = await prisma.blockedUser.findFirst();
+			expect(block).toBeNull();
 		});
 	});
 
+	// ---------------------------------------------------
+
 	describe('cancelFriendRequest', () => {
-		it('Should delete the friend request and return params', async () => {
-			const users = await prisma.user.findMany();
+		it('deletes request', async () => {
+			const [u1, u2] = await prisma.user.findMany();
+
+			if (!u1 || !u2) throw new Error('Test users not found');
+
 			await prisma.friendshipRequest.create({
-				data: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
+				data: { requesterId: u1.id, addresseeId: u2.id },
 			});
-			const result = await cancelFriendRequest({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
-			});
-			const request = await prisma.friendshipRequest.findFirst({
-				where: {
-					requesterId: users[0]!.id,
-					addresseeId: users[1]!.id,
-				},
-			});
+
+			const result = await cancelFriendRequest(u1.id, u2.id);
+
 			expect(result).toEqual({
-				requesterId: users[0]!.id,
-				addresseeId: users[1]!.id,
+				cancellerId: u1.id,
+				cancelledId: u2.id,
 			});
-			expect(request).toBe(null);
+
+			const request = await prisma.friendshipRequest.findFirst();
+			expect(request).toBeNull();
 		});
 	});
 });

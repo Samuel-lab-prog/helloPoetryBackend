@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequest } from '../models/Index';
+import type { FriendRequestRecord, FriendshipRecord } from '../../models/Index';
 import {
 	SelfReferenceError,
 	FriendshipAlreadyExistsError,
@@ -24,7 +24,7 @@ export function sendFriendRequestFactory({
 }: Dependencies) {
 	return async function sendFriendRequest(
 		params: SendFriendRequestParams,
-	): Promise<FriendRequest> {
+	): Promise<FriendRequestRecord | FriendshipRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -62,18 +62,19 @@ export function sendFriendRequestFactory({
 			requesterId: addresseeId,
 			addresseeId: requesterId,
 		});
+
 		if (existingIncomingRequest) {
-			const accepted = await commandsRepository.acceptFriendRequest({
-				requesterId: addresseeId,
-				addresseeId: requesterId,
-			});
+			const accepted = await commandsRepository.acceptFriendRequest(
+				addresseeId,
+				requesterId,
+			);
 			return accepted;
 		}
 
-		const result = await commandsRepository.createFriendRequest({
+		const result = await commandsRepository.createFriendRequest(
 			requesterId,
 			addresseeId,
-		});
+		);
 
 		return result;
 	};

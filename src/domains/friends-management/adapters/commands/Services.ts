@@ -1,6 +1,14 @@
-import { commandsRepository } from '../../../infra/commands-repository/Repository';
-import { queriesRepository } from '../../../infra/queries-repository/Repository';
-import type { FriendRequest } from '../../../use-cases/commands/models/Index';
+import { commandsRepository } from '../../infra/commands-repository/Repository';
+import { queriesRepository } from '../../infra/queries-repository/Repository';
+import type {
+	FriendRequestRecord,
+	FriendshipRecord,
+	FriendRequestRejectionRecord,
+	BlockedUserRecord,
+	RemovedFriendRecord,
+	CancelFriendRequestRecord,
+	UnblockUserRecord,
+} from '../../use-cases/models/Index';
 import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
@@ -9,37 +17,37 @@ import {
 	deleteFriendFactory,
 	cancelFriendRequestFactory,
 	unblockUserFactory,
-} from '../../../use-cases/commands/Index';
+} from '../../use-cases/commands/Index';
 
 export interface CommandsRouterServices {
 	sendFriendRequest(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<FriendRequestRecord | FriendshipRecord>;
 	acceptFriendRequest(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<FriendshipRecord>;
 	rejectFriendRequest(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<FriendRequestRejectionRecord>;
 	blockUser(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<BlockedUserRecord>;
 	deleteFriend(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<{ requesterId: number; addresseeId: number }>;
+	}): Promise<RemovedFriendRecord>;
 	cancelFriendRequest(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<CancelFriendRequestRecord>;
 	unblockUser(params: {
 		requesterId: number;
 		addresseeId: number;
-	}): Promise<FriendRequest>;
+	}): Promise<UnblockUserRecord>;
 }
 
 export const commandsRouterServices: CommandsRouterServices = {

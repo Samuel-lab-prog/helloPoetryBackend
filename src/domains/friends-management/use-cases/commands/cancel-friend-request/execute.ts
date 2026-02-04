@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequest } from '../models/Index';
+import type { CancelFriendRequestRecord } from '../../models/Index';
 import { SelfReferenceError, RequestNotFoundError } from '../Errors';
 
 interface Dependencies {
@@ -19,7 +19,7 @@ export function cancelFriendRequestFactory({
 }: Dependencies) {
 	return async function cancelFriendRequest(
 		params: CancelFriendRequestParams,
-	): Promise<FriendRequest> {
+	): Promise<CancelFriendRequestRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -40,9 +40,6 @@ export function cancelFriendRequestFactory({
 			throw new RequestNotFoundError();
 		}
 
-		return commandsRepository.cancelFriendRequest({
-			requesterId,
-			addresseeId,
-		});
+		return commandsRepository.cancelFriendRequest(requesterId, addresseeId);
 	};
 }

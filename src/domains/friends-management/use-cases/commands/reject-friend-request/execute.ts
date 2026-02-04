@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequest } from '../models/Index';
+import type { FriendRequestRejectionRecord } from '../../models/Index';
 import { SelfReferenceError, RequestNotFoundError } from '../Errors';
 
 interface Dependencies {
@@ -19,7 +19,7 @@ export function rejectFriendRequestFactory({
 }: Dependencies) {
 	return async function rejectFriendRequest(
 		params: RejectFriendRequestParams,
-	): Promise<FriendRequest> {
+	): Promise<FriendRequestRejectionRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -41,9 +41,6 @@ export function rejectFriendRequestFactory({
 			throw new RequestNotFoundError();
 		}
 
-		return commandsRepository.rejectFriendRequest({
-			requesterId,
-			addresseeId,
-		});
+		return commandsRepository.rejectFriendRequest(requesterId, addresseeId);
 	};
 }

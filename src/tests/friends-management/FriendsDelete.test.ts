@@ -8,7 +8,11 @@ import {
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
 import type { AppError } from '@AppError';
-import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
+import type {
+	FriendRequestRecord,
+	FriendshipRecord,
+	RemovedFriendRecord,
+} from '@Domains/friends-management/use-cases/models/Index';
 
 let user1: TestUser;
 let user2: TestUser;
@@ -40,26 +44,31 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Friends Management', () => {
 	it('Users can become friends via friend request and acceptance', async () => {
-		const request = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const request = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 		expect(request.requesterId).toBe(user1.id);
 		expect(request.addresseeId).toBe(user2.id);
 
 		const accepted = (await acceptFriendRequest(
 			user2,
 			user1.id,
-		)) as FriendRequest;
-		expect(accepted.requesterId).toBe(user1.id);
-		expect(accepted.addresseeId).toBe(user2.id);
+		)) as FriendshipRecord;
+		expect(accepted.userAId).toBe(user1.id);
+		expect(accepted.userBId).toBe(user2.id);
 	});
 
 	it('User1 can delete User2 from friends', async () => {
 		await sendFriendRequest(user1, user2.id);
 		await acceptFriendRequest(user2, user1.id);
 
-		expect((await deleteFriend(user1, user2.id)) as FriendRequest).toEqual(
+		expect(
+			(await deleteFriend(user1, user2.id)) as RemovedFriendRecord,
+		).toEqual(
 			expect.objectContaining({
-				requesterId: user1.id,
-				addresseeId: user2.id,
+				removedById: user1.id,
+				removedId: user2.id,
 			}),
 		);
 	});
@@ -84,13 +93,12 @@ describe('INTEGRATION - Friends Management', () => {
 		await acceptFriendRequest(user2, user1.id);
 		await deleteFriend(user1, user2.id);
 
-		(await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		(await sendFriendRequest(user1, user2.id)) as FriendRequestRecord;
 		const accepted = (await acceptFriendRequest(
 			user2,
 			user1.id,
-		)) as FriendRequest;
-
-		expect(accepted.requesterId).toBe(user1.id);
-		expect(accepted.addresseeId).toBe(user2.id);
+		)) as FriendshipRecord;
+		expect(accepted.userAId).toBe(user1.id);
+		expect(accepted.userBId).toBe(user2.id);
 	});
 });

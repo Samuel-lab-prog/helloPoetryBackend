@@ -9,7 +9,10 @@ import {
 } from './Helpers';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
-import type { FriendRequest } from '@Domains/friends-management/use-cases/commands/models/FriendRequest';
+import type {
+	BlockedUserRecord,
+	FriendRequestRecord,
+} from '@Domains/friends-management/use-cases/models/Index';
 import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
 import type { AppError } from '@AppError';
 
@@ -40,10 +43,9 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Friends Management', () => {
 	it('User1 blocks User2', async () => {
-		const blocked = (await blockUser(user1, user2.id)) as FriendRequest;
-
-		expect(blocked.requesterId).toBe(user1.id);
-		expect(blocked.addresseeId).toBe(user2.id);
+		const blocked = (await blockUser(user1, user2.id)) as BlockedUserRecord;
+		expect(blocked.blockedById).toBe(user1.id);
+		expect(blocked.blockedUserId).toBe(user2.id);
 
 		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
@@ -115,7 +117,10 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1, user2.id);
 		await unblockUser(user1, user2.id);
 
-		const req = (await sendFriendRequest(user1, user2.id)) as FriendRequest;
+		const req = (await sendFriendRequest(
+			user1,
+			user2.id,
+		)) as FriendRequestRecord;
 
 		expect(req.requesterId).toBe(user1.id);
 		expect(req.addresseeId).toBe(user2.id);

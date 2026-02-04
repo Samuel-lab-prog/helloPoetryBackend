@@ -1,6 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequest } from '../models/Index';
+import type { UnblockUserRecord } from '../../models/Index';
 import {
 	SelfReferenceError,
 	BlockedRelationshipNotFoundError,
@@ -22,7 +22,7 @@ export function unblockUserFactory({
 }: Dependencies) {
 	return async function unblockUser(
 		params: UnblockUserParams,
-	): Promise<FriendRequest> {
+	): Promise<UnblockUserRecord> {
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) {
@@ -38,9 +38,6 @@ export function unblockUserFactory({
 			throw new BlockedRelationshipNotFoundError();
 		}
 
-		return commandsRepository.unblockUser({
-			requesterId,
-			addresseeId,
-		});
+		return commandsRepository.unblockUser(requesterId, addresseeId);
 	};
 }

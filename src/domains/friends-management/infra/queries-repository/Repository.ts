@@ -4,8 +4,8 @@ import type { QueriesRepository } from '../../ports/QueriesRepository';
 import type {
 	FriendshipRecord,
 	FriendRequestRecord,
-	BlockedFriendRecord,
-} from '../../use-cases/queries/models/Index';
+	BlockedUserRecord,
+} from '../../use-cases/models/Index';
 
 function normalizePair(a: number, b: number): [number, number] {
 	return a < b ? [a, b] : [b, a];
@@ -17,25 +17,41 @@ function findFriendshipBetweenUsers(params: {
 }): Promise<FriendshipRecord | null> {
 	const [userAId, userBId] = normalizePair(params.user1Id, params.user2Id);
 
-	return withPrismaErrorHandling(() =>
-		prisma.friendship.findFirst({
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.friendship.findFirst({
 			where: { userAId, userBId },
-		}),
-	);
+		});
+		if (!rs) return null;
+
+		return {
+			id: rs.id,
+			createdAt: rs.createdAt,
+			userAId: rs.userAId,
+			userBId: rs.userBId,
+		};
+	});
 }
 
 function findFriendRequest(params: {
 	requesterId: number;
 	addresseeId: number;
 }): Promise<FriendRequestRecord | null> {
-	return withPrismaErrorHandling(() =>
-		prisma.friendshipRequest.findFirst({
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.friendshipRequest.findFirst({
 			where: {
 				requesterId: params.requesterId,
 				addresseeId: params.addresseeId,
 			},
-		}),
-	);
+		});
+		if (!rs) return null;
+
+		return {
+			id: rs.id,
+			createdAt: rs.createdAt,
+			requesterId: rs.requesterId,
+			addresseeId: rs.addresseeId,
+		};
+	});
 }
 
 function findBlockedRelationship({
@@ -44,17 +60,25 @@ function findBlockedRelationship({
 }: {
 	userId1: number;
 	userId2: number;
-}): Promise<BlockedFriendRecord | null> {
-	return withPrismaErrorHandling(() =>
-		prisma.blockedUser.findFirst({
+}): Promise<BlockedUserRecord | null> {
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.blockedUser.findFirst({
 			where: {
 				OR: [
 					{ blockerId: userId1, blockedId: userId2 },
 					{ blockerId: userId2, blockedId: userId1 },
 				],
 			},
-		}),
-	);
+		});
+		if (!rs) return null;
+
+		return {
+			blockedById: rs.blockerId,
+			blockedUserId: rs.blockedId,
+			createdAt: rs.createdAt,
+			id: rs.id,
+		};
+	});
 }
 
 export const queriesRepository: QueriesRepository = {
