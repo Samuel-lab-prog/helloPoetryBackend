@@ -18,9 +18,9 @@ export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getAuthorPoems(
 		params: GetAuthorPoemsParams,
 	): Promise<AuthorPoem[]> {
-		const poems = await poemQueriesRepository.selectAuthorPoems({
-			authorId: params.authorId,
-		});
+		const poems = await poemQueriesRepository.selectAuthorPoems(
+			params.authorId,
+		);
 
 		return poems.filter((poem) =>
 			canViewPoem({

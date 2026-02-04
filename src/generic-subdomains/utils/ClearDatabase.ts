@@ -6,6 +6,7 @@ export async function clearDatabase() {
       "BlockedUser",
       "FriendshipRequest",
       "UserSanction",
+      "PoemDedication",
       "CommentLike",
       "Comment",
       "PoemLike",

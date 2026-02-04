@@ -29,6 +29,14 @@ export const testUsersData: CreateUser[] = [
 		bio: 'Bio of User Three',
 		avatarUrl: 'http://example.com/avatar3.png',
 	},
+	{
+		email: 'user4@gmail.com',
+		password: 'password',
+		nickname: 'user4',
+		name: 'User Four',
+		bio: 'Bio of User Four',
+		avatarUrl: 'http://example.com/avatar4.png',
+	},
 ];
 
 export const testPoemsData: CreatePoem[] = [
@@ -61,6 +69,7 @@ export const testPoemsForUpdate: UpdatePoem[] = [
 		isCommentable: true,
 		visibility: 'public',
 		status: 'published',
+		toUserIds: [],
 	},
 	{
 		title: 'Silent Night - Extended',
@@ -70,6 +79,7 @@ export const testPoemsForUpdate: UpdatePoem[] = [
 		isCommentable: false,
 		visibility: 'private',
 		status: 'draft',
+		toUserIds: [],
 	},
 	{
 		title: 'Winds of Change - Final',
@@ -79,5 +89,6 @@ export const testPoemsForUpdate: UpdatePoem[] = [
 		isCommentable: true,
 		visibility: 'public',
 		status: 'published',
+		toUserIds: [],
 	},
 ];

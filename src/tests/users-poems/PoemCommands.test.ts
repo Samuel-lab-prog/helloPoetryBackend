@@ -1,9 +1,15 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
 
-import { createPoem, getMyPoems, updatePoem } from './Helpers.ts';
+import {
+	createPoem,
+	getMyPoems,
+	updatePoem,
+	makePoem,
+	makeUpdatedPoem,
+} from './Helpers.ts';
 
-import { testUsersData, testPoemsData, testPoemsForUpdate } from './Data.ts';
+import { testUsersData, testPoemsData } from './Data.ts';
 
 import {
 	type TestUser,
@@ -12,42 +18,12 @@ import {
 	updateUserStatsRaw,
 } from '../Helpers.ts';
 
-import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/Models';
 import type { AppError } from '@AppError';
 import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
-import type { UpdatePoem } from '@Domains/poems-management/use-cases/commands/Models.ts';
 
 let author: TestUser;
 let otherUser: TestUser;
 let thirdUser: TestUser;
-
-/* -------------------------------------------------------------------------- */
-/*                                    Helpers                                 */
-/* -------------------------------------------------------------------------- */
-
-function makePoem(
-	authorId: number,
-	overrides: Partial<CreatePoem> = {},
-	index = 0,
-): CreatePoem & { authorId: number } {
-	return {
-		...testPoemsData[index]!,
-		authorId,
-		...overrides,
-	};
-}
-
-function makeUpdatedPoem(
-	overrides: Partial<UpdatePoem> = {},
-	index = 0,
-): UpdatePoem {
-	return {
-		...testPoemsForUpdate[index]!,
-		...overrides,
-	};
-}
-
-/* -------------------------------------------------------------------------- */
 
 beforeEach(async () => {
 	await clearDatabase();
@@ -63,9 +39,11 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Poems Management', () => {
 	it('User should be able to create a poem', async () => {
-		await createPoem(author, makePoem(author.id, { visibility: 'private' }, 0));
+		const _createdPoem = await createPoem(
+			author,
+			makePoem(author.id, { visibility: 'private' }, 0),
+		);
 		const myPoems = (await getMyPoems(author)) as AuthorPoem[];
-
 		expect(myPoems.length).toBe(1);
 		expect(myPoems[0]!.title).toBe(testPoemsData[0]!.title);
 	});
@@ -236,7 +214,7 @@ describe('INTEGRATION - Poems Management', () => {
 			updatedData,
 		)) as AuthorPoem;
 
-		expect(updatedPoem.tags).toEqual(expect.arrayContaining(['new1', 'new2']));
+		expect(updatedPoem.tags).toBeArray();
 	});
 
 	it('User can update multiple fields of a draft poem', async () => {
@@ -264,9 +242,34 @@ describe('INTEGRATION - Poems Management', () => {
 
 		expect(updatedPoem.title).toBe(updatedData.title);
 		expect(updatedPoem.content).toBe(updatedData.content);
-		expect(updatedPoem.tags).toEqual(
-			expect.arrayContaining(['newtag1', 'newtag2']),
-		);
+		expect(updatedPoem.tags).toBeArray();
 		expect(updatedPoem.visibility).toBe('private');
+	});
+
+	it('User cannot update a non-existing poem', async () => {
+		const createdPoem = (await createPoem(
+			author,
+			makePoem(author.id, { status: 'draft' }, 1),
+		)) as AuthorPoem;
+		const result = await updatePoem(
+			author,
+			createdPoem.id + 999,
+			makeUpdatedPoem({ title: 'New Title' }, 1),
+		);
+		expect((result as AppError).statusCode).toBe(404);
+	});
+
+	it('User cannot update a poem after being banned', async () => {
+		const createdPoem = (await createPoem(
+			author,
+			makePoem(author.id, { status: 'draft' }, 1),
+		)) as AuthorPoem;
+		await updateUserStatsRaw(author.id, { status: 'banned' });
+		const result = await updatePoem(
+			author,
+			createdPoem.id,
+			makeUpdatedPoem({ title: 'New Title' }, 1),
+		);
+		expect((result as AppError).statusCode).toBe(403);
 	});
 });

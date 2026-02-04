@@ -15,10 +15,7 @@ export function getMyPoemsFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getMyPoems(
 		params: GetMyPoemsParams,
 	): Promise<MyPoem[]> {
-		const poems = await poemQueriesRepository.selectMyPoems({
-			requesterId: params.requesterId,
-		});
-
+		const poems = await poemQueriesRepository.selectMyPoems(params.requesterId);
 		return poems.filter((poem) =>
 			canViewPoem({
 				author: { id: params.requesterId },

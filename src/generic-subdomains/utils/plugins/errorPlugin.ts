@@ -12,11 +12,17 @@ import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) return error;
-	if (error instanceof DomainError) return convertDomainError(error);
+
+	if (error instanceof DomainError) return convertDomainError(error, error);
+
 	if (error instanceof DatabaseError) return convertDatabaseError(error);
 
 	const normalizedCode = typeof code === 'string' ? code : 'UNKNOWN';
-	return convertElysiaError(normalizedCode);
+
+	return convertElysiaError(
+		normalizedCode,
+		error instanceof Error ? error : undefined,
+	);
 }
 
 /* ---------------------------------- */
@@ -30,6 +36,7 @@ function convertDatabaseError(error: DatabaseError): AppError {
 				statusCode: 404,
 				message: error.message,
 				code: 'NOT_FOUND',
+				originalError: error,
 			});
 
 		case 'CONFLICT':
@@ -37,6 +44,7 @@ function convertDatabaseError(error: DatabaseError): AppError {
 				statusCode: 409,
 				message: error.message,
 				code: 'CONFLICT',
+				originalError: error,
 			});
 
 		case 'FORBIDDEN':
@@ -44,6 +52,7 @@ function convertDatabaseError(error: DatabaseError): AppError {
 				statusCode: 403,
 				message: error.message,
 				code: 'FORBIDDEN',
+				originalError: error,
 			});
 
 		default:
@@ -51,17 +60,19 @@ function convertDatabaseError(error: DatabaseError): AppError {
 				statusCode: 500,
 				message: error.message,
 				code: 'INTERNAL_SERVER_ERROR',
+				originalError: error,
 			});
 	}
 }
 
-function convertElysiaError(code: string): AppError {
+function convertElysiaError(code: string, originalError?: Error): AppError {
 	switch (code) {
 		case 'NOT_FOUND':
 			return new AppError({
 				statusCode: 404,
 				message: 'Not Found: resource not found',
 				code: 'NOT_FOUND',
+				originalError,
 			});
 
 		case 'PARSE':
@@ -69,6 +80,7 @@ function convertElysiaError(code: string): AppError {
 				statusCode: 400,
 				message: 'Bad request: Failed to parse request body.',
 				code: 'BAD_REQUEST',
+				originalError,
 			});
 
 		case 'VALIDATION':
@@ -76,6 +88,7 @@ function convertElysiaError(code: string): AppError {
 				statusCode: 422,
 				message: 'Validation failed',
 				code: 'VALIDATION',
+				originalError,
 			});
 
 		case 'INVALID_COOKIE_SIGNATURE':
@@ -83,6 +96,7 @@ function convertElysiaError(code: string): AppError {
 				statusCode: 401,
 				message: 'Invalid cookie signature',
 				code: 'UNAUTHORIZED',
+				originalError,
 			});
 
 		default:
@@ -90,15 +104,20 @@ function convertElysiaError(code: string): AppError {
 				statusCode: 500,
 				message: 'Internal server error',
 				code: 'INTERNAL_SERVER_ERROR',
+				originalError,
 			});
 	}
 }
 
-function convertDomainError(error: DomainError): AppError {
+function convertDomainError(
+	error: DomainError,
+	originalError?: Error,
+): AppError {
 	return new AppError({
 		message: error.message,
 		statusCode: domainStatusMap[error.type] ?? 400,
 		code: error.type as AppErrorCode,
+		originalError: originalError ?? error,
 	});
 }
 
@@ -123,6 +142,7 @@ function logError(
 	status: number,
 	message: string,
 	code: AppErrorCode,
+	originalError?: Error,
 ) {
 	log.error(
 		{
@@ -131,6 +151,7 @@ function logError(
 				status,
 				message,
 				code,
+				originalError: originalError?.message,
 			},
 		},
 		'An error occurred while processing the request',
@@ -207,7 +228,13 @@ function handleError(ctx: HandleErrorContext) {
 
 	set.status = appError.statusCode;
 
-	logError(context, appError.statusCode, appError.message, appError.code);
+	logError(
+		context,
+		appError.statusCode,
+		appError.message,
+		appError.code,
+		appError.originalError,
+	);
 
 	return sendAppError(appError);
 }
@@ -217,6 +244,7 @@ function sendAppError(err: AppError) {
 		message: err.message,
 		statusCode: err.statusCode,
 		code: err.code,
+		originalError: err.originalError?.message,
 	};
 }
 

@@ -5,85 +5,33 @@ import type { QueriesRepository } from '../../ports/QueriesRepository';
 import type { MyPoem, AuthorPoem } from '../../use-cases/queries/Models';
 
 import { authorPoemSelect, myPoemSelect } from './Selects';
+import { mapPoem } from './Helpers';
 
-//------------------------------------------------------------------------
-// Helpers
-//------------------------------------------------------------------------
-
-function getFriendIdsFromRelations(poemAuthor: {
-	friendshipsFrom: { userBId: number }[] | null;
-	friendshipsTo: { userAId: number }[] | null;
-}): number[] {
-	return [
-		...(poemAuthor.friendshipsFrom?.map((f) => f.userBId) || []),
-		...(poemAuthor.friendshipsTo?.map((f) => f.userAId) || []),
-	];
-}
-
-function calculateStats(poem: {
-	_count: { poemLikes: number; comments: number };
-}) {
-	return {
-		likesCount: poem._count.poemLikes,
-		commentsCount: poem._count.comments,
-	};
-}
-
-//------------------------------------------------------------------------
-
-function selectMyPoems(params: { requesterId: number }): Promise<MyPoem[]> {
+export function selectMyPoems(requesterId: number): Promise<MyPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
-			where: {
-				authorId: params.requesterId,
-			},
+			where: { authorId: requesterId },
 			select: myPoemSelect,
-			orderBy: {
-				createdAt: 'desc',
-			},
+			orderBy: { createdAt: 'desc' },
 		});
 
-		return poems.map((poem) => ({
-			...poem,
-			toUserIds: poem.dedications.map((dedication) => ({
-				...dedication.toUser,
-				friendIds: getFriendIdsFromRelations(dedication.toUser),
-			})),
-			stats: calculateStats(poem),
-		}));
+		return poems.map((poem) => mapPoem(poem));
 	});
 }
 
-function selectAuthorPoems(params: {
-	authorId: number;
-}): Promise<AuthorPoem[]> {
+export function selectAuthorPoems(authorId: number): Promise<AuthorPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
-			where: {
-				authorId: params.authorId,
-			},
+			where: { authorId },
 			select: authorPoemSelect,
-			orderBy: {
-				createdAt: 'desc',
-			},
+			orderBy: { createdAt: 'desc' },
 		});
 
-		return poems.map((poem) => ({
-			...poem,
-			stats: calculateStats(poem),
-			author: {
-				...poem.author,
-				friendIds: getFriendIdsFromRelations(poem.author),
-			},
-		}));
+		return poems.map((poem) => mapPoem(poem, poem.author));
 	});
 }
 
-function selectPoemById({
-	poemId,
-}: {
-	poemId: number;
-}): Promise<AuthorPoem | null> {
+export function selectPoemById(poemId: number): Promise<AuthorPoem | null> {
 	return withPrismaErrorHandling(async () => {
 		const poem = await prisma.poem.findUnique({
 			where: { id: poemId },
@@ -92,15 +40,7 @@ function selectPoemById({
 
 		if (!poem) return null;
 
-		const poemDetails: AuthorPoem = {
-			...poem,
-			author: {
-				...poem.author,
-				friendIds: getFriendIdsFromRelations(poem.author),
-			},
-			stats: calculateStats(poem),
-		};
-		return poemDetails;
+		return mapPoem(poem, poem.author);
 	});
 }
 

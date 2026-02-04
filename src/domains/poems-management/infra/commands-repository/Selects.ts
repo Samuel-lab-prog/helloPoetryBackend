@@ -13,7 +13,7 @@ export const insertPoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
-	
+
 	visibility: true,
 	status: true,
 	moderationStatus: true,
@@ -28,8 +28,6 @@ export const insertPoemSelect = {
 			toUserId: true,
 		},
 	},
-
-
 } as const satisfies PoemSelect;
 
 export const updatePoemSelect = {
@@ -54,4 +52,4 @@ export const updatePoemSelect = {
 			toUserId: true,
 		},
 	},
-}
+} as const satisfies PoemSelect;

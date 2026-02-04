@@ -25,5 +25,5 @@ export const UpdatePoemBodySchema = t.Object({
 
 	isCommentable: PoemIsCommentableSchema,
 
-	toUserIds: t.Nullable(PoemToUserIdsSchema),
+	toUserIds: t.Optional(PoemToUserIdsSchema),
 });

@@ -5,7 +5,7 @@ import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { SlugService } from '../../../ports/SlugService';
 
-import type { UpdatePoem } from '../Models';
+import type { UpdatePoem, UpdatePoemResult } from '../Models';
 import { PoemAlreadyExistsError } from '../Errors';
 
 import { canUpdatePoem } from '../policies/policies';
@@ -33,7 +33,7 @@ export function updatePoemFactory(deps: Dependencies) {
 
 	return async function updatePoem(
 		params: UpdatePoemParams,
-	): Promise<UpdatePoem> {
+	): Promise<UpdatePoemResult> {
 		const { data, meta, poemId } = params;
 
 		const authorCtx = {
@@ -54,7 +54,7 @@ export function updatePoemFactory(deps: Dependencies) {
 		const slug = slugService.generateSlug(data.title);
 		const poem = { ...data, slug };
 
-		const result = await commandsRepository.updatePoem({ poemId, poem });
+		const result = await commandsRepository.updatePoem(poemId, poem);
 
 		if (result.ok === true) {
 			return result.data;

@@ -69,7 +69,6 @@ export const PoemIsCommentableSchema = t.Boolean({
 });
 
 export const PoemToUserIdsSchema = t.Array(idSchema, {
-	minItems: 1,
 	uniqueItems: true,
 	...makeValidationError(
 		'DedicationUserIds must contain at least 1 unique user ID',

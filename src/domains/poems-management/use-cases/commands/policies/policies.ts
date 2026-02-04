@@ -12,8 +12,8 @@ import {
 
 type AuthorContext = {
 	status: UserStatus;
-	id?: number;
-	role?: UserRole;
+	id: number;
+	role: UserRole;
 };
 
 type PoemPolicyContext = {
@@ -33,10 +33,17 @@ type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
 
 async function validateDedicatedUsers(
 	usersContract: UsersContract,
+	requesterId: number,
 	userIds?: number[],
 ): Promise<boolean> {
 	if (!userIds || userIds.length === 0) {
 		return true;
+	}
+
+	if (userIds.includes(requesterId)) {
+		throw new PoemUpdateDeniedError(
+			'Author cannot dedicate poem to themselves',
+		);
 	}
 
 	const promises = userIds.map((id) => usersContract.getUserBasicInfo(id));
@@ -59,7 +66,11 @@ export async function canCreatePoem(
 		throw new PoemCreationDeniedError('Author is not active');
 	}
 
-	const areIdsValid = await validateDedicatedUsers(usersContract, toUserIds);
+	const areIdsValid = await validateDedicatedUsers(
+		usersContract,
+		author.id,
+		toUserIds,
+	);
 	if (!areIdsValid) {
 		throw new InvalidDedicatedUsersError();
 	}
@@ -75,12 +86,14 @@ export async function canUpdatePoem(
 		throw new PoemUpdateDeniedError('Author is not active');
 	}
 
-	const existingPoem = await params.queriesRepository.selectPoemById({
-		poemId,
-	});
+	const existingPoem = await params.queriesRepository.selectPoemById(poemId);
 
 	if (!existingPoem) {
 		throw new PoemNotFoundError();
+	}
+
+	if (existingPoem.author.id !== author.id) {
+		throw new PoemUpdateDeniedError('User is not the author of the poem');
 	}
 
 	if (existingPoem.status === 'published') {
@@ -91,7 +104,11 @@ export async function canUpdatePoem(
 		throw new PoemUpdateDeniedError('Cannot update a removed poem');
 	}
 
-	const areIdsValid = await validateDedicatedUsers(usersContract, toUserIds);
+	const areIdsValid = await validateDedicatedUsers(
+		usersContract,
+		author.id,
+		toUserIds,
+	);
 	if (!areIdsValid) {
 		throw new InvalidDedicatedUsersError();
 	}

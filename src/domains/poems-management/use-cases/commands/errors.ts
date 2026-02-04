@@ -26,6 +26,6 @@ export class PoemUpdateDeniedError extends DomainError {
 
 export class InvalidDedicatedUsersError extends DomainError {
 	constructor() {
-		super('BAD_REQUEST', 'One or more dedicated users are invalid or inactive');
+		super('NOT_FOUND', 'One or more dedicated users are invalid or inactive');
 	}
 }

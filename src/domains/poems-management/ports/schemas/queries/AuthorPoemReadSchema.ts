@@ -39,6 +39,8 @@ export const AuthorPoemReadSchema = t.Object({
 	createdAt: DateSchema,
 	updatedAt: DateSchema,
 
+	toUsers: t.Array(UserPreviewSchema),
+
 	author: UserPreviewSchema,
 	stats: t.Object({
 		likesCount: NonNegativeIntegerSchema,

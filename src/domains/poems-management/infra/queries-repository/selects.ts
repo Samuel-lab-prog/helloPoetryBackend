@@ -34,23 +34,23 @@ const countSelect = {
 } as const;
 
 const authorPreviewSelect = {
-			id: true,
-			name: true,
-			nickname: true,
-			avatarUrl: true,
-			friendshipsFrom: {
-				select: {
-					userBId: true,
-					userAId: true,
-				},
-			},
-			friendshipsTo: {
-				select: {
-					userAId: true,
-					userBId: true,
-				},
-			},
- } as const;
+	id: true,
+	name: true,
+	nickname: true,
+	avatarUrl: true,
+	friendshipsFrom: {
+		select: {
+			userBId: true,
+			userAId: true,
+		},
+	},
+	friendshipsTo: {
+		select: {
+			userAId: true,
+			userBId: true,
+		},
+	},
+} as const;
 
 export const myPoemSelect = {
 	id: true,
@@ -60,7 +60,7 @@ export const myPoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
-	
+
 	visibility: true,
 	status: true,
 	moderationStatus: true,
@@ -69,7 +69,6 @@ export const myPoemSelect = {
 
 	createdAt: true,
 	updatedAt: true,
-
 
 	dedications: {
 		select: dedicationsSelect,
@@ -95,7 +94,7 @@ export const authorPoemSelect = {
 	status: true,
 	visibility: true,
 	moderationStatus: true,
-	
+
 	isCommentable: true,
 
 	updatedAt: true,
@@ -103,11 +102,9 @@ export const authorPoemSelect = {
 
 	author: { select: authorPreviewSelect },
 
-
 	dedications: {
 		select: dedicationsSelect,
 	},
 
 	_count: { select: countSelect },
 } as const satisfies PoemSelect;
-

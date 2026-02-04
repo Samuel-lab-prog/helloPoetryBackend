@@ -17,9 +17,7 @@ interface GetPoemParams {
 
 export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getPoem(params: GetPoemParams): Promise<AuthorPoem> {
-		const poem = await poemQueriesRepository.selectPoemById({
-			poemId: params.poemId,
-		});
+		const poem = await poemQueriesRepository.selectPoemById(params.poemId);
 
 		if (!poem) {
 			throw new PoemNotFoundError();

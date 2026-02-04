@@ -10,7 +10,12 @@ import {
 	updatePoemFactory,
 } from '../../use-cases/commands/Index';
 
-import type { CreatePoem, UpdatePoem } from '../../use-cases/commands/Models';
+import type {
+	CreatePoem,
+	CreatePoemResult,
+	UpdatePoem,
+	UpdatePoemResult,
+} from '../../use-cases/commands/Models';
 
 type MetaData = {
 	requesterId: number;
@@ -22,12 +27,12 @@ export interface CommandsRouterServices {
 	createPoem: (params: {
 		data: CreatePoem;
 		meta: MetaData;
-	}) => Promise<{ id: number }>;
+	}) => Promise<CreatePoemResult>;
 	updatePoem: (params: {
 		data: UpdatePoem;
 		poemId: number;
 		meta: MetaData;
-	}) => Promise<UpdatePoem>;
+	}) => Promise<UpdatePoemResult>;
 }
 
 export const commandsRouterServices: CommandsRouterServices = {
@@ -40,6 +45,6 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		slugService: slugifyService,
-		usersContract
+		usersContract,
 	}),
 };

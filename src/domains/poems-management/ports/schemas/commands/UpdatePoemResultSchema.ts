@@ -31,5 +31,5 @@ export const UpdatePoemResultSchema = t.Object({
 	createdAt: DateSchema,
 	updatedAt: DateSchema,
 
-	toUserIds: t.Nullable(PoemToUserIdsSchema),
+	toUserIds: PoemToUserIdsSchema,
 });

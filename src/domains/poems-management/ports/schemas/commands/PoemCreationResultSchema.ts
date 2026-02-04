@@ -34,5 +34,5 @@ export const PoemCreationResultSchema = t.Object({
 
 	isCommentable: PoemIsCommentableSchema,
 
-	toUserIds: t.Nullable(PoemToUserIdsSchema),
+	toUserIds: PoemToUserIdsSchema,
 });

@@ -6,9 +6,11 @@ import {
 	getAuthorPoems,
 	getMyPoems,
 	getPoemById,
+	createAndApprovePoem,
+	makePoem,
 } from './Helpers.ts';
 
-import { testUsersData, testPoemsData } from './Data.ts';
+import { testUsersData } from './Data.ts';
 
 import {
 	type TestUser,
@@ -19,43 +21,13 @@ import {
 	updateUserStatsRaw,
 } from '../Helpers.ts';
 
-import type {
-	CreatePoem,
-	CreatePoemResult,
-} from '@Domains/poems-management/use-cases/commands/Models';
+import type { CreatePoemResult } from '@Domains/poems-management/use-cases/commands/Models';
 import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
 import type { AppError } from '@AppError';
 
 let author: TestUser;
 let otherUser: TestUser;
 let thirdUser: TestUser;
-
-/* -------------------------------------------------------------------------- */
-/*                                    Helpers                                 */
-/* -------------------------------------------------------------------------- */
-
-function makePoem(
-	authorId: number,
-	overrides: Partial<CreatePoem> = {},
-	index = 0,
-): CreatePoem & { authorId: number } {
-	return {
-		...testPoemsData[index]!,
-		authorId,
-		...overrides,
-	};
-}
-
-async function createAndApprovePoem(
-	user: TestUser,
-	poem: CreatePoem,
-): Promise<CreatePoemResult> {
-	const result = (await createPoem(user, poem)) as CreatePoemResult;
-	await updatePoemRaw(result.id!, { moderationStatus: 'approved' });
-	return result;
-}
-
-/* -------------------------------------------------------------------------- */
 
 beforeEach(async () => {
 	await clearDatabase();
@@ -71,12 +43,18 @@ beforeEach(async () => {
 
 describe('INTEGRATION - Poems Management', () => {
 	it('Author can always see all his poems regardless of their visibility status', async () => {
-		await createPoem(author, makePoem(author.id, { visibility: 'private' }, 0));
-		await createPoem(
+		const _privatePoem = await createPoem(
+			author,
+			makePoem(author.id, { visibility: 'private' }, 0),
+		);
+		const _unlistedPoem = await createPoem(
 			author,
 			makePoem(author.id, { visibility: 'unlisted' }, 1),
 		);
-		await createPoem(author, makePoem(author.id, { visibility: 'public' }, 2));
+		const _publicPoem = await createPoem(
+			author,
+			makePoem(author.id, { visibility: 'public' }, 2),
+		);
 
 		const poems = (await getMyPoems(author)) as any[];
 		expect(poems.length).toBe(3);
@@ -104,7 +82,6 @@ describe('INTEGRATION - Poems Management', () => {
 		});
 
 		const result = (await createPoem(author, poem)) as CreatePoemResult;
-
 		const denied = await getPoemById(otherUser, result.id!);
 		expect((denied as AppError).statusCode).toBe(403);
 

@@ -30,7 +30,6 @@ export function createPoemFactory(deps: Dependencies) {
 		params: CreatePoemParams,
 	): Promise<CreatePoemResult> {
 		const { data, meta } = params;
-
 		const authorCtx = {
 			id: meta.requesterId,
 			status: meta.requesterStatus,
@@ -43,7 +42,6 @@ export function createPoemFactory(deps: Dependencies) {
 			usersContract,
 			toUserIds: data.toUserIds,
 		});
-
 		const slug = slugService.generateSlug(data.title);
 		const poem: CreatePoemDB = {
 			...data,
@@ -51,7 +49,7 @@ export function createPoemFactory(deps: Dependencies) {
 			authorId: meta.requesterId,
 		};
 
-		const result = await commandsRepository.insertPoem({ poem });
+		const result = await commandsRepository.insertPoem(poem);
 
 		if (result.ok === true) {
 			return result.data;

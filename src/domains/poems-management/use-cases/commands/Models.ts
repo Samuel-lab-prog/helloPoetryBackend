@@ -2,7 +2,7 @@ import {
 	PoemCreationResultSchema,
 	CreatePoemBodySchema,
 	UpdatePoemBodySchema,
-	UpdatePoemResultSchema
+	UpdatePoemResultSchema,
 } from '../../ports/schemas/Index';
 
 export type CreatePoem = (typeof CreatePoemBodySchema)['static'];
