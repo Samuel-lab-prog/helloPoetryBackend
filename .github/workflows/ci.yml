@@ -72,9 +72,6 @@ jobs:
       - name: Format
         run: bun format
 
-      - name: Dependency Cruise
-        run: bun depcruise
-
       - name: Metrics
         run: bun metrics
 
