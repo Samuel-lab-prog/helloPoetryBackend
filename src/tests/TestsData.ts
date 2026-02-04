@@ -14,10 +14,9 @@ function generateUsersData(quantity: number): CreateUser[] {
 			nickname: `user${i}`,
 			name: `user${i}`,
 			bio: `user${i}bio`,
-			avatarUrl: 'example',
+			avatarUrl: `http://example.com/avatar${i}.png`,
 		});
 	}
-	console.log('Generated Users Data:', data);
 	return data;
 }
 

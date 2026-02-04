@@ -10,7 +10,7 @@ import {
 	makePoem,
 } from './Helpers.ts';
 
-import { testUsersData } from './Data.ts';
+import { usersData } from '../TestsData.ts';
 
 import {
 	type TestUser,
@@ -32,9 +32,9 @@ let thirdUser: TestUser;
 beforeEach(async () => {
 	await clearDatabase();
 
-	author = await createUser(testUsersData[0]!);
-	otherUser = await createUser(testUsersData[1]!);
-	thirdUser = await createUser(testUsersData[2]!);
+	author = await createUser(usersData[0]!);
+	otherUser = await createUser(usersData[1]!);
+	thirdUser = await createUser(usersData[2]!);
 
 	author = await loginUser(author);
 	otherUser = await loginUser(otherUser);

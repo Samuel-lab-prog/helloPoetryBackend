@@ -11,7 +11,7 @@ import {
 	app,
 	updatePoemRaw,
 } from '../Helpers';
-import { testPoemsData, testPoemsForUpdate } from './Data';
+import { poemsData, poemsForUpdate } from '../TestsData';
 
 export async function createPoem(
 	user: TestUser,
@@ -79,7 +79,7 @@ export function makePoem(
 	index = 0,
 ): CreatePoem & { authorId: number } {
 	return {
-		...testPoemsData[index]!,
+		...poemsData[index]!,
 		authorId,
 		...overrides,
 	};
@@ -90,7 +90,7 @@ export function makeUpdatedPoem(
 	index = 0,
 ): UpdatePoem {
 	return {
-		...testPoemsForUpdate[index]!,
+		...poemsForUpdate[index]!,
 		...overrides,
 	};
 }

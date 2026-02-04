@@ -1,6 +1,4 @@
 import type { HeadersInit } from 'bun';
-import { createUser, loginUser, type TestUser } from 'tests/Helpers';
-import { testUsersData } from './poems-management/Data';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,
@@ -12,6 +10,10 @@ type JsonRequestOptions<TBody = unknown> = Omit<
 
 /**
  * Create a Request with JSON headers and body.
+ * @param url The request URL.
+ * @param options Request options, including body and headers.
+ * @returns A Request object with JSON headers and body.
+ * You can pass any type of body, and it will be stringified to JSON.
  */
 export function jsonRequest<TBody = unknown>(
 	url: string,
@@ -30,17 +32,4 @@ export function jsonRequest<TBody = unknown>(
 		headers: finalHeaders,
 		body: body !== undefined ? JSON.stringify(body) : undefined,
 	});
-}
-/**
- * Sets up 3 test users by creating and logging them in.
- * @returns A promise that resolves to an array of logged-in test users.
- */
-export async function setupHttpUsers(): Promise<TestUser[]> {
-	const userPromises = testUsersData.map((data) => createUser(data));
-	let users = await Promise.all(userPromises);
-
-	const loginPromises = users.map((user) => loginUser(user));
-	users = await Promise.all(loginPromises);
-
-	return users;
 }

@@ -9,7 +9,7 @@ import {
 	makeUpdatedPoem,
 } from './Helpers.ts';
 
-import { setupHttpUsers } from 'tests/TestsUtils.ts';
+import { setupHttpUsers } from 'tests/Helpers.ts';
 import { updateUserStatsRaw, type TestUser } from '../Helpers.ts';
 import type { MyPoem } from '@Domains/poems-management/use-cases/queries/Models';
 import type { AppError } from '@AppError';

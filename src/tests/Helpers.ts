@@ -9,6 +9,7 @@ import type {
 } from '@SharedKernel/Enums';
 import { prisma } from '@Prisma/PrismaClient';
 import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
+import { usersData } from './TestsData';
 
 export const app = new Elysia().use(server);
 export const PREFIX = 'http://test/api/v1';
@@ -101,4 +102,18 @@ export async function updatePoemRaw(
 			visibility: true,
 		},
 	});
+}
+
+/**
+ * Sets up 3 test users by creating and logging them in.
+ * @returns A promise that resolves to an array of logged-in test users.
+ */
+export async function setupHttpUsers(): Promise<TestUser[]> {
+	const userPromises = usersData.map((data) => createUser(data));
+	let users = await Promise.all(userPromises);
+
+	const loginPromises = users.map((user) => loginUser(user));
+	users = await Promise.all(loginPromises);
+
+	return users;
 }

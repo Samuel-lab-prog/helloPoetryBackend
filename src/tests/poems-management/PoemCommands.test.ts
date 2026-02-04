@@ -11,8 +11,8 @@ import {
 } from './Helpers.ts';
 
 import { updateUserStatsRaw, type TestUser } from '../Helpers.ts';
-import { setupHttpUsers } from 'tests/TestsUtils.ts';
-import { testPoemsData } from './Data.ts';
+import { setupHttpUsers } from 'tests/Helpers.ts';
+import { poemsData } from '../TestsData.ts';
 import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
 import type { CreatePoem } from '@Domains/poems-management/use-cases/commands/Models.ts';
 
@@ -52,7 +52,7 @@ describe('INTEGRATION - Poems Management', () => {
 			await createDraftPoem(user1);
 			const poem = await getFirstPoem(user1);
 
-			expect(poem.title).toBe(testPoemsData[0]!.title);
+			expect(poem.title).toBe(poemsData[0]!.title);
 		});
 
 		it('Default visibility for a poem is public', async () => {
@@ -87,7 +87,7 @@ describe('INTEGRATION - Poems Management', () => {
 			await createDraftPoem(user1);
 			const result = await createDraftPoem(user2);
 
-			expect((result as AuthorPoem).title).toBe(testPoemsData[0]!.title);
+			expect((result as AuthorPoem).title).toBe(poemsData[0]!.title);
 		});
 	});
 
