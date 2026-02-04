@@ -36,23 +36,24 @@ async function validateDedicatedUsers(
 	requesterId: number,
 	userIds?: number[],
 ): Promise<boolean> {
-	if (!userIds || userIds.length === 0) {
-		return true;
-	}
+	const ids = Array.isArray(userIds) ? userIds.map(Number) : [];
 
-	if (userIds.includes(requesterId)) {
+	if (ids.length === 0) return true;
+
+	if (ids.includes(requesterId)) {
 		throw new PoemUpdateDeniedError(
 			'Author cannot dedicate poem to themselves',
 		);
 	}
 
-	const promises = userIds.map((id) => usersContract.getUserBasicInfo(id));
-	const users = await Promise.all(promises);
+	const users = await Promise.all(
+		ids.map((id) => usersContract.getUserBasicInfo(id).catch(() => null)),
+	);
 
-	const invalidUser = users.find((u) => u.status !== 'active');
-	if (invalidUser) {
-		return false;
-	}
+	const invalidUser = users.find((u) => !u || u.status !== 'active');
+
+	if (invalidUser) return false;
+
 	return true;
 }
 

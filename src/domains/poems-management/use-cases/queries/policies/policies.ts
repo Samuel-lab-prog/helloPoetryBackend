@@ -41,23 +41,29 @@ export function canViewPoem(c: PoemPolicyContext): boolean {
 	const isPoemDraft = poem.status === 'draft';
 	const isPoemPrivate = poem.visibility === 'private';
 
-	const isDirectAccess = !!author.directAccess;
+	const isDirectAccess = author.directAccess === true;
 
 	function isFriend(): boolean {
-		if (!viewer.id) return false;
+		if (viewer.id === undefined) return false;
 		return author.friendIds?.includes(viewer.id) === true;
 	}
 
+	// 1. Author
 	if (isViewerOwnAuthor) return true;
 
+	// 2. Ban
 	if (isViewerBanned) return false;
 
-	if (isPoemDraft) return false;
-
+	// 3. Moderation
 	if (!isPoemApproved) return false;
 
+	// 4. Draft
+	if (isPoemDraft) return false;
+
+	// 5. Moderator
 	if (isViewerModerator && !isPoemPrivate) return true;
 
+	// 6. Visibility
 	switch (poem.visibility) {
 		case 'public':
 			return true;
