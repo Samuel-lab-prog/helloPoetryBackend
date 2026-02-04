@@ -3,6 +3,7 @@ import type { HashService } from '../../ports/HashService';
 import type { AuthRepository } from '../../ports/AuthRepository';
 
 import { InvalidCredentialsError } from '../errors';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	tokenService: TokenService;
@@ -12,8 +13,8 @@ interface Dependencies {
 
 interface AuthClient {
 	id: number;
-	role: string;
-	status: string;
+	role: UserRole;
+	status: UserStatus;
 }
 
 interface LoginResponse {

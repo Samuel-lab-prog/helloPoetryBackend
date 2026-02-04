@@ -1,6 +1,8 @@
+import type { UserRole } from '@SharedKernel/Enums';
+
 export type TokenPayload = {
 	clientId: number;
-	role: string;
+	role: UserRole;
 	email: string;
 };
 

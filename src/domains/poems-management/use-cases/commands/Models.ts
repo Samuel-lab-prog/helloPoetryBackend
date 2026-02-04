@@ -1,5 +1,5 @@
 import {
-	PoemCreationResultSchema,
+	CreatePoemResultSchema,
 	CreatePoemBodySchema,
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
@@ -7,7 +7,7 @@ import {
 
 export type CreatePoem = (typeof CreatePoemBodySchema)['static'];
 export type CreatePoemDB = CreatePoem & { slug: string; authorId: number };
-export type CreatePoemResult = (typeof PoemCreationResultSchema)['static'];
+export type CreatePoemResult = (typeof CreatePoemResultSchema)['static'];
 
 export type UpdatePoem = (typeof UpdatePoemBodySchema)['static'];
 export type UpdatePoemDB = UpdatePoem & { slug: string };

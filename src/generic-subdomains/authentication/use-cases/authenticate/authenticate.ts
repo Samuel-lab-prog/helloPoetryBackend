@@ -2,6 +2,7 @@ import type { TokenService } from '../../ports/TokenService';
 import type { AuthRepository } from '../../ports/AuthRepository';
 
 import { ClientNotFoundError, InvalidTokenError } from '../errors';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	tokenService: TokenService;
@@ -10,8 +11,8 @@ interface Dependencies {
 
 interface AuthClient {
 	id: number;
-	role: string;
-	status: string;
+	role: UserRole;
+	status: UserStatus;
 }
 
 export function authenticateClientFactory(dependencies: Dependencies) {
@@ -28,8 +29,8 @@ export function authenticateClientFactory(dependencies: Dependencies) {
 			}
 			return {
 				id: client.id,
-				role: client.role,
-				status: client.status,
+				role: client.role as UserRole,
+				status: client.status as UserStatus,
 			};
 		} catch {
 			throw new InvalidTokenError();

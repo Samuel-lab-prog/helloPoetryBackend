@@ -1,8 +1,10 @@
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+
 export interface ClientAuthCredentials {
 	id: number;
-	role: string;
+	role: UserRole;
 	email: string;
-	status: string;
+	status: UserStatus;
 	passwordHash: string;
 }
 

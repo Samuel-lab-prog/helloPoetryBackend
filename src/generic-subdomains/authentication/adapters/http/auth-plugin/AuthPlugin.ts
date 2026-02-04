@@ -6,12 +6,13 @@ import { cookieTokenSchema } from '../../schemas/cookieTokenSchema';
 import { authenticateClientFactory } from '../../../use-cases/authenticate/authenticate';
 import { JwtTokenService } from '../../../infra/token/JwtTokenService';
 import { AuthPrismaRepository } from '../../../infra/repository/repository';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	authenticate: (token: string) => Promise<{
 		id: number;
-		role: string;
-		status: string;
+		role: UserRole;
+		status: UserStatus;
 	}>;
 }
 

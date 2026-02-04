@@ -1,14 +1,20 @@
 import Elysia from 'elysia';
 import { appErrorSchema } from '../AppError';
 import { log } from '../logger';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
+type AuthType = {
+	clientId: number;
+	clientRole: UserRole;
+	clientStatus: UserStatus;
+};
 export const SetupPlugin = new Elysia()
 	.as('global')
 	.decorate('auth', {
 		clientId: -1,
-		clientRole: '',
-		clientStatus: '',
-	})
+		clientRole: 'author',
+		clientStatus: 'banned',
+	} as AuthType satisfies AuthType)
 	.decorate('logger', {
 		log,
 	})
@@ -23,10 +29,7 @@ export const SetupPlugin = new Elysia()
 	});
 
 export type SetupPluginContext = {
-	auth: {
-		clientId: number | null;
-		clientRole: string;
-	};
+	auth: AuthType;
 	store: {
 		reqInitiatedAt: number;
 		authTiming: number;

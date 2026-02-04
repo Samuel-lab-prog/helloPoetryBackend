@@ -7,6 +7,8 @@ import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
 import { JwtTokenService } from '../../../infra/token/JwtTokenService';
 import { AuthPrismaRepository } from '../../../infra/repository/repository';
 import { loginClientFactory } from '../../../use-cases/login/login';
+import type { UserRole } from '@SharedKernel/Enums';
+import type { UserStatus } from '@PrismaGenerated/enums';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
 	token.httpOnly = process.env.NODE_ENV === 'prod';
@@ -18,7 +20,7 @@ function setUpCookieTokenOptions(token: CookieOptions) {
 
 interface LoginResponse {
 	token: string;
-	client: { id: number; role: string; status: string };
+	client: { id: number; role: UserRole; status: UserStatus };
 }
 
 interface AuthControllerServices {

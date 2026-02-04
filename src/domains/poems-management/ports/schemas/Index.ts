@@ -2,7 +2,7 @@ export * from './queries/AuthorPoemReadSchema';
 export * from './queries/MyPoemReadSchema';
 export * from './fields/Enums';
 export * from './fields/PoemFieldsSchemas';
-export * from './commands/PoemCreationResultSchema';
+export * from './commands/CreatePoemResultSchema';
 export * from './commands/UpdatePoemBodySchema';
 export * from './commands/CreatePoemBodySchema';
 export * from './commands/UpdatePoemResultSchema';

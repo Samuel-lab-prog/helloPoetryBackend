@@ -1,13 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { appErrorSchema } from '@AppError';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { idSchema } from '@SharedKernel/Schemas';
 
 import {
-	UpdatePoemBodySchema,
-	PoemCreationResultSchema,
+	CreatePoemResultSchema,
 	CreatePoemBodySchema,
+	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
 } from '../../ports/schemas/Index';
 
@@ -26,8 +25,8 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					data: body,
 					meta: {
 						requesterId: auth.clientId,
-						requesterStatus: auth.clientStatus as UserStatus,
-						requesterRole: auth.clientRole as UserRole,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
 					},
 				});
 				set.status = 201;
@@ -35,7 +34,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			},
 			{
 				response: {
-					201: PoemCreationResultSchema,
+					201: CreatePoemResultSchema,
 					409: appErrorSchema,
 				},
 				body: CreatePoemBodySchema,
@@ -53,8 +52,8 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					data: body,
 					meta: {
 						requesterId: auth.clientId,
-						requesterStatus: auth.clientStatus as UserStatus,
-						requesterRole: auth.clientRole as UserRole,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
 					},
 					poemId: params.id,
 				});

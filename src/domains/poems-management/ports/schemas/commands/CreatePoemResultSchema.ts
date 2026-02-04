@@ -16,7 +16,7 @@ import {
 	PoemVisibilityEnumSchema,
 } from '../fields/Enums';
 
-export const PoemCreationResultSchema = t.Object({
+export const CreatePoemResultSchema = t.Object({
 	id: idSchema,
 
 	title: PoemTitleSchema,
