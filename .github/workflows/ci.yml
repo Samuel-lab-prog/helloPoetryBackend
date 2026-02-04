@@ -44,9 +44,6 @@ jobs:
       - name: Reset database
         run: bun reset
 
-      - name: Seed database
-        run: bun seed
-
       - name: Run tests
         run: bun test:all
 
