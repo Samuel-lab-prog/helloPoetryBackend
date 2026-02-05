@@ -35,3 +35,9 @@ export class CrossUserUpdateError extends DomainError {
 		super('FORBIDDEN', 'Error: Cannot update data of another user');
 	}
 }
+
+export class UserNotActiveError extends DomainError {
+	constructor() {
+		super('FORBIDDEN', 'Error: User is not active');
+	}
+}

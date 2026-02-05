@@ -37,7 +37,14 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {
-				return services.updateUser(auth.clientId, params.id, body);
+				return services.updateUser({
+					ctx: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+					},
+					targetId: params.id,
+					data: body,
+				});
 			},
 			{
 				params: t.Object({
