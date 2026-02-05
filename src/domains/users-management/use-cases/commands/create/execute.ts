@@ -19,15 +19,17 @@ export function createUserFactory({
 			...data,
 			passwordHash: hashedPassword,
 		});
-		if (!result.ok) {
-			if (result.failureReason === 'DUPLICATE_EMAIL') {
-				throw new UserCreationConflictError('Email already in use');
-			}
-			if (result.failureReason === 'DUPLICATE_NICKNAME') {
-				throw new UserCreationConflictError('Nickname already in use');
-			}
-			throw new UserCreationError('Failed to create new user');
+		if (result.ok) return result.data;
+
+		if(result.code !== 'CONFLICT') {
+			throw new UserCreationError('Failed to create user');
 		}
-		return result.data;
+		if (result.message?.includes('nickname')) {
+			throw new UserCreationConflictError('Nickname already in use');
+		}
+		if (result.message?.includes('email')) {
+			throw new UserCreationConflictError('Email already in use');
+		}
+		throw new UserCreationError('Failed to create user due to unknown conflict');
 	};
 }

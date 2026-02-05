@@ -1,4 +1,4 @@
-import { queriesRepository } from '../../../infra/read-repository/repository';
+import { queriesRepository } from '../../../infra/queries-repository/Repository';
 
 import {
 	getUserFactory,

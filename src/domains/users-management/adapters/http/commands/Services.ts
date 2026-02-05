@@ -3,7 +3,7 @@ import type {
 	UpdateUserData,
 } from '../../../use-cases/commands/models/Index';
 
-import { commandsRepository } from '../../../infra/commands-repository/repository';
+import { commandsRepository } from '../../../infra/commands-repository/Repository';
 import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
 
 import {

@@ -47,7 +47,7 @@ export async function createUser(data: CreateUser): Promise<TestUser> {
  * Logs in a user and updates their cookie.
  * @param user The user to log in.
  * @returns The logged-in user with an updated cookie.
- * 
+ *
  */
 export async function loginUser(user: TestUser): Promise<TestUser> {
 	const res = await app.handle(
@@ -74,7 +74,6 @@ export async function updateUserStatsRaw(
 		data: updates,
 	});
 }
-
 
 /**
  * Creates a friendship relation between two users in the database. Useful for validating test scenarios.

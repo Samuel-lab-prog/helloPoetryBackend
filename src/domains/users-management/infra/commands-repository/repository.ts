@@ -1,121 +1,67 @@
 import { prisma } from '@PrismaClient';
-import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import { DatabaseError } from '@DatabaseError';
+import { withPrismaResult } from '@PrismaErrorHandler';
+import type { CommandResult } from '@SharedKernel/Types';
 
-import type {
-	CommandsRepository,
-	FailureReasons,
-} from '../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type {
 	UpdateUserData,
 	InsertUser,
 } from '../../use-cases/commands/models/Index';
 import type { FullUser } from '@Domains/users-management/use-cases/queries/Index';
-import { fullUserSelect } from '../read-repository/selectsModels';
+import { fullUserSelect } from '../queries-repository/selects/FullUser';
+import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
 
-async function insertUser(
-	user: InsertUser,
-): Promise<
-	{ ok: true; data: FullUser } | { ok: false; failureReason: FailureReasons }
-> {
-	try {
-		const result = await withPrismaErrorHandling(() => {
-			return prisma.user.create({
-				data: {
-					nickname: user.nickname,
-					email: user.email,
-					passwordHash: user.passwordHash,
-					name: user.name,
-					bio: user.bio,
-					avatarUrl: user.avatarUrl,
-				},
-				select: fullUserSelect,
-			});
-		});
-
-		return { ok: true, data: result };
-	} catch (error: unknown) {
-		if (error instanceof DatabaseError) {
-			if (error.message.includes('email')) {
-				return { ok: false, failureReason: 'DUPLICATE_EMAIL' };
-			}
-			if (error.message.includes('nickname')) {
-				return { ok: false, failureReason: 'DUPLICATE_NICKNAME' };
-			}
-			if (error.message.includes('not found')) {
-				return { ok: false, failureReason: 'NOT_FOUND' };
-			}
-		}
-		return { ok: false, failureReason: 'DB_ERROR' };
-	}
+function toPrismaCreateInput(user: InsertUser): UserCreateInput {
+	return {
+		nickname: user.nickname,
+		email: user.email,
+		passwordHash: user.passwordHash,
+		name: user.name,
+		bio: user.bio,
+		avatarUrl: user.avatarUrl,
+	};
 }
 
-// ----------------------------------
-// UPDATE
-// ----------------------------------
+function toPrismaUpdateInput(data: UpdateUserData): UserUpdateInput {
+	return {
+		...(data.nickname !== undefined && { nickname: data.nickname }),
+		...(data.name !== undefined && { name: data.name }),
+		...(data.bio !== undefined && { bio: data.bio }),
+		...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl }),
+	};
+}
+
+async function insertUser(user: InsertUser): Promise<CommandResult<FullUser>> {
+	return await withPrismaResult(() => {
+		return prisma.user.create({
+			data: toPrismaCreateInput(user),
+			select: fullUserSelect,
+		});
+	});
+}
 
 async function updateUser(
 	userId: number,
 	userData: UpdateUserData,
-): Promise<
-	{ data: FullUser; ok: true } | { ok: false; failureReason: FailureReasons }
-> {
-	try {
-		const result = await withPrismaErrorHandling(() => {
-			return prisma.user.update({
-				where: { id: userId },
-				data: userData,
-				select: fullUserSelect,
-			});
+): Promise<CommandResult<FullUser>> {
+	return await withPrismaResult(() => {
+		return prisma.user.update({
+			where: { id: userId, deletedAt: null },
+			data: toPrismaUpdateInput(userData),
+			select: fullUserSelect,
 		});
-
-		return { ok: true, data: result };
-	} catch (error: unknown) {
-		if (error instanceof DatabaseError) {
-			if (error.message.includes('not found')) {
-				return { ok: false, failureReason: 'NOT_FOUND' };
-			}
-			if (error.message.includes('email')) {
-				return { ok: false, failureReason: 'DUPLICATE_EMAIL' };
-			}
-			if (error.message.includes('nickname')) {
-				return { ok: false, failureReason: 'DUPLICATE_NICKNAME' };
-			}
-		}
-
-		return { ok: false, failureReason: 'DB_ERROR' };
-	}
+	});
 }
 
-// ----------------------------------
-// SOFT DELETE
-// ----------------------------------
-
-async function softDeleteUser(
-	id: number,
-): Promise<
-	{ ok: true; data: FullUser } | { ok: false; failureReason: FailureReasons }
-> {
-	try {
-		const result = await withPrismaErrorHandling(() => {
-			return prisma.user.update({
-				where: { id },
-				data: { deletedAt: new Date() },
-				select: fullUserSelect,
-			});
+async function softDeleteUser(id: number): Promise<CommandResult<FullUser>> {
+	return await withPrismaResult(() => {
+		return prisma.user.update({
+			where: { id, deletedAt: null },
+			data: { deletedAt: new Date() },
+			select: fullUserSelect,
 		});
-
-		return { ok: true, data: result };
-	} catch (error: unknown) {
-		if (error instanceof DatabaseError) {
-			return { ok: false, failureReason: 'NOT_FOUND' };
-		}
-
-		return { ok: false, failureReason: 'DB_ERROR' };
-	}
+	});
 }
-
-// ----------------------------------
 
 export const commandsRepository: CommandsRepository = {
 	insertUser,

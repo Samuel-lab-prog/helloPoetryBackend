@@ -3,37 +3,13 @@ import type {
 	UpdateUserData,
 } from '../use-cases/commands/models/Index';
 import type { FullUser } from '../use-cases/queries/models/FullUser';
-
-export type FailureReasons =
-	| 'DB_ERROR'
-	| 'DUPLICATE_EMAIL'
-	| 'DUPLICATE_NICKNAME'
-	| 'NOT_FOUND'
-	| 'FOREIGN_KEY_VIOLATION';
-
-export type CommandResult = {
-	ok: boolean;
-	failureReason?: FailureReasons;
-};
+import type { CommandResult } from '@SharedKernel/Types';
 
 export interface CommandsRepository {
-	insertUser(
-		user: InsertUser,
-	): Promise<
-		| { data: FullUser; ok: true }
-		| { ok: false; failureReason: CommandResult['failureReason'] }
-	>;
+	insertUser(user: InsertUser): Promise<CommandResult<FullUser>>;
 	updateUser(
 		userId: number,
 		userData: UpdateUserData,
-	): Promise<
-		| { data: FullUser; ok: true }
-		| { ok: false; failureReason: CommandResult['failureReason'] }
-	>;
-	softDeleteUser(
-		id: number,
-	): Promise<
-		| { data: FullUser; ok: true }
-		| { ok: false; failureReason: CommandResult['failureReason'] }
-	>;
+	): Promise<CommandResult<FullUser>>;
+	softDeleteUser(id: number): Promise<CommandResult<FullUser>>;
 }

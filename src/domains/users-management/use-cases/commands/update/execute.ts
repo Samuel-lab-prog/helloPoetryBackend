@@ -5,7 +5,6 @@ import {
 	UserUpdateError,
 	UserUpdateConflictError,
 	CrossUserUpdateError,
-	UserNotFoundError,
 } from '../Errors';
 import { canUpdateData } from '../policies/policies';
 
@@ -25,21 +24,17 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 
 		const result = await commandsRepository.updateUser(targetId, data);
 
-		if (!result.ok) {
-			if (result.failureReason === 'NOT_FOUND') {
-				throw new UserNotFoundError();
-			}
-
-			if (result.failureReason === 'DUPLICATE_EMAIL') {
-				throw new UserUpdateConflictError('Email already exists');
-			}
-
-			if (result.failureReason === 'DUPLICATE_NICKNAME') {
-				throw new UserUpdateConflictError('Nickname already exists');
-			}
-			throw new UserUpdateError('Failed to update user');
-		}
-
-		return result.data;
+		if (result.ok) return result.data;
+		
+				if(result.code !== 'CONFLICT') {
+					throw new UserUpdateError('Failed to update user');
+				}
+				if (result.message?.includes('nickname')) {
+					throw new UserUpdateConflictError('Nickname already in use');
+				}
+				if (result.message?.includes('email')) {
+					throw new UserUpdateConflictError('Email already in use');
+				}
+				throw new UserUpdateError('Failed to update user due to unknown conflict');
+			};
 	};
-}
