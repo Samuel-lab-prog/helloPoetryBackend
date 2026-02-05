@@ -6,7 +6,7 @@ import {
 	NameSchema,
 	BioSchema,
 	AvatarUrlSchema,
-} from '../fields/UserFieldsSchemas';
+} from '../UserFieldsSchemas';
 
 export const CreateUserSchema = t.Object({
 	name: NameSchema,

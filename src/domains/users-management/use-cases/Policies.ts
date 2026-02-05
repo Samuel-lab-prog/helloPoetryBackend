@@ -1,5 +1,5 @@
-import type { UserRole, UserStatus } from './Models';
-import { CrossUserUpdateError, UserNotActiveError } from './Errors';
+import type { UserStatus } from './Models';
+import { CrossUserUpdateError, UserBannedError } from './Errors';
 
 type CanUpdatePolicyInput = {
 	requesterId: number;
@@ -9,18 +9,8 @@ type CanUpdatePolicyInput = {
 
 export function canUpdateData(c: CanUpdatePolicyInput): void {
 	const isResourceOwner = c.requesterId === c.targetId;
-	const isActive = c.requesterStatus === 'active';
+	const isBanned = c.requesterStatus === 'banned';
 
 	if (!isResourceOwner) throw new CrossUserUpdateError();
-	if (!isActive) throw new UserNotActiveError();
-}
-
-type PolicyInput = {
-	requesterId: number;
-	requesterRole: UserRole;
-	targetId: number;
-};
-
-export function canAccessUserInfo(c: PolicyInput): boolean {
-	return c.requesterRole === 'moderator' || c.requesterId === c.targetId;
+	if (isBanned) throw new UserBannedError();
 }

@@ -4,7 +4,6 @@ import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 
 import {
-	FullUserSchema,
 	UserPublicProfileSchema,
 	UsersPageSchema,
 	orderDirectionSchema,
@@ -21,12 +20,14 @@ import {
 // eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
+		.use(AuthPlugin)
 		.get(
 			'/',
-			({ query }) => {
+			({ query, auth }) => {
 				const { limit, cursor, orderBy, orderDirection, searchNickname } =
 					query;
 				return services.getUsers({
+					requesterStatus: auth.clientStatus,
 					navigationOptions: {
 						limit,
 						cursor,
@@ -58,7 +59,6 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
 		.get(
 			'/:id/profile',
 			({ params, auth }) => {
@@ -90,7 +90,8 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			'/me',
 			({ auth }) => {
 				return services.getPrivateProfile({
-					id: auth.clientId,
+					requesterId: auth.clientId,
+					requesterStatus: auth.clientStatus,
 				});
 			},
 			{
@@ -101,31 +102,6 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				detail: {
 					summary: 'Get My Private Profile',
 					description: 'Returns the private profile of the authenticated user.',
-					tags: ['Users Management'],
-				},
-			},
-		)
-		.get(
-			'/:id',
-			({ params, auth }) => {
-				return services.getUser({
-					targetId: params.id,
-					requesterId: auth.clientId,
-					requesterRole: auth.clientRole,
-				});
-			},
-			{
-				response: {
-					200: FullUserSchema,
-					403: appErrorSchema,
-					404: appErrorSchema,
-				},
-				params: t.Object({
-					id: idSchema,
-				}),
-				detail: {
-					summary: 'Get User',
-					description: 'Returns a user by their ID.',
 					tags: ['Users Management'],
 				},
 			},

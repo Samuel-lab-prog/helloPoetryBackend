@@ -4,7 +4,7 @@ import {
 	NameSchema,
 	BioSchema,
 	AvatarUrlSchema,
-} from '../fields/UserFieldsSchemas';
+} from '../UserFieldsSchemas';
 
 export const UpdateUserBodySchema = t.Partial(
 	t.Object({

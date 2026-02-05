@@ -56,3 +56,8 @@ export class UserNotActiveError extends DomainError {
 		super('FORBIDDEN', 'Error: User is not active');
 	}
 }
+export class UserBannedError extends DomainError {
+	constructor() {
+		super('FORBIDDEN', 'Error: User is banned');
+	}
+}

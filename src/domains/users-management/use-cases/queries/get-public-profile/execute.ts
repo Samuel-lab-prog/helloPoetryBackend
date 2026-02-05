@@ -1,6 +1,6 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { UserPublicProfile, UserRole, UserStatus } from '../../Models';
-import { ProfileNotFoundError } from '../../Errors';
+import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -17,15 +17,15 @@ export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPublicProfile(
 		params: GetPublicProfileParams,
 	): Promise<UserPublicProfile> {
-		const { id, requesterId } = params;
+		const { id, requesterId, requesterStatus } = params;
+
+		if (requesterStatus === 'banned') throw new UserBannedError();
 		const profile = await queriesRepository.selectPublicProfile(
 			id,
 			requesterId,
 		);
 
-		if (!profile) {
-			throw new ProfileNotFoundError();
-		}
+		if (!profile) throw new ProfileNotFoundError();
 
 		return profile;
 	};

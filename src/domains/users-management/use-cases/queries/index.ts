@@ -4,5 +4,4 @@
 
 export * from './get-private-profile/execute';
 export * from './get-public-profile/execute';
-export * from './get-user/execute';
 export * from './get-users/execute';
