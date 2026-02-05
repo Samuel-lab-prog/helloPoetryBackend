@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import { UserRoleEnumSchema, UserStatusEnumSchema } from '../fields/Enums';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 import {
 	AvatarUrlSchema,
@@ -7,7 +7,7 @@ import {
 	EmailSchema,
 	NameSchema,
 	NicknameSchema,
-} from './fields/UserFieldsSchemas';
+} from '../fields/UserFieldsSchemas';
 
 export const UserPrivateProfileSchema = t.Object({
 	id: idSchema,

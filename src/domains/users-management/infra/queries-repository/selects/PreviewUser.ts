@@ -1,4 +1,4 @@
-import type { SelectUsersPage } from '../../../use-cases/queries/models/UsersPage';
+import type { UsersPage } from '../../../use-cases/Models';
 import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/internal/prismaNamespaceBrowser';
 export const previewUserSelect = {
@@ -14,7 +14,7 @@ export type PreviewUserRaw = Prisma.UserGetPayload<{
 
 export function fromRawToPreviewUser(
 	raw: PreviewUserRaw,
-): SelectUsersPage['users'][number] {
+): UsersPage['users'][number] {
 	return {
 		id: raw.id,
 		nickname: raw.nickname,

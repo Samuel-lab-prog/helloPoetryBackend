@@ -1,13 +1,13 @@
 import { t } from 'elysia';
 
-import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import { UserRoleEnumSchema, UserStatusEnumSchema } from '../fields/Enums';
 import { idSchema } from '@SharedKernel/Schemas';
 import {
 	AvatarUrlSchema,
 	BioSchema,
 	NameSchema,
 	NicknameSchema,
-} from './fields/UserFieldsSchemas';
+} from '../fields/UserFieldsSchemas';
 
 export const UserPublicProfileSchema = t.Object({
 	id: idSchema,

@@ -1,4 +1,4 @@
-import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
+import type { UserPrivateProfile } from '../../..//use-cases/Models';
 import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
 
@@ -57,7 +57,7 @@ type PrivateProfileRaw = Prisma.UserGetPayload<{
 
 export function fromRawToPrivateProfile(
 	raw: PrivateProfileRaw,
-): PrivateProfile {
+): UserPrivateProfile {
 	const friendIds = [
 		...raw.friendshipsFrom.map((f) => f.userBId),
 		...raw.friendshipsTo.map((f) => f.userAId),
@@ -92,7 +92,6 @@ export function fromRawToPrivateProfile(
 		status: raw.status,
 		email: raw.email,
 		emailVerifiedAt: raw.emailVerifiedAt,
-		friendsIds: friendIds,
 		stats,
 		friendshipRequestsSent,
 		friendshipRequestsReceived,

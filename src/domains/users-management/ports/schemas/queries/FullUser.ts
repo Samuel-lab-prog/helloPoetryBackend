@@ -1,13 +1,13 @@
 import { t } from 'elysia';
 import { idSchema, DateSchema } from '@SharedKernel/Schemas';
-import { UserRoleEnumSchema, UserStatusEnumSchema } from './fields/Enums';
+import { UserRoleEnumSchema, UserStatusEnumSchema } from '../fields/Enums';
 import {
 	AvatarUrlSchema,
 	BioSchema,
 	EmailSchema,
 	NameSchema,
 	NicknameSchema,
-} from './fields/UserFieldsSchemas';
+} from '../fields/UserFieldsSchemas';
 
 export const FullUserSchema = t.Object({
 	id: idSchema,

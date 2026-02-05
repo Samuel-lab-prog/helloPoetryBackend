@@ -4,9 +4,9 @@ import {
 	NameSchema,
 	BioSchema,
 	AvatarUrlSchema,
-} from './fields/UserFieldsSchemas';
+} from '../fields/UserFieldsSchemas';
 
-export const UpdateUserSchema = t.Partial(
+export const UpdateUserBodySchema = t.Partial(
 	t.Object({
 		name: NameSchema,
 		nickname: NicknameSchema,

@@ -1,13 +1,13 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
+import { idSchema } from '@SharedKernel/Schemas';
 
 import {
 	CreateUserSchema,
-	UpdateUserSchema,
-	idSchema,
+	UpdateUserBodySchema,
 	FullUserSchema,
-} from '../../schemas/Index';
+} from '../../ports/schemas/Index';
 
 import { type UsersCommandsServices, commandsServices } from './Services';
 
@@ -16,7 +16,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 		.post(
 			'/',
 			async ({ body, set }) => {
-				const result = await services.createUser(body);
+				const result = await services.createUser({ data: body });
 				set.status = 201;
 				return result;
 			},
@@ -38,10 +38,8 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			'/:id',
 			({ params, body, auth }) => {
 				return services.updateUser({
-					ctx: {
-						requesterId: auth.clientId,
-						requesterStatus: auth.clientStatus,
-					},
+					requesterId: auth.clientId,
+					requesterStatus: auth.clientStatus,
 					targetId: params.id,
 					data: body,
 				});
@@ -50,7 +48,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				params: t.Object({
 					id: idSchema,
 				}),
-				body: UpdateUserSchema,
+				body: UpdateUserBodySchema,
 				response: {
 					200: FullUserSchema,
 					403: appErrorSchema,

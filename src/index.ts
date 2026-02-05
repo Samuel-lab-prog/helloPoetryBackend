@@ -10,8 +10,8 @@ import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 
 import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
-import { userQueriesRouter } from './domains/users-management/adapters/http/queries/Router';
-import { userCommandsRouter } from './domains/users-management/adapters/http/commands/Router';
+import { userQueriesRouter } from './domains/users-management/adapters/queries/Router';
+import { userCommandsRouter } from './domains/users-management/adapters/commands/Router';
 import { poemsQueriesRouter } from './domains/poems-management/adapters/queries/Router';
 import { poemsCommandsRouter } from './domains/poems-management/adapters/commands/Router';
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';

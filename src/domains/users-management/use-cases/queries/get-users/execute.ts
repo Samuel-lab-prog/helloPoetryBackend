@@ -1,38 +1,45 @@
-import type {
-	QueriesRepository,
-	SortOptions,
-} from '../../../ports/QueriesRepository';
-import type { SelectUsersPage } from '../models/UsersPage';
+import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { UsersPage, FullUser } from '../../Models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-interface GetUsersParams {
+type OrderBy = Extract<'createdAt' | 'nickname' | 'id', keyof FullUser>;
+type OrderDirection = 'asc' | 'desc';
+
+export type GetUsersParams = {
 	navigationOptions: {
 		limit?: number;
 		cursor?: number;
 	};
-	sortOptions: SortOptions;
-	nicknameSearch?: string;
-}
+	filterOptions: {
+		searchNickname?: string;
+	};
+	sortOptions: {
+		by: OrderBy;
+		order: OrderDirection;
+	};
+};
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
+
 export function getUsersFactory({ queriesRepository }: Dependencies) {
-	return function getUsers(params: GetUsersParams): Promise<SelectUsersPage> {
+	return function getUsers(params: GetUsersParams): Promise<UsersPage> {
+		const { navigationOptions, filterOptions, sortOptions } = params;
+
 		return queriesRepository.selectUsers({
 			navigationOptions: {
-				limit: Math.min(
-					params.navigationOptions.limit ?? DEFAULT_LIMIT,
-					MAX_LIMIT,
-				),
-				cursor: params.navigationOptions.cursor,
+				limit: Math.min(navigationOptions.limit ?? DEFAULT_LIMIT, MAX_LIMIT),
+				cursor: navigationOptions.cursor,
 			},
-			sortOptions: params.sortOptions,
+			sortOptions: {
+				orderBy: sortOptions.by,
+				orderDirection: sortOptions.order,
+			},
 			filterOptions: {
-				status: 'active',
-				searchNickname: params.nicknameSearch,
+				searchNickname: filterOptions.searchNickname,
 			},
 		});
 	};

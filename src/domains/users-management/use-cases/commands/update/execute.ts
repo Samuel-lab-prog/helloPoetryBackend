@@ -1,24 +1,15 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
-
-import type { FullUser } from '../../queries/models/FullUser';
-import type { UpdateUserData } from '../models/Update';
-import type { UserStatus } from '../../queries/Index';
-
-import {
-	UserUpdateError,
-	UserUpdateConflictError,
-} from '../Errors';
-import { canUpdateData } from '../policies/policies';
+import type { UpdateUserData, UserStatus, FullUser } from '../../Models';
+import { UserUpdateError, UserUpdateConflictError } from '../../Errors';
+import { canUpdateData } from '../../Policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 }
 
-type UpdateUserParams = {
-	ctx: {
-		requesterId: number;
-		requesterStatus: UserStatus;
-	};
+export type UpdateUserParams = {
+	requesterId: number;
+	requesterStatus: UserStatus;
 	targetId: number;
 	data: UpdateUserData;
 };
@@ -27,8 +18,7 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 	return async function updateUser(
 		params: UpdateUserParams,
 	): Promise<FullUser> {
-		const { ctx: { requesterId, requesterStatus }, targetId, data } = params;
-
+		const { targetId, data, requesterId, requesterStatus } = params;
 		canUpdateData({
 			requesterId,
 			requesterStatus,
@@ -48,8 +38,6 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 		if (result.message?.includes('email')) {
 			throw new UserUpdateConflictError('Email already in use');
 		}
-		throw new UserUpdateError(
-			'Failed to update user due to unknown conflict',
-		);
+		throw new UserUpdateError('Failed to update user due to unknown conflict');
 	};
 }

@@ -1,4 +1,4 @@
-import type { PublicProfile } from '@Domains/users-management/use-cases/queries/Index';
+import type { UserPublicProfile } from '../../../use-cases/Models';
 import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
 
@@ -28,7 +28,7 @@ export type PublicProfileRaw = Prisma.UserGetPayload<{
 export function fromRawToPublicProfile(
 	raw: PublicProfileRaw,
 	requesterId: number,
-): PublicProfile {
+): UserPublicProfile {
 	const friendIds = [
 		...raw.friendshipsFrom.map((f) => f.userBId),
 		...raw.friendshipsTo.map((f) => f.userAId),

@@ -1,6 +1,6 @@
 import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
-import type { UserAuthCredentials } from '@Domains/users-management/use-cases/queries/Index';
+import type { AuthUser } from '@Domains/users-management/use-cases/Models';
 
 export const authUserSelect = {
 	id: true,
@@ -14,7 +14,7 @@ export type AuthUserRaw = Prisma.UserGetPayload<{
 	select: typeof authUserSelect;
 }>;
 
-export function fromRawToAuthUser(raw: AuthUserRaw): UserAuthCredentials {
+export function fromRawToAuthUser(raw: AuthUserRaw): AuthUser {
 	return {
 		id: raw.id,
 		email: raw.email,

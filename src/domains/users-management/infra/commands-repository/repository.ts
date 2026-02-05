@@ -1,17 +1,17 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaResult } from '@PrismaErrorHandler';
+import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 import type { CommandsRepository } from '../../ports/CommandsRepository';
 import type {
 	UpdateUserData,
-	InsertUser,
-} from '../../use-cases/commands/models/Index';
-import type { FullUser } from '@Domains/users-management/use-cases/queries/Index';
-import { fullUserSelect } from '../queries-repository/selects/FullUser';
-import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
+	CreateUserDB,
+	FullUser,
+} from '../../use-cases/Models';
+import { fullUserSelect } from '../queries-repository/selects/Index';
 
-function toPrismaCreateInput(user: InsertUser): UserCreateInput {
+function toPrismaCreateInput(user: CreateUserDB): UserCreateInput {
 	return {
 		nickname: user.nickname,
 		email: user.email,
@@ -31,7 +31,9 @@ function toPrismaUpdateInput(data: UpdateUserData): UserUpdateInput {
 	};
 }
 
-async function insertUser(user: InsertUser): Promise<CommandResult<FullUser>> {
+async function insertUser(
+	user: CreateUserDB,
+): Promise<CommandResult<FullUser>> {
 	return await withPrismaResult(() => {
 		return prisma.user.create({
 			data: toPrismaCreateInput(user),

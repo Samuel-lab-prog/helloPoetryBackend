@@ -1,12 +1,12 @@
 import type {
-	InsertUser,
+	CreateUserDB,
 	UpdateUserData,
-} from '../use-cases/commands/models/Index';
-import type { FullUser } from '../use-cases/queries/models/FullUser';
+	FullUser,
+} from '../use-cases/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export interface CommandsRepository {
-	insertUser(user: InsertUser): Promise<CommandResult<FullUser>>;
+	insertUser(user: CreateUserDB): Promise<CommandResult<FullUser>>;
 	updateUser(
 		userId: number,
 		userData: UpdateUserData,

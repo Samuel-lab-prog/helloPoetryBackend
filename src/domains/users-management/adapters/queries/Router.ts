@@ -1,23 +1,22 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
+import { idSchema } from '@SharedKernel/Schemas';
 
 import {
 	FullUserSchema,
 	UserPublicProfileSchema,
-	idSchema,
 	UsersPageSchema,
 	orderDirectionSchema,
 	orderUsersBySchema,
 	paginationLimitSchema,
 	UserPrivateProfileSchema,
-} from '../../schemas/Index';
+} from '../../ports/schemas/Index';
 
 import {
 	usersQueriesServices,
 	type UsersQueriesRouterServices,
 } from './Services';
-import type { UserRole } from '@SharedKernel/Enums';
 
 // eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
@@ -33,10 +32,12 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 						cursor,
 					},
 					sortOptions: {
-						orderBy,
-						orderDirection,
+						by: orderBy,
+						order: orderDirection,
 					},
-					nicknameSearch: searchNickname,
+					filterOptions: {
+						searchNickname,
+					},
 				});
 			},
 			{
@@ -45,7 +46,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 				query: t.Object({
 					limit: paginationLimitSchema,
-					cursor: t.Optional(t.Number()),
+					cursor: t.Optional(idSchema),
 					orderBy: orderUsersBySchema,
 					orderDirection: orderDirectionSchema,
 					searchNickname: t.Optional(t.String()),
@@ -61,7 +62,12 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		.get(
 			'/:id/profile',
 			({ params, auth }) => {
-				return services.getPublicProfile(params.id, auth.clientId);
+				return services.getPublicProfile({
+					id: params.id,
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+				});
 			},
 			{
 				response: {
@@ -83,7 +89,9 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		.get(
 			'/me',
 			({ auth }) => {
-				return services.getPrivateProfile(auth.clientId);
+				return services.getPrivateProfile({
+					id: auth.clientId,
+				});
 			},
 			{
 				response: {
@@ -102,8 +110,8 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			({ params, auth }) => {
 				return services.getUser({
 					targetId: params.id,
-					requesterId: auth.clientId!,
-					requesterRole: auth.clientRole as UserRole,
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
 				});
 			},
 			{

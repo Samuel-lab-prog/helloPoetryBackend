@@ -48,13 +48,15 @@
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
 		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && bunx tsc --noEmit && echo 'All checks passed!'",
-		"gen-usecases": "bun generator/src/UseCasesFactory.ts"
+		"gen-usecases": "bun generator/src/UseCasesFactory.ts",
+		"barrels": "bunx barrelsby -c barrels.config.json"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
 		"@elysiajs/openapi": "^1.4.13",
 		"@prisma/adapter-pg": "^7.2.0",
 		"@prisma/client": "^7.3.0",
+		"barrelsby": "^2.8.1",
 		"bcryptjs": "^3.0.3",
 		"dotenv": "^17.2.3",
 		"elysia": "^1.4.22",

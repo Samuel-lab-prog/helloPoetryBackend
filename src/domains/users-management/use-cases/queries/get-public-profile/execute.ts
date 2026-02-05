@@ -1,23 +1,32 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { PublicProfile } from '../models/PublicProfile';
-import { ProfileNotFoundError } from '../Errors';
+import type { UserPublicProfile, UserRole, UserStatus } from '../../Models';
+import { ProfileNotFoundError } from '../../Errors';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
+export type GetPublicProfileParams = {
+	id: number;
+	requesterId: number;
+	requesterRole: UserRole;
+	requesterStatus: UserStatus;
+};
+
 export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPublicProfile(
-		id: number,
-		requesterId: number,
-	): Promise<PublicProfile> {
+		params: GetPublicProfileParams,
+	): Promise<UserPublicProfile> {
+		const { id, requesterId } = params;
 		const profile = await queriesRepository.selectPublicProfile(
 			id,
 			requesterId,
 		);
+
 		if (!profile) {
 			throw new ProfileNotFoundError();
 		}
+
 		return profile;
 	};
 }

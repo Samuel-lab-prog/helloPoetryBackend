@@ -13,7 +13,7 @@ import type {
 	FriendRequestRecord,
 	FriendshipRecord,
 } from '@Domains/friends-management/use-cases/models/Index';
-import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
+import type { UserPrivateProfile } from '@Domains/users-management/use-cases/Models';
 import type { AppError } from '@AppError';
 
 let user1: TestUser;
@@ -62,7 +62,7 @@ describe('INTEGRATION - Friends Management', () => {
 	it('User1 sees the sent friend request in users/me', async () => {
 		await sendFriendRequest(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 
 		expect(
 			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
@@ -72,7 +72,7 @@ describe('INTEGRATION - Friends Management', () => {
 	it('User2 sees the received friend request in users/me', async () => {
 		await sendFriendRequest(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user2)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user2)) as UserPrivateProfile;
 
 		expect(
 			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
@@ -112,8 +112,8 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1, user2.id);
 		await acceptFriendRequest(user2, user1.id);
 
-		const me1 = (await getMyPrivateProfile(user1)) as PrivateProfile;
-		const me2 = (await getMyPrivateProfile(user2)) as PrivateProfile;
+		const me1 = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
+		const me2 = (await getMyPrivateProfile(user2)) as UserPrivateProfile;
 
 		expect(
 			me1.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
@@ -128,8 +128,8 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1, user2.id);
 		await acceptFriendRequest(user2, user1.id);
 
-		const me1 = (await getMyPrivateProfile(user1)) as PrivateProfile;
-		const me2 = (await getMyPrivateProfile(user2)) as PrivateProfile;
+		const me1 = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
+		const me2 = (await getMyPrivateProfile(user2)) as UserPrivateProfile;
 
 		expect(me1.stats.friendsIds.includes(user2.id)).toBe(true);
 		expect(me2.stats.friendsIds.includes(user1.id)).toBe(true);

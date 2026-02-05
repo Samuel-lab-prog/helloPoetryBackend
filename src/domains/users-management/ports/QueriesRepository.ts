@@ -1,42 +1,40 @@
 import type {
-	PrivateProfile,
-	PublicProfile,
+	UserPrivateProfile,
+	UserPublicProfile,
 	FullUser,
-	UserAuthCredentials,
-	SelectUsersPage,
-	UserStatus,
-} from '../use-cases/queries/models/Index';
+	AuthUser,
+	UsersPage,
+} from '../use-cases/Models';
 
 export interface QueriesRepository {
 	selectUserById(id: number): Promise<FullUser | null>;
 	selectUserByNickname(nickname: string): Promise<FullUser | null>;
 	selectUserByEmail(email: string): Promise<FullUser | null>;
-	selectAuthUserByEmail(email: string): Promise<UserAuthCredentials | null>;
+	selectAuthUserByEmail(email: string): Promise<AuthUser | null>;
 	selectPublicProfile(
 		id: number,
 		requesterId?: number,
-	): Promise<PublicProfile | null>;
-	selectPrivateProfile(id: number): Promise<PrivateProfile | null>;
-	selectUsers(params: SelectUsersParams): Promise<SelectUsersPage>;
+	): Promise<UserPublicProfile | null>;
+	selectPrivateProfile(id: number): Promise<UserPrivateProfile | null>;
+	selectUsers(params: SelectUsersParams): Promise<UsersPage>;
 }
 
-export type NavigationOptions = {
+export type SelectUsersParams = {
+	navigationOptions: NavigationOptions;
+	filterOptions: FilterOptions;
+	sortOptions: SortOptions;
+};
+
+type NavigationOptions = {
 	cursor?: number;
 	limit: number;
 };
 
-export type FilterOptions = {
+type FilterOptions = {
 	searchNickname?: string;
-	status?: UserStatus;
 };
 
-export type SortOptions = {
+type SortOptions = {
 	orderBy: 'nickname' | 'createdAt' | 'id';
 	orderDirection: 'asc' | 'desc';
 };
-
-export interface SelectUsersParams {
-	navigationOptions: NavigationOptions;
-	filterOptions: FilterOptions;
-	sortOptions: SortOptions;
-}

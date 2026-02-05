@@ -8,7 +8,7 @@ import type {
 	UserStatus,
 } from '@SharedKernel/Enums';
 import { prisma } from '@Prisma/PrismaClient';
-import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
+import type { CreateUser } from '@Domains/users-management/use-cases/Models';
 import { usersData } from './TestsData';
 import { jsonRequest } from './TestsUtils.ts';
 

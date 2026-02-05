@@ -8,24 +8,23 @@ import type {
 } from '../../ports/QueriesRepository';
 
 import type {
-	PublicProfile,
-	PrivateProfile,
-	UserAuthCredentials,
-	SelectUsersPage,
+	UserPublicProfile,
+	UserPrivateProfile,
+	AuthUser,
+	UsersPage,
 	FullUser,
-} from '../../use-cases/queries/Index';
+} from '../../use-cases/Models';
 
 import {
-	fromRawToPrivateProfile,
-	privateProfileSelect,
-} from './selects/PrivateProfile';
-import { previewUserSelect, fromRawToPreviewUser } from './selects/PreviewUser';
-import { authUserSelect } from './selects/AuthUser';
-import {
+	authUserSelect,
 	publicProfileSelect,
 	fromRawToPublicProfile,
-} from './selects/PublicProfile';
-import { fullUserSelect } from './selects/FullUser';
+	privateProfileSelect,
+	fromRawToPrivateProfile,
+	fullUserSelect,
+	previewUserSelect,
+	fromRawToPreviewUser,
+} from './selects/Index';
 
 type UserUniqueWhere =
 	| { id: number }
@@ -51,9 +50,7 @@ const selectUserByEmail = (email: string) =>
 const selectUserByNickname = (nickname: string) =>
 	selectFullUser({ nickname, deletedAt: null });
 
-function selectAuthUserByEmail(
-	email: string,
-): Promise<UserAuthCredentials | null> {
+function selectAuthUserByEmail(email: string): Promise<AuthUser | null> {
 	return withPrismaErrorHandling(() =>
 		prisma.user.findUnique({
 			where: { email },
@@ -65,7 +62,7 @@ function selectAuthUserByEmail(
 function selectPublicProfile(
 	id: number,
 	requesterId: number,
-): Promise<PublicProfile | null> {
+): Promise<UserPublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findFirst({
 			where: { id, deletedAt: null },
@@ -77,7 +74,7 @@ function selectPublicProfile(
 	});
 }
 
-function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
+function selectPrivateProfile(id: number): Promise<UserPrivateProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findFirst({
 			where: { id, deletedAt: null },
@@ -89,11 +86,11 @@ function selectPrivateProfile(id: number): Promise<PrivateProfile | null> {
 	});
 }
 
-function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
+function selectUsers(params: SelectUsersParams): Promise<UsersPage> {
 	return withPrismaErrorHandling(async () => {
 		const {
 			navigationOptions: { cursor, limit },
-			filterOptions: { searchNickname, status },
+			filterOptions: { searchNickname },
 			sortOptions: { orderBy, orderDirection },
 		} = params;
 
@@ -105,7 +102,6 @@ function selectUsers(params: SelectUsersParams): Promise<SelectUsersPage> {
 					mode: 'insensitive',
 				},
 			}),
-			...(status && { status }),
 		};
 
 		const users = await prisma.user.findMany({

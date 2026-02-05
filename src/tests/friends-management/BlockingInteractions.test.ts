@@ -13,7 +13,7 @@ import type {
 	BlockedUserRecord,
 	FriendRequestRecord,
 } from '@Domains/friends-management/use-cases/models/Index';
-import type { PrivateProfile } from '@Domains/users-management/use-cases/queries/Index';
+import type { UserPrivateProfile } from '@Domains/users-management/use-cases/Models';
 import type { AppError } from '@AppError';
 
 let user1: TestUser;
@@ -47,7 +47,7 @@ describe('INTEGRATION - Friends Management', () => {
 		expect(blocked.blockedById).toBe(user1.id);
 		expect(blocked.blockedUserId).toBe(user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});
 
@@ -64,7 +64,7 @@ describe('INTEGRATION - Friends Management', () => {
 
 		await blockUser(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 		expect(me.stats.friendsIds.includes(user2.id)).toBe(false);
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});
@@ -94,14 +94,14 @@ describe('INTEGRATION - Friends Management', () => {
 	it('Blocked user does not appear in users/me friend list', async () => {
 		await blockUser(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 		expect(me.stats.friendsIds.includes(user2.id)).toBe(false);
 	});
 
 	it('Blocked user appears in users/me blocked list', async () => {
 		await blockUser(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(true);
 	});
 
@@ -109,7 +109,7 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1, user2.id);
 		await unblockUser(user1, user2.id);
 
-		const me = (await getMyPrivateProfile(user1)) as PrivateProfile;
+		const me = (await getMyPrivateProfile(user1)) as UserPrivateProfile;
 		expect(me.blockedUsersIds.includes(user2.id)).toBe(false);
 	});
 

@@ -1,18 +1,17 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FullUser } from '../models/FullUser';
-import { UserNotFoundError, CrossUserDataAccessError } from '../Errors';
-import type { UserRole } from '../models/Enums';
-import { canAccessUserInfo } from '../policies/policies';
+import type { FullUser, UserRole } from '../../Models';
+import { UserNotFoundError, CrossUserDataAccessError } from '../../Errors';
+import { canAccessUserInfo } from '../../Policies';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-interface GetUserParams {
+export type GetUserParams = {
 	targetId: number;
 	requesterId: number;
 	requesterRole: UserRole;
-}
+};
 
 export function getUserFactory({ queriesRepository }: Dependencies) {
 	return async function getUser(params: GetUserParams): Promise<FullUser> {
