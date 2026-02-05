@@ -4,7 +4,7 @@ import {
 	sendFriendRequest,
 	acceptFriendRequest,
 	deleteFriend,
-} from './Helpers';
+} from './Utils';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
 import type { AppError } from '@AppError';

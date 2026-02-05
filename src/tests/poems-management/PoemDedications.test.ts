@@ -7,7 +7,7 @@ import {
 	updatePoem,
 	makePoem,
 	makeUpdatedPoem,
-} from './Helpers.ts';
+} from './Utilis.ts';
 
 import { setupHttpUsers } from 'tests/Helpers.ts';
 import { updateUserStatsRaw, type TestUser } from '../Helpers.ts';

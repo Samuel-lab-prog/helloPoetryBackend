@@ -8,7 +8,7 @@ import {
 	getPoemById,
 	createAndApprovePoem,
 	makePoem,
-} from './Helpers.ts';
+} from './Utilis.ts';
 
 import { usersData } from '../TestsData.ts';
 

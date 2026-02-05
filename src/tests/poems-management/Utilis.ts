@@ -3,15 +3,9 @@ import type {
 	CreatePoem,
 	CreatePoemResult,
 } from '@Domains/poems-management/use-cases/commands/Models';
-
-import {
-	jsonRequest,
-	type TestUser,
-	PREFIX,
-	app,
-	updatePoemRaw,
-} from '../Helpers';
-import { poemsData, poemsForUpdate } from '../TestsData';
+import { type TestUser, PREFIX, app, updatePoemRaw } from '../Helpers.ts';
+import { jsonRequest } from '../TestsUtils.ts';
+import { poemsData, poemsForUpdate } from '../TestsData.ts';
 
 export async function createPoem(
 	user: TestUser,

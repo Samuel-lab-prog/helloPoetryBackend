@@ -20,18 +20,18 @@ type PoemPolicyContext = {
 	author: AuthorContext;
 };
 
-type PoemCreationPolicyParams = {
+export type PoemCreationPolicyParams = {
 	ctx: PoemPolicyContext;
 	usersContract: UsersContract;
 	toUserIds?: number[];
 };
 
-type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
+export type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
 	poemId: number;
 	queriesRepository: QueriesRepository;
 };
 
-async function validateDedicatedUsers(
+export async function validateDedicatedUsers(
 	usersContract: UsersContract,
 	requesterId: number,
 	userIds?: number[],
@@ -105,12 +105,5 @@ export async function canUpdatePoem(
 		throw new PoemUpdateDeniedError('Cannot update a removed poem');
 	}
 
-	const areIdsValid = await validateDedicatedUsers(
-		usersContract,
-		author.id,
-		toUserIds,
-	);
-	if (!areIdsValid) {
-		throw new InvalidDedicatedUsersError();
-	}
+	await validateDedicatedUsers(usersContract, author.id, toUserIds);
 }

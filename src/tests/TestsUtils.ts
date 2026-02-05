@@ -13,6 +13,7 @@ type JsonRequestOptions<TBody = unknown> = Omit<
  * @param url The request URL.
  * @param options Request options, including body and headers.
  * @returns A Request object with JSON headers and body.
+ *
  * You can pass any type of body, and it will be stringified to JSON.
  */
 export function jsonRequest<TBody = unknown>(

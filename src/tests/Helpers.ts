@@ -10,6 +10,7 @@ import type {
 import { prisma } from '@Prisma/PrismaClient';
 import type { CreateUser } from '@Domains/users-management/use-cases/commands/Index';
 import { usersData } from './TestsData';
+import { jsonRequest } from './TestsUtils.ts';
 
 export const app = new Elysia().use(server);
 export const PREFIX = 'http://test/api/v1';
@@ -21,20 +22,11 @@ export interface TestUser {
 	password: string;
 }
 
-export function jsonRequest(
-	url: string,
-	options: Omit<RequestInit, 'body'> & { body?: unknown } = {},
-): Request {
-	return new Request(url, {
-		...options,
-		headers: {
-			'Content-Type': 'application/json',
-			...(options.headers ?? {}),
-		},
-		body: options.body ? JSON.stringify(options.body) : undefined,
-	});
-}
-
+/**
+ * Creates a new user in the system via the HTTP API.
+ * @param data The data for the new user.
+ * @returns A promise that resolves to the created TestUser.
+ */
 export async function createUser(data: CreateUser): Promise<TestUser> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/users`, {
@@ -51,6 +43,12 @@ export async function createUser(data: CreateUser): Promise<TestUser> {
 	};
 }
 
+/**
+ * Logs in a user and updates their cookie.
+ * @param user The user to log in.
+ * @returns The logged-in user with an updated cookie.
+ * 
+ */
 export async function loginUser(user: TestUser): Promise<TestUser> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/auth/login`, {
@@ -62,6 +60,11 @@ export async function loginUser(user: TestUser): Promise<TestUser> {
 	return { ...user, cookie: cookie || '' };
 }
 
+/**
+ * Updates a user's statistics in the database. Useful for setting up test scenarios.
+ * @param userId The ID of the user to update.
+ * @param updates An object containing the fields to update.
+ */
 export async function updateUserStatsRaw(
 	userId: number,
 	updates: Partial<{ role: UserRole; status: UserStatus }>,
@@ -72,6 +75,12 @@ export async function updateUserStatsRaw(
 	});
 }
 
+
+/**
+ * Creates a friendship relation between two users in the database. Useful for validating test scenarios.
+ * @param requesterId The ID of the user who sent the friend request.
+ * @param addresseeId The ID of the user who received the friend request.
+ */
 export async function createFriendshipRaw(
 	requesterId: number,
 	addresseeId: number,
@@ -84,6 +93,12 @@ export async function createFriendshipRaw(
 	});
 }
 
+/**
+ * Updates a poem's attributes in the database. Useful for setting up test scenarios.
+ * @param poemId - The ID of the poem to update.
+ * @param updates - An object containing the fields to update.
+ * @returns The updated poem with selected fields.
+ */
 export async function updatePoemRaw(
 	poemId: number,
 	updates: Partial<{

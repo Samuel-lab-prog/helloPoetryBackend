@@ -6,7 +6,7 @@ import {
 	getMyPrivateProfile,
 	unblockUser,
 	acceptFriendRequest,
-} from './Helpers';
+} from './Utils';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
 import type {

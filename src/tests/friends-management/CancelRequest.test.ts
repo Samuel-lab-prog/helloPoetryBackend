@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@GenericSubdomains/utils/ClearDatabase';
-import { sendFriendRequest, cancelFriendRequest } from './Helpers';
+import { sendFriendRequest, cancelFriendRequest } from './Utils';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
 import type {
