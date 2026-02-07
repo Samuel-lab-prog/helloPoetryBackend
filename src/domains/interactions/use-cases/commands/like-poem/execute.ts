@@ -3,14 +3,14 @@ import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { FriendsContractForInteractions } from '../../../ports/FriendsServices';
 import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
 
-import type { PoemLike } from '../models/Index';
+import type { PoemLike } from '../../Models';
 import {
 	PoemNotFoundError,
 	AlreadyLikedError,
 	PrivatePoemError,
 	FriendsOnlyPoemError,
 	UserBlockedError,
-} from '../Errors';
+} from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -19,10 +19,10 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-interface LikePoemParams {
+export type LikePoemParams = {
 	userId: number;
 	poemId: number;
-}
+};
 
 export function likePoemFactory({
 	commandsRepository,
@@ -35,31 +35,23 @@ export function likePoemFactory({
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 
-		if (!poemInfo.exists) {
-			throw new PoemNotFoundError();
-		}
+		if (!poemInfo.exists) throw new PoemNotFoundError();
 
 		const authorId = poemInfo.authorId;
 
 		// Visibility rules
-		if (poemInfo.visibility === 'private' && authorId !== userId) {
+		if (poemInfo.visibility === 'private' && authorId !== userId)
 			throw new PrivatePoemError();
-		}
 
 		if (poemInfo.visibility === 'friends' && authorId !== userId) {
 			const areFriends = await friendsServices.areFriends(userId, authorId);
-
-			if (!areFriends) {
-				throw new FriendsOnlyPoemError();
-			}
+			if (!areFriends) throw new FriendsOnlyPoemError();
 		}
 
 		// Block rules
 		const blocked = await friendsServices.areBlocked(userId, authorId);
 
-		if (blocked) {
-			throw new UserBlockedError();
-		}
+		if (blocked) throw new UserBlockedError();
 
 		// Like rules
 		const alreadyLiked = await queriesRepository.existsPoemLike({
@@ -67,9 +59,7 @@ export function likePoemFactory({
 			poemId,
 		});
 
-		if (alreadyLiked) {
-			throw new AlreadyLikedError();
-		}
+		if (alreadyLiked) throw new AlreadyLikedError();
 
 		return commandsRepository.createPoemLike({
 			userId,

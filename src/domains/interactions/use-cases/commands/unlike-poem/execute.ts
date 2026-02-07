@@ -1,17 +1,17 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
-import type { PoemLike } from '../models/Index';
-import { PoemNotFoundError, LikeNotFoundError } from '../Errors';
+import type { PoemLike } from '../../Models';
+import { PoemNotFoundError, LikeNotFoundError } from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
 }
 
-interface UnlikePoemParams {
+export type UnlikePoemParams = {
 	userId: number;
 	poemId: number;
-}
+};
 
 export function unlikePoemFactory({
 	commandsRepository,
@@ -24,18 +24,14 @@ export function unlikePoemFactory({
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 
-		if (!poemInfo.exists) {
-			throw new PoemNotFoundError();
-		}
+		if (!poemInfo.exists) throw new PoemNotFoundError();
 
 		const existingLike = await commandsRepository.findPoemLike({
 			userId,
 			poemId,
 		});
 
-		if (!existingLike) {
-			throw new LikeNotFoundError();
-		}
+		if (!existingLike) throw new LikeNotFoundError();
 
 		return commandsRepository.deletePoemLike({
 			userId,

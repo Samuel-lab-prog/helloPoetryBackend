@@ -1,4 +1,4 @@
-import type { PoemComment } from '../use-cases/commands/models/Index';
+import type { PoemComment } from '../use-cases/Models';
 
 export interface QueriesRepository {
 	selectCommentById(params: { commentId: number }): Promise<PoemComment | null>;

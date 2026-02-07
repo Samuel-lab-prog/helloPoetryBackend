@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
-import { PoemCommentSchema } from '../../schemas/PoemCommentSchema';
+import { PoemCommentSchema } from '../../ports/schemas/PoemCommentSchema';
 
 import { type QueriesRouterServices, queriesRouterServices } from './Services';
 import { appErrorSchema } from '@AppError';

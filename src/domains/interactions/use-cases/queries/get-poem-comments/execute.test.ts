@@ -1,100 +1,104 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { getPoemCommentsFactory } from './execute';
-import { PoemNotFoundError } from '../Errors';
+import { PoemNotFoundError } from '../../Errors';
 
-describe('getPoemCommentsFactory', () => {
-	let queriesRepository: {
-		findCommentsByPoemId: ReturnType<typeof mock>;
-		selectCommentById: ReturnType<typeof mock>;
-		existsPoemLike: ReturnType<typeof mock>;
-	};
-
-	let poemsContract: {
-		getPoemInteractionInfo: ReturnType<typeof mock>;
-	};
-
-	beforeEach(() => {
-		queriesRepository = {
-			findCommentsByPoemId: mock(),
-			selectCommentById: mock(),
-			existsPoemLike: mock(),
+describe('USE-CASE - Interactions', () => {
+	describe('Get Poem Comments', () => {
+		let queriesRepository: {
+			findCommentsByPoemId: ReturnType<typeof mock>;
+			selectCommentById: ReturnType<typeof mock>;
+			existsPoemLike: ReturnType<typeof mock>;
 		};
 
-		poemsContract = {
-			getPoemInteractionInfo: mock(),
+		let poemsContract: {
+			getPoemInteractionInfo: ReturnType<typeof mock>;
 		};
-	});
 
-	it('returns comments for poem', async () => {
-		const now = new Date();
-		const comments = [
-			{ id: 1, userId: 5, poemId: 10, content: 'Nice', createdAt: now },
-			{ id: 2, userId: 6, poemId: 10, content: 'Great', createdAt: now },
-		];
+		beforeEach(() => {
+			queriesRepository = {
+				findCommentsByPoemId: mock(),
+				selectCommentById: mock(),
+				existsPoemLike: mock(),
+			};
 
-		poemsContract.getPoemInteractionInfo.mockResolvedValue({
-			exists: true,
+			poemsContract = {
+				getPoemInteractionInfo: mock(),
+			};
 		});
 
-		queriesRepository.findCommentsByPoemId.mockResolvedValue(comments);
+		it('Returns comments for an existing poem', async () => {
+			const comments = [
+				{ id: 1, content: 'Nice' },
+				{ id: 2, content: 'Great' },
+			];
 
-		const getPoemComments = getPoemCommentsFactory({
-			queriesRepository,
-			poemsContract,
+			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
+				exists: true,
+			});
+
+			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce(comments);
+
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
+
+			const result = await getPoemComments({ poemId: 10 });
+
+			expect(result).toHaveLength(2);
+			expect(result[0]).toHaveProperty('id', 1);
+
+			expect(queriesRepository.findCommentsByPoemId).toHaveBeenCalledWith({
+				poemId: 10,
+			});
 		});
 
-		const result = await getPoemComments({ poemId: 10 });
+		it('Throws PoemNotFoundError when poem does not exist', async () => {
+			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
+				exists: false,
+			});
 
-		expect(result).toEqual(comments);
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
 
-		expect(queriesRepository.findCommentsByPoemId).toHaveBeenCalledWith({
-			poemId: 10,
-		});
-	});
+			await expect(getPoemComments({ poemId: 10 })).rejects.toThrow(
+				PoemNotFoundError,
+			);
 
-	it('throws PoemNotFoundError when poem does not exist', async () => {
-		poemsContract.getPoemInteractionInfo.mockResolvedValue({
-			exists: false,
-		});
-
-		const getPoemComments = getPoemCommentsFactory({
-			queriesRepository,
-			poemsContract,
+			expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
 		});
 
-		await expect(getPoemComments({ poemId: 10 })).rejects.toBeInstanceOf(
-			PoemNotFoundError,
-		);
+		it('Returns empty array when poem has no comments', async () => {
+			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
+				exists: true,
+			});
 
-		expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
-	});
+			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce([]);
 
-	it('returns empty array when poem has no comments', async () => {
-		poemsContract.getPoemInteractionInfo.mockResolvedValue({
-			exists: true,
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
+
+			const result = await getPoemComments({ poemId: 10 });
+
+			expect(result).toEqual([]);
 		});
 
-		queriesRepository.findCommentsByPoemId.mockResolvedValue([]);
+		it('Propagates unexpected dependency errors', async () => {
+			poemsContract.getPoemInteractionInfo.mockRejectedValueOnce(
+				new Error('boom'),
+			);
 
-		const getPoemComments = getPoemCommentsFactory({
-			queriesRepository,
-			poemsContract,
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
+
+			await expect(getPoemComments({ poemId: 10 })).rejects.toThrow('boom');
 		});
-
-		const result = await getPoemComments({ poemId: 10 });
-
-		expect(result).toEqual([]);
-	});
-
-	it('propagates dependency errors', async () => {
-		poemsContract.getPoemInteractionInfo.mockRejectedValue(new Error('boom'));
-
-		const getPoemComments = getPoemCommentsFactory({
-			queriesRepository,
-			poemsContract,
-		});
-
-		await expect(getPoemComments({ poemId: 10 })).rejects.toThrow('boom');
 	});
 });

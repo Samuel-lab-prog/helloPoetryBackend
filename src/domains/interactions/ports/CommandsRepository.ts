@@ -1,4 +1,4 @@
-import type { PoemLike, PoemComment } from '../use-cases/commands/models/Index';
+import type { PoemLike, PoemComment } from '../use-cases/Models';
 
 export interface CommandsRepository {
 	findPoemLike(params: {

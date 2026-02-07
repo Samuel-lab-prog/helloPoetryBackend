@@ -1,16 +1,16 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import { CommentNotFoundError, NotCommentOwnerError } from '../Errors';
+import { CommentNotFoundError, NotCommentOwnerError } from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface DeleteCommentParams {
+export type DeleteCommentParams = {
 	userId: number;
 	commentId: number;
-}
+};
 
 export function deleteCommentFactory({
 	commandsRepository,
@@ -24,16 +24,10 @@ export function deleteCommentFactory({
 		const comment = await queriesRepository.selectCommentById({
 			commentId,
 		});
-
-		if (!comment) {
-			throw new CommentNotFoundError();
-		}
+		if (!comment) throw new CommentNotFoundError();
 
 		const isOwner = comment.userId === userId;
-
-		if (!isOwner) {
-			throw new NotCommentOwnerError();
-		}
+		if (!isOwner) throw new NotCommentOwnerError();
 
 		return commandsRepository.deletePoemComment({
 			commentId,
