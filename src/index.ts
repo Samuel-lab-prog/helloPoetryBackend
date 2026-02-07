@@ -17,7 +17,7 @@ import { poemsCommandsRouter } from './domains/poems-management/adapters/command
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/commands/Router';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
-import { moderationCommandsRouter } from '@Domains/moderation/adapters/http/commands/Router';
+import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/http/queries/QueriesRouter';
 
 const PREFIX = '/api/v1';

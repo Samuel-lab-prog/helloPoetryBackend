@@ -14,7 +14,11 @@
 
 		"./src/domains/interactions/ports/schemas",
 		"./src/domains/interactions/use-cases/commands",
-		"./src/domains/interactions/use-cases/queries"
+		"./src/domains/interactions/use-cases/queries",
+
+		"./src/domains/moderation/ports/schemas",
+		"./src/domains/moderation/use-cases/commands",
+		"./src/domains/moderation/infra/commands-repository/selects"
 	],
 	"delete": true,
 	"location": "top",

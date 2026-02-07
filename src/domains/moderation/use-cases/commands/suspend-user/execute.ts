@@ -1,13 +1,14 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { UserSuspension } from '../models/Index';
+import type { SuspendedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
 	UserAlreadySuspendedError,
 	InsufficientPermissionsError,
 	CannotSuspendSelfError,
-} from '../Errors';
+} from '../../Errors';
 import type { QueriesRepository } from '@Domains/moderation/ports/QueriesRepository';
 import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UserRole } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -15,12 +16,12 @@ interface Dependencies {
 	usersContract: UsersContract;
 }
 
-export interface SuspendUserParams {
+export type SuspendUserParams = {
 	userId: number;
 	reason: string;
 	requesterId: number;
-	requesterRole: string;
-}
+	requesterRole: UserRole;
+};
 
 export function suspendUserFactory({
 	commandsRepository,
@@ -29,27 +30,21 @@ export function suspendUserFactory({
 }: Dependencies) {
 	return async function suspendUser(
 		params: SuspendUserParams,
-	): Promise<UserSuspension> {
+	): Promise<SuspendedUserResponse> {
 		const { userId, reason, requesterId, requesterRole } = params;
+
+		if (requesterId === userId) throw new CannotSuspendSelfError();
+
+		if (requesterRole === 'author') throw new InsufficientPermissionsError();
+
 		const userExists = await usersContract.getUserBasicInfo(userId);
 
-		if (requesterId === userId) {
-			throw new CannotSuspendSelfError();
-		}
-
-		if (requesterRole === 'user') {
-			throw new InsufficientPermissionsError();
-		}
-
-		if (!userExists.exists) {
-			throw new UserNotFoundError();
-		}
+		if (!userExists.exists) throw new UserNotFoundError();
 
 		const activeSuspension =
 			await queriesRepository.selectActiveSuspensionByUserId({ userId });
-		if (activeSuspension) {
-			throw new UserAlreadySuspendedError();
-		}
+
+		if (activeSuspension) throw new UserAlreadySuspendedError();
 
 		return commandsRepository.createSuspension({
 			userId,

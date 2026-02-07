@@ -3,54 +3,52 @@ import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/QueriesRepository';
 import type {
-	UserBan,
-	UserSuspension,
-} from '../../use-cases/commands/models/Index';
+	BannedUserResponse,
+	SuspendedUserResponse,
+} from '../../use-cases/Models';
+import {
+	fromRawToSuspendedUser,
+	suspensionSelect,
+} from '../commands-repository/selects/CreateSuspension';
+import {
+	banSelect,
+	fromRawToBannedUser,
+} from '../commands-repository/selects/CreateBan';
 
 export function selectActiveBanByUserId(params: {
 	userId: number;
-}): Promise<UserBan | null> {
+}): Promise<BannedUserResponse | null> {
 	const { userId } = params;
 
-	return withPrismaErrorHandling(() => {
-		return prisma.userSanction.findFirst({
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.userSanction.findFirst({
 			where: {
 				userId,
 				type: 'ban',
 				endAt: null,
 			},
-			select: {
-				id: true,
-				userId: true,
-				moderatorId: true,
-				reason: true,
-				startAt: true,
-				endAt: true,
-			},
+			select: banSelect,
 		});
+		return rs ? fromRawToBannedUser(rs) : null;
 	});
 }
 
 export function selectActiveSuspensionByUserId(params: {
 	userId: number;
-}): Promise<UserSuspension | null> {
+}): Promise<SuspendedUserResponse | null> {
 	const { userId } = params;
 
-	return withPrismaErrorHandling(() => {
-		return prisma.userSanction.findFirst({
+	return withPrismaErrorHandling(async () => {
+		const rs = await prisma.userSanction.findFirst({
 			where: {
 				userId,
 				type: 'suspension',
 				endAt: null,
 			},
-			select: {
-				id: true,
-				userId: true,
-				moderatorId: true,
-				reason: true,
-				startAt: true,
-			},
+			select: suspensionSelect,
 		});
+
+		return rs ? fromRawToSuspendedUser(rs) : null;
 	});
 }
 

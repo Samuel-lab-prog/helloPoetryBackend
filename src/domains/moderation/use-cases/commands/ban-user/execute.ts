@@ -1,53 +1,49 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { UserBan } from '../models/Index';
+import type { BannedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
 	UserAlreadyBannedError,
 	InsufficientPermissionsError,
 	CannotBanSelfError,
-} from '../Errors';
+} from '../../Errors';
 import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UserRole } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersContract;
 }
-export interface BanUserParams {
+export type BanUserParams = {
 	userId: number;
 	reason: string;
 	requesterId: number;
-	requesterRole: string;
-}
+	requesterRole: UserRole;
+};
 
 export function banUserFactory({
 	commandsRepository,
 	queriesRepository,
 	usersContract,
 }: Dependencies) {
-	return async function banUser(params: BanUserParams): Promise<UserBan> {
+	return async function banUser(
+		params: BanUserParams,
+	): Promise<BannedUserResponse> {
 		const { userId, reason, requesterId, requesterRole } = params;
+
+		if (requesterId === userId) throw new CannotBanSelfError();
+		if (requesterRole === 'author') throw new InsufficientPermissionsError();
+
 		const userExists = await usersContract.getUserBasicInfo(userId);
 
-		if (requesterId === userId) {
-			throw new CannotBanSelfError();
-		}
-
-		if (requesterRole === 'user') {
-			throw new InsufficientPermissionsError();
-		}
-
-		if (!userExists.exists) {
-			throw new UserNotFoundError();
-		}
+		if (!userExists.exists) throw new UserNotFoundError();
 
 		const activeBan = await queriesRepository.selectActiveBanByUserId({
 			userId,
 		});
-		if (activeBan) {
-			throw new UserAlreadyBannedError();
-		}
+
+		if (activeBan) throw new UserAlreadyBannedError();
 
 		return commandsRepository.createBan({
 			userId,

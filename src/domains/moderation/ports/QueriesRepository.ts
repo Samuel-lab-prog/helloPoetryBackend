@@ -1,11 +1,13 @@
 import type {
-	UserBan,
-	UserSuspension,
-} from '../use-cases/commands/models/Index';
+	BannedUserResponse,
+	SuspendedUserResponse,
+} from '../use-cases/Models';
 
 export interface QueriesRepository {
-	selectActiveBanByUserId(params: { userId: number }): Promise<UserBan | null>;
+	selectActiveBanByUserId(params: {
+		userId: number;
+	}): Promise<BannedUserResponse | null>;
 	selectActiveSuspensionByUserId(params: {
 		userId: number;
-	}): Promise<UserSuspension | null>;
+	}): Promise<SuspendedUserResponse | null>;
 }

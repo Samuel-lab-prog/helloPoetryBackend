@@ -1,17 +1,17 @@
 import type {
-	UserBan,
-	UserSuspension,
-} from '../use-cases/commands/models/Index';
+	BannedUserResponse,
+	SuspendedUserResponse,
+} from '../use-cases/Models';
 
 export interface CommandsRepository {
 	createBan(params: {
 		userId: number;
 		reason: string;
 		moderatorId: number;
-	}): Promise<UserBan>;
+	}): Promise<BannedUserResponse>;
 	createSuspension(params: {
 		userId: number;
 		reason: string;
 		moderatorId: number;
-	}): Promise<UserSuspension>;
+	}): Promise<SuspendedUserResponse>;
 }

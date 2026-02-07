@@ -1,8 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
-
 import { idSchema } from '@SharedKernel/Schemas';
-
+import {
+	suspendedUserResponseSchema,
+	bannedUserResponseSchema,
+	sanctionReasonSchema,
+} from '../../ports/schemas/Index';
 import {
 	type CommandsRouterServices,
 	commandsRouterServices,
@@ -29,10 +32,10 @@ export function createModerationCommandsRouter(
 					id: idSchema,
 				}),
 				body: t.Object({
-					reason: t.String(),
+					reason: sanctionReasonSchema,
 				}),
 				response: {
-					200: t.Any(), // UserBan schema can be added here
+					200: bannedUserResponseSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
@@ -58,10 +61,10 @@ export function createModerationCommandsRouter(
 					id: idSchema,
 				}),
 				body: t.Object({
-					reason: t.String(),
+					reason: sanctionReasonSchema,
 				}),
 				response: {
-					200: t.Any(), // UserSuspension schema can be added here
+					200: suspendedUserResponseSchema,
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
