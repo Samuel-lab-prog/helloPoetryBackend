@@ -8,7 +8,7 @@ import type {
 	RemovedFriendRecord,
 	CancelFriendRequestRecord,
 	UnblockUserRecord,
-} from '../../use-cases/models/Index';
+} from '../../use-cases/Models';
 import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
@@ -17,39 +17,32 @@ import {
 	deleteFriendFactory,
 	cancelFriendRequestFactory,
 	unblockUserFactory,
+	type SendFriendRequestParams,
+	type AcceptFriendRequestParams,
+	type RejectFriendRequestParams,
+	type BlockUserParams,
+	type DeleteFriendParams,
+	type CancelFriendRequestParams,
+	type UnblockUserParams,
 } from '../../use-cases/commands/Index';
 
 export interface CommandsRouterServices {
-	sendFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequestRecord | FriendshipRecord>;
-	acceptFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendshipRecord>;
-	rejectFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<FriendRequestRejectionRecord>;
-	blockUser(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<BlockedUserRecord>;
-	deleteFriend(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<RemovedFriendRecord>;
-	cancelFriendRequest(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<CancelFriendRequestRecord>;
-	unblockUser(params: {
-		requesterId: number;
-		addresseeId: number;
-	}): Promise<UnblockUserRecord>;
+	sendFriendRequest(
+		params: SendFriendRequestParams,
+	): Promise<FriendRequestRecord | FriendshipRecord>;
+	acceptFriendRequest(
+		params: AcceptFriendRequestParams,
+	): Promise<FriendshipRecord>;
+	rejectFriendRequest(
+		params: RejectFriendRequestParams,
+	): Promise<FriendRequestRejectionRecord>;
+	blockUser(params: BlockUserParams): Promise<BlockedUserRecord>;
+	deleteFriend(params: DeleteFriendParams): Promise<RemovedFriendRecord>;
+	cancelFriendRequest(
+		params: CancelFriendRequestParams,
+	): Promise<CancelFriendRequestRecord>;
+	unblockUser(params: UnblockUserParams): Promise<UnblockUserRecord>;
 }
-
 export const commandsRouterServices: CommandsRouterServices = {
 	sendFriendRequest: sendFriendRequestFactory({
 		commandsRepository,

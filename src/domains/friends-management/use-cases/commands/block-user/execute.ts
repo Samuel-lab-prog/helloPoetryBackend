@@ -1,17 +1,17 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { BlockedUserRecord } from '../../models/Index';
-import { SelfReferenceError, UserBlockedError } from '../Errors';
+import type { BlockedUserRecord } from '../../Models';
+import { SelfReferenceError, UserBlockedError } from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface BlockUserParams {
+export type BlockUserParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function blockUserFactory({
 	commandsRepository,

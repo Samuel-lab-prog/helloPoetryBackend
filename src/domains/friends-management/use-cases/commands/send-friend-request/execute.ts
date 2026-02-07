@@ -1,22 +1,22 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendRequestRecord, FriendshipRecord } from '../../models/Index';
+import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
 import {
 	SelfReferenceError,
 	FriendshipAlreadyExistsError,
 	RequestAlreadySentError,
 	UserBlockedError,
-} from '../Errors';
+} from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface SendFriendRequestParams {
+export type SendFriendRequestParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function sendFriendRequestFactory({
 	commandsRepository,

@@ -6,7 +6,7 @@ import {
 	UnblockUserSchema,
 	CancelFriendRequestSchema,
 	RemovedFriendSchema,
-} from '../../ports/schemas/Index';
+} from '../ports/schemas/Index';
 
 export type FriendshipRecord = (typeof FriendRecordSchema)['static'];
 export type FriendRequestRecord = (typeof FriendRequestSchema)['static'];

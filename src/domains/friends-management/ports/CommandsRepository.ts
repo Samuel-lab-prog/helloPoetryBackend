@@ -6,7 +6,7 @@ import type {
 	UnblockUserRecord,
 	BlockedUserRecord,
 	RemovedFriendRecord,
-} from '../use-cases/models/Index';
+} from '../use-cases/Models';
 
 export interface CommandsRepository {
 	createFriendRequest(

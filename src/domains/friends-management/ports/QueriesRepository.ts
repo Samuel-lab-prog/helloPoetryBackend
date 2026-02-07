@@ -2,7 +2,7 @@ import type {
 	FriendRequestRecord,
 	BlockedUserRecord,
 	FriendshipRecord,
-} from '../use-cases/models/Index';
+} from '../use-cases/Models';
 
 export interface QueriesRepository {
 	findFriendshipBetweenUsers(params: {

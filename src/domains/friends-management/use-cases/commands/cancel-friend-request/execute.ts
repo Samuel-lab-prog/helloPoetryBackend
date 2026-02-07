@@ -1,17 +1,17 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { CancelFriendRequestRecord } from '../../models/Index';
-import { SelfReferenceError, RequestNotFoundError } from '../Errors';
+import type { CancelFriendRequestRecord } from '../../Models';
+import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface CancelFriendRequestParams {
+export type CancelFriendRequestParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function cancelFriendRequestFactory({
 	commandsRepository,

@@ -5,9 +5,9 @@ import {
 	FriendshipAlreadyExistsError,
 	RequestAlreadySentError,
 	UserBlockedError,
-} from '../Errors';
+} from '../../Errors';
 
-describe('USE-CASE - Send Friend Request', () => {
+describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
 	let queriesRepository: any;
 	let sendFriendRequest: any;
@@ -30,68 +30,70 @@ describe('USE-CASE - Send Friend Request', () => {
 		});
 	});
 
-	it('Does not allow self reference', () => {
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 1 }),
-		).rejects.toBeInstanceOf(SelfReferenceError);
-	});
-
-	it('Should abort when users are blocked', () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 1 });
-
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(UserBlockedError);
-	});
-
-	it('Should abort when friendship already exists', () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue(null);
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 5 });
-
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
-	});
-
-	it('Should abort when outgoing request already exists', () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue(null);
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 10 });
-
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).rejects.toBeInstanceOf(RequestAlreadySentError);
-	});
-
-	it('Should accept request when incoming request exists', () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue(null);
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest
-			.mockResolvedValueOnce(null)
-			.mockResolvedValueOnce({ id: 20 });
-
-		commandsRepository.acceptFriendRequest.mockResolvedValue({
-			id: 30,
+	describe('Send Friend Request', () => {
+		it('Does not allow self reference', () => {
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 1 }),
+			).rejects.toBeInstanceOf(SelfReferenceError);
 		});
 
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).resolves.toEqual({ id: 30 });
-	});
+		it('Should abort when users are blocked', () => {
+			queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 1 });
 
-	it('Should create friend request when no errors occur', () => {
-		queriesRepository.findBlockedRelationship.mockResolvedValue(null);
-		queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-		queriesRepository.findFriendRequest
-			.mockResolvedValueOnce(null)
-			.mockResolvedValueOnce(null);
-
-		commandsRepository.createFriendRequest.mockResolvedValue({
-			id: 40,
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+			).rejects.toBeInstanceOf(UserBlockedError);
 		});
 
-		expect(
-			sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-		).resolves.toEqual({ id: 40 });
+		it('Should abort when friendship already exists', () => {
+			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 5 });
+
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+			).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
+		});
+
+		it('Should abort when outgoing request already exists', () => {
+			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
+			queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 10 });
+
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+			).rejects.toBeInstanceOf(RequestAlreadySentError);
+		});
+
+		it('Should accept request when incoming request exists', () => {
+			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
+			queriesRepository.findFriendRequest
+				.mockResolvedValueOnce(null)
+				.mockResolvedValueOnce({ id: 20 });
+
+			commandsRepository.acceptFriendRequest.mockResolvedValue({
+				id: 30,
+			});
+
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+			).resolves.toEqual({ id: 30 });
+		});
+
+		it('Should create friend request when no errors occur', () => {
+			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
+			queriesRepository.findFriendRequest
+				.mockResolvedValueOnce(null)
+				.mockResolvedValueOnce(null);
+
+			commandsRepository.createFriendRequest.mockResolvedValue({
+				id: 40,
+			});
+
+			expect(
+				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
+			).resolves.toEqual({ id: 40 });
+		});
 	});
 });

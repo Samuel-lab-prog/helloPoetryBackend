@@ -1,20 +1,20 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { UnblockUserRecord } from '../../models/Index';
+import type { UnblockUserRecord } from '../../Models';
 import {
 	SelfReferenceError,
 	BlockedRelationshipNotFoundError,
-} from '../Errors';
+} from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface UnblockUserParams {
+export type UnblockUserParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function unblockUserFactory({
 	commandsRepository,

@@ -10,7 +10,7 @@ import { createUser, type TestUser, loginUser } from '../Helpers';
 import type {
 	FriendRequestRejectionRecord,
 	FriendRequestRecord,
-} from '@Domains/friends-management/use-cases/models/Index';
+} from '@Domains/friends-management/use-cases/Models';
 import type { UserPrivateProfile } from '@Domains/users-management/use-cases/Models';
 import type { AppError } from '@AppError';
 

@@ -1,23 +1,23 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendshipRecord } from '../../models/Index';
+import type { FriendshipRecord } from '../../Models';
 
 import {
 	SelfReferenceError,
 	RequestNotFoundError,
 	FriendshipAlreadyExistsError,
 	UserBlockedError,
-} from '../Errors';
+} from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface AcceptFriendRequestParams {
+export type AcceptFriendRequestParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function acceptFriendRequestFactory({
 	commandsRepository,

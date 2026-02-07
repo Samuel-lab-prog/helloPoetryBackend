@@ -8,7 +8,7 @@ import type {
 	FriendRequestRecord,
 	FriendshipRecord,
 	RemovedFriendRecord,
-} from '@Domains/friends-management/use-cases/models/Index';
+} from '@Domains/friends-management/use-cases/Models';
 
 let user1: TestUser;
 let user2: TestUser;

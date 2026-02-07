@@ -1,17 +1,17 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import { SelfReferenceError, FriendshipNotFoundError } from '../Errors';
-import type { RemovedFriendRecord } from '../../models/Index';
+import { SelfReferenceError, FriendshipNotFoundError } from '../../Errors';
+import type { RemovedFriendRecord } from '../../Models';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
 
-interface DeleteFriendParams {
+export type DeleteFriendParams = {
 	requesterId: number;
 	addresseeId: number;
-}
+};
 
 export function deleteFriendFactory({
 	commandsRepository,

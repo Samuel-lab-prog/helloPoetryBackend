@@ -9,7 +9,7 @@ import type {
 	UnblockUserRecord,
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
-} from '../../use-cases/models/Index';
+} from '../../use-cases/Models';
 
 export const commandsRepository: CommandsRepository = {
 	createFriendRequest,

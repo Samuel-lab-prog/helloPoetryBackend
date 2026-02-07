@@ -7,7 +7,10 @@
 
 		"./src/domains/poems-management/ports/schemas",
 		"./src/domains/poems-management/use-cases/commands",
-		"./src/domains/poems-management/use-cases/queries"
+		"./src/domains/poems-management/use-cases/queries",
+
+		"./src/domains/friends-management/ports/schemas",
+		"./src/domains/friends-management/use-cases/commands"
 	],
 	"delete": true,
 	"location": "top",
