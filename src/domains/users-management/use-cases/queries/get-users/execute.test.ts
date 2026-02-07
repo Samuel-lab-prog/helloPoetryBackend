@@ -13,10 +13,10 @@ describe('USE-CASE - Users Management', () => {
 		selectUsers,
 		selectPublicProfile: mock(),
 		selectPrivateProfile: mock(),
-    selectAuthUserByEmail: mock(),
-    selectUserByEmail: mock(),
-    selectUserById: mock(),
-    selectUserByNickname: mock(),
+		selectAuthUserByEmail: mock(),
+		selectUserByEmail: mock(),
+		selectUserById: mock(),
+		selectUserByNickname: mock(),
 	};
 
 	const getUsers: ReturnType<typeof getUsersFactory> = getUsersFactory({

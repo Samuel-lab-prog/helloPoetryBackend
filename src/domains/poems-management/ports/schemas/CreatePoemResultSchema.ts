@@ -1,35 +1,38 @@
 import { t } from 'elysia';
 import {
 	PoemContentSchema,
-	PoemTitleSchema,
+	PoemToUserIdsSchema,
 	PoemExcerptSchema,
 	PoemIsCommentableSchema,
 	PoemSlugSchema,
-	PoemToUserIdsSchema,
 	PoemTagsReadSchema,
-} from '../fields/PoemFieldsSchemas';
+	PoemTitleSchema,
+} from './PoemFieldsSchemas';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
+
 import {
+	PoemModerationStatusEnumSchema,
 	PoemStatusEnumSchema,
 	PoemVisibilityEnumSchema,
-} from '../fields/Enums';
+} from './Enums';
 
-export const UpdatePoemResultSchema = t.Object({
+export const CreatePoemResultSchema = t.Object({
 	id: idSchema,
 
 	title: PoemTitleSchema,
 	slug: PoemSlugSchema,
-	content: PoemContentSchema,
-	excerpt: PoemExcerptSchema,
+	excerpt: t.Nullable(PoemExcerptSchema),
 	tags: PoemTagsReadSchema,
+	content: PoemContentSchema,
 
 	visibility: PoemVisibilityEnumSchema,
 	status: PoemStatusEnumSchema,
-
-	isCommentable: PoemIsCommentableSchema,
+	moderationStatus: PoemModerationStatusEnumSchema,
 
 	createdAt: DateSchema,
 	updatedAt: DateSchema,
+
+	isCommentable: PoemIsCommentableSchema,
 
 	toUserIds: PoemToUserIdsSchema,
 });

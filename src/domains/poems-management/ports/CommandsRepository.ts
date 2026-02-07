@@ -3,7 +3,7 @@ import type {
 	UpdatePoemDB,
 	CreatePoemResult,
 	UpdatePoemResult,
-} from '../use-cases/commands/Models';
+} from '../use-cases/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export interface CommandsRepository {

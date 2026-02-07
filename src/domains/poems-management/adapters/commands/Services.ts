@@ -1,5 +1,3 @@
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-
 import { queriesRepository } from '../../infra/queries-repository/Repository';
 import { commandsRepository } from '../../infra/commands-repository/Repository';
 import { slugifyService } from '../../infra/slug-service/Execute';
@@ -8,31 +6,18 @@ import { usersContract } from '@SharedKernel/contracts/users/Index';
 import {
 	createPoemFactory,
 	updatePoemFactory,
+	type CreatePoemParams,
+	type UpdatePoemParams,
 } from '../../use-cases/commands/Index';
 
 import type {
-	CreatePoem,
 	CreatePoemResult,
-	UpdatePoem,
 	UpdatePoemResult,
-} from '../../use-cases/commands/Models';
-
-type MetaData = {
-	requesterId: number;
-	requesterStatus: UserStatus;
-	requesterRole: UserRole;
-};
+} from '../../use-cases/Models';
 
 export interface CommandsRouterServices {
-	createPoem: (params: {
-		data: CreatePoem;
-		meta: MetaData;
-	}) => Promise<CreatePoemResult>;
-	updatePoem: (params: {
-		data: UpdatePoem;
-		poemId: number;
-		meta: MetaData;
-	}) => Promise<UpdatePoemResult>;
+	createPoem: (params: CreatePoemParams) => Promise<CreatePoemResult>;
+	updatePoem: (params: UpdatePoemParams) => Promise<UpdatePoemResult>;
 }
 
 export const commandsRouterServices: CommandsRouterServices = {

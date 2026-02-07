@@ -7,12 +7,9 @@ import {
 	PoemTagsCreationSchema,
 	PoemIsCommentableSchema,
 	PoemToUserIdsSchema,
-} from '../fields/PoemFieldsSchemas';
+} from './PoemFieldsSchemas';
 
-import {
-	PoemStatusEnumSchema,
-	PoemVisibilityEnumSchema,
-} from '../fields/Enums';
+import { PoemStatusEnumSchema, PoemVisibilityEnumSchema } from './Enums';
 
 export const CreatePoemBodySchema = t.Object({
 	title: PoemTitleSchema,

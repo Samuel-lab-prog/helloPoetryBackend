@@ -5,29 +5,25 @@ import { getPrivateProfileFactory } from './execute';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { UserStatus } from '@PrismaGenerated/enums';
 
-import {
-	ProfileNotFoundError,
-	UserBannedError,
-} from '../../Errors';
+import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 describe('USE-CASE - Users Management', () => {
 	const selectPrivateProfile = mock();
 
 	const queriesRepository: QueriesRepository = {
 		selectPrivateProfile,
-    selectAuthUserByEmail: mock(),
-    selectPublicProfile: mock(),
-    selectUserByEmail: mock(),
-    selectUserById: mock(),
-    selectUserByNickname: mock(),
-    selectUsers: mock(),
+		selectAuthUserByEmail: mock(),
+		selectPublicProfile: mock(),
+		selectUserByEmail: mock(),
+		selectUserById: mock(),
+		selectUserByNickname: mock(),
+		selectUsers: mock(),
 	};
 
-	const getPrivateProfile: ReturnType<
-		typeof getPrivateProfileFactory
-	> = getPrivateProfileFactory({
-		queriesRepository,
-	});
+	const getPrivateProfile: ReturnType<typeof getPrivateProfileFactory> =
+		getPrivateProfileFactory({
+			queriesRepository,
+		});
 
 	describe('Get Private Profile', () => {
 		it('Does not allow banned users to access private profile', () => {

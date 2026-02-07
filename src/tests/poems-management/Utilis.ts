@@ -2,7 +2,7 @@ import type {
 	UpdatePoem,
 	CreatePoem,
 	CreatePoemResult,
-} from '@Domains/poems-management/use-cases/commands/Models';
+} from '@Domains/poems-management/use-cases/Models.ts';
 import { type TestUser, PREFIX, app, updatePoemRaw } from '../Helpers.ts';
 import { jsonRequest } from '../TestsUtils.ts';
 import { poemsData, poemsForUpdate } from '../TestsData.ts';

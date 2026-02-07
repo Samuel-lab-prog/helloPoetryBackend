@@ -1,27 +1,25 @@
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import { PoemNotFoundError, PoemAccessDeniedError } from '../Errors';
-import { canViewPoem } from '../policies/policies';
-import type { AuthorPoem } from '../Models';
+import { PoemNotFoundError, PoemAccessDeniedError } from '../../Errors';
+import { canViewPoem } from '../../Policies';
+import type { AuthorPoem } from '../../Models';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
 
-interface GetPoemParams {
+export type GetPoemParams = {
 	requesterId?: number;
 	requesterRole?: UserRole;
 	requesterStatus?: UserStatus;
 	poemId: number;
-}
+};
 
 export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getPoem(params: GetPoemParams): Promise<AuthorPoem> {
 		const poem = await poemQueriesRepository.selectPoemById(params.poemId);
 
-		if (!poem) {
-			throw new PoemNotFoundError();
-		}
+		if (!poem) throw new PoemNotFoundError();
 
 		const canAccess = canViewPoem({
 			author: {
@@ -41,9 +39,8 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 				status: params.requesterStatus,
 			},
 		});
-		if (!canAccess) {
-			throw new PoemAccessDeniedError();
-		}
+
+		if (!canAccess) throw new PoemAccessDeniedError();
 
 		return poem;
 	};

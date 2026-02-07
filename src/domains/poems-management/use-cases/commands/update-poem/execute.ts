@@ -5,10 +5,10 @@ import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { SlugService } from '../../../ports/SlugService';
 
-import type { UpdatePoem, UpdatePoemResult } from '../Models';
-import { PoemAlreadyExistsError } from '../Errors';
+import type { UpdatePoem, UpdatePoemResult } from '../../Models';
+import { PoemAlreadyExistsError } from '../../Errors';
 
-import { canUpdatePoem } from '../policies/policies';
+import { canUpdatePoem } from '../../Policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -17,7 +17,7 @@ interface Dependencies {
 	slugService: SlugService;
 }
 
-type UpdatePoemParams = {
+export type UpdatePoemParams = {
 	data: UpdatePoem;
 	poemId: number;
 	meta: {
@@ -56,9 +56,7 @@ export function updatePoemFactory(deps: Dependencies) {
 
 		const result = await commandsRepository.updatePoem(poemId, poem);
 
-		if (result.ok === true) {
-			return result.data;
-		}
+		if (result.ok === true) return result.data;
 
 		if (result.ok === false && result.code === 'CONFLICT') {
 			throw new PoemAlreadyExistsError();

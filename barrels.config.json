@@ -3,11 +3,16 @@
 		"./src/domains/users-management/ports/schemas",
 		"./src/domains/users-management/infra/queries-repository/selects",
 		"./src/domains/users-management/use-cases/commands",
-		"./src/domains/users-management/use-cases/queries"
+		"./src/domains/users-management/use-cases/queries",
+
+		"./src/domains/poems-management/ports/schemas",
+		"./src/domains/poems-management/use-cases/commands",
+		"./src/domains/poems-management/use-cases/queries"
 	],
 	"delete": true,
 	"location": "top",
 	"name": "Index",
 	"singleQuotes": true,
-	"structure": "flat"
+	"structure": "flat",
+	"exclude": [".*\\.test\\.ts$"]
 }

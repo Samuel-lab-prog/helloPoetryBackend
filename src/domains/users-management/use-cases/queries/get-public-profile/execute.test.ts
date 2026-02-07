@@ -4,10 +4,7 @@ import { getPublicProfileFactory } from './execute';
 
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 
-import {
-	ProfileNotFoundError,
-	UserBannedError,
-} from '../../Errors';
+import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 describe('USE-CASE - Users Management', () => {
 	const selectPublicProfile = mock();
@@ -16,17 +13,16 @@ describe('USE-CASE - Users Management', () => {
 		selectPublicProfile,
 		selectPrivateProfile: mock(),
 		selectUsers: mock(),
-    selectAuthUserByEmail: mock(),
-    selectUserByEmail: mock(),
-    selectUserById: mock(),
-    selectUserByNickname: mock(),
+		selectAuthUserByEmail: mock(),
+		selectUserByEmail: mock(),
+		selectUserById: mock(),
+		selectUserByNickname: mock(),
 	};
 
-	const getPublicProfile: ReturnType<
-		typeof getPublicProfileFactory
-	> = getPublicProfileFactory({
-		queriesRepository,
-	});
+	const getPublicProfile: ReturnType<typeof getPublicProfileFactory> =
+		getPublicProfileFactory({
+			queriesRepository,
+		});
 
 	describe('Get Public Profile', () => {
 		it('Does not allow banned users to access public profiles', () => {

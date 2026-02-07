@@ -21,8 +21,10 @@ import {
 	updateUserStatsRaw,
 } from '../Helpers.ts';
 
-import type { CreatePoemResult } from '@Domains/poems-management/use-cases/commands/Models';
-import type { AuthorPoem } from '@Domains/poems-management/use-cases/queries/Models';
+import type {
+	CreatePoemResult,
+	AuthorPoem,
+} from '@Domains/poems-management/use-cases/Models.ts';
 import type { AppError } from '@AppError';
 
 let author: TestUser;

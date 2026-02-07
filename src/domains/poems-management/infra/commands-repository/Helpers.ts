@@ -5,7 +5,7 @@ import type {
 	UpdatePoemResult,
 	CreatePoemDB,
 	UpdatePoemDB,
-} from '../../use-cases/commands/Models';
+} from '../../use-cases/Models';
 
 import { insertPoemSelect, updatePoemSelect } from './Selects';
 

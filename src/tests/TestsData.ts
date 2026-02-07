@@ -1,7 +1,7 @@
 import type {
 	UpdatePoem,
 	CreatePoem,
-} from '@Domains/poems-management/use-cases/commands/Models';
+} from '@Domains/poems-management/use-cases/Models';
 import type { CreateUser } from '@Domains/users-management/use-cases/Models';
 
 function generateUsersData(quantity: number): CreateUser[] {

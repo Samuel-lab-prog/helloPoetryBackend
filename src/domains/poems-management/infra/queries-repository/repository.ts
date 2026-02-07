@@ -2,7 +2,7 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/QueriesRepository';
-import type { MyPoem, AuthorPoem } from '../../use-cases/queries/Models';
+import type { MyPoem, AuthorPoem } from '../../use-cases/Models';
 
 import { authorPoemSelect, myPoemSelect } from './Selects';
 import { mapPoem } from './Helpers';

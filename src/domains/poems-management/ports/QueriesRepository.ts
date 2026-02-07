@@ -1,4 +1,4 @@
-import type { AuthorPoem, MyPoem } from '../use-cases/queries/Models';
+import type { AuthorPoem, MyPoem } from '../use-cases/Models';
 
 export interface QueriesRepository {
 	selectMyPoems(requesterId: number): Promise<MyPoem[]>;

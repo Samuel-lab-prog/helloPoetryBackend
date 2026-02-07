@@ -11,13 +11,13 @@ import {
 
 import { setupHttpUsers } from 'tests/Helpers.ts';
 import { updateUserStatsRaw, type TestUser } from '../Helpers.ts';
-import type { MyPoem } from '@Domains/poems-management/use-cases/queries/Models';
+import type { MyPoem } from '@Domains/poems-management/use-cases/Models';
 import type { AppError } from '@AppError';
 import type {
 	CreatePoem,
 	CreatePoemResult,
 	UpdatePoemResult,
-} from '@Domains/poems-management/use-cases/commands/Models.ts';
+} from '@Domains/poems-management/use-cases/Models.ts';
 
 let users: TestUser[];
 let user1: TestUser;

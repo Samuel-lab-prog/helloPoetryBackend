@@ -1,18 +1,18 @@
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { AuthorPoem } from '../Models';
-import { canViewPoem } from '../policies/policies';
+import type { AuthorPoem } from '../../Models';
+import { canViewPoem } from '../../Policies';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
 
-interface GetAuthorPoemsParams {
+export type GetAuthorPoemsParams = {
 	authorId: number;
 	requesterId?: number;
 	requesterRole?: UserRole;
 	requesterStatus?: UserStatus;
-}
+};
 
 export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getAuthorPoems(

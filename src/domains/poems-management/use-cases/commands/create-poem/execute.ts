@@ -4,9 +4,9 @@ import type { UsersContract } from '@SharedKernel/contracts/users/Index';
 import type { SlugService } from '../../../ports/SlugService';
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 
-import { PoemAlreadyExistsError } from '../Errors';
-import type { CreatePoem, CreatePoemDB, CreatePoemResult } from '../Models';
-import { canCreatePoem } from '../policies/policies';
+import { PoemAlreadyExistsError } from '../../Errors';
+import type { CreatePoem, CreatePoemDB, CreatePoemResult } from '../../Models';
+import { canCreatePoem } from '../../Policies';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -14,7 +14,7 @@ interface Dependencies {
 	usersContract: UsersContract;
 }
 
-type CreatePoemParams = {
+export type CreatePoemParams = {
 	data: CreatePoem;
 	meta: {
 		requesterId: number;
@@ -50,10 +50,7 @@ export function createPoemFactory(deps: Dependencies) {
 		};
 
 		const result = await commandsRepository.insertPoem(poem);
-
-		if (result.ok === true) {
-			return result.data;
-		}
+		if (result.ok === true) return result.data;
 
 		if (result.ok === false && result.code === 'CONFLICT') {
 			throw new PoemAlreadyExistsError();
