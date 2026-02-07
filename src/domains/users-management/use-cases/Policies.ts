@@ -1,7 +1,7 @@
 import type { UserStatus } from './Models';
 import { CrossUserUpdateError, UserBannedError } from './Errors';
 
-type CanUpdatePolicyInput = {
+export type CanUpdatePolicyInput = {
 	requesterId: number;
 	requesterStatus: UserStatus;
 	targetId: number;
