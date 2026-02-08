@@ -1,4 +1,4 @@
-import type { ClocData, FanMetric } from '../types';
+import type { ClocData, FanMetric } from '../Types';
 
 export function buildLocMap(cloc: ClocData): Map<string, number> {
 	const map = new Map<string, number>();

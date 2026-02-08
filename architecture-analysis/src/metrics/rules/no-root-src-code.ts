@@ -1,6 +1,6 @@
 import { red, green } from 'kleur/colors';
-import type { DepcruiseResult } from '../../types';
-import { padRight, divider } from '../../ui/console-format';
+import type { DepcruiseResult } from '../../Types';
+import { padRight, divider } from '../../ConsoleFormat';
 
 type Violation = {
 	module: string;

@@ -1,5 +1,5 @@
 import { bold } from 'kleur/colors';
-import { divider, section } from './console-format';
+import { divider, section } from './ConsoleFormat';
 
 export type TableColumn<Row> = {
 	header: string;

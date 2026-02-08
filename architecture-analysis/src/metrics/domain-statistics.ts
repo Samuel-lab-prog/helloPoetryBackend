@@ -1,5 +1,5 @@
-import type { ClocResult, DomainMetric, DomainAggregate } from '../types';
-import { classifyDomainSize } from '../classify-results/index';
+import type { ClocResult, DomainMetric, DomainAggregate } from '../Types';
+import { classifyDomainSize } from '../Classify';
 
 export function calculateDomainAggregates(
 	cloc: ClocResult,
@@ -7,9 +7,7 @@ export function calculateDomainAggregates(
 	const domainData = new Map<string, DomainAggregate>();
 
 	Object.entries(cloc).forEach(([file, info]) => {
-
-
-		if (file === 'SUM' || ( 'code' in info && !info?.code)) return;
+		if (file === 'SUM' || ('code' in info && !info?.code)) return;
 
 		const match = file.match(
 			/(?:^|\/|\\)src[/\\](domains|generic-subdomains)[/\\]([^/\\]+)[/\\]/,
@@ -54,7 +52,7 @@ export function calculateDomainStatistics(
 }
 
 import { red, yellow, green } from 'kleur/colors';
-import { printTable, type TableColumn } from '../ui/print-table';
+import { printTable, type TableColumn } from '../PrintTable';
 
 function classifySizeResult(percent: number): {
 	label: string;

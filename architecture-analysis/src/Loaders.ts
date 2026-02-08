@@ -1,5 +1,5 @@
 import fs from 'fs';
-import type { ClocResult, DepcruiseResult } from '../types/index';
+import type { ClocResult, DepcruiseResult } from './Types';
 
 export function loadDepcruiseData(path = 'depcruise.json'): DepcruiseResult {
 	return JSON.parse(fs.readFileSync(path, 'utf-8'));

@@ -1,7 +1,7 @@
-import type { DepcruiseResult } from '../types';
+import type { DepcruiseResult } from '../Types';
 import { red, yellow, green } from 'kleur/colors';
-import { printTable, type TableColumn } from '../ui/print-table';
-import { classifyFanOut, classifyFanIn } from '../classify-results';
+import { printTable, type TableColumn } from '../PrintTable';
+import { classifyFanOut, classifyFanIn } from '../Classify';
 
 const IGNORED_MODULES = [
 	'node_modules/',
@@ -22,7 +22,7 @@ const FAN_IN_EXCEPTIONS = [
 ];
 
 function startsWithAny(path: string, prefixes: string[]): boolean {
-	return prefixes.some(prefix => path.startsWith(prefix));
+	return prefixes.some((prefix) => path.startsWith(prefix));
 }
 
 function isIgnored(modulePath: string): boolean {
@@ -34,7 +34,11 @@ function isFanInException(modulePath: string): boolean {
 }
 
 function isEntryPoint(modulePath: string): boolean {
-	return modulePath.endsWith('/index.ts') || modulePath.endsWith('/Index.ts') || modulePath === 'src/index.ts';
+	return (
+		modulePath.endsWith('/index.ts') ||
+		modulePath.endsWith('/Index.ts') ||
+		modulePath === 'src/index.ts'
+	);
 }
 
 export type FanMetric = {
@@ -45,22 +49,24 @@ export type FanMetric = {
 
 export function calculateFanOut(depcruise: DepcruiseResult): FanMetric[] {
 	return depcruise.modules
-		.filter(m => !isEntryPoint(m.source) && !isIgnored(m.source))
-		.map(m => ({
+		.filter((m) => !isEntryPoint(m.source) && !isIgnored(m.source))
+		.map((m) => ({
 			module: m.source,
-			dependencies: m.dependencies.filter(d => !isIgnored(d.resolved)).length,
+			dependencies: m.dependencies.filter((d) => !isIgnored(d.resolved)).length,
 		}));
 }
 
-export function calculateFanIn(depcruise: DepcruiseResult): Map<string, number> {
+export function calculateFanIn(
+	depcruise: DepcruiseResult,
+): Map<string, number> {
 	const fanIn = new Map<string, number>();
 
 	depcruise.modules
-		.filter(m => !isIgnored(m.source))
-		.forEach(m => {
+		.filter((m) => !isIgnored(m.source))
+		.forEach((m) => {
 			m.dependencies
-				.filter(d => !isIgnored(d.resolved))
-				.forEach(d => {
+				.filter((d) => !isIgnored(d.resolved))
+				.forEach((d) => {
 					if (isFanInException(d.resolved)) return;
 					fanIn.set(d.resolved, (fanIn.get(d.resolved) ?? 0) + 1);
 				});
@@ -84,31 +90,39 @@ function classifyFanOutMetric(count: number) {
 }
 
 const FAN_OUT_LIMIT = 10;
-export function printTopFanOut(fanOut: FanMetric[], limit = FAN_OUT_LIMIT): void {
+export function printTopFanOut(
+	fanOut: FanMetric[],
+	limit = FAN_OUT_LIMIT,
+): void {
 	const columns: TableColumn<FanMetric>[] = [
 		{
 			header: 'DEPS',
 			width: 10,
 			align: 'right',
-			render: m => ({ text: String(m.dependencies), color: classifyFanOutMetric(m.dependencies).color }),
+			render: (m) => ({
+				text: String(m.dependencies),
+				color: classifyFanOutMetric(m.dependencies).color,
+			}),
 		},
 		{
 			header: 'MODULE',
 			width: 90,
-			render: m => ({ text: m.module }),
+			render: (m) => ({ text: m.module }),
 		},
 		{
 			header: 'STATUS',
 			width: 14,
 			align: 'right',
-			render: m => {
+			render: (m) => {
 				const { label, color } = classifyFanOutMetric(m.dependencies);
 				return { text: label, color };
 			},
 		},
 	];
 
-	const sorted = [...fanOut].sort((a, b) => b.dependencies - a.dependencies).slice(0, limit);
+	const sorted = [...fanOut]
+		.sort((a, b) => b.dependencies - a.dependencies)
+		.slice(0, limit);
 	printTable(`Top ${limit} Fan-out (outgoing dependencies)`, columns, sorted);
 }
 
@@ -118,7 +132,10 @@ type FanInMetric = {
 };
 
 const FAN_IN_LIMIT = 10;
-export function printTopFanIn(fanIn: Map<string, number>, limit = FAN_IN_LIMIT): void {
+export function printTopFanIn(
+	fanIn: Map<string, number>,
+	limit = FAN_IN_LIMIT,
+): void {
 	const metrics: FanInMetric[] = [...fanIn.entries()]
 		.map(([module, usedBy]) => ({ module, usedBy }))
 		.sort((a, b) => b.usedBy - a.usedBy)
@@ -129,18 +146,21 @@ export function printTopFanIn(fanIn: Map<string, number>, limit = FAN_IN_LIMIT):
 			header: 'USED BY',
 			width: 10,
 			align: 'right',
-			render: m => ({ text: String(m.usedBy), color: classifyFanInMetric(m.usedBy).color }),
+			render: (m) => ({
+				text: String(m.usedBy),
+				color: classifyFanInMetric(m.usedBy).color,
+			}),
 		},
 		{
 			header: 'MODULE',
 			width: 90,
-			render: m => ({ text: m.module }),
+			render: (m) => ({ text: m.module }),
 		},
 		{
 			header: 'STATUS',
 			width: 14,
 			align: 'right',
-			render: m => {
+			render: (m) => {
 				const { label, color } = classifyFanInMetric(m.usedBy);
 				return { text: label, color };
 			},
@@ -159,7 +179,9 @@ export function printHotspotModules(
 ): void {
 	const hotspots: HotspotMetric[] = fanOutWithLoc.filter(
 		(m): m is HotspotMetric =>
-			m.dependencies > minDeps && (m.loc ?? 0) > minLoc && !isFanInException(m.module),
+			m.dependencies > minDeps &&
+			(m.loc ?? 0) > minLoc &&
+			!isFanInException(m.module),
 	);
 
 	if (!hotspots.length) {
@@ -172,18 +194,21 @@ export function printHotspotModules(
 			header: 'DEPS',
 			width: 8,
 			align: 'right',
-			render: m => ({ text: String(m.dependencies), color: classifyFanOutMetric(m.dependencies).color }),
+			render: (m) => ({
+				text: String(m.dependencies),
+				color: classifyFanOutMetric(m.dependencies).color,
+			}),
 		},
 		{
 			header: 'LOC',
 			width: 8,
 			align: 'right',
-			render: m => ({ text: String(m.loc) }),
+			render: (m) => ({ text: String(m.loc) }),
 		},
 		{
 			header: 'MODULE',
 			width: 90,
-			render: m => ({ text: m.module, color: red }),
+			render: (m) => ({ text: m.module, color: red }),
 		},
 		{
 			header: 'STATUS',

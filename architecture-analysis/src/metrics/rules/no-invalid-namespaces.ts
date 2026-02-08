@@ -1,6 +1,6 @@
 import { red, green, yellow } from 'kleur/colors';
-import type { DepcruiseResult } from '../../types';
-import { printTable, type TableColumn } from '../../ui/print-table';
+import type { DepcruiseResult } from '../../Types';
+import { printTable, type TableColumn } from '../../PrintTable';
 
 type Violation = {
 	module: string;

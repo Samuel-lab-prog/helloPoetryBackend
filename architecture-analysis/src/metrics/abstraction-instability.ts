@@ -1,7 +1,7 @@
-import type { ClocResult, DepcruiseResult } from '../types';
+import type { ClocResult, DepcruiseResult } from '../Types';
 import { green, yellow, red, magenta } from 'kleur/colors';
-import { printTable, type TableColumn } from '../ui/print-table';
-import { classifyDistanceFromMain } from '../classify-results';
+import { printTable, type TableColumn } from '../PrintTable';
+import { classifyDistanceFromMain } from '../Classify';
 
 type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';
 
@@ -80,15 +80,12 @@ function calculateInstability(
 		const fromDomain = extractDomainFromPath(module.source);
 		if (!fromDomain) continue;
 
-		if (isTestFile(module.source)
-		)
-			continue;
+		if (isTestFile(module.source)) continue;
 
 		for (const dep of module.dependencies ?? []) {
 			const toDomain = extractDomainFromPath(dep.resolved);
 			if (!toDomain || toDomain === fromDomain) continue;
-			if (isTestFile(dep.resolved))
-				continue;
+			if (isTestFile(dep.resolved)) continue;
 
 			ce.set(fromDomain, (ce.get(fromDomain) ?? 0) + 1);
 			ca.set(toDomain, (ca.get(toDomain) ?? 0) + 1);

@@ -1,7 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
-import { printTable, type TableColumn } from '../ui/print-table';
-import { classifyChangeAmplification } from '../classify-results';
+import { printTable, type TableColumn } from '../PrintTable';
+import { classifyChangeAmplification } from '../Classify';
 
 type ChangeAmplificationMetric = {
 	domain: string;
@@ -18,22 +18,22 @@ function extractDomain(filePath: string): string | null {
 function collectCommitChanges(commitLimit: number): string[][] {
 	const raw = execSync(
 		`git log -n ${commitLimit} --name-only --pretty=format:`,
-		{ encoding: 'utf-8' }
+		{ encoding: 'utf-8' },
 	);
 
 	return raw
 		.split('\n\n')
-		.map(block =>
+		.map((block) =>
 			block
 				.split('\n')
-				.map(line => line.trim())
-				.filter(file => file.startsWith('src/') && file.endsWith('.ts'))
+				.map((line) => line.trim())
+				.filter((file) => file.startsWith('src/') && file.endsWith('.ts')),
 		)
-		.filter(files => files.length > 1);
+		.filter((files) => files.length > 1);
 }
 
 export function calculateChangeAmplification(
-	commitLimit = 100
+	commitLimit = 100,
 ): ChangeAmplificationMetric[] {
 	const commits = collectCommitChanges(commitLimit);
 
@@ -43,14 +43,18 @@ export function calculateChangeAmplification(
 	>();
 
 	for (const files of commits) {
-		const domains = new Set(files.map(extractDomain).filter(Boolean) as string[]);
+		const domains = new Set(
+			files.map(extractDomain).filter(Boolean) as string[],
+		);
 
 		for (const domain of domains) {
 			if (!domainStats.has(domain)) {
 				domainStats.set(domain, { commits: 0, totalFiles: 0, maxFiles: 0 });
 			}
 
-			const filesInDomain = files.filter(f => extractDomain(f) === domain).length;
+			const filesInDomain = files.filter(
+				(f) => extractDomain(f) === domain,
+			).length;
 			const stats = domainStats.get(domain)!;
 
 			stats.commits++;
@@ -63,7 +67,7 @@ export function calculateChangeAmplification(
 		domain,
 		commits: stats.commits,
 		avgFilesChanged: stats.totalFiles / (stats.commits || 1),
-		maxFilesChanged: stats.maxFiles
+		maxFilesChanged: stats.maxFiles,
 	}));
 }
 
@@ -83,44 +87,53 @@ export function printChangeAmplification(): void {
 		{
 			header: 'DOMAIN',
 			width: 32,
-			render: m => ({
+			render: (m) => ({
 				text: m.domain,
-				color: classifyMetric(m.avgFilesChanged, m.maxFilesChanged).color
-			})
+				color: classifyMetric(m.avgFilesChanged, m.maxFilesChanged).color,
+			}),
 		},
 		{
 			header: 'COMMITS',
 			width: 20,
 			align: 'right',
-			render: m => ({ text: String(m.commits) })
+			render: (m) => ({ text: String(m.commits) }),
 		},
 		{
 			header: 'AVG FILES',
 			width: 20,
 			align: 'right',
-			render: m => {
+			render: (m) => {
 				const { color } = classifyMetric(m.avgFilesChanged, m.maxFilesChanged);
 				return { text: m.avgFilesChanged.toFixed(2), color };
-			}
+			},
 		},
 		{
 			header: 'MAX FILES',
 			width: 20,
 			align: 'right',
-			render: m => ({ text: String(m.maxFilesChanged) })
+			render: (m) => ({ text: String(m.maxFilesChanged) }),
 		},
 		{
 			header: 'STATUS',
 			width: 16,
 			align: 'right',
-			render: m => {
-				const { label, color } = classifyMetric(m.avgFilesChanged, m.maxFilesChanged);
+			render: (m) => {
+				const { label, color } = classifyMetric(
+					m.avgFilesChanged,
+					m.maxFilesChanged,
+				);
 				return { text: label, color };
-			}
-		}
+			},
+		},
 	];
 
-	const sorted = [...metrics].sort((a, b) => b.avgFilesChanged - a.avgFilesChanged);
+	const sorted = [...metrics].sort(
+		(a, b) => b.avgFilesChanged - a.avgFilesChanged,
+	);
 
-	printTable(`Change Amplification Metrics (last ${COMMITS_TO_ANALYZE} commits)`, columns, sorted);
+	printTable(
+		`Change Amplification Metrics (last ${COMMITS_TO_ANALYZE} commits)`,
+		columns,
+		sorted,
+	);
 }
