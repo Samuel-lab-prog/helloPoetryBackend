@@ -5,7 +5,7 @@ import { PoemAlreadyExistsError } from '../../Errors';
 
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { SlugService } from '../../../ports/SlugService';
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UsersServicesForPoems } from '../../../ports/UsersServices';
 import type { CreatePoem } from '../../Models';
 
 describe('USE-CASE - Poems Management', () => {
@@ -23,9 +23,9 @@ describe('USE-CASE - Poems Management', () => {
 			generateSlug,
 		};
 
-		const usersContract: UsersContract = {
+		const usersContract: UsersServicesForPoems = {
 			getUserBasicInfo,
-		} as UsersContract;
+		} as UsersServicesForPoems;
 
 		const createPoem = createPoemFactory({
 			commandsRepository,

@@ -1,4 +1,5 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { UsersServicesForModeration } from '../../../ports/UsersServices';
 import type { SuspendedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
@@ -7,13 +8,12 @@ import {
 	CannotSuspendSelfError,
 } from '../../Errors';
 import type { QueriesRepository } from '@Domains/moderation/ports/QueriesRepository';
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
 import type { UserRole } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	usersContract: UsersContract;
+	usersContract: UsersServicesForModeration;
 }
 
 export type SuspendUserParams = {

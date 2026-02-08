@@ -1,5 +1,5 @@
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UsersServicesForPoems } from '../../../ports/UsersServices';
 
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
@@ -13,7 +13,7 @@ import { canUpdatePoem } from '../../Policies';
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	usersContract: UsersContract;
+	usersContract: UsersServicesForPoems;
 	slugService: SlugService;
 }
 

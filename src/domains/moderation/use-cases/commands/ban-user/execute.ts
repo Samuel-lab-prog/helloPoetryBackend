@@ -1,5 +1,6 @@
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { UsersServicesForModeration } from '../../../ports/UsersServices';
 import type { BannedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
@@ -7,13 +8,12 @@ import {
 	InsufficientPermissionsError,
 	CannotBanSelfError,
 } from '../../Errors';
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
 import type { UserRole } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	usersContract: UsersContract;
+	usersContract: UsersServicesForModeration;
 }
 export type BanUserParams = {
 	userId: number;
@@ -36,13 +36,11 @@ export function banUserFactory({
 		if (requesterRole === 'author') throw new InsufficientPermissionsError();
 
 		const userExists = await usersContract.getUserBasicInfo(userId);
-
 		if (!userExists.exists) throw new UserNotFoundError();
 
 		const activeBan = await queriesRepository.selectActiveBanByUserId({
 			userId,
 		});
-
 		if (activeBan) throw new UserAlreadyBannedError();
 
 		return commandsRepository.createBan({

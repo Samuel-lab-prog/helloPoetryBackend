@@ -1,4 +1,4 @@
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UsersServicesForPoems } from '../ports/UsersServices';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 import type { QueriesRepository } from '../ports/QueriesRepository';
@@ -28,7 +28,7 @@ type PoemPolicyContext = {
 
 export type PoemCreationPolicyParams = {
 	ctx: PoemPolicyContext;
-	usersContract: UsersContract;
+	usersContract: UsersServicesForPoems;
 	toUserIds?: number[];
 };
 
@@ -38,7 +38,7 @@ export type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
 };
 
 export async function validateDedicatedUsers(
-	usersContract: UsersContract,
+	usersContract: UsersServicesForPoems,
 	requesterId: number,
 	userIds?: number[],
 ): Promise<boolean> {

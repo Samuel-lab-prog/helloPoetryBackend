@@ -1,6 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { UserStatus, UserRole } from '../../Enums';
+import type { UsersServicesForModeration } from '@Domains/moderation/ports/UsersServices';
+import type { UsersServicesForPoems } from '@Domains/poems-management/ports/UsersServices';
 
 async function getUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {
@@ -31,15 +32,10 @@ async function getUserBasicInfo(userId: number) {
 	});
 }
 
-export interface UsersContract {
-	getUserBasicInfo(userId: number): Promise<{
-		exists: boolean;
-		id: number | null;
-		status: UserStatus | null;
-		role: UserRole | null;
-	}>;
-}
+export const usersContract: UsersServicesForModeration = {
+	getUserBasicInfo,
+};
 
-export const usersContract: UsersContract = {
+export const usersContractForPoems: UsersServicesForPoems = {
 	getUserBasicInfo,
 };

@@ -1,5 +1,5 @@
 import type { UserStatus, UserRole } from '@SharedKernel/Enums';
-import type { UsersContract } from '@SharedKernel/contracts/users/Index';
+import type { UsersServicesForPoems } from '../../../ports/UsersServices';
 
 import type { SlugService } from '../../../ports/SlugService';
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
@@ -11,7 +11,7 @@ import { canCreatePoem } from '../../Policies';
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	slugService: SlugService;
-	usersContract: UsersContract;
+	usersContract: UsersServicesForPoems;
 }
 
 export type CreatePoemParams = {
