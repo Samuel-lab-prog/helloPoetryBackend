@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { extractRootNamespace } from '../../Utils';
 
 type Violation = {
 	module: string;
@@ -13,11 +14,6 @@ const ALLOWED_ROOT_NAMESPACES = new Set([
 	'shared-kernel',
 	'tests',
 ]);
-
-function extractRootNamespace(path: string): string | null {
-	const match = path.match(/^src\/([^/]+)\//);
-	return match?.[1] ?? null;
-}
 
 function checkRootNamespaceRestriction(
 	cruiseResult: DepcruiseResult,

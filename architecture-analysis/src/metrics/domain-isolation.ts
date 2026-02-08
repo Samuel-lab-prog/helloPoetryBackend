@@ -2,6 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
 import type { DepcruiseResult } from '../Types';
 import { classifyIsolation } from '../Classify';
+import { extractDomainFromPath } from '../Utils';
 
 type DomainIsolationMetric = {
 	domain: string;
@@ -10,18 +11,13 @@ type DomainIsolationMetric = {
 	externalPercent: number;
 };
 
-function extractDomain(path: string): string | null {
-	const match = path.match(/^src\/(domains|generic-subdomains)\/([^/]+)\//);
-	return match ? match[2]! : null;
-}
-
 export function calculateDomainIsolation(
 	cruiseResult: DepcruiseResult,
 ): DomainIsolationMetric[] {
 	const acc = new Map<string, { internal: number; external: number }>();
 
 	cruiseResult.modules.forEach((module) => {
-		const fromDomain = extractDomain(module.source);
+		const fromDomain = extractDomainFromPath(module.source);
 		if (!fromDomain) return;
 
 		if (!acc.has(fromDomain)) {
@@ -29,7 +25,7 @@ export function calculateDomainIsolation(
 		}
 
 		module.dependencies.forEach((dep) => {
-			const toDomain = extractDomain(dep.resolved);
+			const toDomain = extractDomainFromPath(dep.resolved);
 			if (!toDomain) return;
 
 			const record = acc.get(fromDomain)!;

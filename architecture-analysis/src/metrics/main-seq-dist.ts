@@ -2,15 +2,13 @@ import type { ClocResult, DepcruiseResult } from '../Types';
 import { green, yellow, red, magenta } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyDistanceFromMain } from '../Classify';
-
-type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';
-
-function classifyDomainKind(domain: string): DomainKind {
-	if (domain === 'utils') return 'UTILITY';
-	if (domain === 'persistance' || domain === 'authentication')
-		return 'INFRA_SHARED';
-	return 'CORE';
-}
+import {
+	extractDomainFromPath,
+	isAbstractFile,
+	isTestFile,
+	classifyDomainKind,
+	type DomainKind,
+} from '../Utils';
 
 export type DomainArchitectureMetric = {
 	domain: string;
@@ -22,42 +20,21 @@ export type DomainArchitectureMetric = {
 	ce: number;
 };
 
-function extractDomainFromPath(path: string): string | null {
-	const match = path.match(
-		/(?:^|\/|\\)src[/\\](domains|generic-subdomains)[/\\]([^/\\]+)[/\\]/,
-	);
-	return match ? match[2]! : null;
-}
-
-function isAbstractFile(path: string, content?: string): boolean {
-	return (
-		path.includes('/ports/') ||
-		path.includes('\\ports\\') ||
-		(content?.includes('interface ') ?? false) ||
-		(content?.includes('abstract class') ?? false)
-	);
-}
-
-function isTestFile(path: string): boolean {
-	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
-}
-
 function calculateAbstraction(cloc: ClocResult): Map<string, number> {
 	const totalFiles = new Map<string, number>();
 	const abstractFiles = new Map<string, number>();
 
-	for (const [file, _info] of Object.entries(cloc)) {
-		if (file === 'header' || file === 'SUM') continue;
+	for (const [key, _value] of Object.entries(cloc)) {
+		if (key === 'header' || key === 'SUM') continue;
 
-		const domain = extractDomainFromPath(file);
-
-		if (isTestFile(file)) continue;
-
+		const domain = extractDomainFromPath(key);
 		if (!domain) continue;
+
+		if (isTestFile(key)) continue;
 
 		totalFiles.set(domain, (totalFiles.get(domain) ?? 0) + 1);
 
-		if (isAbstractFile(file))
+		if (isAbstractFile(key))
 			abstractFiles.set(domain, (abstractFiles.get(domain) ?? 0) + 1);
 	}
 
@@ -113,7 +90,7 @@ function calculateInstability(
 	return result;
 }
 
-export function calculateAbstractionInstability(
+function calculateAbstractionInstability(
 	cloc: ClocResult,
 	depcruise: DepcruiseResult,
 ): DomainArchitectureMetric[] {
@@ -168,9 +145,11 @@ function classifyDistance(
 	return { label: 'FAIL', color: red };
 }
 
-export function printInstabilityAbstraction(
-	metrics: DomainArchitectureMetric[],
+export function printMainSeqDist(
+	clocResult: ClocResult,
+	depcruiseResult: DepcruiseResult,
 ): void {
+	const metrics = calculateAbstractionInstability(clocResult, depcruiseResult);
 	const columns: TableColumn<DomainArchitectureMetric>[] = [
 		{
 			header: 'DOMAIN',

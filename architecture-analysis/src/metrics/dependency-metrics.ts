@@ -1,7 +1,8 @@
-import type { DepcruiseResult } from '../Types';
+import type { ClocResult, DepcruiseResult } from '../Types';
 import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyFanOut, classifyFanIn } from '../Classify';
+import { attachLocToFanOut, buildLocMap } from './Index';
 
 const IGNORED_MODULES = [
 	'node_modules/',
@@ -90,10 +91,8 @@ function classifyFanOutMetric(count: number) {
 }
 
 const FAN_OUT_LIMIT = 10;
-export function printTopFanOut(
-	fanOut: FanMetric[],
-	limit = FAN_OUT_LIMIT,
-): void {
+export function printTopFanOut(depcruise: DepcruiseResult): void {
+	const fanOut = calculateFanOut(depcruise);
 	const columns: TableColumn<FanMetric>[] = [
 		{
 			header: 'DEPS',
@@ -122,8 +121,12 @@ export function printTopFanOut(
 
 	const sorted = [...fanOut]
 		.sort((a, b) => b.dependencies - a.dependencies)
-		.slice(0, limit);
-	printTable(`Top ${limit} Fan-out (outgoing dependencies)`, columns, sorted);
+		.slice(0, FAN_OUT_LIMIT);
+	printTable(
+		`Top ${FAN_OUT_LIMIT} Fan-out (outgoing dependencies)`,
+		columns,
+		sorted,
+	);
 }
 
 type FanInMetric = {
@@ -132,14 +135,12 @@ type FanInMetric = {
 };
 
 const FAN_IN_LIMIT = 10;
-export function printTopFanIn(
-	fanIn: Map<string, number>,
-	limit = FAN_IN_LIMIT,
-): void {
+export function printTopFanIn(depcruise: DepcruiseResult): void {
+	const fanIn = calculateFanIn(depcruise);
 	const metrics: FanInMetric[] = [...fanIn.entries()]
 		.map(([module, usedBy]) => ({ module, usedBy }))
 		.sort((a, b) => b.usedBy - a.usedBy)
-		.slice(0, limit);
+		.slice(0, FAN_IN_LIMIT);
 
 	const columns: TableColumn<FanInMetric>[] = [
 		{
@@ -167,16 +168,23 @@ export function printTopFanIn(
 		},
 	];
 
-	printTable(`Top ${limit} Fan-in (incoming dependencies)`, columns, metrics);
+	printTable(
+		`Top ${FAN_IN_LIMIT} Fan-in (incoming dependencies)`,
+		columns,
+		metrics,
+	);
 }
 
 type HotspotMetric = Required<FanMetric>;
 
 export function printHotspotModules(
-	fanOutWithLoc: FanMetric[],
-	minDeps = 15,
-	minLoc = 100,
+	depcruise: DepcruiseResult,
+	cloc: ClocResult,
 ): void {
+	const fanOut = calculateFanOut(depcruise);
+	const fanOutWithLoc = attachLocToFanOut(fanOut, buildLocMap(cloc));
+	const minDeps = 15;
+	const minLoc = 200;
 	const hotspots: HotspotMetric[] = fanOutWithLoc.filter(
 		(m): m is HotspotMetric =>
 			m.dependencies > minDeps &&

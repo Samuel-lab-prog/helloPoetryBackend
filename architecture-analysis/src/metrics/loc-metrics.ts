@@ -4,7 +4,7 @@ export function buildLocMap(cloc: ClocResult): Map<string, number> {
 	const map = new Map<string, number>();
 
 	Object.entries(cloc).forEach(([file, info]) => {
-		if ("code" in info && info.code) map.set(file, info.code);
+		if ('code' in info && info.code) map.set(file, info.code);
 	});
 
 	return map;

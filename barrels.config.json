@@ -21,7 +21,9 @@
 		"./src/domains/moderation/infra/commands-repository/selects",
 
 		"./src/domains/feed-engine/ports/schemas",
-		"./src/domains/feed-engine/use-cases/queries"
+		"./src/domains/feed-engine/use-cases/queries",
+
+		"./architecture-analysis/src/metrics"
 	],
 	"delete": true,
 	"location": "top",

@@ -65,7 +65,10 @@ function classifySizeResult(percent: number): {
 	return { label, color: red };
 }
 
-export function printDomainStatistics(metrics: DomainMetric[]): void {
+export function printDomainStatistics(clocResult: ClocResult): void {
+	const totalLoc = clocResult.SUM.code;
+	const domainAggregates = calculateDomainAggregates(clocResult);
+	const metrics = calculateDomainStatistics(domainAggregates, totalLoc);
 	const columns: TableColumn<DomainMetric>[] = [
 		{
 			header: 'DOMAIN',

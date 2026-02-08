@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { extractDomainFromPath, isGenericSubdomain } from '../../Utils';
 
 type Violation = {
 	from: string;
@@ -9,17 +10,6 @@ type Violation = {
 	toDomain: string;
 };
 
-const DOMAIN_PATH_REGEX = /^src\/domains\/([^/]+)\//;
-
-function extractDomain(path: string): string | null {
-	const match = path.match(DOMAIN_PATH_REGEX);
-	return match?.[1] ?? null;
-}
-
-function isGenericSubdomain(path: string): boolean {
-	return path.startsWith('src/generic-subdomains/');
-}
-
 function checkDomainNamespaceIntegrity(
 	cruiseResult: DepcruiseResult,
 ): Violation[] {
@@ -27,7 +17,7 @@ function checkDomainNamespaceIntegrity(
 
 	for (const module of cruiseResult.modules) {
 		const from = module.source;
-		const fromDomain = extractDomain(from);
+		const fromDomain = extractDomainFromPath(from);
 		if (!fromDomain) continue;
 
 		for (const dep of module.dependencies ?? []) {
@@ -36,7 +26,7 @@ function checkDomainNamespaceIntegrity(
 			if (isGenericSubdomain(to)) continue;
 			if (!to.startsWith('src/domains/')) continue;
 
-			const toDomain = extractDomain(to);
+			const toDomain = extractDomainFromPath(to);
 			if (!toDomain) continue;
 			if (toDomain === fromDomain) continue;
 
@@ -82,22 +72,6 @@ export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 			width: 60,
 			render: (v) => ({
 				text: v.from,
-			}),
-		},
-		{
-			header: 'TO MODULE',
-			width: 60,
-			render: (v) => ({
-				text: v.to,
-			}),
-		},
-		{
-			header: 'STATUS',
-			width: 10,
-			align: 'right',
-			render: () => ({
-				text: 'VIOLATION',
-				color: red,
 			}),
 		},
 	];

@@ -10,16 +10,13 @@ type Violation = {
 
 const REQUIRED_FOLDERS = ['use-cases', 'ports', 'adapters'];
 
-const DOMAIN_REGEX =
-	/^src\/(domains|generic-subdomains)\/([^/]+)\/(.+)/;
+const DOMAIN_REGEX = /^src\/(domains|generic-subdomains)\/([^/]+)\/(.+)/;
 
 function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-export function checkPortsAndAdaptersStructure(
-	cloc: ClocResult,
-): Violation[] {
+export function checkPortsAndAdaptersStructure(cloc: ClocResult): Violation[] {
 	const domains = new Map<
 		string,
 		{
@@ -40,30 +37,24 @@ export function checkPortsAndAdaptersStructure(
 		const [, , domainName, rest] = match;
 		const domainPath = `src/domains/${domainName}`;
 
-    if(!rest) continue;
+		if (!rest) continue;
 		const firstFolder = rest.split('/')[0];
 
-		const entry =
-			domains.get(domainPath) ??
-			{
-				domain: domainName,
-				path: domainPath,
-				folders: new Set<string>(),
-			};
+		const entry = domains.get(domainPath) ?? {
+			domain: domainName,
+			path: domainPath,
+			folders: new Set<string>(),
+		};
 
-		if (firstFolder) 
-			entry.folders.add(firstFolder);
-		
-    if(!entry)
-		  domains.set(domainPath, entry);
+		if (firstFolder) entry.folders.add(firstFolder);
+
+		if (!entry) domains.set(domainPath, entry);
 	}
 
 	const violations: Violation[] = [];
 
 	for (const domain of domains.values()) {
-		const missing = REQUIRED_FOLDERS.filter(
-			(f) => !domain.folders.has(f),
-		);
+		const missing = REQUIRED_FOLDERS.filter((f) => !domain.folders.has(f));
 
 		if (missing.length > 0) {
 			violations.push({
@@ -77,15 +68,11 @@ export function checkPortsAndAdaptersStructure(
 	return violations;
 }
 
-export function printPortsAndAdaptersViolations(
-	cloc: ClocResult,
-): void {
+export function printNoMissingDirectories(cloc: ClocResult): void {
 	const violations = checkPortsAndAdaptersStructure(cloc);
 
 	if (violations.length === 0) {
-		console.log(
-			green('✔ All domains follow ports & adapters structure'),
-		);
+		console.log(green('✔ All domains follow ports & adapters structure'));
 		return;
 	}
 

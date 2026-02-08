@@ -1,14 +1,11 @@
 import { red, green } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
-import { padRight, divider } from '../../ConsoleFormat';
+import { padRight, divider } from '../../ConsoleFormatUtils';
+import { isRootLevelSourceFile } from '../../Utils';
 
 type Violation = {
 	module: string;
 };
-
-function isRootLevelSourceFile(path: string): boolean {
-	return /^src\/[^/]+\.(ts|js)$/.test(path);
-}
 
 const ALLOWED_ROOT_FILES = ['src/index.ts'];
 
@@ -38,11 +35,9 @@ export function printNoRootSourceCode(cruiseResult: DepcruiseResult): void {
 		red(`✖ ${violations.length} source file(s) found at src root\n`),
 	);
 
-	// header
 	console.log(padRight('MODULE', 60));
 	console.log(divider('·'));
 
-	// rows
 	for (const v of violations) {
 		console.log(red(padRight(v.module, 60)));
 	}

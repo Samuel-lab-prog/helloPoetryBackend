@@ -1,6 +1,7 @@
 import { red, green } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { extractDomainFromPath } from '../../Utils';
 
 type Violation = {
 	domain: string;
@@ -10,13 +11,6 @@ type Violation = {
 
 const USE_CASE_PATH_REGEX =
 	/^src[\\/](domains|generic-subdomains)[\\/][^\\/]+[\\/]use-cases[\\/].+[\\/]/;
-
-function extractDomain(path: string): string | null {
-	const match = path.match(
-		/^src[\\/](domains|generic-subdomains)[\\/]([^\\/]+)[\\/]/,
-	);
-	return match ? match[2]! : null;
-}
 
 function getDirectory(path: string): string {
 	return path.replace(/[\\/][^\\/]+$/, '');
@@ -39,7 +33,7 @@ export function checkMissingExecuteTests(cloc: ClocResult): Violation[] {
 		if (!USE_CASE_PATH_REGEX.test(file)) continue;
 
 		const dir = getDirectory(file);
-		const domain = extractDomain(file) ?? 'root';
+		const domain = extractDomainFromPath(file) ?? 'root';
 
 		const entry = folders.get(dir) ?? {
 			domain,
@@ -74,7 +68,7 @@ export function checkMissingExecuteTests(cloc: ClocResult): Violation[] {
 	return violations;
 }
 
-export function printMissingExecuteTests(cloc: ClocResult): void {
+export function printNoUntestedUsecase(cloc: ClocResult): void {
 	const violations = checkMissingExecuteTests(cloc);
 
 	if (violations.length === 0) {

@@ -2,6 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyChangeAmplification } from '../Classify';
+import { extractDomainFromPath } from '../Utils';
 
 type ChangeAmplificationMetric = {
 	domain: string;
@@ -9,11 +10,6 @@ type ChangeAmplificationMetric = {
 	avgFilesChanged: number;
 	maxFilesChanged: number;
 };
-
-function extractDomain(filePath: string): string | null {
-	const match = filePath.match(/^src\/(domains|generic-subdomains)\/([^/]+)\//);
-	return match ? match[2]! : null;
-}
 
 function collectCommitChanges(commitLimit: number): string[][] {
 	const raw = execSync(
@@ -44,7 +40,7 @@ export function calculateChangeAmplification(
 
 	for (const files of commits) {
 		const domains = new Set(
-			files.map(extractDomain).filter(Boolean) as string[],
+			files.map(extractDomainFromPath).filter(Boolean) as string[],
 		);
 
 		for (const domain of domains) {
@@ -53,7 +49,7 @@ export function calculateChangeAmplification(
 			}
 
 			const filesInDomain = files.filter(
-				(f) => extractDomain(f) === domain,
+				(f) => extractDomainFromPath(f) === domain,
 			).length;
 			const stats = domainStats.get(domain)!;
 

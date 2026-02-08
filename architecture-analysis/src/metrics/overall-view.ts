@@ -2,6 +2,7 @@ import type { ClocResult } from '../Types';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyTestsPercent } from '../Classify';
 import { green, red, yellow } from 'kleur/colors';
+import { extractDomainFromPath, isTestFile } from '../Utils';
 
 type DomainCodeStats = {
 	domain: string;
@@ -12,15 +13,6 @@ type DomainCodeStats = {
 	testLOC: number;
 	testPercent: number;
 };
-
-function extractDomain(path: string): string | null {
-	const match = path.match(/^src[\\/](domains|generic-subdomains)[\\/](.+?)[\\/]/);
-	return match ? match[2]! : null;
-}
-
-function isTestFile(path: string): boolean {
-	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
-}
 
 export function calculateDomainCodeStats(cloc: ClocResult): DomainCodeStats[] {
 	const domainMap = new Map<
@@ -39,8 +31,8 @@ export function calculateDomainCodeStats(cloc: ClocResult): DomainCodeStats[] {
 
 		if (!('code' in info)) continue;
 
-		const domain = extractDomain(file);
-    if (!domain) continue;
+		const domain = extractDomainFromPath(file);
+		if (!domain) continue;
 
 		const stats = domainMap.get(domain) ?? {
 			files: 0,
@@ -71,10 +63,10 @@ export function calculateDomainCodeStats(cloc: ClocResult): DomainCodeStats[] {
 }
 
 function classifyTestCoverage(testsPercent: number) {
-  const label = classifyTestsPercent(testsPercent);
-  if (label === 'GOOD') return { label, color: green };
-  if (label === 'OK') return { label, color: yellow };
-  return { label, color: red };
+	const label = classifyTestsPercent(testsPercent);
+	if (label === 'GOOD') return { label, color: green };
+	if (label === 'OK') return { label, color: yellow };
+	return { label, color: red };
 }
 
 export function printDomainCodeStats(cloc: ClocResult): void {
@@ -85,9 +77,9 @@ export function printDomainCodeStats(cloc: ClocResult): void {
 			header: 'DOMAIN',
 			width: 32,
 			render: (m) => ({
-         text: m.domain,
-         color: classifyTestCoverage(m.testPercent).color
-         }),
+				text: m.domain,
+				color: classifyTestCoverage(m.testPercent).color,
+			}),
 		},
 		{
 			header: 'FILES',
@@ -124,21 +116,21 @@ export function printDomainCodeStats(cloc: ClocResult): void {
 			width: 13,
 			align: 'right',
 			render: (m) => {
-        return { 
-          text: m.testPercent.toFixed(2) + '%',
-          color: classifyTestCoverage(m.testPercent).color  
-        };
+				return {
+					text: m.testPercent.toFixed(2) + '%',
+					color: classifyTestCoverage(m.testPercent).color,
+				};
 			},
 		},
-    {
-      header: 'STATUS',
-      width: 12,
-      align: 'right',
-      render: (m) => {
-        const { label, color } = classifyTestCoverage(m.testPercent);
-        return { text: label, color };
-      },
-    }
+		{
+			header: 'STATUS',
+			width: 12,
+			align: 'right',
+			render: (m) => {
+				const { label, color } = classifyTestCoverage(m.testPercent);
+				return { text: label, color };
+			},
+		},
 	];
 
 	printTable('Domain Code Metrics (by lines of test code)', columns, metrics);
