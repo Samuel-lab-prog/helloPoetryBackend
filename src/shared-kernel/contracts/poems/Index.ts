@@ -80,9 +80,17 @@ function getPoemsByIds(params: { ids: number[] }) {
 			},
 			select: {
 				id: true,
-				authorId: true,
 				content: true,
 				title: true,
+				slug: true,
+				author: {
+					select: {
+						id: true,
+						name: true,
+						nickname: true,
+						avatarUrl: true,
+					},
+				},
 				tags: {
 					select: {
 						name: true,
@@ -94,8 +102,18 @@ function getPoemsByIds(params: { ids: number[] }) {
 
 		return {
 			poems: poems.map((poem) => ({
-				...poem,
+				id: poem.id,
+				content: poem.content,
+				title: poem.title,
+				slug: poem.slug,
 				tags: poem.tags.map((tag) => tag.name),
+				createdAt: poem.createdAt,
+				author: {
+					id: poem.author.id,
+					name: poem.author.name,
+					nickname: poem.author.nickname,
+					avatarUrl: poem.author.avatarUrl,
+				},
 			})),
 		};
 	});

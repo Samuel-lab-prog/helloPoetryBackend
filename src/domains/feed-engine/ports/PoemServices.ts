@@ -1,4 +1,4 @@
-import type { FeedItem } from '../use-cases/queries/models/FeedItem';
+import type { FeedItem } from '../use-cases/Models';
 
 export interface PoemsContractForRecomendationEngine {
 	getPoemsByAuthorIds(params: {

@@ -1,15 +1,15 @@
 import type { PoemsContractForRecomendationEngine } from '../../../ports/PoemServices';
 import type { FriendsContractForRecomendationEngine } from '../../../ports/FriendsServices';
-import type { FeedItem } from '../models/FeedItem';
+import type { FeedItem } from '../../Models';
 
 interface Dependencies {
 	poemsServices: PoemsContractForRecomendationEngine;
 	friendsServices: FriendsContractForRecomendationEngine;
 }
 
-interface GetFeedParams {
+export type GetFeedParams = {
 	userId: number;
-}
+};
 
 export function getFeedFactory({
 	poemsServices,

@@ -18,7 +18,7 @@ import { friendsCommandsRouter } from '@Domains/friends-management/adapters/comm
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/commands/Router';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
-import { feedQueriesRouter } from '@Domains/feed-engine/adapters/http/queries/QueriesRouter';
+import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';

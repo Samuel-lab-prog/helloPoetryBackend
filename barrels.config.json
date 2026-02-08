@@ -18,7 +18,10 @@
 
 		"./src/domains/moderation/ports/schemas",
 		"./src/domains/moderation/use-cases/commands",
-		"./src/domains/moderation/infra/commands-repository/selects"
+		"./src/domains/moderation/infra/commands-repository/selects",
+
+		"./src/domains/feed-engine/ports/schemas",
+		"./src/domains/feed-engine/use-cases/queries"
 	],
 	"delete": true,
 	"location": "top",

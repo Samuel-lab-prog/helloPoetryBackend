@@ -44,8 +44,6 @@ async function getFirstPoem(user: TestUser): Promise<AuthorPoem> {
 	return poems[0]!;
 }
 
-// ---------- Testes principais ----------
-
 describe('INTEGRATION - Poems Management', () => {
 	describe('Creating poems', () => {
 		it('User should be able to create a poem', async () => {

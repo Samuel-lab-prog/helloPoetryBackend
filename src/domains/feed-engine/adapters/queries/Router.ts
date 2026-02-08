@@ -2,29 +2,23 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { type QueriesRouterServices, queriesRouterServices } from './Services';
-import { feedPoemSchema } from '../../schemas/FeedPoemsSchema';
+import { feedPoemSchema } from '../../ports/schemas/Index';
 import { appErrorSchema } from '@AppError';
 
 export function createFeedQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/feed' }).use(AuthPlugin).get(
 		'/',
-		({ auth, query }) => {
+		({ auth }) => {
 			return services.getFeed({
 				userId: auth.clientId,
-				page: query.page ?? 1,
-				pageSize: query.pageSize ?? 20,
 			});
 		},
 		{
 			response: {
-				200: t.Array(feedPoemSchema), // FeedItem schema can be complex, using t.Any() for brevity
+				200: t.Array(feedPoemSchema),
 				404: appErrorSchema,
 				409: appErrorSchema,
 			},
-			query: t.Object({
-				page: t.Optional(t.Number()),
-				pageSize: t.Optional(t.Number()),
-			}),
 			detail: {
 				summary: 'Get Home Feed',
 				description: 'Retrieves home feed for authenticated user.',

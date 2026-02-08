@@ -23,7 +23,6 @@ let users: TestUser[];
 let user1: TestUser;
 let user2: TestUser;
 
-// ---------- Setup ----------
 beforeEach(async () => {
 	await clearDatabase();
 	users = await setupHttpUsers();
@@ -31,7 +30,6 @@ beforeEach(async () => {
 	[user1, user2] = users;
 });
 
-// ---------- Helpers ----------
 async function createDraftPoem(
 	user: TestUser,
 	overrides: Partial<CreatePoem> = {},
@@ -41,8 +39,7 @@ async function createDraftPoem(
 	return (await createPoem(user, poemData)) as CreatePoemResult;
 }
 
-// ---------- Testes ----------
-describe('INTEGRATION - Poems Dedications', () => {
+describe('INTEGRATION - Poems Management', () => {
 	it('User can create poem with dedications', async () => {
 		const poem = await createDraftPoem(user1, { toUserIds: [user2.id] });
 		expect(poem.toUserIds).toEqual(expect.arrayContaining([user2.id]));
