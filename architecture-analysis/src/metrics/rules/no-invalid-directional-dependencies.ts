@@ -1,5 +1,5 @@
 import { red, green } from 'kleur/colors';
-import type { CruiseResult } from '../../types';
+import type { DepcruiseResult } from '../../types';
 import { printTable, type TableColumn } from '../../ui/print-table';
 
 type Layer = 'adapters' | 'use-cases' | 'domain';
@@ -25,7 +25,7 @@ type DirectionViolation = {
 };
 
 export function detectDirectionalViolations(
-	cruiseResult: CruiseResult,
+	cruiseResult: DepcruiseResult,
 ): DirectionViolation[] {
 	const violations: DirectionViolation[] = [];
 
@@ -52,7 +52,7 @@ export function detectDirectionalViolations(
 }
 
 export function printNoInvalidDirectionalDependencies(
-	cruiseResult: CruiseResult,
+	cruiseResult: DepcruiseResult,
 ): void {
 	const violations = detectDirectionalViolations(cruiseResult);
 

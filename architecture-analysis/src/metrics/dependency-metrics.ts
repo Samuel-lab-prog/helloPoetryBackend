@@ -1,4 +1,4 @@
-import type { CruiseResult } from '../types';
+import type { DepcruiseResult } from '../types';
 import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
 import { classifyFanOut, classifyFanIn } from '../classify-results/index';
@@ -56,7 +56,7 @@ export type FanMetric = {
 	loc?: number;
 };
 
-export function calculateFanOut(data: CruiseResult): FanMetric[] {
+export function calculateFanOut(data: DepcruiseResult): FanMetric[] {
 	return data.modules
 		.filter((m) => !isEntryPoint(m.source))
 		.filter((m) => !isIgnored(m.source))
@@ -66,7 +66,7 @@ export function calculateFanOut(data: CruiseResult): FanMetric[] {
 		}));
 }
 
-export function calculateFanIn(data: CruiseResult): Map<string, number> {
+export function calculateFanIn(data: DepcruiseResult): Map<string, number> {
 	const fanIn = new Map<string, number>();
 
 	data.modules

@@ -1,14 +1,32 @@
 import type { ICruiseResult } from 'dependency-cruiser';
 
-export type CruiseResult = ICruiseResult;
+export type DepcruiseResult = ICruiseResult;
 
-export type ClocFileInfo = {
-	code?: number;
+type ClocFileData = {
+	blank: number;
+	comment: number;
+	code: number;
+	language: string;
 };
 
-export type ClocData = Record<string, ClocFileInfo> & {
-	SUM: { code: number };
-};
+export type ClocResult = {
+	header: {
+		cloc_url: string;
+		cloc_version: string;
+		elapsed_seconds: number;
+		n_files: number;
+		n_lines: number;
+		files_per_second: number;
+		lines_per_second: number;
+		report_file: string;
+	};
+	SUM: {
+		blank: number;
+		comment: number;
+		code: number;
+		nFiles: number;
+	};
+} & Record<string, ClocFileData>;
 
 export type FanMetric = {
 	module: string;

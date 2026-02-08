@@ -6,8 +6,8 @@ export type TableColumn<Row> = {
 	width: number;
 	align?: 'left' | 'right';
 	render: (row: Row) => {
-		text: string; // texto puro (SEM cor)
-		color?: (t: string) => string; // cor aplicada DEPOIS
+		text: string;
+		color?: (t: string) => string;
 	};
 };
 
@@ -40,7 +40,6 @@ export function printTable<Row>(
 
 	console.log(divider('·', totalWidth));
 
-	// Rows
 	rows.forEach((row) => {
 		console.log(
 			columns

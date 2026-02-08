@@ -1,5 +1,5 @@
-import type { ClocData, CruiseResult } from '../types';
-import { green, yellow, red, cyan, magenta } from 'kleur/colors';
+import type { ClocResult, DepcruiseResult } from '../types';
+import { green, yellow, red, magenta } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
 import { classifyDistanceFromMain } from '../classify-results';
 
@@ -7,16 +7,17 @@ type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';
 
 function classifyDomainKind(domain: string): DomainKind {
 	if (domain === 'utils') return 'UTILITY';
-	if (domain === 'persistance') return 'INFRA_SHARED';
+	if (domain === 'persistance' || domain === 'authentication')
+		return 'INFRA_SHARED';
 	return 'CORE';
 }
 
 export type DomainArchitectureMetric = {
 	domain: string;
 	kind: DomainKind;
-	abstractness: number; // A
-	instability: number; // I
-	distance: number; // D
+	abstractness: number;
+	instability: number;
+	distance: number;
 	ca: number;
 	ce: number;
 };
@@ -37,21 +38,27 @@ function isAbstractFile(path: string, content?: string): boolean {
 	);
 }
 
-function calculateAbstraction(cloc: ClocData): Map<string, number> {
+function isTestFile(path: string): boolean {
+	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
+}
+
+function calculateAbstraction(cloc: ClocResult): Map<string, number> {
 	const totalFiles = new Map<string, number>();
 	const abstractFiles = new Map<string, number>();
 
-	for (const [file, info] of Object.entries(cloc)) {
-		if (!info.code) continue;
+	for (const [file, _info] of Object.entries(cloc)) {
+		if (file === 'header' || file === 'SUM') continue;
 
 		const domain = extractDomainFromPath(file);
+
+		if (isTestFile(file)) continue;
+
 		if (!domain) continue;
 
 		totalFiles.set(domain, (totalFiles.get(domain) ?? 0) + 1);
 
-		if (isAbstractFile(file)) {
+		if (isAbstractFile(file))
 			abstractFiles.set(domain, (abstractFiles.get(domain) ?? 0) + 1);
-		}
 	}
 
 	const abstraction = new Map<string, number>();
@@ -60,12 +67,11 @@ function calculateAbstraction(cloc: ClocData): Map<string, number> {
 		const total = totalFiles.get(domain)!;
 		abstraction.set(domain, total === 0 ? 0 : abs / total);
 	}
-
 	return abstraction;
 }
 
 function calculateInstability(
-	depcruise: CruiseResult,
+	depcruise: DepcruiseResult,
 ): Map<string, { ca: number; ce: number; instability: number }> {
 	const ca = new Map<string, number>();
 	const ce = new Map<string, number>();
@@ -74,9 +80,15 @@ function calculateInstability(
 		const fromDomain = extractDomainFromPath(module.source);
 		if (!fromDomain) continue;
 
+		if (isTestFile(module.source)
+		)
+			continue;
+
 		for (const dep of module.dependencies ?? []) {
 			const toDomain = extractDomainFromPath(dep.resolved);
 			if (!toDomain || toDomain === fromDomain) continue;
+			if (isTestFile(dep.resolved))
+				continue;
 
 			ce.set(fromDomain, (ce.get(fromDomain) ?? 0) + 1);
 			ca.set(toDomain, (ca.get(toDomain) ?? 0) + 1);
@@ -105,8 +117,8 @@ function calculateInstability(
 }
 
 export function calculateAbstractionInstability(
-	cloc: ClocData,
-	depcruise: CruiseResult,
+	cloc: ClocResult,
+	depcruise: DepcruiseResult,
 ): DomainArchitectureMetric[] {
 	const abstraction = calculateAbstraction(cloc);
 	const instability = calculateInstability(depcruise);
@@ -140,6 +152,8 @@ export function calculateAbstractionInstability(
 	return metrics;
 }
 
+// ----------------------- UI Rendering --------------------- //
+
 function classifyDistance(
 	distance: number,
 	kind: DomainKind,
@@ -147,22 +161,13 @@ function classifyDistance(
 	label: string;
 	color: (text: string) => string;
 } {
-	if (kind === 'UTILITY') {
-		return { label: 'UTILITY', color: cyan };
-	}
-
-	if (kind === 'INFRA_SHARED') {
-		return { label: 'INFRA', color: magenta };
-	}
+	if (kind === 'UTILITY') return { label: 'UTILITY', color: magenta };
+	if (kind === 'INFRA_SHARED') return { label: 'INFRA', color: magenta };
 
 	const classification = classifyDistanceFromMain(distance);
 
-	if (classification === 'GOOD') {
-		return { label: 'GOOD', color: green };
-	}
-	if (classification === 'OK') {
-		return { label: 'OK', color: yellow };
-	}
+	if (classification === 'GOOD') return { label: 'GOOD', color: green };
+	if (classification === 'OK') return { label: 'OK', color: yellow };
 	return { label: 'FAIL', color: red };
 }
 
@@ -172,7 +177,7 @@ export function printInstabilityAbstraction(
 	const columns: TableColumn<DomainArchitectureMetric>[] = [
 		{
 			header: 'DOMAIN',
-			width: 30,
+			width: 32,
 			render: (m) => {
 				const { color } = classifyDistance(m.distance, m.kind);
 				return { text: m.domain, color };
@@ -180,19 +185,19 @@ export function printInstabilityAbstraction(
 		},
 		{
 			header: 'A',
-			width: 8,
+			width: 10,
 			align: 'right',
 			render: (m) => ({ text: m.abstractness.toFixed(2) }),
 		},
 		{
 			header: 'I',
-			width: 8,
+			width: 10,
 			align: 'right',
 			render: (m) => ({ text: m.instability.toFixed(2) }),
 		},
 		{
 			header: 'D',
-			width: 8,
+			width: 10,
 			align: 'right',
 			render: (m) => {
 				const { color } = classifyDistance(m.distance, m.kind);
@@ -201,19 +206,19 @@ export function printInstabilityAbstraction(
 		},
 		{
 			header: 'CA',
-			width: 8,
+			width: 10,
 			align: 'right',
 			render: (m) => ({ text: String(m.ca) }),
 		},
 		{
 			header: 'CE',
-			width: 8,
+			width: 10,
 			align: 'right',
 			render: (m) => ({ text: String(m.ce) }),
 		},
 		{
 			header: 'STATUS',
-			width: 10,
+			width: 20,
 			align: 'right',
 			render: (m) => {
 				const { label, color } = classifyDistance(m.distance, m.kind);
@@ -221,10 +226,10 @@ export function printInstabilityAbstraction(
 			},
 		},
 	];
-
+	const sorted = [...metrics].sort((a, b) => b.distance - a.distance);
 	printTable(
 		'Instability, Abstraction & Distance from the Main Sequence',
 		columns,
-		[...metrics].sort((a, b) => b.distance - a.distance),
+		sorted,
 	);
 }

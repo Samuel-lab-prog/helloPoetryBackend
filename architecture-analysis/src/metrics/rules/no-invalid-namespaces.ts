@@ -1,5 +1,5 @@
 import { red, green, yellow } from 'kleur/colors';
-import type { CruiseResult } from '../../types';
+import type { DepcruiseResult } from '../../types';
 import { printTable, type TableColumn } from '../../ui/print-table';
 
 type Violation = {
@@ -20,7 +20,7 @@ function extractRootNamespace(path: string): string | null {
 }
 
 function checkRootNamespaceRestriction(
-	cruiseResult: CruiseResult,
+	cruiseResult: DepcruiseResult,
 ): Violation[] {
 	const violations: Violation[] = [];
 
@@ -42,7 +42,9 @@ function checkRootNamespaceRestriction(
 	return violations;
 }
 
-export function printNoInvalidRootNamespaces(cruiseResult: CruiseResult): void {
+export function printNoInvalidRootNamespaces(
+	cruiseResult: DepcruiseResult,
+): void {
 	const violations = checkRootNamespaceRestriction(cruiseResult);
 
 	if (violations.length === 0) {

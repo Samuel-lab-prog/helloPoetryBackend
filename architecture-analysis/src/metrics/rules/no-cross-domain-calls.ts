@@ -1,5 +1,5 @@
 import { red, green, yellow } from 'kleur/colors';
-import type { CruiseResult } from '../../types';
+import type { DepcruiseResult } from '../../types';
 import { printTable, type TableColumn } from '../../ui/print-table';
 
 type Violation = {
@@ -21,7 +21,7 @@ function isGenericSubdomain(path: string): boolean {
 }
 
 function checkDomainNamespaceIntegrity(
-	cruiseResult: CruiseResult,
+	cruiseResult: DepcruiseResult,
 ): Violation[] {
 	const violations: Violation[] = [];
 
@@ -52,7 +52,7 @@ function checkDomainNamespaceIntegrity(
 	return violations;
 }
 
-export function printNoCrossDomainCalls(cruiseResult: CruiseResult): void {
+export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 	const violations = checkDomainNamespaceIntegrity(cruiseResult);
 
 	if (violations.length === 0) {

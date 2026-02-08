@@ -1,5 +1,5 @@
 import { red, green } from 'kleur/colors';
-import type { CruiseResult } from '../../types';
+import type { DepcruiseResult } from '../../types';
 import { padRight, divider } from '../../ui/console-format';
 
 type Violation = {
@@ -12,7 +12,7 @@ function isRootLevelSourceFile(path: string): boolean {
 
 const ALLOWED_ROOT_FILES = ['src/index.ts'];
 
-function checkNoRootSourceCode(cruiseResult: CruiseResult): Violation[] {
+function checkNoRootSourceCode(cruiseResult: DepcruiseResult): Violation[] {
 	const violations: Violation[] = [];
 
 	for (const module of cruiseResult.modules) {
@@ -26,7 +26,7 @@ function checkNoRootSourceCode(cruiseResult: CruiseResult): Violation[] {
 	return violations;
 }
 
-export function printNoRootSourceCode(cruiseResult: CruiseResult): void {
+export function printNoRootSourceCode(cruiseResult: DepcruiseResult): void {
 	const violations = checkNoRootSourceCode(cruiseResult);
 
 	if (violations.length === 0) {

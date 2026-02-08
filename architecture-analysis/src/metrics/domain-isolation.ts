@@ -1,6 +1,6 @@
 import { red, green, yellow } from 'kleur/colors';
 import { printTable, type TableColumn } from '../ui/print-table';
-import type { CruiseResult } from '../types';
+import type { DepcruiseResult } from '../types';
 import { classifyIsolation } from '../classify-results/index';
 
 type DomainIsolationMetric = {
@@ -16,7 +16,7 @@ function extractDomain(path: string): string | null {
 }
 
 export function calculateDomainIsolation(
-	cruiseResult: CruiseResult,
+	cruiseResult: DepcruiseResult,
 ): DomainIsolationMetric[] {
 	const acc = new Map<string, { internal: number; external: number }>();
 
@@ -61,7 +61,7 @@ function classifyIsolationResult(externalPercent: number): {
 	return { label, color: red };
 }
 
-export function printDomainIsolation(cruiseResult: CruiseResult): void {
+export function printDomainIsolation(cruiseResult: DepcruiseResult): void {
 	const metrics = calculateDomainIsolation(cruiseResult);
 
 	const columns: TableColumn<DomainIsolationMetric>[] = [

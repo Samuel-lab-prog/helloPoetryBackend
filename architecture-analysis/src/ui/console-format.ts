@@ -1,6 +1,6 @@
 import { blue } from 'kleur/colors';
 
-const TERMINAL_WIDTH = 100;
+const TERMINAL_WIDTH = 120;
 
 export function center(text: string, width = TERMINAL_WIDTH): string {
 	const pad = Math.max(0, Math.floor((width - text.length) / 2));
