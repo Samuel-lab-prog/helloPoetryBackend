@@ -1,7 +1,7 @@
 # Ports
 
-This document describes how **ports** are defined, used, and implemented in
-this codebase.
+This document describes how **ports** are defined, used, and implemented in this
+codebase.
 
 Ports are the **formal boundary** between application logic (use-cases and
 domains) and external concerns such as persistence, APIs, or infrastructure.
@@ -13,9 +13,10 @@ They are a core mechanism for enforcing dependency direction and testability.
 ## What Is a Port
 
 A port is a **TypeScript interface** that defines how the application
-*communicates outward*.
+_communicates outward_.
 
 Ports:
+
 - are owned by the application layer,
 - describe required behavior, not implementations,
 - are consumed by use-cases,
@@ -29,13 +30,10 @@ Ports never contain logic. They only define contracts.
 
 All ports live in the dedicated `ports/` directory.
 
-Example:
-ports/
-├─ QueriesRepository.ts
-└─ CommandsRepository.ts
-
+Example: ports/ ├─ QueriesRepository.ts └─ CommandsRepository.ts
 
 Rules:
+
 - Ports belong to the application, not to adapters or infra.
 - Ports must not import from adapters, infra, or frameworks.
 - Ports may import **application-level types** (models, DTOs).
@@ -43,6 +41,7 @@ Rules:
 This ensures that dependency direction always points inward.
 
 See:
+
 - ADR-013 – Directional dependencies
 
 ---
@@ -52,14 +51,17 @@ See:
 Ports are split by **intent**, not by technical concerns.
 
 This codebase follows a clear separation between:
+
 - **Query ports** (read-only)
 - **Command ports** (state-changing)
 
 Example:
+
 - `QueriesRepository`
 - `CommandsRepository`
 
 This separation:
+
 - makes side effects explicit,
 - simplifies reasoning about behavior,
 - improves testability,
@@ -94,11 +96,10 @@ Key properties:
 - no infrastructure details leak into the interface.
 
 ## Who Uses Ports
-Use-cases
-Use-cases depend on ports to:
 
-query current state,
-perform state transitions.
+Use-cases Use-cases depend on ports to:
+
+query current state, perform state transitions.
 
 Use-cases must:
 
@@ -108,31 +109,27 @@ Use-cases must:
 
 See:
 
-use-cases/commands
-use-cases/queries
+use-cases/commands use-cases/queries
 
 ## Implementations
+
 Ports are implemented by:
 
 - adapters (adapters/commands, adapters/queries),
-- infrastructure modules (infra/*-repository)
+- infrastructure modules (infra/\*-repository)
 
 Example structure:
 
-infra/
-├─ queries-repository/
-│  ├─ Repository.ts
-│  └─ Repository.test.ts
-└─ commands-repository/
-   ├─ Repository.ts
-   └─ Repository.test.ts
-Rules for implementations:
+infra/ ├─ queries-repository/ │ ├─ Repository.ts │ └─ Repository.test.ts └─
+commands-repository/ ├─ Repository.ts └─ Repository.test.ts Rules for
+implementations:
 
 - must fully satisfy the port interface,
 - may depend on frameworks, ORMs, or external services,
 - must not introduce additional application logic.
 
 ## Adapters and Ports
+
 Adapters act as binders between external inputs and use-cases.
 
 Adapters:
@@ -148,13 +145,8 @@ Adapters must not:
 
 Example adapter locations:
 
-adapters/
-├─ queries/
-│  ├─ Services.ts
-│  └─ QueriesRouter.ts
-└─ commands/
-   ├─ Services.ts
-   └─ CommandsRouter.ts
+adapters/ ├─ queries/ │ ├─ Services.ts │ └─ QueriesRouter.ts └─ commands/ ├─
+Services.ts └─ CommandsRouter.ts
 
 ## Testing Strategy
 
@@ -170,8 +162,7 @@ This allows:
 
 See:
 
-ADR-006 – Use cases tests
-ADR-007 – Domain tests
+ADR-006 – Use cases tests ADR-007 – Domain tests
 
 ## What Ports Must Not Do
 

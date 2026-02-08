@@ -17,12 +17,14 @@ them in practice.
 A use-case represents a **single application action** or business capability.
 
 Examples:
+
 - accept a friend request
 - create an account
 - publish a poem
 - cancel a subscription
 
 A use-case:
+
 - orchestrates domain logic,
 - enforces business rules,
 - coordinates reads and writes through ports,
@@ -40,9 +42,10 @@ A use-case is responsible for:
 - enforcing business invariants,
 - querying current state when needed,
 - executing state-changing commands,
-- deciding *what happens next*.
+- deciding _what happens next_.
 
 A use-case is **not** responsible for:
+
 - HTTP concerns,
 - persistence details,
 - framework-specific behavior,
@@ -53,10 +56,12 @@ A use-case is **not** responsible for:
 ## Dependency Model
 
 Use-cases depend only on:
+
 - **domains** (models, domain errors),
 - **ports** (interfaces for external interaction).
 
 They must not depend on:
+
 - adapters,
 - frameworks,
 - concrete infrastructure implementations.
@@ -65,8 +70,8 @@ Dependency direction:
 
 Adapters → Use-cases → Domains
 
-
 See:
+
 - ADR-013 – Directional dependencies
 
 ---
@@ -77,6 +82,7 @@ Use-cases must be created through **factory functions** that receive their
 dependencies explicitly.
 
 This enables:
+
 - dependency inversion,
 - testability,
 - isolation from infrastructure.
@@ -95,24 +101,24 @@ interface Dependencies {
 }
 
 export type SomeUseCaseParams = {
-  // input parameters for the use-case
-  // Is very important to export this type to help with typing in adapters and tests,
-  // but we gonna talk abou this later.
+	// input parameters for the use-case
+	// Is very important to export this type to help with typing in adapters and tests,
+	// but we gonna talk abou this later.
 };
 
 export function someUseCaseFactory({ dependencyA, dependencyB }: Dependencies) {
-	return async function someUseCase(params: SomeUseCaseParams): Promise<Result> {
-		if(somethingIsWrong(params)) 
-      throw new SomeDomainError('Invalid input');
+	return async function someUseCase(
+		params: SomeUseCaseParams,
+	): Promise<Result> {
+		if (somethingIsWrong(params)) throw new SomeDomainError('Invalid input');
 
-    const someData = await dependencyA.fetchSomething(params);
+		const someData = await dependencyA.fetchSomething(params);
 
-    if(!SomePolicy.isSatisfied(someData)) 
-      throw new SomeDomainError('Business rule violation');
+		if (!SomePolicy.isSatisfied(someData))
+			throw new SomeDomainError('Business rule violation');
 
-    const result = await dependencyB.executeCommand(someData);
-    return result;
-    
+		const result = await dependencyB.executeCommand(someData);
+		return result;
 	};
 }
 ```
@@ -157,10 +163,12 @@ Guidelines:
 - avoid “manager”, “service”, or “handler” suffixes.
 
 Good:
+
 - acceptFriendRequest
 - publishPoem
 
 Bad:
+
 - friendshipService
 - userManager
 
@@ -179,8 +187,7 @@ A use-case without tests is considered incomplete.
 
 See:
 
-ADR-006 – Use cases tests
-ADR-007 – Domain tests
+ADR-006 – Use cases tests ADR-007 – Domain tests
 
 ## What to Avoid
 
@@ -208,7 +215,8 @@ Violations are detected and enforced through CI.
 - Use-cases should not have subfolders unless necessary for complexity.
 - You can apply CQRS in Models or Errors if needed, but it's not mandatory.
 - All models are derived from schemas defined in the ports.
-- Use-cases should not import models from other domains directly; they should go through ports.
+- Use-cases should not import models from other domains directly; they should go
+  through ports.
 
 ## Summary
 
@@ -219,4 +227,7 @@ Use-cases are:
 - independent of infrastructure,
 - governed by architectural rules.
 
-Take a look at the ADRs for more details on the architectural decisions that govern use-cases. And remember: use-cases are not just a pattern, they are a fundamental architectural unit that shapes how the system evolves and maintains its integrity over time.
+Take a look at the ADRs for more details on the architectural decisions that
+govern use-cases. And remember: use-cases are not just a pattern, they are a
+fundamental architectural unit that shapes how the system evolves and maintains
+its integrity over time.
