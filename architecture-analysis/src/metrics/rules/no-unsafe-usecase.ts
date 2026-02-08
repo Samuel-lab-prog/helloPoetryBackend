@@ -93,7 +93,7 @@ export function printMissingExecuteTests(cloc: ClocResult): void {
 		},
 		{
 			header: 'USE-CASE PATH',
-			width: 70,
+			width: 77,
 			render: (v) => ({ text: v.useCasePath }),
 		},
 		{

@@ -29,6 +29,7 @@ import { printMissingExecuteTests } from './metrics/rules/no-unsafe-usecase';
 import { printNoInvalidRootNamespaces } from './metrics/rules/no-invalid-namespaces';
 import { printNoRootSourceCode } from './metrics/rules/no-root-src-code';
 import { printNoInvalidDirectionalDependencies } from './metrics/rules/no-invalid-directional-dependencies';
+import { printPortsAndAdaptersViolations } from './metrics/rules/no-invalid-direrory';
 
 function metrics(): void {
 	const depcruise = loadDepcruiseData();
@@ -57,6 +58,7 @@ function metrics(): void {
 	printNoRootSourceCode(depcruise);
 	printNoInvalidDirectionalDependencies(depcruise);
 	printMissingExecuteTests(cloc);
+	printPortsAndAdaptersViolations(cloc);
 }
 
 metrics();
