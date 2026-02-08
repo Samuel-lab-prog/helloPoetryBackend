@@ -20,41 +20,36 @@ export function calculateDomainIsolation(
 ): DomainIsolationMetric[] {
 	const acc = new Map<string, { internal: number; external: number }>();
 
-	cruiseResult.modules.forEach((m) => {
-		const fromDomain = extractDomain(m.source);
+	cruiseResult.modules.forEach(module => {
+		const fromDomain = extractDomain(module.source);
 		if (!fromDomain) return;
 
 		if (!acc.has(fromDomain)) {
 			acc.set(fromDomain, { internal: 0, external: 0 });
 		}
 
-		m.dependencies.forEach((d) => {
-			const toDomain = extractDomain(d.resolved);
+		module.dependencies.forEach(dep => {
+			const toDomain = extractDomain(dep.resolved);
 			if (!toDomain) return;
 
-			if (toDomain === fromDomain) {
-				acc.get(fromDomain)!.internal++;
-			} else {
-				acc.get(fromDomain)!.external++;
-			}
+			const record = acc.get(fromDomain)!;
+			if (toDomain === fromDomain) record.internal++;
+			else record.external++;
 		});
 	});
 
-	return [...acc.entries()].map(([domain, v]) => {
-		const total = v.internal + v.external || 1;
+	return [...acc.entries()].map(([domain, counts]) => {
+		const total = counts.internal + counts.external || 1;
 		return {
 			domain,
-			internalDeps: v.internal,
-			externalDeps: v.external,
-			externalPercent: v.external / total,
+			internalDeps: counts.internal,
+			externalDeps: counts.external,
+			externalPercent: counts.external / total,
 		};
 	});
 }
 
-function classifyIsolationResult(externalPercent: number): {
-	label: string;
-	color: (text: string) => string;
-} {
+function classifyMetric(externalPercent: number) {
 	const label = classifyIsolation(externalPercent);
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
@@ -67,50 +62,40 @@ export function printDomainIsolation(cruiseResult: DepcruiseResult): void {
 	const columns: TableColumn<DomainIsolationMetric>[] = [
 		{
 			header: 'DOMAIN',
-			width: 30,
-			render: (m) => ({
-				text: m.domain,
-				color: classifyIsolationResult(m.externalPercent).color,
-			}),
+			width: 32,
+			render: m => ({ text: m.domain, color: classifyMetric(m.externalPercent).color }),
 		},
 		{
 			header: 'INT DEPS',
-			width: 12,
+			width: 20,
 			align: 'right',
-			render: (m) => ({ text: String(m.internalDeps) }),
+			render: m => ({ text: String(m.internalDeps) }),
 		},
 		{
 			header: 'EXT DEPS',
-			width: 12,
+			width: 20,
 			align: 'right',
-			render: (m) => ({ text: String(m.externalDeps) }),
+			render: m => ({ text: String(m.externalDeps) }),
 		},
 		{
 			header: '% EXT',
-			width: 10,
+			width: 20,
 			align: 'right',
-			render: (m) => {
-				const { color } = classifyIsolationResult(m.externalPercent);
-				return {
-					text: `${(m.externalPercent * 100).toFixed(1)}%`,
-					color,
-				};
+			render: m => {
+				const { color } = classifyMetric(m.externalPercent);
+				return { text: `${(m.externalPercent * 100).toFixed(1)}%`, color };
 			},
 		},
 		{
 			header: 'STATUS',
-			width: 10,
+			width: 15,
 			align: 'right',
-			render: (m) => {
-				const { label, color } = classifyIsolationResult(m.externalPercent);
+			render: m => {
+				const { label, color } = classifyMetric(m.externalPercent);
 				return { text: label, color };
 			},
 		},
 	];
 
-	printTable(
-		`Domain Isolation Metrics`,
-		columns,
-		[...metrics].sort((a, b) => b.externalPercent - a.externalPercent),
-	);
+	printTable('Domain Isolation Metrics', columns, metrics.sort((a, b) => b.externalPercent - a.externalPercent));
 }

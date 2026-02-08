@@ -1,14 +1,15 @@
-import type { ClocData, DomainMetric, DomainAggregate } from '../types';
+import type { ClocResult, DomainMetric, DomainAggregate } from '../types';
 import { classifyDomainSize } from '../classify-results/index';
 
 export function calculateDomainAggregates(
-	cloc: ClocData,
+	cloc: ClocResult,
 ): Map<string, DomainAggregate> {
 	const domainData = new Map<string, DomainAggregate>();
 
 	Object.entries(cloc).forEach(([file, info]) => {
-		// ignore cloc summary and files without code
-		if (file === 'SUM' || !info?.code) return;
+
+
+		if (file === 'SUM' || ( 'code' in info && !info?.code)) return;
 
 		const match = file.match(
 			/(?:^|\/|\\)src[/\\](domains|generic-subdomains)[/\\]([^/\\]+)[/\\]/,
@@ -17,8 +18,9 @@ export function calculateDomainAggregates(
 		if (!match) return;
 
 		const domainName = match[2]!;
-
 		const current = domainData.get(domainName) ?? { loc: 0, files: 0 };
+
+		if (!('code' in info)) return;
 
 		domainData.set(domainName, {
 			loc: current.loc + info.code,
@@ -69,7 +71,7 @@ export function printDomainStatistics(metrics: DomainMetric[]): void {
 	const columns: TableColumn<DomainMetric>[] = [
 		{
 			header: 'DOMAIN',
-			width: 30,
+			width: 32,
 			render: (m) => ({
 				text: m.domain,
 				color: classifySizeResult(m.percent).color,
@@ -77,19 +79,19 @@ export function printDomainStatistics(metrics: DomainMetric[]): void {
 		},
 		{
 			header: 'LOC',
-			width: 12,
+			width: 15,
 			align: 'right',
 			render: (m) => ({ text: String(m.loc) }),
 		},
 		{
 			header: 'FILES',
-			width: 12,
+			width: 15,
 			align: 'right',
 			render: (m) => ({ text: String(m.files) }),
 		},
 		{
 			header: '% TOTAL',
-			width: 12,
+			width: 15,
 			align: 'right',
 			render: (m) => ({
 				text: `${(m.percent * 100).toFixed(1)}%`,
@@ -97,7 +99,7 @@ export function printDomainStatistics(metrics: DomainMetric[]): void {
 		},
 		{
 			header: 'Z-SCORE',
-			width: 12,
+			width: 15,
 			align: 'right',
 			render: (m) => {
 				const { color } = classifySizeResult(m.percent);
@@ -109,7 +111,7 @@ export function printDomainStatistics(metrics: DomainMetric[]): void {
 		},
 		{
 			header: 'STATUS',
-			width: 10,
+			width: 13,
 			align: 'right',
 			render: (m) => {
 				const { label, color } = classifySizeResult(m.percent);
