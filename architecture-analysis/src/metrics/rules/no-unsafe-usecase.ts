@@ -97,11 +97,6 @@ export function printMissingExecuteTests(cloc: ClocResult): void {
 			render: (v) => ({ text: v.useCasePath }),
 		},
 		{
-			header: 'EXECUTE FILE',
-			width: 50,
-			render: (v) => ({ text: v.executeFile }),
-		},
-		{
 			header: 'STATUS',
 			width: 12,
 			align: 'right',
