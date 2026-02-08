@@ -11,7 +11,7 @@ export * from './main-seq-dist';
 export * from './overall-view';
 export * from './rules/no-cross-domain-calls';
 export * from './rules/no-invalid-directional-dependencies';
-export * from './rules/no-invalid-direrory';
+export * from './rules/no-invalid-direrectory';
 export * from './rules/no-invalid-namespaces';
 export * from './rules/no-root-src-code';
 export * from './rules/no-untested-usecase';
