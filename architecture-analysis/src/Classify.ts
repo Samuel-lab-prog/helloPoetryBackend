@@ -42,3 +42,11 @@ export function classifyDistanceFromMain(
 	if (distance <= 0.5) return 'OK';
 	return 'FAIL';
 }
+
+export function classifyTestsPercent(
+	testPercent: number,
+): 'GOOD' | 'OK' | 'FAIL' {
+	if (testPercent >= 40) return 'GOOD';
+	if (testPercent >= 20) return 'OK';
+	return 'FAIL';
+}

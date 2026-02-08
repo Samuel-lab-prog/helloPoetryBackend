@@ -1,10 +1,10 @@
-import type { ClocData, FanMetric } from '../Types';
+import type { ClocResult, FanMetric } from '../Types';
 
-export function buildLocMap(cloc: ClocData): Map<string, number> {
+export function buildLocMap(cloc: ClocResult): Map<string, number> {
 	const map = new Map<string, number>();
 
 	Object.entries(cloc).forEach(([file, info]) => {
-		if (info.code) map.set(file, info.code);
+		if ("code" in info && info.code) map.set(file, info.code);
 	});
 
 	return map;

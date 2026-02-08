@@ -19,12 +19,13 @@ import {
 import { printNoCrossDomainCalls } from './metrics/rules/no-cross-domain-calls';
 import { printDomainIsolation } from './metrics/domain-isolation';
 import { printChangeAmplification } from './metrics/change-amp';
-import { printOverallStats } from './metrics/overall-view';
+import { printDomainCodeStats } from './metrics/overall-view';
 import {
 	printInstabilityAbstraction,
 	calculateAbstractionInstability,
 } from './metrics/abstraction-instability';
 
+import { printMissingExecuteTests } from './metrics/rules/no-unsafe-usecase';
 import { printNoInvalidRootNamespaces } from './metrics/rules/no-invalid-namespaces';
 import { printNoRootSourceCode } from './metrics/rules/no-root-src-code';
 import { printNoInvalidDirectionalDependencies } from './metrics/rules/no-invalid-directional-dependencies';
@@ -49,12 +50,13 @@ function metrics(): void {
 	printDomainIsolation(depcruise);
 	printChangeAmplification();
 	printInstabilityAbstraction(archMetrics);
+	printDomainCodeStats(cloc);
 
 	printNoCrossDomainCalls(depcruise);
 	printNoInvalidRootNamespaces(depcruise);
 	printNoRootSourceCode(depcruise);
 	printNoInvalidDirectionalDependencies(depcruise);
-	printOverallStats(cloc);
+	printMissingExecuteTests(cloc);
 }
 
 metrics();
