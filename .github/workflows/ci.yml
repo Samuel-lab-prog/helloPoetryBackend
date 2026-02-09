@@ -26,5 +26,33 @@ jobs:
       - name: Metrics
         run: bun metrics
 
-      - name: ChatGPT CodeReviewer
-        uses: anc95/ChatGPT-CodeReview@v1.0.23
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: hello_poetry_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d hello_poetry_test"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Migrate database
+        run: bun run migrate
+
+      - name: Generate Prisma client
+        run: bun run generate
+
+      - name: Run tests
+        run: bun test:all
