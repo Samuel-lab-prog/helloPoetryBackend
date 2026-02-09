@@ -34,6 +34,7 @@ jobs:
         image: postgres:17
         env:
           TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
+          NODE_ENV: test
         ports:
           - 5432:5432
         options: >-
