@@ -36,12 +36,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Migrate database
-        run: bun run migratedev
-
-      - name: Generate Prisma client
-        run: bun run generate
-
       - name: Run use case tests
         run: bun test:use-cases
 
