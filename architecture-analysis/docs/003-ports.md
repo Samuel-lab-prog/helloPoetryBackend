@@ -118,12 +118,6 @@ Ports are implemented by:
 - adapters (adapters/commands, adapters/queries),
 - infrastructure modules (infra/\*-repository)
 
-Example structure:
-
-infra/ ├─ queries-repository/ │ ├─ Repository.ts │ └─ Repository.test.ts └─
-commands-repository/ ├─ Repository.ts └─ Repository.test.ts Rules for
-implementations:
-
 - must fully satisfy the port interface,
 - may depend on frameworks, ORMs, or external services,
 - must not introduce additional application logic.
