@@ -26,7 +26,7 @@ jobs:
       - name: Metrics
         run: bun metrics
 
-  build:
+  test:
     runs-on: ubuntu-latest
 
     services:
@@ -49,7 +49,7 @@ jobs:
         run: bun install
 
       - name: Migrate database
-        run: bun run migrate
+        run: bun run migratedev
 
       - name: Generate Prisma client
         run: bun run generate
