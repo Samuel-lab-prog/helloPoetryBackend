@@ -27,9 +27,8 @@ Tests exist to **protect behavior and boundaries**, not to inflate metrics.
   - error conditions,
   - boundary cases.
 
-Rationale:
-Use-cases contain application logic and orchestration and must be protected
-against regressions.
+Rationale: Use-cases contain application logic and orchestration and must be
+protected against regressions.
 
 ---
 
@@ -42,6 +41,7 @@ against regressions.
   - edge cases.
 
 Infra tests must not:
+
 - re-test business rules,
 - assert use-case behavior.
 
@@ -65,11 +65,12 @@ Thin routers with no logic do not require tests.
 When unit tests exist, they must live **next to the module they test**.
 
 Examples:
+
 - `use-cases/commands/CreateUser.ts` → `use-cases/commands/CreateUser.test.ts`
 - `infra/user-repository.ts` → `infra/user-repository.test.ts`
 
-
 Rules:
+
 - no central `__tests__` folders for unit tests,
 - test location must reflect ownership.
 
@@ -79,13 +80,14 @@ Rules:
 
 Integration and E2E tests live in a **dedicated root folder**:
 
-
 These tests may:
+
 - cross layers,
 - hit real infrastructure,
 - validate system behavior end-to-end.
 
 They must not:
+
 - replace unit tests,
 - duplicate use-case coverage.
 
@@ -94,11 +96,13 @@ They must not:
 ## Test Scope Rules
 
 Tests must:
+
 - test only the module under test,
 - mock or stub external dependencies,
 - avoid asserting implementation details.
 
 Tests must not:
+
 - rely on unrelated modules,
 - validate behavior owned by another layer.
 
@@ -109,9 +113,11 @@ If a test needs multiple layers, it is not a unit test.
 ## Test Runner
 
 All tests use:
+
 - **Bun’s test runner**
 
 Rules:
+
 - no mixed test frameworks,
 - consistent setup across the codebase,
 - test execution must be deterministic.
@@ -128,4 +134,5 @@ Rules:
 - Bun is the single test runner
 
 When unsure:
+
 > Test where the responsibility lives — nowhere else.
