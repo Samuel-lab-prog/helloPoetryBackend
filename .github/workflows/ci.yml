@@ -33,6 +33,9 @@ jobs:
       postgres:
         image: postgres:17
         env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hello_poetry_test
           TEST_DB_URL: postgres://postgres:postgres@localhost:5432/hello_poetry_test
           NODE_ENV: test
         ports:
