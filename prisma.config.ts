@@ -1,9 +1,15 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { defineConfig } from 'prisma/config';
+import path from 'path';
 
-const url = process.env.DATABASE_URL;
+config({
+	path: path.resolve(process.cwd(), '.env'),
+});
 
-if (!url) throw new Error('DATABASE_URL is not set');
+const env = process.env;
+const url = env.DATABASE_URL;
+
+if (!url) throw new Error('DATABASE_URL is not set in .env');
 
 export default defineConfig({
 	schema: 'src/generic-subdomains/persistance/prisma/schema.prisma',
