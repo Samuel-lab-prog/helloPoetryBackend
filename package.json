@@ -43,7 +43,7 @@
 		"test:policies": "bun test -t POLICY --concurrent --bail=5",
 		"test:integration": "bun test -t INTEGRATION --bail=5",
 		"metrics:cloc": "npx cloc src --by-file --exclude-dir=prisma --json --out cloc.json",
-		"metrics:depcruise ": "npx dependency-cruiser src --output-type json --output-to depcruise.json",
+		"metrics:depcruise": "npx dependency-cruiser src --output-type json --output-to depcruise.json",
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
