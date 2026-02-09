@@ -25,4 +25,3 @@ jobs:
 
       - name: Metrics
         run: bun metrics
-
