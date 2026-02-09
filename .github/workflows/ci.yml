@@ -26,7 +26,7 @@ jobs:
       - name: Metrics
         run: bun metrics
 
-  unit-tests:
+  tests:
     runs-on: ubuntu-latest
 
     services:
@@ -62,8 +62,5 @@ jobs:
       - name: Generate Prisma client
         run: bun run generate
 
-      - name: Run use case tests
-        run: bun test:use-cases
-
-      - name: Run policy tests
-        run: bun test:policies
+      - name: Run tests
+        run: bun test:all
