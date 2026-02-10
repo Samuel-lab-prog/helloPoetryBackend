@@ -1,8 +1,7 @@
 import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
 import { expect } from 'bun:test';
-import { Elysia } from 'elysia';
-import { createServer } from '../index';
+import { createTestServer } from '../index';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,
@@ -85,7 +84,7 @@ export const NON_EXISTENT_ID = 999999999;
 /**
  * The app instance used for testing. We create a new Elysia instance and use our server for handling requests in tests.
  */
-export const API_INSTANCE = new Elysia().use(createServer);
+export const API_INSTANCE = createTestServer;
 /**
  * The API prefix used for making requests to the test server. This should match the prefix defined in the server setup.
  */

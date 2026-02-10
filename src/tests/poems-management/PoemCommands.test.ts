@@ -41,7 +41,6 @@ describe('INTEGRATION - Poems Management', () => {
 	it('User should be able to create a poem', async () => {
 		await createDraftPoem(user1);
 		const poem = await getMyFirstPoem(user1.cookie);
-
 		expect(poem.title).toBe(poemsData[0]!.title);
 	});
 
