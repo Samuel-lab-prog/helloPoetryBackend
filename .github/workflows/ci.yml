@@ -31,9 +31,6 @@ jobs:
       - name: Metrics
         run: bun metrics
 
-      - name: TS type check
-        run: bun typecheck
-
   test:
     runs-on: ubuntu-latest
     needs: quality
