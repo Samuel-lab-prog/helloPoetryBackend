@@ -8,11 +8,11 @@ import {
 	updatePoem,
 	makePoem,
 	makeUpdatedPoem,
-} from './Utilis.ts';
+} from '../endpoints/Poems.ts';
 
 import { updateUserStatsRaw, type TestUser } from '../Helpers.ts';
 import { setupHttpUsers } from 'tests/Helpers.ts';
-import { poemsData } from '../TestsData.ts';
+import { poemsData } from '../data/TestsData.ts';
 import type { AuthorPoem } from '@Domains/poems-management/use-cases/Models';
 import type { CreatePoem } from '@Domains/poems-management/use-cases/Models.ts';
 

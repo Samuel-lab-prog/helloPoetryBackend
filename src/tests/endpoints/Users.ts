@@ -1,5 +1,4 @@
 import { type TestUser, PREFIX, app } from '../Helpers.ts';
-
 import { jsonRequest } from '../TestsUtils.ts';
 
 export async function sendFriendRequest(from: TestUser, addresseeId: number) {

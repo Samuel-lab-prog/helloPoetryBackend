@@ -5,7 +5,7 @@ import {
 	rejectFriendRequest,
 	getMyPrivateProfile,
 	acceptFriendRequest,
-} from './Utils';
+} from '../endpoints/Users';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 import type {
 	FriendRequestRejectionRecord,

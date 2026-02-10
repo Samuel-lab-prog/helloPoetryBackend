@@ -8,9 +8,9 @@ import {
 	getPoemById,
 	createAndApprovePoem,
 	makePoem,
-} from './Utilis.ts';
+} from '../endpoints/Poems.ts';
 
-import { usersData } from '../TestsData.ts';
+import { usersData } from '../data/TestsData.ts';
 
 import {
 	type TestUser,
