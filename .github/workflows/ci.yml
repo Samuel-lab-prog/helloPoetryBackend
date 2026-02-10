@@ -19,9 +19,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Migrate database
-        run: bun migratedev
-        
       - name: Generate models
         run: bun generate
 
@@ -61,8 +58,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
 
+      - name: Generate models
+        run: bun generate
+
+      - name: Migrate database
+        run: bun migratedev
+
       - name: Install dependencies
         run: bun install
 
       - name: Run tests
         run: bun test:all
+
+      - name: Type check
+        run: bun typecheck
