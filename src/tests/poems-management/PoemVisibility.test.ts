@@ -11,15 +11,16 @@ import {
 	createFriendshipRaw,
 	updatePoemRaw,
 	updateUserStatsRaw,
+	type AuthUser,
 } from '../endpoints/Index';
 
-import { type AuthUser, setupHttpUsers } from '../Helpers.ts';
 import type {
 	CreatePoemResult,
 	AuthorPoem,
 } from '@Domains/poems-management/use-cases/Models';
 
 import { expectAppError } from '../TestsUtils.ts';
+import { setupHttpUsers } from 'tests/TestsSetups.ts';
 
 let author: AuthUser;
 let otherUser: AuthUser;

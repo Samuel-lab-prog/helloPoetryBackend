@@ -9,9 +9,9 @@ import {
 	updateUserStatsRaw,
 	createDraftPoem,
 	getMyFirstPoem,
+	type AuthUser,
 } from '../endpoints/Index';
 
-import { type AuthUser, setupHttpUsers } from '../Helpers.ts';
 import { poemsData } from '../data/Index';
 import type {
 	CreatePoemResult,
@@ -19,6 +19,8 @@ import type {
 	UpdatePoemResult,
 } from '@Domains/poems-management/use-cases/Models';
 import { expectAppError, NON_EXISTENT_ID } from 'tests/TestsUtils.ts';
+
+import { setupHttpUsers } from 'tests/TestsSetups.ts';
 
 let user1: AuthUser;
 let user2: AuthUser;

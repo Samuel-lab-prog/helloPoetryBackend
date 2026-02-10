@@ -1,6 +1,6 @@
 {
 	"name": "hellopoetryback",
-	"main": "index.ts",
+	"main": "Server.ts",
 	"type": "module",
 	"private": true,
 	"devDependencies": {
@@ -23,9 +23,9 @@
 		"typescript-eslint": "^8.55.0"
 	},
 	"scripts": {
-		"build": "bun build src/index.ts --target bun --outdir dist",
-		"start": "bun src/index.ts",
-		"dev": "bun --watch src/index.ts",
+		"build": "bun build src/Server.ts --target bun --outdir dist",
+		"start": "bun src/Server.ts",
+		"dev": "bun --watch src/Server.ts",
 		"docker:up": "docker build -t api . && docker run --env-file .env -p 5000:5000 api",
 		"compose": "docker-compose up --build",
 		"generate": "npx prisma generate",
@@ -39,14 +39,14 @@
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"test:all": "bun test --coverage --bail=5 --reporter=junit --reporter-outfile=./bun.xml",
-		"test:unit": "bun test -t USE-CASE && bun test -t POLICY",
+		"test:unit": "bun test -t USE-CASE && bun test -t POLICY --concurrent",
 		"test:integration": "bun test -t INTEGRATION --bail=5",
 		"metrics:cloc": "npx cloc src --by-file --exclude-dir=prisma --json --out cloc.json",
 		"metrics:depcruise": "npx dependency-cruiser src --output-type json --output-to depcruise.json",
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",
 		"metrics": "bun metrics:cloc && bun metrics:depcruise && bun metrics:analysis",
 		"depcruise": "bunx depcruise src",
-		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && bunx tsc --noEmit && echo 'All checks passed!'",
+		"check": "bun barrels && bun lint:fix && bun format:fix && bun metrics && bun depcruise && bun typecheck && bun test:all && echo 'All checks passed!'",
 		"gen-usecases": "bun generator/src/UseCasesFactory.ts",
 		"barrels": "bunx barrelsby -c barrels.config.json",
 		"typecheck": "tsc --noEmit"

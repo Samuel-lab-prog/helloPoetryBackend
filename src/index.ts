@@ -20,10 +20,10 @@ import { interactionsQueriesRouter } from '@Domains/interactions/adapters/querie
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
 
-const PREFIX = '/api/v1';
-const INSTANCE_NAME = 'mainServerInstance';
-const HOST_NAME = '0.0.0.0';
-const PORT = Number(process.env.PORT) || 5000;
+export const PREFIX = '/api/v1';
+export const MAIN_INSTANCE_NAME = 'mainServerInstance';
+export const HOST_NAME = '0.0.0.0';
+export const PORT = Number(process.env.PORT) || 5000;
 
 const OPEN_API_SETTINGS = {
 	path: '/docs',
@@ -39,7 +39,7 @@ const OPEN_API_SETTINGS = {
 
 const ELYSIA_SETTINGS = {
 	adapter: BunAdapter,
-	name: INSTANCE_NAME,
+	name: MAIN_INSTANCE_NAME,
 	prefix: PREFIX,
 	sanitize: (value: string) => sanitize(value),
 	serve: {
@@ -54,7 +54,7 @@ const RATE_LIMIT_SETTINGS = {
 	skip: () => process.env.NODE_ENV === 'test',
 };
 
-export const server = new Elysia(ELYSIA_SETTINGS)
+export const createServer = new Elysia(ELYSIA_SETTINGS)
 	.use(cors())
 	.use(SetupPlugin)
 	.use(LoggerPlugin)
@@ -71,4 +71,3 @@ export const server = new Elysia(ELYSIA_SETTINGS)
 	.use(interactionsQueriesRouter)
 	.use(moderationCommandsRouter)
 	.use(feedQueriesRouter)
-	.listen({ hostname: HOST_NAME, port: PORT });

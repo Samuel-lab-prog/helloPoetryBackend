@@ -1,75 +1,110 @@
 import { prisma } from '@Prisma/PrismaClient.ts';
-import { type TestUser, PREFIX, app } from '../Helpers.ts';
-import { jsonRequest } from '../TestsUtils.ts';
+import {
+	jsonRequest,
+	API_INSTANCE,
+	API_PREFIX,
+	handleResponse,
+} from '../TestsUtils.ts';
+import type {
+	FriendRequestRecord,
+	FriendRequestRejectionRecord,
+	FriendshipRecord,
+	UnblockUserRecord,
+	CancelFriendRequestRecord,
+	RemovedFriendRecord,
+	BlockedUserRecord,
+} from '@Domains/friends-management/use-cases/Models.ts';
+import type { AppError } from '@AppError';
 
-export async function sendFriendRequest(from: TestUser, addresseeId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/${addresseeId}`, {
+export async function sendFriendRequest(
+	cookie: string,
+	addresseeId: number,
+): Promise<FriendRequestRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/${addresseeId}`, {
 			method: 'POST',
-			headers: { Cookie: from.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<FriendRequestRecord>(res);
 }
 
-export async function acceptFriendRequest(to: TestUser, requesterId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/accept/${requesterId}`, {
+export async function acceptFriendRequest(
+	cookie: string,
+	requesterId: number,
+): Promise<FriendshipRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/accept/${requesterId}`, {
 			method: 'PATCH',
-			headers: { Cookie: to.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<FriendshipRecord>(res);
 }
 
-export async function rejectFriendRequest(to: TestUser, requesterId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/reject/${requesterId}`, {
+export async function rejectFriendRequest(
+	cookie: string,
+	requesterId: number,
+): Promise<FriendRequestRejectionRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/reject/${requesterId}`, {
 			method: 'PATCH',
-			headers: { Cookie: to.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<FriendRequestRejectionRecord>(res);
 }
 
-export async function unblockUser(by: TestUser, targetUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/unblock/${targetUserId}`, {
+export async function unblockUser(
+	cookie: string,
+	targetUserId: number,
+): Promise<UnblockUserRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/unblock/${targetUserId}`, {
 			method: 'PATCH',
-			headers: { Cookie: by.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<UnblockUserRecord>(res);
 }
 
-export async function blockUser(by: TestUser, targetUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/block/${targetUserId}`, {
+export async function blockUser(
+	cookie: string,
+	targetUserId: number,
+): Promise<BlockedUserRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/block/${targetUserId}`, {
 			method: 'PATCH',
-			headers: { Cookie: by.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<BlockedUserRecord>(res);
 }
 
-export async function cancelFriendRequest(from: TestUser, addresseeId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/cancel/${addresseeId}`, {
+export async function cancelFriendRequest(
+	cookie: string,
+	addresseeId: number,
+): Promise<CancelFriendRequestRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/cancel/${addresseeId}`, {
 			method: 'DELETE',
-			headers: { Cookie: from.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<CancelFriendRequestRecord>(res);
 }
 
-export async function deleteFriend(user: TestUser, friendUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/delete/${friendUserId}`, {
+export async function deleteFriend(
+	cookie: string,
+	friendUserId: number,
+): Promise<RemovedFriendRecord | AppError> {
+	const res = await API_INSTANCE.handle(
+		jsonRequest(`${API_PREFIX}/friends/delete/${friendUserId}`, {
 			method: 'DELETE',
-			headers: { Cookie: user.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	return await handleResponse<RemovedFriendRecord>(res);
 }
 
 /**

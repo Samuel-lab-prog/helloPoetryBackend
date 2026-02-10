@@ -9,31 +9,36 @@ import type {
 	AuthorPoem,
 	UpdatePoemResult,
 } from '@Domains/poems-management/use-cases/Models.ts';
-import { PREFIX, app, type AuthUser } from '../Helpers.ts';
-import { jsonRequest, handleResponse } from '../TestsUtils.ts';
+import {
+	jsonRequest,
+	handleResponse,
+	API_INSTANCE,
+	API_PREFIX,
+} from '../TestsUtils.ts';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
-import { prisma } from '@Prisma/PrismaClient.ts';
+import { prisma } from '@PrismaClient';
 import type { AppError } from '@AppError';
+import { type AuthUser } from './Auth.ts';
 
 export async function createPoem(
 	cookie: string,
 	poem: CreatePoem,
 ): Promise<CreatePoemResult | AppError> {
-	const request = jsonRequest(`${PREFIX}/poems`, {
+	const request = jsonRequest(`${API_PREFIX}/poems`, {
 		method: 'POST',
 		headers: { Cookie: cookie },
 		body: poem,
 	});
-	const response = await app.handle(request);
+	const response = await API_INSTANCE.handle(request);
 	return handleResponse<CreatePoemResult>(response);
 }
 
 export async function getMyPoems(cookie: string): Promise<MyPoem[] | AppError> {
-	const request = jsonRequest(`${PREFIX}/poems/me`, {
+	const request = jsonRequest(`${API_PREFIX}/poems/me`, {
 		method: 'GET',
 		headers: { Cookie: cookie },
 	});
-	const response = await app.handle(request);
+	const response = await API_INSTANCE.handle(request);
 	return handleResponse<MyPoem[]>(response);
 }
 
@@ -41,11 +46,11 @@ export async function getPoemById(
 	cookie: string,
 	poemId: number,
 ): Promise<AuthorPoem | AppError> {
-	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
+	const request = jsonRequest(`${API_PREFIX}/poems/${poemId}`, {
 		method: 'GET',
 		headers: { Cookie: cookie },
 	});
-	const response = await app.handle(request);
+	const response = await API_INSTANCE.handle(request);
 	return handleResponse<AuthorPoem>(response);
 }
 
@@ -53,11 +58,11 @@ export async function getAuthorPoems(
 	cookie: string,
 	authorId: number,
 ): Promise<AuthorPoem[] | AppError> {
-	const request = jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
+	const request = jsonRequest(`${API_PREFIX}/poems/authors/${authorId}`, {
 		method: 'GET',
 		headers: { Cookie: cookie },
 	});
-	const response = await app.handle(request);
+	const response = await API_INSTANCE.handle(request);
 	return handleResponse<AuthorPoem[]>(response);
 }
 
@@ -66,12 +71,12 @@ export async function updatePoem(
 	poemId: number,
 	data: Partial<UpdatePoem>,
 ): Promise<UpdatePoemResult | AppError> {
-	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
+	const request = jsonRequest(`${API_PREFIX}/poems/${poemId}`, {
 		method: 'PUT',
 		headers: { Cookie: cookie },
 		body: data,
 	});
-	const response = await app.handle(request);
+	const response = await API_INSTANCE.handle(request);
 	return handleResponse<UpdatePoemResult>(response);
 }
 

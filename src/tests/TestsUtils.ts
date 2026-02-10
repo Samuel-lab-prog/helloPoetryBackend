@@ -1,6 +1,8 @@
 import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
 import { expect } from 'bun:test';
+import { Elysia } from 'elysia';
+import { createServer } from '../index';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,
@@ -51,12 +53,6 @@ export async function handleResponse<T>(
 }
 
 /**
- * A constant representing a non-existent ID, useful for testing error cases where an ID is expected to not be found in the database.
- * We are not using -1 because the API might have validation that rejects negative IDs before it even checks if they exist, which would prevent us from testing the "not found" logic in the handlers.
- */
-export const NON_EXISTENT_ID = 999999999;
-
-/**
  * Correctly identifies whether a given result is an AppError by checking for the presence of 'statusCode' and 'message' properties.
  * @param result The result to check.
  * @returns True if the result is an AppError, false otherwise.
@@ -80,3 +76,17 @@ export function expectAppError(result: unknown, statusCode: number) {
 	const error = result as AppError;
 	expect(error.statusCode).toBe(statusCode);
 }
+
+/**
+ * A constant representing a non-existent ID, useful for testing error cases where an ID is expected to not be found in the database.
+ * We are not using -1 because the API might have validation that rejects negative IDs before it even checks if they exist, which would prevent us from testing the "not found" logic in the handlers.
+ */
+export const NON_EXISTENT_ID = 999999999;
+/**
+ * The app instance used for testing. We create a new Elysia instance and use our server for handling requests in tests.
+ */
+export const API_INSTANCE = new Elysia().use(createServer);
+/**
+ * The API prefix used for making requests to the test server. This should match the prefix defined in the server setup.
+ */
+export const API_PREFIX = 'http://test/api/v1';
