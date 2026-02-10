@@ -2,6 +2,10 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { UsersServicesForModeration } from '@Domains/moderation/ports/UsersServices';
 import type { UsersServicesForPoems } from '@Domains/poems-management/ports/UsersServices';
+import type {
+	AuthRepository,
+	ClientAuthCredentials,
+} from '@GenericSubdomains/authentication/ports/AuthRepository';
 
 async function getUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {
@@ -38,4 +42,25 @@ export const usersContract: UsersServicesForModeration = {
 
 export const usersContractForPoems: UsersServicesForPoems = {
 	getUserBasicInfo,
+};
+
+function selectAuthUserByEmail(
+	email: string,
+): Promise<ClientAuthCredentials | null> {
+	return withPrismaErrorHandling(() =>
+		prisma.user.findUnique({
+			where: { email, deletedAt: null },
+			select: {
+				id: true,
+				email: true,
+				passwordHash: true,
+				role: true,
+				status: true,
+			},
+		}),
+	);
+}
+
+export const usersContractForAuth: AuthRepository = {
+	findClientByEmail: selectAuthUserByEmail,
 };
