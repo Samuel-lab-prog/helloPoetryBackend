@@ -6,8 +6,9 @@ import {
 	getMyPrivateProfile,
 	unblockUser,
 	acceptFriendRequest,
-} from '../endpoints/Users';
-import { createUser, type TestUser, loginUser } from '../Helpers';
+	createUser,
+} from '../endpoints/Index';
+import { type TestUser, loginUser } from '../Helpers';
 
 import type {
 	BlockedUserRecord,

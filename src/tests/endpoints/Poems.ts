@@ -2,78 +2,101 @@ import type {
 	UpdatePoem,
 	CreatePoem,
 	CreatePoemResult,
+	PoemStatus,
+	PoemVisibility,
+	PoemModerationStatus,
+	MyPoem,
+	AuthorPoem,
+	UpdatePoemResult,
 } from '@Domains/poems-management/use-cases/Models.ts';
-import { type TestUser, PREFIX, app, updatePoemRaw } from '../Helpers.ts';
-import { jsonRequest } from '../TestsUtils.ts';
-import { poemsData, poemsForUpdate } from '../data/TestsData.ts';
+import { PREFIX, app, type AuthUser } from '../Helpers.ts';
+import { jsonRequest, handleResponse } from '../TestsUtils.ts';
+import { poemsData, poemsForUpdate } from '../data/Index.ts';
+import { prisma } from '@Prisma/PrismaClient.ts';
+import type { AppError } from '@AppError';
 
 export async function createPoem(
-	user: TestUser,
+	cookie: string,
 	poem: CreatePoem,
-): Promise<unknown> {
+): Promise<CreatePoemResult | AppError> {
 	const request = jsonRequest(`${PREFIX}/poems`, {
 		method: 'POST',
-		headers: { Cookie: user.cookie },
+		headers: { Cookie: cookie },
 		body: poem,
 	});
 	const response = await app.handle(request);
-	return await response.json();
+	return handleResponse<CreatePoemResult>(response);
 }
 
-export async function getMyPoems(user: TestUser): Promise<unknown> {
+export async function getMyPoems(cookie: string): Promise<MyPoem[] | AppError> {
 	const request = jsonRequest(`${PREFIX}/poems/me`, {
 		method: 'GET',
-		headers: { Cookie: user.cookie },
+		headers: { Cookie: cookie },
 	});
 	const response = await app.handle(request);
-	return await response.json();
+	return handleResponse<MyPoem[]>(response);
 }
 
 export async function getPoemById(
-	user: TestUser,
+	cookie: string,
 	poemId: number,
-): Promise<unknown> {
+): Promise<AuthorPoem | AppError> {
 	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
 		method: 'GET',
-		headers: { Cookie: user.cookie },
+		headers: { Cookie: cookie },
 	});
 	const response = await app.handle(request);
-	return await response.json();
+	return handleResponse<AuthorPoem>(response);
 }
 
 export async function getAuthorPoems(
-	user: TestUser,
+	cookie: string,
 	authorId: number,
-): Promise<unknown> {
+): Promise<AuthorPoem[] | AppError> {
 	const request = jsonRequest(`${PREFIX}/poems/authors/${authorId}`, {
 		method: 'GET',
-		headers: { Cookie: user.cookie },
+		headers: { Cookie: cookie },
 	});
 	const response = await app.handle(request);
-	return await response.json();
+	return handleResponse<AuthorPoem[]>(response);
 }
 
 export async function updatePoem(
-	user: TestUser,
+	cookie: string,
 	poemId: number,
 	data: Partial<UpdatePoem>,
-): Promise<unknown> {
+): Promise<UpdatePoemResult | AppError> {
 	const request = jsonRequest(`${PREFIX}/poems/${poemId}`, {
 		method: 'PUT',
-		headers: { Cookie: user.cookie },
+		headers: { Cookie: cookie },
 		body: data,
 	});
 	const response = await app.handle(request);
-	return await response.json();
+	return handleResponse<UpdatePoemResult>(response);
 }
 
 export async function createAndApprovePoem(
-	user: TestUser,
+	cookie: string,
 	poem: CreatePoem,
-): Promise<unknown> {
-	const result = (await createPoem(user, poem)) as CreatePoemResult;
+): Promise<CreatePoemResult | AppError> {
+	const result = (await createPoem(cookie, poem)) as CreatePoemResult;
+
 	await updatePoemRaw(result.id!, { moderationStatus: 'approved' });
 	return result;
+}
+
+export async function createDraftPoem(
+	user: AuthUser,
+	overrides: Partial<CreatePoem> = {},
+	index = 0,
+): Promise<CreatePoemResult | AppError> {
+	const poemData = makePoem(user.id, { status: 'draft', ...overrides }, index);
+	return await createPoem(user.cookie, poemData);
+}
+
+export async function getMyFirstPoem(cookie: string): Promise<MyPoem> {
+	const poems = (await getMyPoems(cookie)) as MyPoem[];
+	return poems[0]!;
 }
 
 // ------------------- Helper functions for test data generation -----------------
@@ -113,3 +136,28 @@ export function makeUpdatedPoem(
 	};
 }
 
+/**
+ * Updates a poem's attributes in the database. Useful for setting up test scenarios.
+ * @param poemId - The ID of the poem to update.
+ * @param updates - An object containing the fields to update.
+ * @returns The updated poem with selected fields.
+ */
+export async function updatePoemRaw(
+	poemId: number,
+	updates: Partial<{
+		visibility: PoemVisibility;
+		status: PoemStatus;
+		moderationStatus: PoemModerationStatus;
+	}>,
+) {
+	return await prisma.poem.update({
+		where: { id: poemId },
+		data: updates,
+		select: {
+			id: true,
+			moderationStatus: true,
+			status: true,
+			visibility: true,
+		},
+	});
+}

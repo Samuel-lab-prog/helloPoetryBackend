@@ -1,134 +1,61 @@
 import { Elysia } from 'elysia';
 import { server } from '../index';
-import type {
-	PoemModerationStatus,
-	PoemStatus,
-	PoemVisibility,
-	UserRole,
-	UserStatus,
-} from '@SharedKernel/Enums';
-import { prisma } from '@Prisma/PrismaClient';
-import type { CreateUser } from '@Domains/users-management/use-cases/Models';
-import { usersData } from './data/TestsData.ts';
-import { jsonRequest } from './TestsUtils.ts';
+import { usersData } from './data/Users.ts';
+import { jsonRequest, isAppError } from './TestsUtils.ts';
+import type { AppError } from '@AppError';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums.ts';
+import { createUser } from './endpoints/Users.ts';
 
 export const app = new Elysia().use(server);
 export const PREFIX = 'http://test/api/v1';
-
-export interface TestUser {
-	id: number;
-	cookie: string;
-	email: string;
-	password: string;
-}
-
-/**
- * Creates a new user in the system via the HTTP API.
- * @param data The data for the new user.
- * @returns A promise that resolves to the created TestUser.
- */
-export async function createUser(data: CreateUser): Promise<TestUser> {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/users`, {
-			method: 'POST',
-			body: data,
-		}),
-	);
-	const body = (await res.json()) as { id: number };
-	return {
-		id: body.id,
-		cookie: '',
-		email: data.email,
-		password: data.password,
-	};
-}
+export type AuthUser = { cookie: string; id: number };
 
 /**
  * Logs in a user and updates their cookie.
- * @param user The user to log in.
- * @returns The logged-in user with an updated cookie.
+ * @param email - The email of the user to log in.
+ * @param password - The password of the user to log in.
+ * @returns Cookie and id.
  *
  */
-export async function loginUser(user: TestUser): Promise<TestUser> {
+export async function loginUser(
+	email: string,
+	password: string,
+): Promise<AuthUser | AppError> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/auth/login`, {
 			method: 'POST',
-			body: { email: user.email, password: user.password },
+			body: { email, password },
 		}),
 	);
+
 	const cookie = res.headers.get('set-cookie');
-	return { ...user, cookie: cookie || '' };
-}
+	const parsed = await res.json();
 
-/**
- * Updates a user's statistics in the database. Useful for setting up test scenarios.
- * @param userId The ID of the user to update.
- * @param updates An object containing the fields to update.
- */
-export async function updateUserStatsRaw(
-	userId: number,
-	updates: Partial<{ role: UserRole; status: UserStatus }>,
-) {
-	await prisma.user.update({
-		where: { id: userId },
-		data: updates,
-	});
-}
-
-/**
- * Creates a friendship relation between two users in the database. Useful for validating test scenarios.
- * @param requesterId The ID of the user who sent the friend request.
- * @param addresseeId The ID of the user who received the friend request.
- */
-export async function createFriendshipRaw(
-	requesterId: number,
-	addresseeId: number,
-) {
-	await prisma.friendship.create({
-		data: {
-			userAId: requesterId,
-			userBId: addresseeId,
-		},
-	});
-}
-
-/**
- * Updates a poem's attributes in the database. Useful for setting up test scenarios.
- * @param poemId - The ID of the poem to update.
- * @param updates - An object containing the fields to update.
- * @returns The updated poem with selected fields.
- */
-export async function updatePoemRaw(
-	poemId: number,
-	updates: Partial<{
-		visibility: PoemVisibility;
-		status: PoemStatus;
-		moderationStatus: PoemModerationStatus;
-	}>,
-) {
-	return await prisma.poem.update({
-		where: { id: poemId },
-		data: updates,
-		select: {
-			id: true,
-			moderationStatus: true,
-			status: true,
-			visibility: true,
-		},
-	});
+	if (!res.ok || !cookie) return parsed as AppError;
+	const okResult = parsed as { id: number; role: UserRole; status: UserStatus };
+	return { cookie, id: okResult.id };
 }
 
 /**
  * Sets up test users by creating and logging them in.
  * @returns A promise that resolves to an array of logged-in test users.
  */
-export async function setupHttpUsers(): Promise<TestUser[]> {
+export async function setupHttpUsers(): Promise<AuthUser[]> {
 	const userPromises = usersData.map((data) => createUser(data));
-	let users = await Promise.all(userPromises);
+	await Promise.all(userPromises);
 
-	const loginPromises = users.map((user) => loginUser(user));
-	users = await Promise.all(loginPromises);
+	const loginPromises = usersData.map((data) =>
+		loginUser(data.email, data.password),
+	);
+	const loginResults = await Promise.all(loginPromises);
 
-	return users;
+	for (const result of loginResults) {
+		if (isAppError(result))
+			throw new Error(`Failed to set up users: ${result.message}`);
+
+		if (!result || !result.cookie)
+			throw new Error('Failed to set up users: Missing cookie');
+	}
+
+	return loginResults as AuthUser[];
 }
-

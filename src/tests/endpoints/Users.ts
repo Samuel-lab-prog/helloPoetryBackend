@@ -1,82 +1,92 @@
-import { type TestUser, PREFIX, app } from '../Helpers.ts';
+import type {
+	CreateUser,
+	CreateUserResult,
+	UpdateUserData,
+	UpdateUserResult,
+	UserPrivateProfile,
+	UserPublicProfile,
+	UserRole,
+	UserStatus,
+} from '@Domains/users-management/use-cases/Models.ts';
+import { PREFIX, app } from '../Helpers.ts';
 import { jsonRequest } from '../TestsUtils.ts';
+import { prisma } from '@Prisma/PrismaClient.ts';
+import type { AppError } from '@AppError';
 
-export async function sendFriendRequest(from: TestUser, addresseeId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/${addresseeId}`, {
-			method: 'POST',
-			headers: { Cookie: from.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function acceptFriendRequest(to: TestUser, requesterId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/accept/${requesterId}`, {
-			method: 'PATCH',
-			headers: { Cookie: to.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function rejectFriendRequest(to: TestUser, requesterId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/reject/${requesterId}`, {
-			method: 'PATCH',
-			headers: { Cookie: to.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function unblockUser(by: TestUser, targetUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/unblock/${targetUserId}`, {
-			method: 'PATCH',
-			headers: { Cookie: by.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function blockUser(by: TestUser, targetUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/block/${targetUserId}`, {
-			method: 'PATCH',
-			headers: { Cookie: by.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function cancelFriendRequest(from: TestUser, addresseeId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/cancel/${addresseeId}`, {
-			method: 'DELETE',
-			headers: { Cookie: from.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function deleteFriend(user: TestUser, friendUserId: number) {
-	const res = await app.handle(
-		jsonRequest(`${PREFIX}/friends/delete/${friendUserId}`, {
-			method: 'DELETE',
-			headers: { Cookie: user.cookie },
-		}),
-	);
-	return await res.json();
-}
-
-export async function getMyPrivateProfile(user: TestUser) {
+export async function getMyPrivateProfile(
+	cookie: string,
+): Promise<UserPrivateProfile | AppError> {
 	const res = await app.handle(
 		jsonRequest(`${PREFIX}/users/me`, {
 			method: 'GET',
-			headers: { Cookie: user.cookie },
+			headers: { Cookie: cookie },
 		}),
 	);
-	return await res.json();
+	const parsed = await res.json();
+
+	if (!res.ok) return parsed as AppError;
+	return parsed as UserPrivateProfile;
+}
+
+export async function getUserPublicProfile(
+	cookie: string,
+	targetUserId: number,
+): Promise<UserPublicProfile | AppError> {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/users/${targetUserId}`, {
+			method: 'GET',
+			headers: { Cookie: cookie },
+		}),
+	);
+	const parsed = await res.json();
+
+	if (!res.ok) return parsed as AppError;
+	return parsed as UserPublicProfile;
+}
+
+export async function createUser(
+	data: CreateUser,
+): Promise<CreateUserResult | AppError> {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/users`, {
+			method: 'POST',
+			body: data,
+		}),
+	);
+	const parsed = await res.json();
+
+	if (!res.ok) return parsed as AppError;
+	return parsed as CreateUserResult;
+}
+
+export async function updateUserProfile(
+	cookie: string,
+	updates: UpdateUserData,
+): Promise<UpdateUserResult | AppError> {
+	const res = await app.handle(
+		jsonRequest(`${PREFIX}/users`, {
+			method: 'PATCH',
+			headers: { Cookie: cookie },
+			body: updates,
+		}),
+	);
+	const parsed = await res.json();
+
+	if (!res.ok) return parsed as AppError;
+	return parsed as UpdateUserResult;
+}
+
+/**
+ * Updates a user's role or status directly in the database. Useful for setting up test scenarios.
+ * @param userId The ID of the user to update.
+ * @param updates An object containing the fields to update.
+ */
+export async function updateUserStatsRaw(
+	userId: number,
+	updates: Partial<{ role: UserRole; status: UserStatus }>,
+) {
+	await prisma.user.update({
+		where: { id: userId },
+		data: updates,
+	});
 }

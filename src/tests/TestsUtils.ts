@@ -1,4 +1,6 @@
+import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
+import { expect } from 'bun:test';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,
@@ -24,13 +26,57 @@ export function jsonRequest<TBody = unknown>(
 
 	const finalHeaders = new Headers(headers);
 
-	if (!finalHeaders.has('Content-Type')) {
+	if (!finalHeaders.has('Content-Type'))
 		finalHeaders.set('Content-Type', 'application/json');
-	}
 
 	return new Request(url, {
 		...rest,
 		headers: finalHeaders,
 		body: body !== undefined ? JSON.stringify(body) : undefined,
 	});
+}
+
+/**
+ * Correctly handles a Response by parsing its JSON and checking the status code.
+ * If the response is not OK, it returns an AppError. Otherwise, it returns the parsed JSON as type T.
+ * @param response The Response object to handle.
+ * @returns A promise that resolves to either the parsed JSON as type T or an AppError.
+ */
+export async function handleResponse<T>(
+	response: Response,
+): Promise<T | AppError> {
+	const parsed = await response.json();
+	if (!response.ok) return parsed as AppError;
+	return parsed as T;
+}
+
+/**
+ * A constant representing a non-existent ID, useful for testing error cases where an ID is expected to not be found in the database.
+ * We are not using -1 because the API might have validation that rejects negative IDs before it even checks if they exist, which would prevent us from testing the "not found" logic in the handlers.
+ */
+export const NON_EXISTENT_ID = 999999999;
+
+/**
+ * Correctly identifies whether a given result is an AppError by checking for the presence of 'statusCode' and 'message' properties.
+ * @param result The result to check.
+ * @returns True if the result is an AppError, false otherwise.
+ */
+export function isAppError(result: unknown): result is AppError {
+	return (
+		typeof result === 'object' &&
+		result !== null &&
+		'statusCode' in result &&
+		'message' in result &&
+		'code' in result
+	);
+}
+
+/**
+ * Expects the result to be an AppError and checks its status code. Uses expect from Bun's test framework.
+ * @param result The result to check.
+ * @param statusCode The expected status code.
+ */
+export function expectAppError(result: unknown, statusCode: number) {
+	const error = result as AppError;
+	expect(error.statusCode).toBe(statusCode);
 }

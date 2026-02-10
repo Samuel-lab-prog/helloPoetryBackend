@@ -23,7 +23,9 @@
 		"./src/domains/feed-engine/ports/schemas",
 		"./src/domains/feed-engine/use-cases/queries",
 
-		"./architecture-analysis/src/metrics"
+		"./architecture-analysis/src/metrics",
+		"./src/tests/endpoints",
+		"./src/tests/data"
 	],
 	"delete": true,
 	"location": "top",

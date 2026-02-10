@@ -18,7 +18,7 @@ function setUpCookieTokenOptions(token: CookieOptions) {
 	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
 }
 
-interface LoginResponse {
+export interface LoginResponse {
 	token: string;
 	client: { id: number; role: UserRole; status: UserStatus };
 }

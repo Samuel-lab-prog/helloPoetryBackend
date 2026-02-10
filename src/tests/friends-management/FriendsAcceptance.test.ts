@@ -6,7 +6,7 @@ import {
 	getMyPrivateProfile,
 	cancelFriendRequest,
 	rejectFriendRequest,
-} from '../endpoints/Users';
+} from '../endpoints/Index';
 import { createUser, type TestUser, loginUser } from '../Helpers';
 
 import type {

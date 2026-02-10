@@ -2,23 +2,6 @@ import type {
 	UpdatePoem,
 	CreatePoem,
 } from '@Domains/poems-management/use-cases/Models';
-import type { CreateUser } from '@Domains/users-management/use-cases/Models';
-
-function generateUsersData(quantity: number): CreateUser[] {
-	const data: CreateUser[] = [];
-
-	for (let i = 1; i <= quantity; i++) {
-		data.push({
-			email: `user${i}@gmail.com`,
-			password: `password${i}`,
-			nickname: `user${i}`,
-			name: `user${i}`,
-			bio: `user${i}bio`,
-			avatarUrl: `http://example.com/avatar${i}.png`,
-		});
-	}
-	return data;
-}
 
 function generatePoemsData(quantity: number): CreatePoem[] {
 	const data: CreatePoem[] = [];
@@ -49,10 +32,8 @@ function generatePoemsForUpdate(quantity: number): UpdatePoem[] {
 	}
 	return data;
 }
-const USERS_QUANTITY = 10;
 const POEMS_QUANTITY = 10;
 const POEMS_FOR_UPDATE_QUANTITY = 10;
 
-export const usersData = generateUsersData(USERS_QUANTITY);
 export const poemsData = generatePoemsData(POEMS_QUANTITY);
 export const poemsForUpdate = generatePoemsForUpdate(POEMS_FOR_UPDATE_QUANTITY);
