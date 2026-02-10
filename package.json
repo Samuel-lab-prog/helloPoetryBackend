@@ -48,7 +48,8 @@
 		"depcruise": "bunx depcruise src",
 		"check": "bun lint:fix && bun format:fix && bun test && bun metrics && bun depcruise && bunx tsc --noEmit && echo 'All checks passed!'",
 		"gen-usecases": "bun generator/src/UseCasesFactory.ts",
-		"barrels": "bunx barrelsby -c barrels.config.json"
+		"barrels": "bunx barrelsby -c barrels.config.json",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
