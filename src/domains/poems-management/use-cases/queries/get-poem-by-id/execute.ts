@@ -1,19 +1,11 @@
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { QueriesRepository, GetPoemParams } from '../../../ports/Queries';
 import { PoemNotFoundError, PoemAccessDeniedError } from '../../Errors';
 import { canViewPoem } from '../../Policies';
 import type { AuthorPoem } from '../../Models';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
-
-export type GetPoemParams = {
-	requesterId?: number;
-	requesterRole?: UserRole;
-	requesterStatus?: UserStatus;
-	poemId: number;
-};
 
 export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getPoem(params: GetPoemParams): Promise<AuthorPoem> {

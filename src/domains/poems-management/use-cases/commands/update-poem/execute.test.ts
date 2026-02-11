@@ -3,10 +3,12 @@ import { describe, it, expect, mock } from 'bun:test';
 import { updatePoemFactory } from './execute';
 import { PoemAlreadyExistsError } from '../../Errors';
 
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { SlugService } from '../../../ports/SlugService';
-import type { UsersServicesForPoems } from '../../../ports/UsersServices';
+import type { CommandsRepository } from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
+import type {
+	SlugService,
+	UsersServicesForPoems,
+} from '../../../ports/ExternalServices';
 import type { UpdatePoem } from '../../Models';
 
 describe('USE-CASE - Poems', () => {

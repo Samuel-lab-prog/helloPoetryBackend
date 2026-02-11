@@ -6,7 +6,7 @@ import { idSchema } from '@SharedKernel/Schemas';
 
 import { MyPoemReadSchema, AuthorPoemReadSchema } from '../ports/schemas/Index';
 
-import { type QueriesRouterServices } from '../ports/QueriesServices';
+import { type QueriesRouterServices } from '../ports/Queries';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })

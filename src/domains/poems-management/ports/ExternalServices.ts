@@ -1,5 +1,9 @@
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
+export interface SlugService {
+	generateSlug(title: string): string;
+}
+
 type UserBasicInfo = {
 	exists: boolean;
 	id: number | null;

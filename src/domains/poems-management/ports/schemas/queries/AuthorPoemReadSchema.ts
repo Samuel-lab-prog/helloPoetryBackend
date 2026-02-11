@@ -13,13 +13,13 @@ import {
 	PoemExcerptSchema,
 	PoemSlugSchema,
 	PoemIsCommentableSchema,
-} from './PoemFieldsSchemas';
+} from '../PoemFieldsSchemas';
 
 import {
 	PoemModerationStatusEnumSchema,
 	PoemStatusEnumSchema,
 	PoemVisibilityEnumSchema,
-} from './Enums';
+} from '../Enums';
 
 export const AuthorPoemReadSchema = t.Object({
 	id: idSchema,

@@ -10,7 +10,7 @@ import {
 	UpdatePoemResultSchema,
 } from '../ports/schemas/Index';
 
-import { type CommandsRouterServices } from '../ports/CommandsServices';
+import { type CommandsRouterServices } from '../ports/Commands';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/poems' })

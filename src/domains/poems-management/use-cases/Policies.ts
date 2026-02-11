@@ -1,7 +1,7 @@
-import type { UsersServicesForPoems } from '../ports/UsersServices';
+import type { UsersServicesForPoems } from '../ports/ExternalServices';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
-import type { QueriesRepository } from '../ports/QueriesRepository';
+import type { QueriesRepository } from '../ports/Queries';
 
 import {
 	InvalidDedicatedUsersError,

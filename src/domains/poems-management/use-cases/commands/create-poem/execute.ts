@@ -1,7 +1,11 @@
-import type { UsersServicesForPoems } from '../../../ports/UsersServices';
-import type { SlugService } from '../../../ports/SlugService';
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { CreatePoemParams } from '../../../ports/CommandsServices';
+import type {
+	SlugService,
+	UsersServicesForPoems,
+} from '../../../ports/ExternalServices';
+import type {
+	CommandsRepository,
+	CreatePoemParams,
+} from '../../../ports/Commands';
 import { PoemAlreadyExistsError } from '../../Errors';
 import type { CreatePoemDB, CreatePoemResult } from '../../Models';
 import { canCreatePoem } from '../../Policies';
@@ -41,9 +45,8 @@ export function createPoemFactory(deps: Dependencies) {
 		const result = await commandsRepository.insertPoem(poem);
 		if (result.ok === true) return result.data;
 
-		if (result.ok === false && result.code === 'CONFLICT') {
+		if (result.ok === false && result.code === 'CONFLICT')
 			throw new PoemAlreadyExistsError();
-		}
 
 		throw result.error;
 	};

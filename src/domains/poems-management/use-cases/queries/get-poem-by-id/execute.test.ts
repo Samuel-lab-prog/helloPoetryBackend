@@ -3,7 +3,7 @@ import { describe, it, expect, mock } from 'bun:test';
 import { getPoemFactory } from './execute';
 import { PoemNotFoundError } from '../../Errors';
 
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { QueriesRepository } from '../../../ports/Queries';
 import type { AuthorPoem } from '../../Models';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 

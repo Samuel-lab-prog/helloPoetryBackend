@@ -14,8 +14,8 @@ import {
 	InvalidDedicatedUsersError,
 } from './Errors';
 
-import type { UsersServicesForPoems } from '../ports/UsersServices';
-import type { QueriesRepository } from '../ports/QueriesRepository';
+import type { UsersServicesForPoems } from '../ports/ExternalServices';
+import type { QueriesRepository } from '../ports/Queries';
 
 describe('POLICY - Poems Management', () => {
 	describe('validateDedicatedUsers', () => {

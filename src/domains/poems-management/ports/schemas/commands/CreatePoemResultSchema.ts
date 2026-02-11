@@ -7,14 +7,14 @@ import {
 	PoemSlugSchema,
 	PoemTagsReadSchema,
 	PoemTitleSchema,
-} from './PoemFieldsSchemas';
+} from '../PoemFieldsSchemas';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 
 import {
 	PoemModerationStatusEnumSchema,
 	PoemStatusEnumSchema,
 	PoemVisibilityEnumSchema,
-} from './Enums';
+} from '../Enums';
 
 export const CreatePoemResultSchema = t.Object({
 	id: idSchema,

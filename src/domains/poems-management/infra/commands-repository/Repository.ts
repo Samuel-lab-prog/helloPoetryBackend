@@ -2,7 +2,7 @@ import { prisma } from '@PrismaClient';
 import { withPrismaResult } from '@PrismaErrorHandler';
 import type { CommandResult } from '@SharedKernel/Types';
 
-import type { CommandsRepository } from '../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../ports/Commands';
 import type {
 	CreatePoemDB,
 	CreatePoemResult,

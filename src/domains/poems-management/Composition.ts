@@ -1,5 +1,5 @@
 import { queriesRepository } from './infra/queries-repository/Repository';
-import type { QueriesRouterServices } from './ports/QueriesServices';
+import type { QueriesRouterServices } from './ports/Queries';
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { slugifyService } from './infra/slug-service/Execute';
 import { usersContract } from '@SharedKernel/contracts/users/Index';
@@ -15,7 +15,7 @@ import {
 	updatePoemFactory,
 } from './use-cases/commands/Index';
 
-import type { CommandsRouterServices } from './ports/CommandsServices';
+import type { CommandsRouterServices } from './ports/Commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 
 const commandsRouterServices: CommandsRouterServices = {

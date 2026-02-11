@@ -1,14 +1,13 @@
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type {
+	QueriesRepository,
+	GetMyPoemsParams,
+} from '../../../ports/Queries';
 import type { MyPoem } from '../../Models';
 import { canViewPoem } from '../../Policies';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
 }
-
-export type GetMyPoemsParams = {
-	requesterId: number;
-};
 
 export function getMyPoemsFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getMyPoems(

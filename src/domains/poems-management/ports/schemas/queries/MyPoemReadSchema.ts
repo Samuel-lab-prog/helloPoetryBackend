@@ -6,7 +6,7 @@ import {
 	PoemSlugSchema,
 	PoemTagsReadSchema,
 	PoemIsCommentableSchema,
-} from './PoemFieldsSchemas';
+} from '../PoemFieldsSchemas';
 import {
 	DateSchema,
 	idSchema,
@@ -18,7 +18,7 @@ import {
 	PoemVisibilityEnumSchema,
 	PoemModerationStatusEnumSchema,
 	PoemStatusEnumSchema,
-} from './Enums';
+} from '../Enums';
 
 export const MyPoemReadSchema = t.Object({
 	id: idSchema,

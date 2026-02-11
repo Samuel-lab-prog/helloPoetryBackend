@@ -3,9 +3,11 @@ import { describe, it, expect, mock } from 'bun:test';
 import { createPoemFactory } from './execute';
 import { PoemAlreadyExistsError } from '../../Errors';
 
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { SlugService } from '../../../ports/SlugService';
-import type { UsersServicesForPoems } from '../../../ports/UsersServices';
+import type { CommandsRepository } from '../../../ports/Commands';
+import type {
+	SlugService,
+	UsersServicesForPoems,
+} from '../../../ports/ExternalServices';
 import type { CreatePoem } from '../../Models';
 
 describe('USE-CASE - Poems Management', () => {

@@ -1,8 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-
 import { getMyPoemsFactory } from './execute';
-
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { QueriesRepository } from '../../../ports/Queries';
 
 describe('USE-CASE - Poems Management', () => {
 	describe('Get My Poems', () => {

@@ -1,12 +1,14 @@
-import type { UsersServicesForPoems } from '../../../ports/UsersServices';
-import type { UpdatePoemParams } from '../../../ports/CommandsServices';
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { SlugService } from '../../../ports/SlugService';
-
+import type {
+	UsersServicesForPoems,
+	SlugService,
+} from '../../../ports/ExternalServices';
+import type {
+	UpdatePoemParams,
+	CommandsRepository,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 import type { UpdatePoemResult } from '../../Models';
 import { PoemAlreadyExistsError } from '../../Errors';
-
 import { canUpdatePoem } from '../../Policies';
 
 interface Dependencies {
