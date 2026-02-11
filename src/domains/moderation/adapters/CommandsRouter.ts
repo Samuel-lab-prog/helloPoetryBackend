@@ -5,11 +5,8 @@ import {
 	suspendedUserResponseSchema,
 	bannedUserResponseSchema,
 	sanctionReasonSchema,
-} from '../../ports/schemas/Index';
-import {
-	type CommandsRouterServices,
-	commandsRouterServices,
-} from './Services';
+} from '../ports/schemas/Index';
+import { type CommandsRouterServices } from '../ports/Commands';
 import { appErrorSchema } from '@AppError';
 
 export function createModerationCommandsRouter(
@@ -76,6 +73,3 @@ export function createModerationCommandsRouter(
 			},
 		);
 }
-export const moderationCommandsRouter = createModerationCommandsRouter(
-	commandsRouterServices,
-);

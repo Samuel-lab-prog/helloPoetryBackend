@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { UsersServicesForModeration } from '../../../ports/UsersServices';
+import type {
+	CommandsRepository,
+	SuspendUserParams,
+} from '../../../ports/Commands';
+import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
 import type { SuspendedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
@@ -7,21 +10,13 @@ import {
 	InsufficientPermissionsError,
 	CannotSuspendSelfError,
 } from '../../Errors';
-import type { QueriesRepository } from '@Domains/moderation/ports/QueriesRepository';
-import type { UserRole } from '@SharedKernel/Enums';
+import type { QueriesRepository } from '@Domains/moderation/ports/Queries';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersServicesForModeration;
 }
-
-export type SuspendUserParams = {
-	userId: number;
-	reason: string;
-	requesterId: number;
-	requesterRole: UserRole;
-};
 
 export function suspendUserFactory({
 	commandsRepository,

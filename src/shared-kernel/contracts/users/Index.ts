@@ -1,6 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { UsersServicesForModeration } from '@Domains/moderation/ports/UsersServices';
+import type { UsersServicesForModeration } from '@Domains/moderation/ports/ExternalServices';
 import type { UsersServicesForPoems } from '@Domains/poems-management/ports/ExternalServices';
 import type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
 import type { AuthRepository } from '@GenericSubdomains/authentication/ports/AuthRepository';

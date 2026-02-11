@@ -1,6 +1,9 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { UsersServicesForModeration } from '../../../ports/UsersServices';
+import type {
+	CommandsRepository,
+	BanUserParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
+import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
 import type { BannedUserResponse } from '../../Models';
 import {
 	UserNotFoundError,
@@ -8,19 +11,12 @@ import {
 	InsufficientPermissionsError,
 	CannotBanSelfError,
 } from '../../Errors';
-import type { UserRole } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersServicesForModeration;
 }
-export type BanUserParams = {
-	userId: number;
-	reason: string;
-	requesterId: number;
-	requesterRole: UserRole;
-};
 
 export function banUserFactory({
 	commandsRepository,
