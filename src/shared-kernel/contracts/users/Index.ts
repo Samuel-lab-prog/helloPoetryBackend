@@ -2,10 +2,8 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { UsersServicesForModeration } from '@Domains/moderation/ports/UsersServices';
 import type { UsersServicesForPoems } from '@Domains/poems-management/ports/UsersServices';
-import type {
-	AuthRepository,
-	ClientAuthCredentials,
-} from '@GenericSubdomains/authentication/ports/AuthRepository';
+import type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
+import type { AuthRepository } from '@GenericSubdomains/authentication/ports/AuthRepository';
 
 async function getUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {

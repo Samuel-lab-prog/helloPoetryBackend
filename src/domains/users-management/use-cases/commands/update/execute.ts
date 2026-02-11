@@ -1,4 +1,4 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../../ports/commands/Repository';
 import type { UpdateUserData, UserStatus, FullUser } from '../../Models';
 import { UserUpdateError, UserUpdateConflictError } from '../../Errors';
 import { canUpdateData } from '../../Policies';

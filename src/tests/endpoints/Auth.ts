@@ -26,7 +26,6 @@ export async function loginUser(
 			body: { email, password },
 		}),
 	);
-
 	const cookie = res.headers.get('set-cookie');
 	const parsed = await res.json();
 

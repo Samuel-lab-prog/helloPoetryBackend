@@ -2,7 +2,7 @@ import type {
 	CreateUserDB,
 	UpdateUserData,
 	FullUser,
-} from '../use-cases/Models';
+} from '../../use-cases/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export interface CommandsRepository {

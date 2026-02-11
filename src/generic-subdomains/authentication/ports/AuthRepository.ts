@@ -1,17 +1,5 @@
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-
-export interface ClientAuthCredentials {
-	id: number;
-	role: UserRole;
-	email: string;
-	status: UserStatus;
-	passwordHash: string;
-}
-
-export interface FindClientByEmail {
-	(email: string): Promise<ClientAuthCredentials | null>;
-}
+import type { ClientAuthCredentials } from '../use-cases/Models';
 
 export interface AuthRepository {
-	findClientByEmail: FindClientByEmail;
+	findClientByEmail: (email: string) => Promise<ClientAuthCredentials | null>;
 }

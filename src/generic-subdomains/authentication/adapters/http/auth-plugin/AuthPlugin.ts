@@ -1,22 +1,10 @@
 import { Elysia } from 'elysia';
 import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@AppError';
-import { cookieTokenSchema } from '../../schemas/cookieTokenSchema';
+import { cookieTokenSchema } from '../../../ports/schemas/CookieTokenSchema';
+import type { AuthPluginServices } from '../../Services';
 
-import { authenticateClientFactory } from '../../../use-cases/authenticate/authenticate';
-import { JwtTokenService } from '../../../infra/token/JwtTokenService';
-import { AuthPrismaRepository } from '../../../infra/repository/repository';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-
-interface Dependencies {
-	authenticate: (token: string) => Promise<{
-		id: number;
-		role: UserRole;
-		status: UserStatus;
-	}>;
-}
-
-export function createAuthPlugin({ authenticate }: Dependencies) {
+export function createAuthPlugin({ authenticate }: AuthPluginServices) {
 	return new Elysia().use(SetupPlugin).guard({
 		as: 'scoped',
 		beforeHandle: async ({ cookie, store, auth }) => {
@@ -33,17 +21,9 @@ export function createAuthPlugin({ authenticate }: Dependencies) {
 				store.authTiming = Math.round(performance.now() - authInitiatedAt);
 			}
 		},
-
 		response: {
 			401: appErrorSchema,
 		},
 		cookie: cookieTokenSchema,
 	});
 }
-
-const authenticate = authenticateClientFactory({
-	tokenService: JwtTokenService,
-	findClientByEmail: AuthPrismaRepository['findClientByEmail'],
-});
-
-export const AuthPlugin = createAuthPlugin({ authenticate });

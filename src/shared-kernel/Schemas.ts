@@ -40,3 +40,6 @@ export const UserPreviewSchema = t.Object({
 	avatarUrl: t.Nullable(t.String()),
 	friendIds: t.Array(idSchema),
 });
+
+export const UserStatusSchema = t.UnionEnum(['active', 'suspended', 'banned']);
+export const UserRoleSchema = t.UnionEnum(['moderator', 'admin', 'author']);

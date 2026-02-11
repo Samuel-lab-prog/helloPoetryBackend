@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
-import type { HashServices } from '@SharedKernel/ports/HashServices';
+import type { HashServices } from '../ports/HashServices';
 
-const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS);
+const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 3;
 
 function hash(password: string): Promise<string> {
-	return bcrypt.hash(password, saltRounds);
+	return bcrypt.hash(password, SALT_ROUNDS);
 }
 
 function compare(password: string, hashedPassword: string): Promise<boolean> {

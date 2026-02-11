@@ -9,9 +9,7 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 
-import { authRouter } from './generic-subdomains/authentication/adapters/http/auth-router/AuthRouter';
 import { userQueriesRouter } from './domains/users-management/adapters/queries/Router';
-import { userCommandsRouter } from './domains/users-management/adapters/commands/Router';
 import { poemsQueriesRouter } from './domains/poems-management/adapters/queries/Router';
 import { poemsCommandsRouter } from './domains/poems-management/adapters/commands/Router';
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';
@@ -19,6 +17,13 @@ import { interactionsCommandsRouter } from '@Domains/interactions/adapters/comma
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
+
+import {
+	userCommandsRouter,
+	userCommandsRouterWithFakeHash,
+} from 'composition/Users';
+
+import { authRouter, authRouterWithFakeHash } from 'composition/Auth';
 
 export const PREFIX = '/api/v1';
 export const MAIN_INSTANCE_NAME = 'mainServerInstance';
@@ -54,35 +59,48 @@ const RATE_LIMIT_SETTINGS = {
 	skip: () => process.env.NODE_ENV === 'test',
 };
 
-export const createServer = new Elysia(ELYSIA_SETTINGS)
-	.use(cors())
-	.use(SetupPlugin)
-	.use(LoggerPlugin)
-	.use(ErrorPlugin)
-	.use(rateLimit(RATE_LIMIT_SETTINGS))
-	.use(openapi(OPEN_API_SETTINGS))
-	.use(authRouter)
-	.use(userQueriesRouter)
-	.use(userCommandsRouter)
-	.use(poemsQueriesRouter)
-	.use(poemsCommandsRouter)
-	.use(friendsCommandsRouter)
-	.use(interactionsCommandsRouter)
-	.use(interactionsQueriesRouter)
-	.use(moderationCommandsRouter)
-	.use(feedQueriesRouter);
+type MakeServerOptions = {
+	enableRealHash: boolean;
+	enableDocs: boolean;
+	enableRateLimit: boolean;
+	enableLogger: boolean;
+};
 
-export const createTestServer = new Elysia(ELYSIA_SETTINGS)
-	.use(SetupPlugin)
-	.use(LoggerPlugin)
-	.use(ErrorPlugin)
-	.use(authRouter)
-	.use(userQueriesRouter)
-	.use(userCommandsRouter)
-	.use(poemsQueriesRouter)
-	.use(poemsCommandsRouter)
-	.use(friendsCommandsRouter)
-	.use(interactionsCommandsRouter)
-	.use(interactionsQueriesRouter)
-	.use(moderationCommandsRouter)
-	.use(feedQueriesRouter);
+function makeServer({
+	enableRealHash,
+	enableDocs,
+	enableRateLimit,
+	enableLogger,
+}: MakeServerOptions) {
+	return new Elysia(ELYSIA_SETTINGS)
+		.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
+		.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
+		.use(enableLogger ? LoggerPlugin : undefined)
+		.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
+		.use(cors())
+		.use(SetupPlugin)
+		.use(ErrorPlugin)
+		.use(enableRealHash ? authRouter : authRouterWithFakeHash)
+		.use(userQueriesRouter)
+		.use(poemsCommandsRouter)
+		.use(poemsQueriesRouter)
+		.use(friendsCommandsRouter)
+		.use(interactionsCommandsRouter)
+		.use(interactionsQueriesRouter)
+		.use(moderationCommandsRouter)
+		.use(feedQueriesRouter);
+}
+
+export const server = makeServer({
+	enableRealHash: true,
+	enableDocs: true,
+	enableRateLimit: true,
+	enableLogger: true,
+});
+
+export const testServer = makeServer({
+	enableRealHash: false,
+	enableDocs: false,
+	enableRateLimit: false,
+	enableLogger: false,
+});

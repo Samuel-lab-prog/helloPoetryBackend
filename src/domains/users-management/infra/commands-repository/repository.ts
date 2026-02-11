@@ -3,7 +3,7 @@ import { withPrismaResult } from '@PrismaErrorHandler';
 import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
 import type { CommandResult } from '@SharedKernel/Types';
 
-import type { CommandsRepository } from '../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../ports/commands/Repository';
 import type {
 	UpdateUserData,
 	CreateUserDB,

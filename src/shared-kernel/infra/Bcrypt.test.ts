@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { BcryptHashService } from './BcryptHashService';
+import { BcryptHashService } from './Bcrypt';
 
 describe('BcryptHashService', () => {
 	it('should hash a password and validate it correctly', async () => {

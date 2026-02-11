@@ -1,5 +1,5 @@
 import type { AppErrorCode } from '@AppError';
-export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/ports/AuthRepository';
+export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
 
 export type CommandResult<T> =
 	| {

@@ -1,25 +1,13 @@
 import type { TokenService, TokenPayload } from '../../ports/TokenService';
-import type { HashService } from '../../ports/HashService';
 import type { AuthRepository } from '../../ports/AuthRepository';
-
-import { InvalidCredentialsError } from '../errors';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import { InvalidCredentialsError } from '../Errors';
+import type { LoginResponse } from '../Models';
+import type { HashServices } from '@SharedKernel/ports/HashServices';
 
 interface Dependencies {
 	tokenService: TokenService;
-	hashService: HashService;
+	hashService: HashServices;
 	findClientByEmail: AuthRepository['findClientByEmail'];
-}
-
-interface AuthClient {
-	id: number;
-	role: UserRole;
-	status: UserStatus;
-}
-
-interface LoginResponse {
-	token: string;
-	client: AuthClient;
 }
 
 export function loginClientFactory(dependencies: Dependencies) {
@@ -30,18 +18,14 @@ export function loginClientFactory(dependencies: Dependencies) {
 		const { tokenService, hashService, findClientByEmail } = dependencies;
 		const client = await findClientByEmail(clientEmail);
 
-		if (!client) {
-			throw new InvalidCredentialsError();
-		}
+		if (!client) throw new InvalidCredentialsError();
 
 		const isPasswordValid = await hashService.compare(
 			clientPassword,
 			client.passwordHash,
 		);
 
-		if (!isPasswordValid) {
-			throw new InvalidCredentialsError();
-		}
+		if (!isPasswordValid) throw new InvalidCredentialsError();
 
 		const tokenPayload: TokenPayload = {
 			clientId: client.id,

@@ -1,14 +1,9 @@
-import { Elysia, t, type CookieOptions } from 'elysia';
+import { Elysia, type CookieOptions } from 'elysia';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { appErrorSchema } from '@AppError';
-import { loginSchema } from '../../schemas/loginSchema';
-
-import { BcryptHashService } from '../../../infra/hashing/BcryptHashService';
-import { JwtTokenService } from '../../../infra/token/JwtTokenService';
-import { AuthPrismaRepository } from '../../../infra/repository/repository';
-import { loginClientFactory } from '../../../use-cases/login/login';
-import type { UserRole } from '@SharedKernel/Enums';
-import type { UserStatus } from '@PrismaGenerated/enums';
+import { loginSchema } from '../../../ports/schemas/loginSchema';
+import type { AuthControllerServices } from '../../Services';
+import { loginResponseSchema } from '@GenericSubdomains/authentication/ports/schemas/LoginResponseSchema';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
 	token.httpOnly = process.env.NODE_ENV === 'prod';
@@ -16,15 +11,6 @@ function setUpCookieTokenOptions(token: CookieOptions) {
 	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60 * 60;
 	token.secure = process.env.NODE_ENV === 'prod';
 	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
-}
-
-export interface LoginResponse {
-	token: string;
-	client: { id: number; role: UserRole; status: UserStatus };
-}
-
-interface AuthControllerServices {
-	login: (email: string, password: string) => Promise<LoginResponse>;
 }
 
 export function createAuthRouter(services: AuthControllerServices) {
@@ -46,16 +32,9 @@ export function createAuthRouter(services: AuthControllerServices) {
 		{
 			body: loginSchema,
 			response: {
-				200: t.Object({
-					id: t.Number(),
-					role: t.String(),
-					status: t.String(),
-				}),
-			},
-			errors: {
-				401: appErrorSchema,
+				200: loginResponseSchema,
 				400: appErrorSchema,
-				422: appErrorSchema,
+				401: appErrorSchema,
 			},
 			detail: {
 				summary: 'Login',
@@ -66,11 +45,3 @@ export function createAuthRouter(services: AuthControllerServices) {
 		},
 	);
 }
-
-export const login = loginClientFactory({
-	hashService: BcryptHashService,
-	tokenService: JwtTokenService,
-	findClientByEmail: AuthPrismaRepository['findClientByEmail'],
-});
-
-export const authRouter = createAuthRouter({ login });

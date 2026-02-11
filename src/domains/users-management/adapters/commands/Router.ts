@@ -9,7 +9,7 @@ import {
 	FullUserSchema,
 } from '../../ports/schemas/Index';
 
-import { type UsersCommandsServices, commandsServices } from './Services';
+import { type UsersCommandsServices } from '../../ports/commands/Services';
 
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	return new Elysia({ prefix: '/users' })
@@ -63,4 +63,3 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			},
 		);
 }
-export const userCommandsRouter = createUsersCommandsRouter(commandsServices);

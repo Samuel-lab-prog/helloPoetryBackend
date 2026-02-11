@@ -70,7 +70,7 @@ function generateUser(index: number, passwordHash: string) {
 	};
 }
 
-import { BcryptHashService } from '@GenericSubdomains/authentication/infra/hashing/BcryptHashService';
+import { BcryptHashService } from '@SharedKernel/infra/Bcrypt';
 
 export async function createUserSeeds(amount: number) {
 	const passwordHash = await BcryptHashService.hash('defaultpassword');

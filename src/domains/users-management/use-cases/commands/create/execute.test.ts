@@ -2,8 +2,8 @@ import { describe, it, expect, mock } from 'bun:test';
 
 import { createUserFactory } from './execute';
 
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { HashServices } from '../../../ports/HashSerices';
+import type { CommandsRepository } from '../../../ports/commands/Repository';
+import type { HashServices } from '@SharedKernel/ports/HashServices';
 
 import { UserCreationError, UserCreationConflictError } from '../../Errors';
 

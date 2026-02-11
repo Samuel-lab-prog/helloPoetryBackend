@@ -1,6 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
 import { updateUserFactory } from './execute';
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../../ports/commands/Repository';
 import { UserUpdateConflictError, UserUpdateError } from '../../Errors';
 
 describe('USE-CASE - Users Management', () => {
