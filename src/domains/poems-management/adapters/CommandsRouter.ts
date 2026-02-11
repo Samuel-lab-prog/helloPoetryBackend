@@ -8,12 +8,9 @@ import {
 	CreatePoemBodySchema,
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
-} from '../../ports/schemas/Index';
+} from '../ports/schemas/Index';
 
-import {
-	type CommandsRouterServices,
-	commandsRouterServices,
-} from './Services';
+import { type CommandsRouterServices } from '../ports/CommandsServices';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/poems' })
@@ -77,7 +74,3 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			},
 		);
 }
-
-export const poemsCommandsRouter = createPoemsCommandsRouter(
-	commandsRouterServices,
-);

@@ -1,11 +1,9 @@
-import type { UserStatus, UserRole } from '@SharedKernel/Enums';
 import type { UsersServicesForPoems } from '../../../ports/UsersServices';
-
 import type { SlugService } from '../../../ports/SlugService';
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
-
+import type { CreatePoemParams } from '../../../ports/CommandsServices';
 import { PoemAlreadyExistsError } from '../../Errors';
-import type { CreatePoem, CreatePoemDB, CreatePoemResult } from '../../Models';
+import type { CreatePoemDB, CreatePoemResult } from '../../Models';
 import { canCreatePoem } from '../../Policies';
 
 interface Dependencies {
@@ -13,15 +11,6 @@ interface Dependencies {
 	slugService: SlugService;
 	usersContract: UsersServicesForPoems;
 }
-
-export type CreatePoemParams = {
-	data: CreatePoem;
-	meta: {
-		requesterId: number;
-		requesterStatus: UserStatus;
-		requesterRole: UserRole;
-	};
-};
 
 export function createPoemFactory(deps: Dependencies) {
 	const { commandsRepository, slugService, usersContract } = deps;

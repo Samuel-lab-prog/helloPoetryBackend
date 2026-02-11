@@ -4,12 +4,9 @@ import { appErrorSchema } from '@AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { idSchema } from '@SharedKernel/Schemas';
 
-import {
-	MyPoemReadSchema,
-	AuthorPoemReadSchema,
-} from '../../ports/schemas/Index';
+import { MyPoemReadSchema, AuthorPoemReadSchema } from '../ports/schemas/Index';
 
-import { type QueriesRouterServices, queriesRouterServices } from './Services';
+import { type QueriesRouterServices } from '../ports/QueriesServices';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
@@ -85,7 +82,3 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			},
 		);
 }
-
-export const poemsQueriesRouter = createPoemsQueriesRouter(
-	queriesRouterServices,
-);

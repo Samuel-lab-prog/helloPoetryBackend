@@ -9,9 +9,11 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 
-import { userQueriesRouter } from './domains/users-management/adapters/queries/Router';
-import { poemsQueriesRouter } from './domains/poems-management/adapters/queries/Router';
-import { poemsCommandsRouter } from './domains/poems-management/adapters/commands/Router';
+import { userQueriesRouter } from '@Domains/users-management/adapters/queries/Router';
+import {
+	poemsCommandsRouter,
+	poemsQueriesRouter,
+} from '@Domains/poems-management/Composition';
 import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/commands/Router';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';

@@ -1,11 +1,10 @@
-import type { UserStatus, UserRole } from '@SharedKernel/Enums';
 import type { UsersServicesForPoems } from '../../../ports/UsersServices';
-
+import type { UpdatePoemParams } from '../../../ports/CommandsServices';
 import type { CommandsRepository } from '../../../ports/CommandsRepository';
 import type { QueriesRepository } from '../../../ports/QueriesRepository';
 import type { SlugService } from '../../../ports/SlugService';
 
-import type { UpdatePoem, UpdatePoemResult } from '../../Models';
+import type { UpdatePoemResult } from '../../Models';
 import { PoemAlreadyExistsError } from '../../Errors';
 
 import { canUpdatePoem } from '../../Policies';
@@ -16,16 +15,6 @@ interface Dependencies {
 	usersContract: UsersServicesForPoems;
 	slugService: SlugService;
 }
-
-export type UpdatePoemParams = {
-	data: UpdatePoem;
-	poemId: number;
-	meta: {
-		requesterId: number;
-		requesterStatus: UserStatus;
-		requesterRole: UserRole;
-	};
-};
 
 export function updatePoemFactory(deps: Dependencies) {
 	const { commandsRepository, queriesRepository, slugService, usersContract } =
@@ -58,9 +47,8 @@ export function updatePoemFactory(deps: Dependencies) {
 
 		if (result.ok === true) return result.data;
 
-		if (result.ok === false && result.code === 'CONFLICT') {
+		if (result.ok === false && result.code === 'CONFLICT')
 			throw new PoemAlreadyExistsError();
-		}
 
 		throw result.error;
 	};
