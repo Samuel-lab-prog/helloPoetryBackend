@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
+import type {
+	CommandsRepository,
+	CommentPoemParams,
+} from '../../../ports/Commands';
+import type { PoemsContractForInteractions } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
 import { PoemNotFoundError, EmptyCommentError } from '../../Errors';
 
@@ -7,12 +10,6 @@ interface Dependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
 }
-
-export type CommentPoemParams = {
-	userId: number;
-	poemId: number;
-	content: string;
-};
 
 export function commentPoemFactory({
 	commandsRepository,

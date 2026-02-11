@@ -23,8 +23,10 @@ import {
 	poemsQueriesRouter,
 } from '@Domains/poems-management/Composition';
 import { friendsCommandsRouter } from '@Domains/friends-management/Composition';
-import { interactionsCommandsRouter } from '@Domains/interactions/adapters/commands/Router';
-import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
+import {
+	interactionsCommandsRouter,
+	interactionsQueriesRouter,
+} from '@Domains/interactions/Composition';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
 

@@ -1,7 +1,12 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { FriendsContractForInteractions } from '../../../ports/FriendsServices';
-import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
+import type {
+	CommandsRepository,
+	LikePoemParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
+import type {
+	FriendsContractForInteractions,
+	PoemsContractForInteractions,
+} from '../../../ports/ExternalServices';
 
 import type { PoemLike } from '../../Models';
 import {
@@ -19,11 +24,6 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-export type LikePoemParams = {
-	userId: number;
-	poemId: number;
-};
-
 export function likePoemFactory({
 	commandsRepository,
 	queriesRepository,
@@ -39,7 +39,6 @@ export function likePoemFactory({
 
 		const authorId = poemInfo.authorId;
 
-		// Visibility rules
 		if (poemInfo.visibility === 'private' && authorId !== userId)
 			throw new PrivatePoemError();
 
@@ -48,12 +47,10 @@ export function likePoemFactory({
 			if (!areFriends) throw new FriendsOnlyPoemError();
 		}
 
-		// Block rules
 		const blocked = await friendsServices.areBlocked(userId, authorId);
 
 		if (blocked) throw new UserBlockedError();
 
-		// Like rules
 		const alreadyLiked = await queriesRepository.existsPoemLike({
 			userId,
 			poemId,

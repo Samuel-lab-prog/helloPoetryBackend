@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
+import type {
+	CommandsRepository,
+	UnlikePoemParams,
+} from '../../../ports/Commands';
+import type { PoemsContractForInteractions } from '../../../ports/ExternalServices';
 import type { PoemLike } from '../../Models';
 import { PoemNotFoundError, LikeNotFoundError } from '../../Errors';
 
@@ -7,11 +10,6 @@ interface Dependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
 }
-
-export type UnlikePoemParams = {
-	userId: number;
-	poemId: number;
-};
 
 export function unlikePoemFactory({
 	commandsRepository,

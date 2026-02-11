@@ -1,5 +1,8 @@
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { PoemsContractForInteractions } from '../../../ports/PoemServices';
+import type {
+	QueriesRepository,
+	GetPoemCommentsParams,
+} from '../../../ports/Queries';
+import type { PoemsContractForInteractions } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
 import { PoemNotFoundError } from '../../Errors';
 
@@ -7,10 +10,6 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 	poemsContract: PoemsContractForInteractions;
 }
-
-export type GetPoemCommentsParams = {
-	poemId: number;
-};
 
 export function getPoemCommentsFactory({
 	queriesRepository,

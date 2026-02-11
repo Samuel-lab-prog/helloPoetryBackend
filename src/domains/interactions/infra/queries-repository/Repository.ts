@@ -1,6 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { QueriesRepository } from '../../ports/QueriesRepository';
+import type { QueriesRepository } from '../../ports/Queries';
 import type { PoemComment } from '../../use-cases/Models';
 
 export function selectCommentById(params: {

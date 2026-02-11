@@ -1,7 +1,7 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { commentPoemFactory } from './execute';
 import { EmptyCommentError, PoemNotFoundError } from '../../Errors';
-import type { CommandsRepository } from '@Domains/interactions/ports/CommandsRepository';
+import type { CommandsRepository } from '../../../ports/Commands';
 
 describe('USE-CASE - Interactions', () => {
 	describe('Comment Poem', () => {

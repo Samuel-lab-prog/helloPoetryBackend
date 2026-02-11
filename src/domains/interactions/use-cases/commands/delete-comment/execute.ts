@@ -1,16 +1,14 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type {
+	CommandsRepository,
+	DeleteCommentParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 import { CommentNotFoundError, NotCommentOwnerError } from '../../Errors';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
-
-export type DeleteCommentParams = {
-	userId: number;
-	commentId: number;
-};
 
 export function deleteCommentFactory({
 	commandsRepository,

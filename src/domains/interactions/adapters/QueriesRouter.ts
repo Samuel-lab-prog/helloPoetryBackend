@@ -2,12 +2,14 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
-import { PoemCommentSchema } from '../../ports/schemas/PoemCommentSchema';
+import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
 
-import { type QueriesRouterServices, queriesRouterServices } from './Services';
+import { type QueriesRouterServices } from '../ports/Queries';
 import { appErrorSchema } from '@AppError';
 
-function createInteractionsQueriesRouter(services: QueriesRouterServices) {
+export function createInteractionsQueriesRouter(
+	services: QueriesRouterServices,
+) {
 	return new Elysia({ prefix: '/interactions' }).use(AuthPlugin).get(
 		'/poems/:id/comments',
 		({ params }) => {
@@ -32,6 +34,3 @@ function createInteractionsQueriesRouter(services: QueriesRouterServices) {
 		},
 	);
 }
-export const interactionsQueriesRouter = createInteractionsQueriesRouter(
-	queriesRouterServices,
-);

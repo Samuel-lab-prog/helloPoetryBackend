@@ -3,14 +3,11 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
-import { PoemLikeSchema } from '../../ports/schemas/PoemLikeSchema';
+import { PoemLikeSchema } from '../ports/schemas/PoemLikeSchema';
 
-import {
-	type CommandsRouterServices,
-	commandsRouterServices,
-} from './Services';
+import { type CommandsRouterServices } from '../ports/Commands';
 import { appErrorSchema } from '@AppError';
-import { PoemCommentSchema } from '../../ports/schemas/PoemCommentSchema';
+import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
 
 export function createInteractionsCommandsRouter(
 	services: CommandsRouterServices,
@@ -123,6 +120,3 @@ export function createInteractionsCommandsRouter(
 			},
 		);
 }
-export const interactionsCommandsRouter = createInteractionsCommandsRouter(
-	commandsRouterServices,
-);
