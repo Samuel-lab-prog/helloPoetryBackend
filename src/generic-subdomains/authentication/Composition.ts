@@ -1,13 +1,13 @@
-import { createAuthRouter } from '@GenericSubdomains/authentication/adapters/http/auth-router/AuthRouter';
-import { authRepository } from '@GenericSubdomains/authentication/infra/repository/Repository';
+import { createAuthRouter } from './adapters/http/auth-router/AuthRouter';
+import { authRepository } from './infra/repository/Repository';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
-import { authenticateClientFactory } from '@GenericSubdomains/authentication/use-cases/authenticate/execute';
-import { loginClientFactory } from '@GenericSubdomains/authentication/use-cases/login/execute';
+import { authenticateClientFactory } from './use-cases/authenticate/execute';
+import { loginClientFactory } from './use-cases/login/execute';
 import {
 	JwtTokenService,
 	FakeJwtTokenService,
-} from '@GenericSubdomains/authentication/infra/token/JwtTokenService';
-import { createAuthPlugin } from '@GenericSubdomains/authentication/adapters/http/auth-plugin/AuthPlugin';
+} from './infra/token/JwtTokenService';
+import { createAuthPlugin } from './adapters/http/auth-plugin/AuthPlugin';
 
 const login = loginClientFactory({
 	findClientByEmail: authRepository.findClientByEmail,

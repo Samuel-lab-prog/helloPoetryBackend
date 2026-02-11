@@ -15,6 +15,10 @@ import {
 	userCommandsRouterWithFakeHash,
 } from '@Domains/users-management/Composition';
 import {
+	authRouter,
+	authRouterWithFakeHash,
+} from '@GenericSubdomains/authentication/Composition';
+import {
 	poemsCommandsRouter,
 	poemsQueriesRouter,
 } from '@Domains/poems-management/Composition';
@@ -23,8 +27,6 @@ import { interactionsCommandsRouter } from '@Domains/interactions/adapters/comma
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
-
-import { authRouter, authRouterWithFakeHash } from 'composition/Auth';
 
 export const PREFIX = '/api/v1';
 export const MAIN_INSTANCE_NAME = 'mainServerInstance';

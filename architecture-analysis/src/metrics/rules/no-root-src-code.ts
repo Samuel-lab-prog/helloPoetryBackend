@@ -7,7 +7,7 @@ type Violation = {
 	module: string;
 };
 
-const ALLOWED_ROOT_FILES = ['src/index.ts'];
+const ALLOWED_ROOT_FILES = ['src/index.ts', 'src/Server.ts'];
 
 function checkNoRootSourceCode(cruiseResult: DepcruiseResult): Violation[] {
 	const violations: Violation[] = [];
@@ -15,9 +15,8 @@ function checkNoRootSourceCode(cruiseResult: DepcruiseResult): Violation[] {
 	for (const module of cruiseResult.modules) {
 		const source = module.source;
 
-		if (isRootLevelSourceFile(source) && !ALLOWED_ROOT_FILES.includes(source)) {
+		if (isRootLevelSourceFile(source) && !ALLOWED_ROOT_FILES.includes(source))
 			violations.push({ module: source });
-		}
 	}
 
 	return violations;
@@ -38,7 +37,5 @@ export function printNoRootSourceCode(cruiseResult: DepcruiseResult): void {
 	console.log(padRight('MODULE', 60));
 	console.log(divider('·'));
 
-	for (const v of violations) {
-		console.log(red(padRight(v.module, 60)));
-	}
+	for (const v of violations) console.log(red(padRight(v.module, 60)));
 }

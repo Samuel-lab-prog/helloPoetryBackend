@@ -20,7 +20,7 @@
 			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
 			"@SharedKernel/*": ["./shared-kernel/*"],
-			"@AuthPlugin": ["./composition/Auth.ts"],
+			"@AuthPlugin": ["./generic-subdomains/authentication/Composition.ts"],
 			"@ClearDatabase": ["./generic-subdomains/utils/ClearDatabase.ts"],
 
 			"@PrismaErrorHandler": [
