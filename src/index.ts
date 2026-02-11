@@ -28,7 +28,7 @@ import {
 	interactionsQueriesRouter,
 } from '@Domains/interactions/Composition';
 import { moderationCommandsRouter } from '@Domains/moderation/Composition';
-import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
+import { feedQueriesRouter } from '@Domains/feed-engine/Composition';
 
 export const PREFIX = '/api/v1';
 export const MAIN_INSTANCE_NAME = 'mainServerInstance';

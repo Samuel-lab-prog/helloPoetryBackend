@@ -1,7 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { PoemsContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
-import type { PoemsContractForRecomendationEngine } from '@Domains/feed-engine/ports/PoemServices';
+import type { PoemsContractForRecomendationEngine } from '@Domains/feed-engine/ports/ExternalServices';
 
 async function getPoemInteractionInfo(poemId: number) {
 	return await withPrismaErrorHandling(async () => {

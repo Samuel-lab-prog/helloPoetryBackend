@@ -1,14 +1,8 @@
-import type { FeedItem } from '../../use-cases/Models';
-import {
-	getFeedFactory,
-	type GetFeedParams,
-} from '../../use-cases/queries/Index';
+import { getFeedFactory } from './use-cases/queries/Index';
 import { poemsServicesForRecomendationEngine } from '@SharedKernel/contracts/poems/Index';
 import { friendsServicesForRecomendationEngine } from '@SharedKernel/contracts/friends/Index';
-
-export interface QueriesRouterServices {
-	getFeed(params: GetFeedParams): Promise<FeedItem[]>;
-}
+import { createFeedQueriesRouter } from './adapters/QueriesRouter';
+import type { QueriesRouterServices } from './ports/Queries';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getFeed: getFeedFactory({
@@ -16,3 +10,5 @@ export const queriesRouterServices: QueriesRouterServices = {
 		friendsServices: friendsServicesForRecomendationEngine,
 	}),
 };
+
+export const feedQueriesRouter = createFeedQueriesRouter(queriesRouterServices);

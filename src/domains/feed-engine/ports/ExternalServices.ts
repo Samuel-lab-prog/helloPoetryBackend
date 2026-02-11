@@ -1,5 +1,10 @@
 import type { FeedItem } from '../use-cases/Models';
 
+export interface FriendsContractForRecomendationEngine {
+	getFollowedUserIds(userId: number): Promise<number[]>;
+	getBlockedUserIds(userId: number): Promise<number[]>;
+}
+
 export interface PoemsContractForRecomendationEngine {
 	getPoemsByAuthorIds(params: {
 		authorIds: number[];

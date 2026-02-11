@@ -1,6 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { FriendsContractForRecomendationEngine } from '@Domains/feed-engine/ports/FriendsServices';
+import type { FriendsContractForRecomendationEngine } from '@Domains/feed-engine/ports/ExternalServices';
 import type { FriendsContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
 
 async function getFollowedUserIds(userId: number): Promise<number[]> {

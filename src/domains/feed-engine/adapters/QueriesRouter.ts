@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
-import { type QueriesRouterServices, queriesRouterServices } from './Services';
-import { feedPoemSchema } from '../../ports/schemas/Index';
+import { type QueriesRouterServices } from '../ports/Queries';
+import { feedPoemSchema } from '../ports/schemas/Index';
 import { appErrorSchema } from '@AppError';
 
 export function createFeedQueriesRouter(services: QueriesRouterServices) {
@@ -27,5 +27,3 @@ export function createFeedQueriesRouter(services: QueriesRouterServices) {
 		},
 	);
 }
-
-export const feedQueriesRouter = createFeedQueriesRouter(queriesRouterServices);
