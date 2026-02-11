@@ -31,21 +31,18 @@ export function sendFriendRequestFactory({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
-
 		if (blocked) throw new UserBlockedError();
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
-
 		if (friendship) throw new FriendshipAlreadyExistsError();
 
 		const existingOutgoingRequest = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
-
 		if (existingOutgoingRequest) throw new RequestAlreadySentError();
 
 		const existingIncomingRequest = await queriesRepository.findFriendRequest({
@@ -58,7 +55,19 @@ export function sendFriendRequestFactory({
 				addresseeId,
 				requesterId,
 			);
-			return accepted;
+
+			if (!accepted.ok) {
+				switch (accepted.code) {
+					case 'CONFLICT':
+						throw new FriendshipAlreadyExistsError();
+					case 'NOT_FOUND':
+						throw new RequestAlreadySentError();
+					default:
+						throw new Error(accepted.message);
+				}
+			}
+
+			return accepted.data;
 		}
 
 		const result = await commandsRepository.createFriendRequest(
@@ -66,6 +75,15 @@ export function sendFriendRequestFactory({
 			addresseeId,
 		);
 
-		return result;
+		if (!result.ok) {
+			switch (result.code) {
+				case 'CONFLICT':
+					throw new RequestAlreadySentError();
+				default:
+					throw new Error(result.message);
+			}
+		}
+
+		return result.data;
 	};
 }

@@ -32,6 +32,15 @@ export function unblockUserFactory({
 
 		if (!blocked) throw new BlockedRelationshipNotFoundError();
 
-		return commandsRepository.unblockUser(requesterId, addresseeId);
+		const result = await commandsRepository.unblockUser(
+			requesterId,
+			addresseeId,
+		);
+
+		if (!result.ok) {
+			throw new Error(result.message || 'Failed to unblock user');
+		}
+
+		return result.data;
 	};
 }

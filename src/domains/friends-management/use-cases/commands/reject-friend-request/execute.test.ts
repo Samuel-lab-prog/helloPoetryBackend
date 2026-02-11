@@ -41,12 +41,20 @@ describe('USE-CASE - Friends Management', () => {
 			});
 		});
 
-		it('Should reject friend request when no errors occur', () => {
+		it('Should reject friend request when no errors occur', async () => {
 			queriesRepository.findFriendRequest.mockResolvedValue({ id: 10 });
 
-			expect(
-				rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).resolves.toEqual(undefined);
+			commandsRepository.rejectFriendRequest.mockResolvedValue({
+				ok: true,
+				data: { rejectedId: 2, rejecterId: 1 },
+			});
+
+			const result = await rejectFriendRequest({
+				requesterId: 1,
+				addresseeId: 2,
+			});
+
+			expect(result).toEqual({ rejectedId: 2, rejecterId: 1 });
 		});
 	});
 });

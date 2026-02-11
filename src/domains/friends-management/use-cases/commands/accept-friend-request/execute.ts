@@ -53,6 +53,19 @@ export function acceptFriendRequestFactory({
 			addresseeId,
 		);
 
-		return result;
+		if (!result.ok) {
+			switch (result.code) {
+				case 'CONFLICT':
+					throw new FriendshipAlreadyExistsError();
+
+				case 'NOT_FOUND':
+					throw new RequestNotFoundError();
+
+				default:
+					throw new Error(result.message);
+			}
+		}
+
+		return result.data;
 	};
 }

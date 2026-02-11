@@ -38,15 +38,20 @@ describe('USE-CASE - Friends Management', () => {
 			).rejects.toBeInstanceOf(RequestNotFoundError);
 		});
 
-		it('Should cancel the friend request and return the result when no errors occur', () => {
+		it('Should cancel the friend request and return the result when no errors occur', async () => {
 			const cancelledRequest = { id: 10, requesterId: 1, addresseeId: 2 };
+
 			queriesRepository.findFriendRequest.mockResolvedValue(cancelledRequest);
-			commandsRepository.cancelFriendRequest.mockResolvedValue(
-				cancelledRequest,
-			);
-			expect(
-				cancelFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).resolves.toEqual(cancelledRequest);
+			commandsRepository.cancelFriendRequest.mockResolvedValue({
+				ok: true,
+				data: cancelledRequest,
+			});
+
+			const result = await cancelFriendRequest({
+				requesterId: 1,
+				addresseeId: 2,
+			});
+			expect(result).toEqual(cancelledRequest);
 		});
 	});
 });

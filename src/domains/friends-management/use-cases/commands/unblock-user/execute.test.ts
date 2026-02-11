@@ -45,13 +45,21 @@ describe('USE-CASE - Friends Management', () => {
 			});
 		});
 
-		it('Should unblock friend request when relationship exists', () => {
+		it('Should unblock friend request when relationship exists', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 10 });
-			commandsRepository.unblockUser.mockResolvedValue(undefined);
+			commandsRepository.unblockUser.mockResolvedValue({
+				ok: true,
+				data: { unblockerId: 1, unblockedId: 2, id: 20, createdAt: new Date() },
+			});
 
-			expect(unblockUser({ requesterId: 1, addresseeId: 2 })).resolves.toEqual(
-				undefined,
-			);
+			const result = await unblockUser({ requesterId: 1, addresseeId: 2 });
+
+			expect(result).toEqual({
+				unblockerId: 1,
+				unblockedId: 2,
+				id: 20,
+				createdAt: expect.any(Date),
+			});
 
 			expect(commandsRepository.unblockUser).toHaveBeenCalledWith(1, 2);
 		});

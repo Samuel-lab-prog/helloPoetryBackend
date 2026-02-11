@@ -68,11 +68,12 @@ describe('USE-CASE - Friends Management', () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest
-				.mockResolvedValueOnce(null)
-				.mockResolvedValueOnce({ id: 20 });
+				.mockResolvedValueOnce(null) // outgoing
+				.mockResolvedValueOnce({ id: 20 }); // incoming
 
 			commandsRepository.acceptFriendRequest.mockResolvedValue({
-				id: 30,
+				ok: true,
+				data: { id: 30 },
 			});
 
 			expect(
@@ -84,11 +85,12 @@ describe('USE-CASE - Friends Management', () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest
-				.mockResolvedValueOnce(null)
-				.mockResolvedValueOnce(null);
+				.mockResolvedValueOnce(null) // outgoing
+				.mockResolvedValueOnce(null); // incoming
 
 			commandsRepository.createFriendRequest.mockResolvedValue({
-				id: 40,
+				ok: true,
+				data: { id: 40 },
 			});
 
 			expect(

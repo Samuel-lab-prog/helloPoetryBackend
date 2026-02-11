@@ -22,18 +22,19 @@ export function cancelFriendRequestFactory({
 
 		if (requesterId === addresseeId) throw new SelfReferenceError();
 
-		// There's no need to check for blocking relationships in both directions
-		// since if either user has blocked the other, the request cannot exist.
-
-		// We also don't need to check for existing friendships, since if they were friends,
-		// there wouldn't be a pending request to cancel.
-
 		const request = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
 		if (!request) throw new RequestNotFoundError();
 
-		return commandsRepository.cancelFriendRequest(requesterId, addresseeId);
+		const result = await commandsRepository.cancelFriendRequest(
+			requesterId,
+			addresseeId,
+		);
+
+		if (!result.ok) throw new Error(result.message);
+
+		return result.data!;
 	};
 }

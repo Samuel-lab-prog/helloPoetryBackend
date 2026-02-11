@@ -34,19 +34,32 @@ export function blockUserFactory({
 			user2Id: addresseeId,
 		});
 
-		if (friendship)
-			await commandsRepository.deleteFriend(requesterId, addresseeId);
+		if (friendship) {
+			const result = await commandsRepository.deleteFriend(
+				requesterId,
+				addresseeId,
+			);
+			if (!result.ok) throw new Error(result.message);
+		}
 
-		await commandsRepository.deleteFriendRequestIfExists(
+		const req1 = await commandsRepository.deleteFriendRequestIfExists(
 			requesterId,
 			addresseeId,
 		);
+		if (!req1.ok) throw new Error(req1.message);
 
-		await commandsRepository.deleteFriendRequestIfExists(
+		const req2 = await commandsRepository.deleteFriendRequestIfExists(
 			addresseeId,
 			requesterId,
 		);
+		if (!req2.ok) throw new Error(req2.message);
 
-		return commandsRepository.blockUser(requesterId, addresseeId);
+		const blockResult = await commandsRepository.blockUser(
+			requesterId,
+			addresseeId,
+		);
+		if (!blockResult.ok) throw new Error(blockResult.message);
+
+		return blockResult.data!;
 	};
 }

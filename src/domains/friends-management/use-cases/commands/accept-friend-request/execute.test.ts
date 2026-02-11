@@ -89,7 +89,11 @@ describe('USE-CASE - Friends Management', () => {
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
 			queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-			commandsRepository.acceptFriendRequest.mockResolvedValue(acceptedRequest);
+
+			commandsRepository.acceptFriendRequest.mockResolvedValue({
+				ok: true,
+				data: acceptedRequest,
+			});
 
 			const result = await acceptFriendRequest({
 				requesterId: 1,

@@ -8,6 +8,8 @@ import type {
 	RemovedFriendRecord,
 } from '../use-cases/Models';
 
+import type { CommandResult } from '@SharedKernel/Types';
+
 export type AcceptFriendRequestParams = {
 	requesterId: number;
 	addresseeId: number;
@@ -47,36 +49,42 @@ export interface CommandsRepository {
 	createFriendRequest(
 		requesterId: number,
 		addresseeId: number,
-	): Promise<FriendRequestRecord>;
+	): Promise<CommandResult<FriendRequestRecord>>;
 
 	rejectFriendRequest(
 		rejecterId: number,
 		rejectedId: number,
-	): Promise<FriendRequestRejectionRecord>;
+	): Promise<CommandResult<FriendRequestRejectionRecord>>;
 
 	acceptFriendRequest(
 		accepterId: number,
 		accepteeId: number,
-	): Promise<FriendshipRecord>;
+	): Promise<CommandResult<FriendshipRecord>>;
 
 	cancelFriendRequest(
 		cancellerId: number,
 		cancelledId: number,
-	): Promise<CancelFriendRequestRecord>;
+	): Promise<CommandResult<CancelFriendRequestRecord>>;
 
-	blockUser(blockerId: number, blockedId: number): Promise<BlockedUserRecord>;
+	blockUser(
+		blockerId: number,
+		blockedId: number,
+	): Promise<CommandResult<BlockedUserRecord>>;
 
 	unblockUser(
 		unblockerId: number,
 		unblockedId: number,
-	): Promise<UnblockUserRecord>;
+	): Promise<CommandResult<UnblockUserRecord>>;
 
-	deleteFriend(user1Id: number, user2Id: number): Promise<RemovedFriendRecord>;
+	deleteFriend(
+		user1Id: number,
+		user2Id: number,
+	): Promise<CommandResult<RemovedFriendRecord>>;
 
 	deleteFriendRequestIfExists(
 		requesterId: number,
 		addresseeId: number,
-	): Promise<void>;
+	): Promise<CommandResult<void>>;
 }
 
 export interface CommandsRouterServices {

@@ -29,9 +29,13 @@ export function deleteFriendFactory({
 
 		if (!friendship) throw new FriendshipNotFoundError();
 
-		// No need for check if has a blocking relationship in both directions,
-		// since if either user has blocked the other, they cannot be friends.
+		const result = await commandsRepository.deleteFriend(
+			requesterId,
+			addresseeId,
+		);
 
-		return commandsRepository.deleteFriend(requesterId, addresseeId);
+		if (!result.ok) throw new Error(result.message);
+
+		return result.data!;
 	};
 }

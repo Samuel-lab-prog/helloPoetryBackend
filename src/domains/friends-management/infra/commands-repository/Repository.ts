@@ -1,5 +1,5 @@
 import { prisma } from '@PrismaClient';
-import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import { withPrismaResult } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/Commands';
 import type {
 	FriendRequestRecord,
@@ -10,6 +10,7 @@ import type {
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
 } from '../../use-cases/Models';
+import type { CommandResult } from '@SharedKernel/Types';
 
 export const commandsRepository: CommandsRepository = {
 	createFriendRequest,
@@ -22,23 +23,24 @@ export const commandsRepository: CommandsRepository = {
 	unblockUser,
 };
 
+function normalizePair(id1: number, id2: number): [number, number] {
+	return id1 < id2 ? [id1, id2] : [id2, id1];
+}
+
 export function createFriendRequest(
 	requesterId: number,
 	addresseeId: number,
-): Promise<FriendRequestRecord> {
-	return withPrismaErrorHandling(async () => {
+): Promise<CommandResult<FriendRequestRecord>> {
+	return withPrismaResult(async () => {
 		const rs = await prisma.friendshipRequest.create({
-			data: {
-				requesterId,
-				addresseeId,
-			},
+			data: { requesterId, addresseeId },
 		});
 
 		return {
+			id: rs.id,
 			requesterId: rs.requesterId,
 			addresseeId: rs.addresseeId,
 			createdAt: rs.createdAt,
-			id: rs.id,
 		};
 	});
 }
@@ -46,30 +48,25 @@ export function createFriendRequest(
 export function acceptFriendRequest(
 	requesterId: number,
 	addresseeId: number,
-): Promise<FriendshipRecord> {
-	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.$transaction([
-			prisma.friendshipRequest.delete({
-				where: {
-					requesterId_addresseeId: {
-						requesterId,
-						addresseeId,
-					},
-				},
-			}),
-			prisma.friendship.create({
-				data: {
-					userAId: requesterId,
-					userBId: addresseeId,
-				},
-			}),
-		]);
+): Promise<CommandResult<FriendshipRecord>> {
+	return withPrismaResult(async () => {
+		const [userAId, userBId] = normalizePair(requesterId, addresseeId);
+
+		const friendship = await prisma.$transaction(async (tx) => {
+			await tx.friendshipRequest.delete({
+				where: { requesterId_addresseeId: { requesterId, addresseeId } },
+			});
+
+			return tx.friendship.create({
+				data: { userAId, userBId },
+			});
+		});
 
 		return {
-			userAId: rs[1]!.userAId,
-			userBId: rs[1]!.userBId,
-			createdAt: rs[1]!.createdAt,
-			id: rs[1]!.id,
+			id: friendship.id,
+			userAId: friendship.userAId,
+			userBId: friendship.userBId,
+			createdAt: friendship.createdAt,
 		};
 	});
 }
@@ -77,101 +74,15 @@ export function acceptFriendRequest(
 export function rejectFriendRequest(
 	requesterId: number,
 	addresseeId: number,
-): Promise<FriendRequestRejectionRecord> {
-	return withPrismaErrorHandling(async () => {
+): Promise<CommandResult<FriendRequestRejectionRecord>> {
+	return withPrismaResult(async () => {
 		await prisma.friendshipRequest.delete({
-			where: {
-				requesterId_addresseeId: {
-					requesterId,
-					addresseeId,
-				},
-			},
+			where: { requesterId_addresseeId: { requesterId, addresseeId } },
 		});
 
 		return {
-			rejectedId: addresseeId,
 			rejecterId: requesterId,
-		};
-	});
-}
-
-export function blockUser(
-	requesterId: number,
-	addresseeId: number,
-): Promise<BlockedUserRecord> {
-	return withPrismaErrorHandling(async () => {
-		const [, , blocked] = await prisma.$transaction([
-			prisma.friendshipRequest.deleteMany({
-				where: {
-					OR: [
-						{ requesterId, addresseeId },
-						{ requesterId: addresseeId, addresseeId: requesterId },
-					],
-				},
-			}),
-			prisma.friendship.deleteMany({
-				where: {
-					OR: [
-						{ userAId: requesterId, userBId: addresseeId },
-						{ userAId: addresseeId, userBId: requesterId },
-					],
-				},
-			}),
-			prisma.blockedUser.create({
-				data: {
-					blockerId: requesterId,
-					blockedId: addresseeId,
-				},
-			}),
-		]);
-
-		return {
-			blockedById: blocked.blockerId,
-			blockedUserId: blocked.blockedId,
-			id: blocked.id,
-			createdAt: blocked.createdAt,
-		};
-	});
-}
-
-export function cancelFriendRequest(
-	requesterId: number,
-	addresseeId: number,
-): Promise<CancelFriendRequestRecord> {
-	return withPrismaErrorHandling(async () => {
-		await prisma.friendshipRequest.delete({
-			where: {
-				requesterId_addresseeId: {
-					requesterId,
-					addresseeId,
-				},
-			},
-		});
-
-		return {
-			cancelledId: addresseeId,
-			cancellerId: requesterId,
-		};
-	});
-}
-
-export function unblockUser(
-	requesterId: number,
-	addresseeId: number,
-): Promise<UnblockUserRecord> {
-	return withPrismaErrorHandling(async () => {
-		await prisma.blockedUser.delete({
-			where: {
-				blockerId_blockedId: {
-					blockerId: requesterId,
-					blockedId: addresseeId,
-				},
-			},
-		});
-
-		return {
-			unblockerId: requesterId,
-			unblockedId: addresseeId,
+			rejectedId: addresseeId,
 		};
 	});
 }
@@ -179,8 +90,8 @@ export function unblockUser(
 export function deleteFriend(
 	removedById: number,
 	removedId: number,
-): Promise<RemovedFriendRecord> {
-	return withPrismaErrorHandling(async () => {
+): Promise<CommandResult<RemovedFriendRecord>> {
+	return withPrismaResult(async () => {
 		await prisma.friendship.deleteMany({
 			where: {
 				OR: [
@@ -200,13 +111,82 @@ export function deleteFriend(
 export function deleteFriendRequestIfExists(
 	requesterId: number,
 	addresseeId: number,
-): Promise<void> {
-	return withPrismaErrorHandling(async () => {
+): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
 		await prisma.friendshipRequest.deleteMany({
+			where: { requesterId, addresseeId },
+		});
+	});
+}
+
+export function cancelFriendRequest(
+	requesterId: number,
+	addresseeId: number,
+): Promise<CommandResult<CancelFriendRequestRecord>> {
+	return withPrismaResult(async () => {
+		await prisma.friendshipRequest.delete({
+			where: { requesterId_addresseeId: { requesterId, addresseeId } },
+		});
+
+		return {
+			cancellerId: requesterId,
+			cancelledId: addresseeId,
+		};
+	});
+}
+
+export function blockUser(
+	requesterId: number,
+	addresseeId: number,
+): Promise<CommandResult<BlockedUserRecord>> {
+	return withPrismaResult(async () => {
+		const [, , blocked] = await prisma.$transaction([
+			prisma.friendshipRequest.deleteMany({
+				where: {
+					OR: [
+						{ requesterId, addresseeId },
+						{ requesterId: addresseeId, addresseeId: requesterId },
+					],
+				},
+			}),
+
+			prisma.friendship.deleteMany({
+				where: {
+					OR: [
+						{ userAId: requesterId, userBId: addresseeId },
+						{ userAId: addresseeId, userBId: requesterId },
+					],
+				},
+			}),
+
+			prisma.blockedUser.create({
+				data: { blockerId: requesterId, blockedId: addresseeId },
+			}),
+		]);
+
+		return {
+			blockedById: blocked.blockerId,
+			blockedUserId: blocked.blockedId,
+			id: blocked.id,
+			createdAt: blocked.createdAt,
+		};
+	});
+}
+
+export function unblockUser(
+	requesterId: number,
+	addresseeId: number,
+): Promise<CommandResult<UnblockUserRecord>> {
+	return withPrismaResult(async () => {
+		await prisma.blockedUser.delete({
 			where: {
-				requesterId,
-				addresseeId,
+				blockerId_blockedId: { blockerId: requesterId, blockedId: addresseeId },
 			},
 		});
+
+		return {
+			unblockerId: requesterId,
+			unblockedId: addresseeId,
+		};
 	});
 }

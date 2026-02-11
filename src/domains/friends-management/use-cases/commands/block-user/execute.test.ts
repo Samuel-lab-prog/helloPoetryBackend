@@ -49,20 +49,20 @@ describe('USE-CASE - Friends Management', () => {
 		});
 
 		it('Should block the user and return the result when no errors occur', async () => {
-			const blockedUser = { id: 30 };
-
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-			queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
+			queriesRepository.findFriendRequest.mockResolvedValue(null);
 			queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-			commandsRepository.blockUser.mockResolvedValue(blockedUser);
 
-			const result = await blockUser({
-				requesterId: 1,
-				addresseeId: 2,
+			commandsRepository.deleteFriendRequestIfExists.mockResolvedValue({
+				ok: true,
+			});
+			commandsRepository.blockUser.mockResolvedValue({
+				ok: true,
+				data: { blockerId: 1, blockedId: 2 },
 			});
 
-			expect(result).toEqual(blockedUser);
-			expect(commandsRepository.blockUser).toHaveBeenCalledWith(1, 2);
+			const result = await blockUser({ requesterId: 1, addresseeId: 2 });
+			expect(result).toEqual({ blockerId: 1, blockedId: 2 });
 		});
 	});
 });
