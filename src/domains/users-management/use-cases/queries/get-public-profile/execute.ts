@@ -1,17 +1,13 @@
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-import type { UserPublicProfile, UserRole, UserStatus } from '../../Models';
+import type {
+	QueriesRepository,
+	GetPublicProfileParams,
+} from '../../../ports/Queries';
+import type { UserPublicProfile } from '../../Models';
 import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
-
-export type GetPublicProfileParams = {
-	id: number;
-	requesterId: number;
-	requesterRole: UserRole;
-	requesterStatus: UserStatus;
-};
 
 export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	return async function getPublicProfile(

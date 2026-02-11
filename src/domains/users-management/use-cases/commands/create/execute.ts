@@ -1,17 +1,15 @@
-import type { CommandsRepository } from '../../../ports/commands/Repository';
+import type {
+	CommandsRepository,
+	CreateUserParams,
+} from '../../../ports/Commands';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-
 import { UserCreationError, UserCreationConflictError } from '../../Errors';
-import type { FullUser, CreateUser } from '../../Models';
+import type { FullUser } from '../../Models';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	hashServices: HashServices;
 }
-
-export type CreateUserParams = {
-	data: CreateUser;
-};
 
 export function createUserFactory({
 	commandsRepository,
@@ -26,17 +24,14 @@ export function createUserFactory({
 			...data,
 			passwordHash: hashedPassword,
 		});
-		if (result.ok) return result.data;
 
-		if (result.code !== 'CONFLICT') {
+		if (result.ok) return result.data;
+		if (result.code !== 'CONFLICT')
 			throw new UserCreationError('Failed to create user');
-		}
-		if (result.message?.includes('nickname')) {
+		if (result.message?.includes('nickname'))
 			throw new UserCreationConflictError('Nickname already in use');
-		}
-		if (result.message?.includes('email')) {
+		if (result.message?.includes('email'))
 			throw new UserCreationConflictError('Email already in use');
-		}
 		throw new UserCreationError(
 			'Failed to create user due to unknown conflict',
 		);

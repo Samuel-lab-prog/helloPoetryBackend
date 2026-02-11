@@ -10,12 +10,9 @@ import {
 	orderUsersBySchema,
 	paginationLimitSchema,
 	UserPrivateProfileSchema,
-} from '../../ports/schemas/Index';
+} from '../ports/schemas/Index';
 
-import {
-	usersQueriesServices,
-	type UsersQueriesRouterServices,
-} from './Services';
+import { type UsersQueriesRouterServices } from '../ports/Queries';
 
 // eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
@@ -107,5 +104,3 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			},
 		);
 }
-
-export const userQueriesRouter = createUsersReadRouter(usersQueriesServices);

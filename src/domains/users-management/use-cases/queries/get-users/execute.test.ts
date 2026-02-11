@@ -1,9 +1,6 @@
 import { describe, it, expect, mock } from 'bun:test';
-
 import { getUsersFactory } from './execute';
-
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
-
+import type { QueriesRepository } from '../../../ports/Queries';
 import { UserBannedError } from '../../Errors';
 
 describe('USE-CASE - Users Management', () => {

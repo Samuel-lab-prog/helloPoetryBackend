@@ -1,28 +1,10 @@
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type { QueriesRepository, GetUsersParams } from '../../../ports/Queries';
 import { UserBannedError } from '../../Errors';
-import type { UsersPage, FullUser, UserStatus } from '../../Models';
+import type { UsersPage } from '../../Models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
-
-type OrderBy = Extract<'createdAt' | 'nickname' | 'id', keyof FullUser>;
-type OrderDirection = 'asc' | 'desc';
-
-export type GetUsersParams = {
-	requesterStatus: UserStatus;
-	navigationOptions: {
-		limit?: number;
-		cursor?: number;
-	};
-	filterOptions: {
-		searchNickname?: string;
-	};
-	sortOptions: {
-		by: OrderBy;
-		order: OrderDirection;
-	};
-};
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;

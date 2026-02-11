@@ -7,9 +7,9 @@ import {
 	CreateUserSchema,
 	UpdateUserBodySchema,
 	FullUserSchema,
-} from '../../ports/schemas/Index';
+} from '../ports/schemas/Index';
 
-import { type UsersCommandsServices } from '../../ports/commands/Services';
+import { type UsersCommandsServices } from '../ports/Commands';
 
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	return new Elysia({ prefix: '/users' })

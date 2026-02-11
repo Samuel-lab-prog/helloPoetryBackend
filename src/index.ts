@@ -9,7 +9,11 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 
-import { userQueriesRouter } from '@Domains/users-management/adapters/queries/Router';
+import {
+	userQueriesRouter,
+	userCommandsRouter,
+	userCommandsRouterWithFakeHash,
+} from '@Domains/users-management/Composition';
 import {
 	poemsCommandsRouter,
 	poemsQueriesRouter,
@@ -19,11 +23,6 @@ import { interactionsCommandsRouter } from '@Domains/interactions/adapters/comma
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';
 import { feedQueriesRouter } from '@Domains/feed-engine/adapters/queries/Router';
-
-import {
-	userCommandsRouter,
-	userCommandsRouterWithFakeHash,
-} from 'composition/Users';
 
 import { authRouter, authRouterWithFakeHash } from 'composition/Auth';
 

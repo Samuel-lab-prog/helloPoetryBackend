@@ -2,10 +2,7 @@ import { prisma } from '@PrismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
-import type {
-	QueriesRepository,
-	SelectUsersParams,
-} from '../../ports/QueriesRepository';
+import type { QueriesRepository, SelectUsersParams } from '../../ports/Queries';
 
 import type {
 	UserPublicProfile,
