@@ -1,6 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { CommandsRepository } from '../../ports/CommandsRepository';
+import type { CommandsRepository } from '../../ports/Commands';
 import type {
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,

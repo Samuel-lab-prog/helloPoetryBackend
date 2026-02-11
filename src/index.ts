@@ -22,7 +22,7 @@ import {
 	poemsCommandsRouter,
 	poemsQueriesRouter,
 } from '@Domains/poems-management/Composition';
-import { friendsCommandsRouter } from '@Domains/friends-management/adapters/commands/Router';
+import { friendsCommandsRouter } from '@Domains/friends-management/Composition';
 import { interactionsCommandsRouter } from '@Domains/interactions/adapters/commands/Router';
 import { interactionsQueriesRouter } from '@Domains/interactions/adapters/queries/Router';
 import { moderationCommandsRouter } from '@Domains/moderation/adapters/commands/Router';

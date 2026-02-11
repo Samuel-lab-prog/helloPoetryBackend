@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type {
+	CommandsRepository,
+	CancelFriendRequestParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 import type { CancelFriendRequestRecord } from '../../Models';
 import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
 
@@ -7,11 +10,6 @@ interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
-
-export type CancelFriendRequestParams = {
-	requesterId: number;
-	addresseeId: number;
-};
 
 export function cancelFriendRequestFactory({
 	commandsRepository,
@@ -22,9 +20,7 @@ export function cancelFriendRequestFactory({
 	): Promise<CancelFriendRequestRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) {
-			throw new SelfReferenceError();
-		}
+		if (requesterId === addresseeId) throw new SelfReferenceError();
 
 		// There's no need to check for blocking relationships in both directions
 		// since if either user has blocked the other, the request cannot exist.
@@ -36,9 +32,7 @@ export function cancelFriendRequestFactory({
 			requesterId,
 			addresseeId,
 		});
-		if (!request) {
-			throw new RequestNotFoundError();
-		}
+		if (!request) throw new RequestNotFoundError();
 
 		return commandsRepository.cancelFriendRequest(requesterId, addresseeId);
 	};

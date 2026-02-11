@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type {
+	CommandsRepository,
+	UnblockUserParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 import type { UnblockUserRecord } from '../../Models';
 import {
 	SelfReferenceError,
@@ -11,11 +14,6 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-export type UnblockUserParams = {
-	requesterId: number;
-	addresseeId: number;
-};
-
 export function unblockUserFactory({
 	commandsRepository,
 	queriesRepository,
@@ -25,18 +23,14 @@ export function unblockUserFactory({
 	): Promise<UnblockUserRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) {
-			throw new SelfReferenceError();
-		}
+		if (requesterId === addresseeId) throw new SelfReferenceError();
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
 
-		if (!blocked) {
-			throw new BlockedRelationshipNotFoundError();
-		}
+		if (!blocked) throw new BlockedRelationshipNotFoundError();
 
 		return commandsRepository.unblockUser(requesterId, addresseeId);
 	};

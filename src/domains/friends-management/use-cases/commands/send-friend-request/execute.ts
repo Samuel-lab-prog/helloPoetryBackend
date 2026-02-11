@@ -1,5 +1,8 @@
-import type { CommandsRepository } from '../../../ports/CommandsRepository';
-import type { QueriesRepository } from '../../../ports/QueriesRepository';
+import type {
+	CommandsRepository,
+	SendFriendRequestParams,
+} from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
 import {
 	SelfReferenceError,
@@ -13,11 +16,6 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-export type SendFriendRequestParams = {
-	requesterId: number;
-	addresseeId: number;
-};
-
 export function sendFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
@@ -27,36 +25,28 @@ export function sendFriendRequestFactory({
 	): Promise<FriendRequestRecord | FriendshipRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) {
-			throw new SelfReferenceError();
-		}
+		if (requesterId === addresseeId) throw new SelfReferenceError();
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
 
-		if (blocked) {
-			throw new UserBlockedError();
-		}
+		if (blocked) throw new UserBlockedError();
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
 
-		if (friendship) {
-			throw new FriendshipAlreadyExistsError();
-		}
+		if (friendship) throw new FriendshipAlreadyExistsError();
 
 		const existingOutgoingRequest = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
 
-		if (existingOutgoingRequest) {
-			throw new RequestAlreadySentError();
-		}
+		if (existingOutgoingRequest) throw new RequestAlreadySentError();
 
 		const existingIncomingRequest = await queriesRepository.findFriendRequest({
 			requesterId: addresseeId,

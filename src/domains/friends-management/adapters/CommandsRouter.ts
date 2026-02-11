@@ -3,10 +3,7 @@ import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
 
-import {
-	commandsRouterServices,
-	type CommandsRouterServices,
-} from './Services';
+import { type CommandsRouterServices } from '../ports/Commands';
 import { idSchema } from '@SharedKernel/Schemas';
 import {
 	FriendRequestSchema,
@@ -16,7 +13,7 @@ import {
 	RemovedFriendSchema,
 	BlockedUserSchema,
 	UnblockUserSchema,
-} from '../../ports/schemas/Index';
+} from '../ports/schemas/Index';
 
 export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/friends' })
@@ -196,7 +193,3 @@ export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 			},
 		);
 }
-
-export const friendsCommandsRouter = createFriendsCommandsRouter(
-	commandsRouterServices,
-);
