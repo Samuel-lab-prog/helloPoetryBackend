@@ -89,3 +89,5 @@ export const API_INSTANCE = testServer;
  * The API prefix used for making requests to the test server. This should match the prefix defined in the server setup.
  */
 export const API_PREFIX = 'http://test/api/v1';
+
+export const MAX_QUERY_TIME_LIMIT = 300;
