@@ -33,6 +33,8 @@ export type PoemBasicInfo = {
 	moderationStatus: PoemModerationStatus;
 	deletedAt: Date | null;
 	status: PoemStatus;
+	isCommentable: boolean;
+
 };
 
 export interface PoemsContractForInteractions {
