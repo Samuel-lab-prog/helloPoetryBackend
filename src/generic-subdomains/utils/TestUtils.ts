@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
 import { expect, mock } from 'bun:test';
-import { testServer } from '../index';
+import { testServer } from '../../index';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
-	RequestInit,
-	'body' | 'headers'
+  RequestInit,
+  'body' | 'headers'
 > & {
-	body?: TBody;
-	headers?: HeadersInit;
+  body?: TBody;
+  headers?: HeadersInit;
 };
 
 /**
@@ -20,21 +21,21 @@ type JsonRequestOptions<TBody = unknown> = Omit<
  * You can pass any type of body, and it will be stringified to JSON.
  */
 export function jsonRequest<TBody = unknown>(
-	url: string,
-	options: JsonRequestOptions<TBody> = {},
+  url: string,
+  options: JsonRequestOptions<TBody> = {},
 ) {
-	const { body, headers, ...rest } = options;
+  const { body, headers, ...rest } = options;
 
-	const finalHeaders = new Headers(headers);
+  const finalHeaders = new Headers(headers);
 
-	if (!finalHeaders.has('Content-Type'))
-		finalHeaders.set('Content-Type', 'application/json');
+  if (!finalHeaders.has('Content-Type'))
+    finalHeaders.set('Content-Type', 'application/json');
 
-	return new Request(url, {
-		...rest,
-		headers: finalHeaders,
-		body: body !== undefined ? JSON.stringify(body) : undefined,
-	});
+  return new Request(url, {
+    ...rest,
+    headers: finalHeaders,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
 }
 
 /**
@@ -44,11 +45,11 @@ export function jsonRequest<TBody = unknown>(
  * @returns A promise that resolves to either the parsed JSON as type T or an AppError.
  */
 export async function handleResponse<T>(
-	response: Response,
+  response: Response,
 ): Promise<T | AppError> {
-	const parsed = await response.json();
-	if (!response.ok) return parsed as AppError;
-	return parsed as T;
+  const parsed = await response.json();
+  if (!response.ok) return parsed as AppError;
+  return parsed as T;
 }
 
 /**
@@ -57,13 +58,13 @@ export async function handleResponse<T>(
  * @returns True if the result is an AppError, false otherwise.
  */
 export function isAppError(result: unknown): result is AppError {
-	return (
-		typeof result === 'object' &&
-		result !== null &&
-		'statusCode' in result &&
-		'message' in result &&
-		'code' in result
-	);
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'statusCode' in result &&
+    'message' in result &&
+    'code' in result
+  );
 }
 
 /**
@@ -72,8 +73,8 @@ export function isAppError(result: unknown): result is AppError {
  * @param statusCode The expected status code.
  */
 export function expectAppError(result: unknown, statusCode: number) {
-	const error = result as AppError;
-	expect(error.statusCode).toBe(statusCode);
+  const error = result as AppError;
+  expect(error.statusCode).toBe(statusCode);
 }
 
 /** * Expects a promise to reject with an error of a specific type. Uses expect from Bun's test framework.
@@ -81,10 +82,10 @@ export function expectAppError(result: unknown, statusCode: number) {
  * @param expectedType The constructor of the expected error type.
  */
 export function expectError(
-	promise: Promise<unknown>,
-	expectedType: new (...args: any[]) => Error,
+  promise: Promise<unknown>,
+  expectedType: new (...args: any[]) => Error,
 ) {
-	return expect(promise).rejects.toBeInstanceOf(expectedType);
+  return expect(promise).rejects.toBeInstanceOf(expectedType);
 }
 /**
  * A constant representing a non-existent ID, useful for testing error cases where an ID is expected to not be found in the database.
@@ -108,7 +109,7 @@ export const MAX_QUERY_TIME_LIMIT = 300;
 type AnyFn = (...args: any[]) => any;
 
 type MockedFn<T extends AnyFn> = ReturnType<typeof mock<T>> & {
-	(...args: Parameters<T>): ReturnType<T>;
+  (...args: Parameters<T>): ReturnType<T>;
 };
 
 /**
@@ -120,7 +121,7 @@ type MockedFn<T extends AnyFn> = ReturnType<typeof mock<T>> & {
  * returns A mocked contract of type T, where each function is replaced with a mocked function.
  */
 export type MockedContract<T> = {
-	[K in keyof T]: T[K] extends AnyFn ? MockedFn<T[K]> : T[K];
+  [K in keyof T]: T[K] extends AnyFn ? MockedFn<T[K]> : T[K];
 };
 
 /**
@@ -133,11 +134,11 @@ export type MockedContract<T> = {
  * @returns A mocked contract of type T.
  */
 export function createMockedContract<
-	T extends Record<string, any>,
+  T extends Record<string, any>,
 >(): MockedContract<T> {
-	const mocked: Partial<MockedContract<T>> = {};
+  const mocked: Partial<MockedContract<T>> = {};
 
-	for (const key in {} as T) mocked[key as keyof T] = mock<T[keyof T]>() as any;
+  for (const key in {} as T) mocked[key as keyof T] = mock<T[keyof T]>() as any;
 
-	return mocked as MockedContract<T>;
+  return mocked as MockedContract<T>;
 }

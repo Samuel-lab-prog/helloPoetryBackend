@@ -8,7 +8,7 @@ import {
 	blockUser,
 	unblockUser,
 } from '../endpoints/Index';
-import { MAX_QUERY_TIME_LIMIT } from '../TestsUtils';
+import { MAX_QUERY_TIME_LIMIT } from '@TestUtils';
 
 let user1: any;
 let user2: any;

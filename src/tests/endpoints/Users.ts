@@ -13,7 +13,7 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '../TestsUtils.ts';
+} from '@TestUtils';
 import { prisma } from '@Prisma/PrismaClient.ts';
 import type { AppError } from '@AppError';
 

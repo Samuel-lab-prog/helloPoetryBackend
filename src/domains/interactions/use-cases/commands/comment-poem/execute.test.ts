@@ -6,7 +6,7 @@ import {
 } from '@DomainError';
 
 import { makeParams, makeCommentScenario } from '../../TestHelpers';
-import { expectError } from 'tests/TestsUtils';
+import { expectError } from '@TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {

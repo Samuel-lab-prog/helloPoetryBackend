@@ -14,7 +14,7 @@ import {
 	handleResponse,
 	API_INSTANCE,
 	API_PREFIX,
-} from '../TestsUtils.ts';
+} from '@TestUtils';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
 import { prisma } from '@PrismaClient';
 import type { AppError } from '@AppError';

@@ -10,7 +10,7 @@ import type {
 } from '../ports/ExternalServices';
 
 import type { CommandsRepository, CommentPoemParams } from '../ports/Commands';
-import { createMockedContract, type MockedContract } from 'tests/TestsUtils';
+import { createMockedContract, type MockedContract } from '@TestUtils';
 
 type SutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;

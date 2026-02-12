@@ -19,7 +19,7 @@ import type {
 	AuthorPoem,
 } from '@Domains/poems-management/use-cases/Models';
 
-import { expectAppError } from '../TestsUtils.ts';
+import { expectAppError } from '@TestUtils';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 
 let author: AuthUser;

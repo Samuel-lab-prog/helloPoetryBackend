@@ -4,7 +4,7 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '../TestsUtils.ts';
+} from '@TestUtils';
 import type {
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,

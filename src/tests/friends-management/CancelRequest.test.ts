@@ -12,7 +12,7 @@ import type {
 	FriendRequestRecord,
 } from '@Domains/friends-management/use-cases/Models';
 
-import { expectAppError } from '../TestsUtils';
+import { expectAppError } from '@TestUtils';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 
 let user1: AuthUser;

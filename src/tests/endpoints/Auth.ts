@@ -1,4 +1,4 @@
-import { jsonRequest, API_INSTANCE, API_PREFIX } from '../TestsUtils.ts';
+import { jsonRequest, API_INSTANCE, API_PREFIX } from '@TestUtils';
 import type { AppError } from '@AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums.ts';
 

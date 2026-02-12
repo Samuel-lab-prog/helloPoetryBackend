@@ -1,7 +1,7 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { getPoemCommentsFactory } from './execute';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../Errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Interactions', () => {
 	describe('Get Poem Comments', () => {

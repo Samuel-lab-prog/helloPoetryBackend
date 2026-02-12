@@ -1,7 +1,7 @@
 import { usersData } from './data/Users.ts';
 import { loginUser, type AuthUser } from './endpoints/Auth.ts';
 import { createUser } from './endpoints/Users.ts';
-import { isAppError } from './TestsUtils.ts';
+import { isAppError } from '@TestUtils';
 
 /**
  * Sets up test users by creating and logging them in.

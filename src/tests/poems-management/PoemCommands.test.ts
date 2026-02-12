@@ -18,7 +18,7 @@ import type {
 	UpdatePoem,
 	UpdatePoemResult,
 } from '@Domains/poems-management/use-cases/Models';
-import { expectAppError, NON_EXISTENT_ID } from 'tests/TestsUtils.ts';
+import { expectAppError, NON_EXISTENT_ID } from '@TestUtils';
 
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 

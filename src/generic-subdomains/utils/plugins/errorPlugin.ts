@@ -122,6 +122,7 @@ function convertDomainError(
 }
 
 const domainStatusMap: Record<AppErrorCode, number> = {
+	UNPROCESSABLE_ENTITY: 422,
 	NOT_FOUND: 404,
 	CONFLICT: 409,
 	UNAUTHORIZED: 401,
