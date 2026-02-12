@@ -6,86 +6,111 @@ import {
 } from '@DomainError';
 
 import { makeParams, makeCommentScenario } from '../../TestHelpers';
-
 import { expectError } from 'tests/TestsUtils';
 
-describe.concurrent('USE-CASE - Interactions', () => {
-	describe.concurrent('Comment Poem', () => {
-		it('creates a comment successfully with trimmed content', async () => {
-			const scenario = makeCommentScenario()
-				.withValidScenario()
-				.withValidComment();
-			const result = await scenario.execute(makeParams());
+describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
+	describe('Successful execution', () => {
+		it('should create a comment and trim content properly', async () => {
+			const scenario = makeCommentScenario().withValidScenario().withValidComment();
+			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
-
-		it('does not allow unknown users', () => {
+		it('should allow exactly 300 characters', async () => {
+			const scenario = makeCommentScenario().withValidScenario().withValidComment();
+			const result = await scenario.execute(
+				makeParams({ content: 'a'.repeat(300) }),
+			);
+			expect(result).toHaveProperty('id');
+		});
+	});
+	describe('User validation', () => {
+		it('should throw NotFoundError when user does not exist', async () => {
 			const scenario = makeCommentScenario().withUnknownUser();
-			expectError(scenario.execute(), NotFoundError);
+			await expectError(scenario.execute(), NotFoundError);
 		});
-
-		it('does not allow non-active users', () => {
+		it('should throw ForbiddenError when user is suspended', async () => {
 			const scenario = makeCommentScenario().withSuspendedUser();
-			expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.execute(), ForbiddenError);
 		});
+		it('should throw ForbiddenError when user is banned', async () => {
+			const scenario = makeCommentScenario().withBannedUser();
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+		it('should throw ForbiddenError when users are blocked', async () => {
+			const scenario = makeCommentScenario()
+				.withValidScenario()
+				.withUsersBlocked();
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
+	describe('Poem validation', () => {
+		it('should throw NotFoundError when poem does not exist', async () => {
+			const scenario = makeCommentScenario().withUnknownPoem();
+			await expectError(scenario.execute(), NotFoundError);
+		});
+		it('should throw ForbiddenError for private poems', async () => {
+			const scenario = makeCommentScenario()
+				.withActiveUser()
+				.withPrivatePoem();
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
 
-		it('does not allow empty comments', () => {
+	describe('Comment content validation', () => {
+		it('should throw UnprocessableEntityError for empty comments', async () => {
 			const scenario = makeCommentScenario().withValidScenario();
-			expectError(
+			await expectError(
 				scenario.execute(makeParams({ content: '   ' })),
 				UnprocessableEntityError,
 			);
 		});
-
-		it('does not allow comments with more than 300 characters', () => {
+		it('should throw UnprocessableEntityError when content exceeds 300 characters', async () => {
 			const scenario = makeCommentScenario().withValidScenario();
-			expectError(
+			await expectError(
 				scenario.execute(makeParams({ content: 'a'.repeat(301) })),
 				UnprocessableEntityError,
 			);
 		});
-
-		it('throws NotFoundError when poem does not exist', () => {
-			const scenario = makeCommentScenario().withUnknownPoem();
-			expectError(scenario.execute(), NotFoundError);
-		});
-
-		it('throws ForbiddenError when users are blocked', () => {
-			const scenario = makeCommentScenario()
-				.withValidScenario()
-				.withUsersBlocked();
-			expectError(scenario.execute(), ForbiddenError);
-		});
-
-		it('throws ForbiddenError for private poems', () => {
-			const scenario = makeCommentScenario().withActiveUser().withPrivatePoem();
-			expectError(scenario.execute(), ForbiddenError);
-		});
-
-		it('throws ForbiddenError for friends-only poems when not friends', () => {
+	});
+	describe('Visibility rules', () => {
+		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
 			const scenario = makeCommentScenario()
 				.withActiveUser()
 				.withFriendsOnlyPoem();
-			expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.execute(), ForbiddenError);
 		});
-
-		it('allows comments on friends-only poems when users are friends', async () => {
+		it('should allow comments on friends-only poems when users are friends', async () => {
 			const scenario = makeCommentScenario()
 				.withActiveUser()
 				.withFriendsOnlyPoem()
 				.withUsersFriends()
 				.withValidComment();
-
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
-
-		it('does not swallow dependency errors', () => {
+		it('should allow owner to comment on their own non-private poem', async () => {
+			const scenario = makeCommentScenario()
+				.withActiveUser()
+				.withOwnerPoem()
+				.withValidComment();
+			const result = await scenario.execute();
+			expect(result).toHaveProperty('id');
+		});
+		it('should throw ForbiddenError when owner comments on their own private poem', async () => {
+			const scenario = makeCommentScenario()
+				.withActiveUser()
+				.withOwnerPoem({ visibility: 'private' })
+				.withValidComment();
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
 			const scenario = makeCommentScenario().withActiveUser();
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
-			expectError(scenario.execute(), Error);
+			await expectError(scenario.execute(), Error);
 		});
 	});
 });
