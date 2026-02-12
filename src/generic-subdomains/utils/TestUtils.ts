@@ -142,3 +142,24 @@ export function createMockedContract<
 
 	return mocked as MockedContract<T>;
 }
+
+type MockConfigItem<T> = {
+	name: string; // nome do mock no objeto final
+	factory: () => T; // função que cria o mock
+};
+
+type SutConfig = MockConfigItem<any>[];
+
+export function makeSutGeneric<TFactoryArgs, TResult, TDeps extends Record<string, any>>(
+	factory: (args: TFactoryArgs) => TResult,
+	config: SutConfig = []
+) {
+	const mocks: Partial<TDeps> = {};
+
+	for (const item of config) 
+		mocks[item.name as keyof TDeps] = item.factory();
+	
+	const sut = factory(mocks as TFactoryArgs);
+
+	return { sut, mocks: mocks as TDeps };
+}

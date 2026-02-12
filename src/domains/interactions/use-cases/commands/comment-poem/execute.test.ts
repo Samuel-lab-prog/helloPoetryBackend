@@ -6,10 +6,71 @@ import {
 } from '@DomainError';
 
 import {
-	makeCreateCommentParams,
-	makeCreateCommentScenario,
+	givenCreatedComment,
+	givenPoem,
+	givenUser,
+	givenUsersAreBlocked,
+	givenUsersAreFriends,
+	makeInteractionsSutWithConfig,
+	type UserBasicInfoOverride,
+	type PoemInteractionInfoOverride,
+	type CreatePoemCommentOverride,
+	DEFAULT_PERFORMER_USER_ID,
+	DEFAULT_POEM_ID,
+	DEFAULT_COMMENT_CONTENT,
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
+import { commentPoemFactory } from './execute';
+import type { CommentPoemParams } from '../../../ports/Commands';
+
+function makeCreateCommentParams(
+	overrides: Partial<CommentPoemParams> = {},
+): CommentPoemParams {
+	return {
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		...overrides,
+	};
+}
+
+function makeCreateCommentScenario() {
+	const { sut: commentPoem, mocks } = makeInteractionsSutWithConfig(commentPoemFactory, {
+		includeCommands: true,
+		includePoems: true,
+		includeUsers: true,
+		includeFriends: true,
+	});
+
+	return {
+		withUser(overrides: UserBasicInfoOverride = {}) {
+			givenUser(mocks.usersContract, overrides);
+			return this;
+		},
+		withPoem(overrides: PoemInteractionInfoOverride = {}) {
+			givenPoem(mocks.poemsContract, overrides);
+			return this;
+		},
+		withUsersBlocked() {
+			givenUsersAreBlocked(mocks.friendsContract);
+			return this;
+		},
+		withUsersFriends() {
+			givenUsersAreFriends(mocks.friendsContract);
+			return this;
+		},
+		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
+			givenCreatedComment(mocks.commandsRepository, overrides);
+			return this;
+		},
+		execute(params = makeCreateCommentParams()) {
+			return commentPoem(params);
+		},
+		get mocks() {
+			return mocks;
+		},
+	};
+}
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {

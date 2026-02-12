@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { mock } from 'bun:test';
-import { commentPoemFactory } from './commands/Index';
-
 import type {
 	UsersContractForInteractions,
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
 } from '../ports/ExternalServices';
-
-import type { CommandsRepository, CommentPoemParams } from '../ports/Commands';
-import { createMockedContract, type MockedContract } from '@TestUtils';
+import type { CommandsRepository, } from '../ports/Commands';
 import type { QueriesRepository } from '../ports/Queries';
+import { createMockedContract, type MockedContract, makeSutGeneric } from '@TestUtils';
 
-type SutMocks = {
+export const DEFAULT_PERFORMER_USER_ID = 1;
+export const DEFAULT_POEM_OWNER_USER_ID = 2;
+export const DEFAULT_POEM_VISIBILITY = 'public';
+export const DEFAULT_POEM_MODERATION_STATUS = 'approved';
+export const DEFAULT_POEM_STATUS = 'published';
+export const DEFAULT_USER_STATUS = 'active';
+export const DEFAULT_USER_ROLE = 'author';
+export const DEFAULT_POEM_ID = 1;
+export const DEFAULT_COMMENT_ID = 1;
+export const DEFAULT_COMMENT_CONTENT = 'hello';
+
+export type InteractionsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
 	poemsContract: MockedContract<PoemsContractForInteractions>;
@@ -20,68 +28,20 @@ type SutMocks = {
 	friendsContract: MockedContract<FriendsContractForInteractions>;
 };
 
-const DEFAULT_PERFORMER_USER_ID = 1;
-const DEFAULT_POEM_OWNER_USER_ID = 2;
-
-const DEFAULT_POEM_VISIBILITY = 'public';
-const DEFAULT_POEM_MODERATION_STATUS = 'approved';
-const DEFAULT_POEM_STATUS = 'published';
-
-const DEFAULT_USER_STATUS = 'active';
-const DEFAULT_USER_ROLE = 'author';
-
-const DEFAULT_POEM_ID = 1;
-const DEFAULT_COMMENT_ID = 1;
-
-const DEFAULT_COMMENT_CONTENT = 'hello';
-
-type MockConfigItem<T> = {
-  name: string; // nome do mock no objeto final
-  factory: () => T; // função que cria o mock
-};
-
-type SutConfig = MockConfigItem<any>[];
-
-function makeSutGeneric<TFactoryArgs, TResult, TDeps extends Record<string, any>>(
-  factory: (args: TFactoryArgs) => TResult,
-  config: SutConfig = []
-) {
-  const mocks: Partial<TDeps> = {};
-
-  for (const item of config) {
-    mocks[item.name as keyof TDeps] = item.factory();
-  }
-
-  const sut = factory(mocks as TFactoryArgs);
-
-  return { sut, mocks: mocks as TDeps };
-}
-
-export function makeCreateCommentParams(
-	overrides: Partial<CommentPoemParams> = {},
-): CommentPoemParams {
-	return {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		...overrides,
-	};
-}
-
-type UserBasicInfoOverride = Partial<
+export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersContractForInteractions['getUserBasicInfo']>>
 >;
 
-type PoemInteractionInfoOverride = Partial<
+export type PoemInteractionInfoOverride = Partial<
 	Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
 >;
 
-type CreatePoemCommentOverride = Partial<
+export type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
-function givenUser(
-	userContract: SutMocks['usersContract'],
+export function givenUser(
+	userContract: InteractionsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
 ) {
 	userContract.getUserBasicInfo.mockResolvedValue({
@@ -93,8 +53,8 @@ function givenUser(
 	});
 }
 
-function givenPoem(
-	poemsContract: SutMocks['poemsContract'],
+export function givenPoem(
+	poemsContract: InteractionsSutMocks['poemsContract'],
 	overrides: PoemInteractionInfoOverride = {},
 ) {
 	poemsContract.getPoemInteractionInfo.mockResolvedValue({
@@ -108,8 +68,8 @@ function givenPoem(
 	});
 }
 
-function givenCreatedComment(
-	commandsRepository: SutMocks['commandsRepository'],
+export function givenCreatedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
 	overrides: CreatePoemCommentOverride = {},
 ) {
 	commandsRepository.createPoemComment.mockResolvedValue({
@@ -122,14 +82,14 @@ function givenCreatedComment(
 	});
 }
 
-function givenUsersAreBlocked(friendsContract: SutMocks['friendsContract']) {
+export function givenUsersAreBlocked(friendsContract: InteractionsSutMocks['friendsContract']) {
 	friendsContract.areBlocked.mockResolvedValue(true);
 }
 
-function givenUsersAreFriends(friendsContract: SutMocks['friendsContract']) {
+export function givenUsersAreFriends(friendsContract: InteractionsSutMocks['friendsContract']) {
 	friendsContract.areFriends.mockResolvedValue(true);
 }
-type SutBooleanConfig = {
+type InteractionsSutBooleanConfig = {
 	includeCommands?: boolean;
 	includePoems?: boolean;
 	includeUsers?: boolean;
@@ -139,11 +99,11 @@ type SutBooleanConfig = {
 type SutFromFactory<T extends (...args: any) => any> = ReturnType<T>;
 type FactoryDeps<T extends (...args: any) => any> = Parameters<T>[0];
 
-export function makeSutWithConfig<TFactory extends (...args: any) => any>(
+export function makeInteractionsSutWithConfig<TFactory extends (...args: any) => any>(
 	factory: TFactory,
-	config: SutBooleanConfig = {}
-): { sut: SutFromFactory<TFactory>; mocks: SutMocks } {
-	const mocks: Partial<SutMocks> = {};
+	config: InteractionsSutBooleanConfig = {}
+): { sut: SutFromFactory<TFactory>; mocks: InteractionsSutMocks } {
+	const mocks: Partial<InteractionsSutMocks> = {};
 
 	if (config.includeCommands ?? true) 
 		mocks.commandsRepository = Object.assign(createMockedContract<CommandsRepository>(), {
@@ -174,48 +134,10 @@ export function makeSutWithConfig<TFactory extends (...args: any) => any>(
 		factory: () => value,
 	}));
 
-	const { sut } = makeSutGeneric<FactoryDeps<TFactory>, SutFromFactory<TFactory>, SutMocks>(
+	const { sut } = makeSutGeneric<FactoryDeps<TFactory>, SutFromFactory<TFactory>, InteractionsSutMocks>(
 		factory,
-		factoryArray as any
+		factoryArray
 	);
 
-	return { sut, mocks: mocks as SutMocks };
-}
-
-export function makeCreateCommentScenario() {
-	const { sut: commentPoem, mocks } = makeSutWithConfig(commentPoemFactory, {
-		includeCommands: true,
-		includePoems: true,
-		includeUsers: true,
-		includeFriends: true,
-	});
-
-	return {
-		withUser(overrides: UserBasicInfoOverride = {}) {
-			givenUser(mocks.usersContract, overrides);
-			return this;
-		},
-		withPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoem(mocks.poemsContract, overrides);
-			return this;
-		},
-		withUsersBlocked() {
-			givenUsersAreBlocked(mocks.friendsContract);
-			return this;
-		},
-		withUsersFriends() {
-			givenUsersAreFriends(mocks.friendsContract);
-			return this;
-		},
-		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
-			givenCreatedComment(mocks.commandsRepository, overrides);
-			return this;
-		},
-		execute(params = makeCreateCommentParams()) {
-			return commentPoem(params);
-		},
-		get mocks() {
-			return mocks;
-		},
-	};
+	return { sut, mocks: mocks as InteractionsSutMocks };
 }
