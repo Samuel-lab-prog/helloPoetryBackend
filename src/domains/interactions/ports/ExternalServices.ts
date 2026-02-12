@@ -1,5 +1,6 @@
 import type {
 	PoemModerationStatus,
+	PoemStatus,
 	PoemVisibility,
 	UserRole,
 	UserStatus,
@@ -17,6 +18,7 @@ export interface PoemsContractForInteractions {
 		visibility: PoemVisibility | null;
 		moderationStatus: PoemModerationStatus | null;
 		deletedAt: Date | null;
+		status: PoemStatus | null;
 	}>;
 }
 

@@ -13,6 +13,7 @@ async function getPoemInteractionInfo(poemId: number) {
 				visibility: true,
 				deletedAt: true,
 				moderationStatus: true,
+				status: true,
 			},
 		});
 
@@ -23,6 +24,7 @@ async function getPoemInteractionInfo(poemId: number) {
 				visibility: null,
 				deletedAt: null,
 				moderationStatus: null,
+				status: null,
 			};
 		}
 
@@ -32,6 +34,7 @@ async function getPoemInteractionInfo(poemId: number) {
 			visibility: poem.visibility,
 			deletedAt: poem.deletedAt,
 			moderationStatus: poem.moderationStatus,
+			status: poem.status,
 		};
 	});
 }

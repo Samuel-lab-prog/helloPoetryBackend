@@ -5,108 +5,124 @@ import {
 	UnprocessableEntityError,
 } from '@DomainError';
 
-import { makeParams, makeCommentScenario } from '../../TestHelpers';
+import {
+	makeCreateCommentParams,
+	makeCreateCommentScenario,
+} from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {
-		it('should create a comment and trim content properly', async () => {
-			const scenario = makeCommentScenario().withValidScenario().withValidComment();
+		it('should create a comment', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem()
+				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
 		it('should allow exactly 300 characters', async () => {
-			const scenario = makeCommentScenario().withValidScenario().withValidComment();
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem()
+				.withCreatedComment();
 			const result = await scenario.execute(
-				makeParams({ content: 'a'.repeat(300) }),
+				makeCreateCommentParams({ content: 'a'.repeat(300) }),
 			);
 			expect(result).toHaveProperty('id');
 		});
 	});
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeCommentScenario().withUnknownUser();
+			const scenario = makeCreateCommentScenario().withUser({ exists: false });
 			await expectError(scenario.execute(), NotFoundError);
 		});
 		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeCommentScenario().withSuspendedUser();
+			const scenario = makeCreateCommentScenario().withUser({
+				status: 'suspended',
+			});
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 		it('should throw ForbiddenError when user is banned', async () => {
-			const scenario = makeCommentScenario().withBannedUser();
+			const scenario = makeCreateCommentScenario().withUser({
+				status: 'banned',
+			});
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 		it('should throw ForbiddenError when users are blocked', async () => {
-			const scenario = makeCommentScenario()
-				.withValidScenario()
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem()
 				.withUsersBlocked();
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 	});
 	describe('Poem validation', () => {
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makeCommentScenario().withUnknownPoem();
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ exists: false });
 			await expectError(scenario.execute(), NotFoundError);
 		});
 		it('should throw ForbiddenError for private poems', async () => {
-			const scenario = makeCommentScenario()
-				.withActiveUser()
-				.withPrivatePoem();
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ visibility: 'private' });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 	});
 
 	describe('Comment content validation', () => {
 		it('should throw UnprocessableEntityError for empty comments', async () => {
-			const scenario = makeCommentScenario().withValidScenario();
+			const scenario = makeCreateCommentScenario().withUser().withPoem();
 			await expectError(
-				scenario.execute(makeParams({ content: '   ' })),
+				scenario.execute(makeCreateCommentParams({ content: '   ' })),
 				UnprocessableEntityError,
 			);
 		});
 		it('should throw UnprocessableEntityError when content exceeds 300 characters', async () => {
-			const scenario = makeCommentScenario().withValidScenario();
+			const scenario = makeCreateCommentScenario().withUser().withPoem();
 			await expectError(
-				scenario.execute(makeParams({ content: 'a'.repeat(301) })),
+				scenario.execute(makeCreateCommentParams({ content: 'a'.repeat(301) })),
 				UnprocessableEntityError,
 			);
 		});
 	});
 	describe('Visibility rules', () => {
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
-			const scenario = makeCommentScenario()
-				.withActiveUser()
-				.withFriendsOnlyPoem();
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ visibility: 'friends' });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 		it('should allow comments on friends-only poems when users are friends', async () => {
-			const scenario = makeCommentScenario()
-				.withActiveUser()
-				.withFriendsOnlyPoem()
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ visibility: 'friends' })
 				.withUsersFriends()
-				.withValidComment();
+				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
 		it('should allow owner to comment on their own non-private poem', async () => {
-			const scenario = makeCommentScenario()
-				.withActiveUser()
-				.withOwnerPoem()
-				.withValidComment();
+			const scenario = makeCreateCommentScenario()
+				.withUser({ id: 1 })
+				.withPoem({ authorId: 1 })
+				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
 		it('should throw ForbiddenError when owner comments on their own private poem', async () => {
-			const scenario = makeCommentScenario()
-				.withActiveUser()
-				.withOwnerPoem({ visibility: 'private' })
-				.withValidComment();
+			const scenario = makeCreateCommentScenario()
+				.withUser({ id: 1 })
+				.withPoem({ authorId: 1, visibility: 'private' })
+				.withCreatedComment();
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 	});
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
-			const scenario = makeCommentScenario().withActiveUser();
+			const scenario = makeCreateCommentScenario().withUser().withPoem();
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);

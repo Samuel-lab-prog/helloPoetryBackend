@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-lines-per-function */
 import { mock } from 'bun:test';
 import { commentPoemFactory } from './commands/Index';
 
@@ -19,7 +17,22 @@ type SutMocks = {
 	friendsContract: MockedContract<FriendsContractForInteractions>;
 };
 
-function makeSuts() {
+const DEFAULT_PERFORMER_USER_ID = 1;
+const DEFAULT_POEM_OWNER_USER_ID = 2;
+
+const DEFAULT_POEM_VISIBILITY = 'public';
+const DEFAULT_POEM_MODERATION_STATUS = 'approved';
+const DEFAULT_POEM_STATUS = 'published';
+
+const DEFAULT_USER_STATUS = 'active';
+const DEFAULT_USER_ROLE = 'author';
+
+const DEFAULT_POEM_ID = 1;
+const DEFAULT_COMMENT_ID = 1;
+
+const DEFAULT_COMMENT_CONTENT = 'hello';
+
+function makeCreateCommentSut() {
 	const commandsRepository = createMockedContract<CommandsRepository>();
 	const poemsContract = createMockedContract<PoemsContractForInteractions>();
 	const usersContract = createMockedContract<UsersContractForInteractions>();
@@ -43,16 +56,17 @@ function makeSuts() {
 
 	usersContract.getUserBasicInfo.mockResolvedValue({
 		exists: true,
-		status: 'active',
-		id: 1,
-		role: 'author',
+		status: DEFAULT_USER_STATUS,
+		id: DEFAULT_PERFORMER_USER_ID,
+		role: DEFAULT_USER_ROLE,
 	});
 
 	poemsContract.getPoemInteractionInfo.mockResolvedValue({
 		exists: true,
-		visibility: 'public',
-		authorId: 2,
-		moderationStatus: 'approved',
+		visibility: DEFAULT_POEM_VISIBILITY,
+		status: DEFAULT_POEM_STATUS,
+		authorId: DEFAULT_POEM_OWNER_USER_ID,
+		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		deletedAt: null,
 	});
 
@@ -67,9 +81,7 @@ function makeSuts() {
 	});
 
 	return {
-		suts: {
-			commentPoem,
-		},
+		commentPoem,
 		mocks: {
 			commandsRepository,
 			poemsContract,
@@ -79,13 +91,13 @@ function makeSuts() {
 	};
 }
 
-export function makeParams(
+export function makeCreateCommentParams(
 	overrides: Partial<CommentPoemParams> = {},
 ): CommentPoemParams {
 	return {
-		userId: 1,
-		poemId: 10,
-		content: 'hello',
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
 		...overrides,
 	};
 }
@@ -102,154 +114,40 @@ type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
-const PERFORMER_USER_ID = 1;
-const OWNER_USER_ID = 2;
-
-function givenActiveUser(
-	mocks: SutMocks,
-	overrides: UserBasicInfoOverride = {},
-) {
+function givenUser(mocks: SutMocks, overrides: UserBasicInfoOverride = {}) {
 	mocks.usersContract.getUserBasicInfo.mockResolvedValue({
 		exists: true,
-		status: 'active',
-		id: PERFORMER_USER_ID,
-		role: 'author',
+		status: DEFAULT_USER_STATUS,
+		id: DEFAULT_PERFORMER_USER_ID,
+		role: DEFAULT_USER_ROLE,
 		...overrides,
 	});
 }
 
-function givenSuspendedUser(
-	mocks: SutMocks,
-	overrides: UserBasicInfoOverride = {},
-) {
-	mocks.usersContract.getUserBasicInfo.mockResolvedValue({
-		exists: true,
-		status: 'suspended',
-		id: PERFORMER_USER_ID,
-		role: 'author',
-		...overrides,
-	});
-}
-
-function givenBannedUser(
-	mocks: SutMocks,
-	overrides: UserBasicInfoOverride = {},
-) {
-	mocks.usersContract.getUserBasicInfo.mockResolvedValue({
-		exists: true,
-		status: 'banned',
-		id: PERFORMER_USER_ID,
-		role: 'author',
-		...overrides,
-	});
-}
-
-function givenUnknownUser(
-	mocks: SutMocks,
-	overrides: UserBasicInfoOverride = {},
-) {
-	mocks.usersContract.getUserBasicInfo.mockResolvedValue({
-		exists: false,
-		status: 'active',
-		id: 0,
-		role: 'author',
-		...overrides,
-	});
-}
-
-function givenOwnerPoem(
+function givenPoem(
 	mocks: SutMocks,
 	overrides: PoemInteractionInfoOverride = {},
 ) {
 	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
 		exists: true,
-		visibility: 'public',
-		authorId: PERFORMER_USER_ID,
-		moderationStatus: 'approved',
+		visibility: DEFAULT_POEM_VISIBILITY,
+		authorId: DEFAULT_POEM_OWNER_USER_ID,
+		status: DEFAULT_POEM_STATUS,
+		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		deletedAt: null,
 		...overrides,
 	});
 }
 
-function givenPublicApprovedPoem(
-	mocks: SutMocks,
-	overrides: PoemInteractionInfoOverride = {},
-) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: true,
-		visibility: 'public',
-		authorId: OWNER_USER_ID,
-		moderationStatus: 'approved',
-		deletedAt: null,
-		...overrides,
-	});
-}
-
-function givenPrivatePoem(
-	mocks: SutMocks,
-	overrides: PoemInteractionInfoOverride = {},
-) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: true,
-		visibility: 'private',
-		authorId: OWNER_USER_ID,
-		moderationStatus: 'approved',
-		deletedAt: null,
-		...overrides,
-	});
-}
-
-function givenFriendsOnlyPoem(
-	mocks: SutMocks,
-	overrides: PoemInteractionInfoOverride = {},
-) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: true,
-		visibility: 'friends',
-		authorId: OWNER_USER_ID,
-		moderationStatus: 'approved',
-		deletedAt: null,
-		...overrides,
-	});
-}
-
-function givenPoemDoesNotExist(
-	mocks: SutMocks,
-	overrides: PoemInteractionInfoOverride = {},
-) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: false,
-		visibility: null,
-		authorId: 0,
-		moderationStatus: null,
-		deletedAt: null,
-		...overrides,
-	});
-}
-
-function givenPoemNotApproved(
-	mocks: SutMocks,
-	overrides: PoemInteractionInfoOverride = {},
-) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: true,
-		visibility: 'public',
-		authorId: OWNER_USER_ID,
-		moderationStatus: 'pending',
-		deletedAt: null,
-		...overrides,
-	});
-}
-
-function givenValidComment(
+function givenCreatedComment(
 	mocks: SutMocks,
 	overrides: CreatePoemCommentOverride = {},
 ) {
 	mocks.commandsRepository.createPoemComment.mockResolvedValue({
-		id: 1,
-		userId: PERFORMER_USER_ID,
-		poemId: 10,
-		content: 'hello',
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
 		createdAt: new Date(),
 		...overrides,
 	});
@@ -263,57 +161,17 @@ function givenUsersAreFriends(mocks: SutMocks) {
 	mocks.friendsContract.areFriends.mockResolvedValue(true);
 }
 
-export function makeCommentScenario() {
-	const { suts, mocks } = makeSuts();
+export function makeCreateCommentScenario() {
+	const { commentPoem, mocks } = makeCreateCommentSut();
 
 	return {
-		withActiveUser(overrides: UserBasicInfoOverride = {}) {
-			givenActiveUser(mocks, overrides);
+		withUser(overrides: UserBasicInfoOverride = {}) {
+			givenUser(mocks, overrides);
 			return this;
 		},
 
-		withSuspendedUser(overrides: UserBasicInfoOverride = {}) {
-			givenSuspendedUser(mocks, overrides);
-			return this;
-		},
-
-		withUnknownUser(overrides: UserBasicInfoOverride = {}) {
-			givenUnknownUser(mocks, overrides);
-			return this;
-		},
-
-		withBannedUser(overrides: UserBasicInfoOverride = {}) {
-			givenBannedUser(mocks, overrides);
-			return this;
-		},
-
-		withPublicPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPublicApprovedPoem(mocks, overrides);
-			return this;
-		},
-
-		withPrivatePoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPrivatePoem(mocks, overrides);
-			return this;
-		},
-
-		withUnknownPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoemDoesNotExist(mocks, overrides);
-			return this;
-		},
-
-		withFriendsOnlyPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenFriendsOnlyPoem(mocks, overrides);
-			return this;
-		},
-
-		withOwnerPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenOwnerPoem(mocks, overrides);
-			return this;
-		},
-
-		withPoemNotApproved(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoemNotApproved(mocks, overrides);
+		withPoem(overrides: PoemInteractionInfoOverride = {}) {
+			givenPoem(mocks, overrides);
 			return this;
 		},
 
@@ -327,17 +185,13 @@ export function makeCommentScenario() {
 			return this;
 		},
 
-		withValidComment(overrides: CreatePoemCommentOverride = {}) {
-			givenValidComment(mocks, overrides);
+		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
+			givenCreatedComment(mocks, overrides);
 			return this;
 		},
 
-		withValidScenario() {
-			return this.withActiveUser().withPublicPoem()
-		},
-
-		execute(params = makeParams()) {
-			return suts.commentPoem(params);
+		execute(params = makeCreateCommentParams()) {
+			return commentPoem(params);
 		},
 
 		get mocks() {
