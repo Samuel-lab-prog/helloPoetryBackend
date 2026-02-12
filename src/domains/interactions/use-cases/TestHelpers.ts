@@ -68,7 +68,6 @@ export function givenPoem(
 		authorId: DEFAULT_POEM_OWNER_USER_ID,
 		status: DEFAULT_POEM_STATUS,
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
-		deletedAt: null,
 		isCommentable: true,
 		...overrides,
 	});

@@ -32,14 +32,18 @@ export function unlikePoemFactory({
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
 
-		v.user(userInfo).withStatus(['active'])
+		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
-		v.poem(poemInfo).withModerationStatus(['approved'])
-		.withStatus(['published'])
-		.withVisibility(['public', 'friends', 'unlisted']);
+		v.poem(poemInfo)
+			.withModerationStatus(['approved'])
+			.withStatus(['published'])
+			.withVisibility(['public', 'friends', 'unlisted']);
 
-		const existingLike = await queriesRepository.findPoemLike({ userId, poemId });
+		const existingLike = await queriesRepository.findPoemLike({
+			userId,
+			poemId,
+		});
 		if (!existingLike) throw new NotFoundError('Like not found');
 
 		return commandsRepository.deletePoemLike({ userId, poemId });

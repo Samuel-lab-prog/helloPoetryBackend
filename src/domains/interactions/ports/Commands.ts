@@ -22,8 +22,6 @@ export type UnlikePoemParams = {
 };
 
 export interface CommandsRepository {
-
-
 	createPoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
 	deletePoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
 	createPoemComment(params: {

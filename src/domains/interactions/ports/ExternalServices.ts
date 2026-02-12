@@ -6,13 +6,6 @@ import type {
 	UserStatus,
 } from '@SharedKernel/Enums';
 
-export interface FriendsContractForInteractions {
-	usersRelation(
-		userId1: number,
-		userId2: number,
-	): Promise<UsersRelationBasicInfo>;
-}
-
 export type UsersRelationBasicInfo = {
 	areFriends: boolean;
 	areBlocked: boolean;
@@ -31,7 +24,6 @@ export type PoemBasicInfo = {
 	authorId: number;
 	visibility: PoemVisibility;
 	moderationStatus: PoemModerationStatus;
-	deletedAt: Date | null;
 	status: PoemStatus;
 	isCommentable: boolean;
 };
@@ -42,4 +34,11 @@ export interface PoemsContractForInteractions {
 
 export interface UsersContractForInteractions {
 	getUserBasicInfo(userId: number): Promise<UserBasicInfo>;
+}
+
+export interface FriendsContractForInteractions {
+	usersRelation(
+		userId1: number,
+		userId2: number,
+	): Promise<UsersRelationBasicInfo>;
 }

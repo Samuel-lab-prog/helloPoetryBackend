@@ -17,12 +17,14 @@ import type { CommandsRouterServices } from './ports/Commands';
 import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
-import { usersContract } from '@SharedKernel/contracts/users/Index';
+import { usersContractForInteractions } from '@SharedKernel/contracts/users/Index';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
 		queriesRepository,
 		poemsContract: poemsServicesForInteractions,
+		friendsContract: friendsServicesForInteractions,
+		usersContract: usersContractForInteractions,
 	}),
 };
 
@@ -31,27 +33,28 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		poemsContract: poemsServicesForInteractions,
-		friendsServices: friendsServicesForInteractions,
-		usersContract: usersContract,
+		friendsContract: friendsServicesForInteractions,
+		usersContract: usersContractForInteractions,
 	}),
 
 	unlikePoem: unlikePoemFactory({
 		commandsRepository,
 		poemsContract: poemsServicesForInteractions,
-		usersContract: usersContract,
+		usersContract: usersContractForInteractions,
+		queriesRepository,
 	}),
 
 	commentPoem: commentPoemFactory({
 		commandsRepository,
 		poemsContract: poemsServicesForInteractions,
-		usersContract: usersContract,
+		usersContract: usersContractForInteractions,
 		friendsContract: friendsServicesForInteractions,
 	}),
 
 	deleteComment: deleteCommentFactory({
 		commandsRepository,
 		queriesRepository,
-		usersContract: usersContract,
+		usersContract: usersContractForInteractions,
 	}),
 };
 

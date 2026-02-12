@@ -177,7 +177,6 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 				.withPoem({ visibility: 'private', authorId: 1 });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
-
 	});
 
 	describe('Relation rules', () => {
@@ -192,7 +191,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
 			const scenario = makeLikePoemScenario()
 				.withUser()
-				.withPoem({ visibility: 'friends'})
+				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: false, areBlocked: false });
 			await expectError(scenario.execute(), ForbiddenError);
 		});

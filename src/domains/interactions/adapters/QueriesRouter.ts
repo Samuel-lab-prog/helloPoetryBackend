@@ -12,9 +12,10 @@ export function createInteractionsQueriesRouter(
 ) {
 	return new Elysia({ prefix: '/interactions' }).use(AuthPlugin).get(
 		'/poems/:id/comments',
-		({ params }) => {
+		({ params, auth }) => {
 			return services.getPoemComments({
 				poemId: params.id,
+				userId: auth.clientId,
 			});
 		},
 		{

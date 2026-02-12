@@ -6,25 +6,26 @@ import type { PoemsContractForRecomendationEngine } from '@Domains/feed-engine/p
 async function getPoemInteractionInfo(poemId: number) {
 	return await withPrismaErrorHandling(async () => {
 		const poem = await prisma.poem.findUnique({
-			where: { id: poemId },
+			where: { id: poemId, deletedAt: null },
 			select: {
 				id: true,
 				authorId: true,
 				visibility: true,
-				deletedAt: true,
 				moderationStatus: true,
 				status: true,
+				isCommentable: true,
 			},
 		});
 
 		if (!poem) {
 			return {
+				id: -1,
 				exists: false,
 				authorId: -1,
-				visibility: null,
-				deletedAt: null,
-				moderationStatus: null,
-				status: null,
+				visibility: 'private' as const,
+				moderationStatus: 'pending' as const,
+				status: 'draft' as const,
+				isCommentable: false,
 			};
 		}
 
@@ -32,9 +33,10 @@ async function getPoemInteractionInfo(poemId: number) {
 			exists: true,
 			authorId: poem.authorId,
 			visibility: poem.visibility,
-			deletedAt: poem.deletedAt,
 			moderationStatus: poem.moderationStatus,
 			status: poem.status,
+			isCommentable: poem.isCommentable,
+			id: poem.id,
 		};
 	});
 }

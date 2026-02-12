@@ -1,135 +1,230 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
+import {
+	givenPoem,
+	givenUser,
+	givenUsersRelation,
+	makeInteractionsSutWithConfig,
+	type UserBasicInfoOverride,
+	type PoemInteractionInfoOverride,
+	type UsersRelationInfoOverride,
+	DEFAULT_PERFORMER_USER_ID,
+	DEFAULT_POEM_ID,
+	type InteractionsSutMocks,
+} from '../../TestHelpers';
+
+import { expectError } from '@TestUtils';
 import { getPoemCommentsFactory } from './execute';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@DomainError';
+import type {
+	QueriesRepository,
+	GetPoemCommentsParams,
+} from '../../../ports/Queries';
 
-describe('USE-CASE - Interactions', () => {
-	describe('Get Poem Comments', () => {
-		let queriesRepository: {
-			findCommentsByPoemId: ReturnType<typeof mock>;
-			selectCommentById: ReturnType<typeof mock>;
-			existsPoemLike: ReturnType<typeof mock>;
-		};
+type FindCommentsOverride = Partial<
+	Awaited<ReturnType<QueriesRepository['findCommentsByPoemId']>>[number]
+>;
 
-		let poemsContract: {
-			getPoemInteractionInfo: ReturnType<typeof mock>;
-		};
+function givenExistingComments(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	overrides: FindCommentsOverride = {},
+) {
+	queriesRepository.findCommentsByPoemId.mockResolvedValue([
+		{
+			id: 1,
+			userId: DEFAULT_PERFORMER_USER_ID,
+			poemId: DEFAULT_POEM_ID,
+			content: 'Comment 1',
+			createdAt: new Date(),
+			...overrides,
+		},
+	]);
+}
 
-		beforeEach(() => {
-			queriesRepository = {
-				findCommentsByPoemId: mock(),
-				selectCommentById: mock(),
-				existsPoemLike: mock(),
-			};
+function makeParams(
+	overrides: Partial<GetPoemCommentsParams> = {},
+): GetPoemCommentsParams {
+	return {
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		...overrides,
+	};
+}
 
-			poemsContract = {
-				getPoemInteractionInfo: mock(),
-			};
+function makeGetPoemCommentsScenario() {
+	const { sut: getPoemComments, mocks } = makeInteractionsSutWithConfig(
+		getPoemCommentsFactory,
+		{
+			includeQueries: true,
+			includePoems: true,
+			includeUsers: true,
+			includeFriends: true,
+		},
+	);
+
+	return {
+		withUser(overrides: UserBasicInfoOverride = {}) {
+			givenUser(mocks.usersContract, overrides);
+			return this;
+		},
+
+		withPoem(overrides: PoemInteractionInfoOverride = {}) {
+			givenPoem(mocks.poemsContract, overrides);
+			return this;
+		},
+
+		withUsersRelation(overrides: UsersRelationInfoOverride = {}) {
+			givenUsersRelation(mocks.friendsContract, overrides);
+			return this;
+		},
+
+		withExistingComments(overrides: FindCommentsOverride = {}) {
+			givenExistingComments(mocks.queriesRepository, overrides);
+			return this;
+		},
+
+		execute(params = makeParams()) {
+			return getPoemComments(params);
+		},
+
+		get mocks() {
+			return mocks;
+		},
+	};
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                    Tests                                   */
+/* -------------------------------------------------------------------------- */
+
+describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
+	describe('Successful execution', () => {
+		it('should list comments for public poem', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem()
+				.withUsersRelation({ areBlocked: false })
+				.withExistingComments();
+
+			const result = await scenario.execute();
+
+			expect(result).toHaveLength(1);
 		});
 
-		it('returns comments for an existing public poem', async () => {
-			const comments = [
-				{ id: 1, content: 'Nice' },
-				{ id: 2, content: 'Great' },
-			];
+		it('should allow friend to list comments for friends-only poem', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ visibility: 'friends' })
+				.withUsersRelation({ areFriends: true, areBlocked: false })
+				.withExistingComments();
 
-			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
-				exists: true,
-				visibility: 'public',
-			});
+			const result = await scenario.execute();
 
-			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce(comments);
-
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
-
-			const result = await getPoemComments({ poemId: 10 });
-
-			expect(result).toHaveLength(2);
-			expect(result[0]).toHaveProperty('id', 1);
-
-			expect(queriesRepository.findCommentsByPoemId).toHaveBeenCalledWith({
-				poemId: 10,
-			});
+			expect(result).toHaveLength(1);
 		});
 
-		it('rejects invalid poem id', async () => {
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
+		it('should allow author to list comments even if not friends', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser({ id: 1 })
+				.withPoem({ authorId: 1, visibility: 'friends' })
+				.withUsersRelation({ areFriends: false, areBlocked: false })
+				.withExistingComments();
 
-			await expect(getPoemComments({ poemId: 0 })).rejects.toBeInstanceOf(
-				BadRequestError,
-			);
-			expect(poemsContract.getPoemInteractionInfo).not.toHaveBeenCalled();
+			const result = await scenario.execute();
+
+			expect(result).toHaveLength(1);
 		});
+	});
 
-		it('throws NotFoundError when poem does not exist', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
+	describe('User validation', () => {
+		it('should throw NotFoundError when user does not exist', async () => {
+			const scenario = makeGetPoemCommentsScenario().withUser({
 				exists: false,
 			});
 
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
-
-			await expect(getPoemComments({ poemId: 10 })).rejects.toBeInstanceOf(
-				NotFoundError,
-			);
-
-			expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
+			await expectError(scenario.execute(), NotFoundError);
 		});
 
-		it('throws ForbiddenError when poem visibility is restricted', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
-				exists: true,
-				visibility: 'friends',
+		it('should throw ForbiddenError when user is suspended', async () => {
+			const scenario = makeGetPoemCommentsScenario().withUser({
+				status: 'suspended',
 			});
 
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
-
-			await expect(getPoemComments({ poemId: 10 })).rejects.toBeInstanceOf(
-				ForbiddenError,
-			);
-			expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
+			await expectError(scenario.execute(), ForbiddenError);
 		});
 
-		it('returns empty array when poem has no comments', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
-				exists: true,
-				visibility: 'unlisted',
-			});
+		it('should throw ForbiddenError when users are blocked', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem()
+				.withUsersRelation({ areBlocked: true });
 
-			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce([]);
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
 
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
+	describe('Poem validation', () => {
+		it('should throw NotFoundError when poem does not exist', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ exists: false });
 
-			const result = await getPoemComments({ poemId: 10 });
-
-			expect(result).toEqual([]);
+			await expectError(scenario.execute(), NotFoundError);
 		});
 
-		it('propagates unexpected dependency errors', async () => {
-			poemsContract.getPoemInteractionInfo.mockRejectedValueOnce(
+		it('should throw ForbiddenError for private poems', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ visibility: 'private' });
+
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError for unapproved poems', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ moderationStatus: 'pending' });
+
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError for draft poems', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ status: 'draft' });
+
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when comments are disabled', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ isCommentable: false });
+
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
+
+	describe('Visibility rules', () => {
+		it('should throw ForbiddenError for friends-only poem when not friends', async () => {
+			const scenario = makeGetPoemCommentsScenario()
+				.withUser()
+				.withPoem({ visibility: 'friends' })
+				.withUsersRelation({ areFriends: false, areBlocked: false });
+
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeGetPoemCommentsScenario().withUser().withPoem();
+
+			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
 
-			const getPoemComments = getPoemCommentsFactory({
-				queriesRepository,
-				poemsContract,
-			});
-
-			await expect(getPoemComments({ poemId: 10 })).rejects.toThrow('boom');
+			await expectError(scenario.execute(), Error);
 		});
 	});
 });

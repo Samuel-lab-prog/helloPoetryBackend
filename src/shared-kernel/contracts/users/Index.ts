@@ -4,6 +4,7 @@ import type { UsersServicesForModeration } from '@Domains/moderation/ports/Exter
 import type { UsersServicesForPoems } from '@Domains/poems-management/ports/ExternalServices';
 import type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
 import type { AuthRepository } from '@GenericSubdomains/authentication/ports/AuthRepository';
+import type { UsersContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
 
 async function getUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {
@@ -19,9 +20,9 @@ async function getUserBasicInfo(userId: number) {
 		if (!user) {
 			return {
 				exists: false,
-				id: null,
-				status: null,
-				role: null,
+				id: -1,
+				status: 'banned' as const,
+				role: 'author' as const,
 			};
 		}
 
@@ -39,6 +40,10 @@ export const usersContract: UsersServicesForModeration = {
 };
 
 export const usersContractForPoems: UsersServicesForPoems = {
+	getUserBasicInfo,
+};
+
+export const usersContractForInteractions: UsersContractForInteractions = {
 	getUserBasicInfo,
 };
 

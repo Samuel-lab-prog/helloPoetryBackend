@@ -1,7 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/Queries';
-import type { PoemComment } from '../../use-cases/Models';
+import type { PoemComment, PoemLike } from '../../use-cases/Models';
 
 export function selectCommentById(params: {
 	commentId: number;
@@ -77,9 +77,26 @@ export function findCommentsByPoemId(params: {
 		}));
 	});
 }
+export function findPoemLike(params: {
+	userId: number;
+	poemId: number;
+}): Promise<PoemLike | null> {
+	const { userId, poemId } = params;
+	return withPrismaErrorHandling(() => {
+		return prisma.poemLike.findUnique({
+			where: {
+				userId_poemId: {
+					userId,
+					poemId,
+				},
+			},
+		});
+	});
+}
 
 export const queriesRepository: QueriesRepository = {
 	selectCommentById,
 	findCommentsByPoemId,
 	existsPoemLike,
+	findPoemLike,
 };

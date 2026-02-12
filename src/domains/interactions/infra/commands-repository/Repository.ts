@@ -37,23 +37,6 @@ export function deletePoemLike(params: {
 	});
 }
 
-export function findPoemLike(params: {
-	userId: number;
-	poemId: number;
-}): Promise<PoemLike | null> {
-	const { userId, poemId } = params;
-	return withPrismaErrorHandling(() => {
-		return prisma.poemLike.findUnique({
-			where: {
-				userId_poemId: {
-					userId,
-					poemId,
-				},
-			},
-		});
-	});
-}
-
 // ----------------------------------------
 // Poem Comments
 // ----------------------------------------
@@ -96,7 +79,6 @@ export function deletePoemComment(params: {
 }
 
 export const commandsRepository: CommandsRepository = {
-	findPoemLike,
 	createPoemLike,
 	deletePoemLike,
 	createPoemComment,

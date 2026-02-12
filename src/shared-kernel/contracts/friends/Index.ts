@@ -62,6 +62,17 @@ async function areBlocked(userAId: number, userBId: number): Promise<boolean> {
 	});
 }
 
+async function getUsersRelation(userAId: number, userBId: number) {
+	const [friends, blocked] = await Promise.all([
+		areFriends(userAId, userBId),
+		areBlocked(userAId, userBId),
+	]);
+	return {
+		areFriends: friends,
+		areBlocked: blocked,
+	};
+}
+
 export const friendsServicesForRecomendationEngine: FriendsContractForRecomendationEngine =
 	{
 		getFollowedUserIds,
@@ -69,6 +80,5 @@ export const friendsServicesForRecomendationEngine: FriendsContractForRecomendat
 	};
 
 export const friendsServicesForInteractions: FriendsContractForInteractions = {
-	areFriends,
-	areBlocked,
+	usersRelation: getUsersRelation,
 };
