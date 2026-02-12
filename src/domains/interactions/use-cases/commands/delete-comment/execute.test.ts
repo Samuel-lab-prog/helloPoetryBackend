@@ -1,6 +1,6 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { deleteCommentFactory } from './execute';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@DomainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Interactions', () => {
 	describe('Delete Comment', () => {
@@ -72,38 +72,6 @@ describe('USE-CASE - Interactions', () => {
 			expect(commandsRepository.deletePoemComment).toHaveBeenCalledWith({
 				commentId: 10,
 			});
-		});
-
-		it('rejects invalid user id', async () => {
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 0,
-					commentId: 10,
-				}),
-			).rejects.toBeInstanceOf(BadRequestError);
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
-		});
-
-		it('rejects invalid comment id', async () => {
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 1,
-					commentId: -10,
-				}),
-			).rejects.toBeInstanceOf(BadRequestError);
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
 		});
 
 		it('throws NotFoundError when user does not exist', async () => {

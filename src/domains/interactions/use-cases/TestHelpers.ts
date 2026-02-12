@@ -5,9 +5,13 @@ import type {
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
 } from '../ports/ExternalServices';
-import type { CommandsRepository, } from '../ports/Commands';
+import type { CommandsRepository } from '../ports/Commands';
 import type { QueriesRepository } from '../ports/Queries';
-import { createMockedContract, type MockedContract, makeSutGeneric } from '@TestUtils';
+import {
+	createMockedContract,
+	type MockedContract,
+	makeSutGeneric,
+} from '@TestUtils';
 
 export const DEFAULT_PERFORMER_USER_ID = 1;
 export const DEFAULT_POEM_OWNER_USER_ID = 2;
@@ -82,11 +86,15 @@ export function givenCreatedComment(
 	});
 }
 
-export function givenUsersAreBlocked(friendsContract: InteractionsSutMocks['friendsContract']) {
+export function givenUsersAreBlocked(
+	friendsContract: InteractionsSutMocks['friendsContract'],
+) {
 	friendsContract.areBlocked.mockResolvedValue(true);
 }
 
-export function givenUsersAreFriends(friendsContract: InteractionsSutMocks['friendsContract']) {
+export function givenUsersAreFriends(
+	friendsContract: InteractionsSutMocks['friendsContract'],
+) {
 	friendsContract.areFriends.mockResolvedValue(true);
 }
 type InteractionsSutBooleanConfig = {
@@ -99,34 +107,48 @@ type InteractionsSutBooleanConfig = {
 type SutFromFactory<T extends (...args: any) => any> = ReturnType<T>;
 type FactoryDeps<T extends (...args: any) => any> = Parameters<T>[0];
 
-export function makeInteractionsSutWithConfig<TFactory extends (...args: any) => any>(
+export function makeInteractionsSutWithConfig<
+	TFactory extends (...args: any) => any,
+>(
 	factory: TFactory,
-	config: InteractionsSutBooleanConfig = {}
+	config: InteractionsSutBooleanConfig = {},
 ): { sut: SutFromFactory<TFactory>; mocks: InteractionsSutMocks } {
 	const mocks: Partial<InteractionsSutMocks> = {};
 
-	if (config.includeCommands ?? true) 
-		mocks.commandsRepository = Object.assign(createMockedContract<CommandsRepository>(), {
-			createPoemComment: mock(),
-		});
-	
-	if (config.includePoems ?? true) 
-		mocks.poemsContract = Object.assign(createMockedContract<PoemsContractForInteractions>(), {
-			getPoemInteractionInfo: mock(),
-		});
+	if (config.includeCommands ?? true)
+		mocks.commandsRepository = Object.assign(
+			createMockedContract<CommandsRepository>(),
+			{
+				createPoemComment: mock(),
+			},
+		);
 
-	if (config.includeUsers ?? true) 
-		mocks.usersContract = Object.assign(createMockedContract<UsersContractForInteractions>(), {
-			getUserBasicInfo: mock(),
-		});
-	
-	if (config.includeFriends ?? true) 
-		mocks.friendsContract = Object.assign(createMockedContract<FriendsContractForInteractions>(), {
-			areBlocked: mock(),
-			areFriends: mock(),
-		});
+	if (config.includePoems ?? true)
+		mocks.poemsContract = Object.assign(
+			createMockedContract<PoemsContractForInteractions>(),
+			{
+				getPoemInteractionInfo: mock(),
+			},
+		);
 
-	if (config.includeQueries ?? true) 
+	if (config.includeUsers ?? true)
+		mocks.usersContract = Object.assign(
+			createMockedContract<UsersContractForInteractions>(),
+			{
+				getUserBasicInfo: mock(),
+			},
+		);
+
+	if (config.includeFriends ?? true)
+		mocks.friendsContract = Object.assign(
+			createMockedContract<FriendsContractForInteractions>(),
+			{
+				areBlocked: mock(),
+				areFriends: mock(),
+			},
+		);
+
+	if (config.includeQueries ?? true)
 		mocks.queriesRepository = createMockedContract<QueriesRepository>();
 
 	const factoryArray = Object.entries(mocks).map(([key, value]) => ({
@@ -134,10 +156,11 @@ export function makeInteractionsSutWithConfig<TFactory extends (...args: any) =>
 		factory: () => value,
 	}));
 
-	const { sut } = makeSutGeneric<FactoryDeps<TFactory>, SutFromFactory<TFactory>, InteractionsSutMocks>(
-		factory,
-		factoryArray
-	);
+	const { sut } = makeSutGeneric<
+		FactoryDeps<TFactory>,
+		SutFromFactory<TFactory>,
+		InteractionsSutMocks
+	>(factory, factoryArray);
 
 	return { sut, mocks: mocks as InteractionsSutMocks };
 }

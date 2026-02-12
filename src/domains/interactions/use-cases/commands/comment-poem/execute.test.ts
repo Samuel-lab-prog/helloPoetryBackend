@@ -35,12 +35,15 @@ function makeCreateCommentParams(
 }
 
 function makeCreateCommentScenario() {
-	const { sut: commentPoem, mocks } = makeInteractionsSutWithConfig(commentPoemFactory, {
-		includeCommands: true,
-		includePoems: true,
-		includeUsers: true,
-		includeFriends: true,
-	});
+	const { sut: commentPoem, mocks } = makeInteractionsSutWithConfig(
+		commentPoemFactory,
+		{
+			includeCommands: true,
+			includePoems: true,
+			includeUsers: true,
+			includeFriends: true,
+		},
+	);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
@@ -76,9 +79,9 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {
 		it('should create a comment', async () => {
 			const scenario = makeCreateCommentScenario()
-			.withUser()
-			.withPoem()
-			.withCreatedComment();
+				.withUser()
+				.withPoem()
+				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
@@ -129,6 +132,24 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withPoem({ visibility: 'private' });
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+		it('should throw ForbiddenError for poems under moderation', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ moderationStatus: 'pending' });
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+		it('should throw ForbiddenError for rejected poems', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ moderationStatus: 'rejected' });
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+		it('should throw ForbiddenError for removed poems', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ moderationStatus: 'removed' });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 	});
