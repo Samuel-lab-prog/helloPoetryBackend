@@ -1,13 +1,15 @@
 import { user } from './User';
 import { poem } from './Poem';
 import { relation } from './UsersRelation';
-import { checkContent } from './Content';
+import { compareIds } from './CompareNumbers';
+import { ensureResource } from './CheckResource';
 
-export function v() {
+export function validator() {
 	return {
 		user,
 		poem,
 		relation,
-		checkContent,
+		compareIds,
+		ensureResource,
 	};
 }

@@ -48,6 +48,10 @@ export type UsersRelationInfoOverride = Partial<
 	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
 >;
 
+export type SelectCommentByIdOverride = Partial<
+	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
+>;
+
 export function givenUser(
 	userContract: InteractionsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
@@ -91,6 +95,28 @@ export function givenCreatedComment(
 	});
 }
 
+export function givenDeletedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	commandsRepository.deletePoemComment.mockResolvedValue(undefined);
+}
+
+export function givenFoundComment(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	overrides: Partial<
+		Awaited<ReturnType<QueriesRepository['selectCommentById']>>
+	> = {},
+) {
+	queriesRepository.selectCommentById.mockResolvedValue({
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		createdAt: new Date(),
+		...overrides,
+	});
+}
+
 export function givenUsersRelation(
 	friendsContract: InteractionsSutMocks['friendsContract'],
 	overrides: UsersRelationInfoOverride = {},
@@ -120,43 +146,39 @@ export function makeInteractionsSutWithConfig<
 ): { sut: SutFromFactory<TFactory>; mocks: InteractionsSutMocks } {
 	const mocks: Partial<InteractionsSutMocks> = {};
 
-	if (config.includeCommands ?? true)
+	if (config.includeCommands !== false)
 		mocks.commandsRepository = Object.assign(
 			createMockedContract<CommandsRepository>(),
-			{
-				createPoemComment: mock(),
-			},
+			{ createPoemComment: mock(), deletePoemComment: mock() },
 		);
 
-	if (config.includePoems ?? true)
+	if (config.includePoems !== false)
 		mocks.poemsContract = Object.assign(
 			createMockedContract<PoemsContractForInteractions>(),
-			{
-				getPoemInteractionInfo: mock(),
-			},
+			{ getPoemInteractionInfo: mock() },
 		);
 
-	if (config.includeUsers ?? true)
+	if (config.includeUsers !== false)
 		mocks.usersContract = Object.assign(
 			createMockedContract<UsersContractForInteractions>(),
-			{
-				getUserBasicInfo: mock(),
-			},
+			{ getUserBasicInfo: mock() },
 		);
 
-	if (config.includeFriends ?? true)
+	if (config.includeFriends !== false)
 		mocks.friendsContract = Object.assign(
 			createMockedContract<FriendsContractForInteractions>(),
-			{
-				usersRelation: mock().mockResolvedValue({
-					areBlocked: false,
-					areFriends: false,
-				}),
-			},
+			{ usersRelation: mock() },
 		);
 
-	if (config.includeQueries ?? true)
-		mocks.queriesRepository = createMockedContract<QueriesRepository>();
+	if (config.includeQueries !== false)
+		mocks.queriesRepository = Object.assign(
+			createMockedContract<QueriesRepository>(),
+			{
+				selectCommentById: mock(),
+				findCommentsByPoemId: mock(),
+				existsPoemLike: mock(),
+			},
+		);
 
 	const factoryArray = Object.entries(mocks).map(([key, value]) => ({
 		name: key,

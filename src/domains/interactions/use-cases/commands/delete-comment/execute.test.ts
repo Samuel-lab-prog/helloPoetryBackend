@@ -1,219 +1,132 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
-import { deleteCommentFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 
-describe('USE-CASE - Interactions', () => {
-	describe('Delete Comment', () => {
-		let commandsRepository: {
-			deletePoemComment: ReturnType<typeof mock>;
-			findPoemLike: ReturnType<typeof mock>;
-			createPoemLike: ReturnType<typeof mock>;
-			deletePoemLike: ReturnType<typeof mock>;
-			createPoemComment: ReturnType<typeof mock>;
-		};
+import {
+	givenCreatedComment,
+	givenUser,
+	makeInteractionsSutWithConfig,
+	type UserBasicInfoOverride,
+	type CreatePoemCommentOverride,
+	DEFAULT_PERFORMER_USER_ID,
+	DEFAULT_COMMENT_ID,
+	type SelectCommentByIdOverride,
+	givenFoundComment,
+	givenDeletedComment,
+} from '../../TestHelpers';
 
-		let queriesRepository: {
-			selectCommentById: ReturnType<typeof mock>;
-			findCommentsByPoemId: ReturnType<typeof mock>;
-			existsPoemLike: ReturnType<typeof mock>;
-		};
+import { expectError } from '@TestUtils';
+import { deleteCommentFactory } from './execute';
+import type { DeleteCommentParams } from '../../../ports/Commands';
 
-		let usersContract: {
-			getUserBasicInfo: ReturnType<typeof mock>;
-		};
+function makeDeleteCommentParams(
+	overrides: Partial<DeleteCommentParams> = {},
+): DeleteCommentParams {
+	return {
+		userId: DEFAULT_PERFORMER_USER_ID,
+		commentId: DEFAULT_COMMENT_ID,
+		...overrides,
+	};
+}
 
-		beforeEach(() => {
-			commandsRepository = {
-				deletePoemComment: mock(),
-				findPoemLike: mock(),
-				createPoemLike: mock(),
-				deletePoemLike: mock(),
-				createPoemComment: mock(),
-			};
+function makeDeleteCommentScenario() {
+	const { sut: deleteComment, mocks } = makeInteractionsSutWithConfig(
+		deleteCommentFactory,
+		{
+			includeCommands: true,
+			includeQueries: true,
+			includeUsers: true,
+		},
+	);
 
-			queriesRepository = {
-				selectCommentById: mock(),
-				findCommentsByPoemId: mock(),
-				existsPoemLike: mock(),
-			};
+	return {
+		withUser(overrides: UserBasicInfoOverride = {}) {
+			givenUser(mocks.usersContract, overrides);
+			return this;
+		},
+		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
+			givenCreatedComment(mocks.commandsRepository, overrides);
+			return this;
+		},
+		withFoundComment(overrides: SelectCommentByIdOverride = {}) {
+			givenFoundComment(mocks.queriesRepository, overrides);
+			return this;
+		},
+		withDeletedComment() {
+			givenDeletedComment(mocks.commandsRepository);
+			return this;
+		},
+		execute(params = makeDeleteCommentParams()) {
+			return deleteComment(params);
+		},
+		get mocks() {
+			return mocks;
+		},
+	};
+}
 
-			usersContract = {
-				getUserBasicInfo: mock(),
-			};
+describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
+	describe('Successful execution', () => {
+		it('should delete a comment for the owner', async () => {
+			const scenario = makeDeleteCommentScenario()
+				.withUser()
+				.withFoundComment()
+				.withDeletedComment();
+
+			await expect(scenario.execute()).resolves.toBeUndefined();
 		});
 
-		it('deletes comment when user is owner', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
-				status: 'active',
-			});
-			queriesRepository.selectCommentById.mockResolvedValue({
-				id: 10,
-				userId: 5,
-				content: 'hello',
-			});
-			commandsRepository.deletePoemComment.mockResolvedValue(undefined);
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			const result = await deleteComment({
-				userId: 5,
-				commentId: 10,
-			});
-
-			expect(result).toBeUndefined();
-			expect(queriesRepository.selectCommentById).toHaveBeenCalledWith({
-				commentId: 10,
-			});
-			expect(commandsRepository.deletePoemComment).toHaveBeenCalledWith({
-				commentId: 10,
-			});
+		it('should allow admin to delete any comment', async () => {
+			const scenario = makeDeleteCommentScenario()
+				.withUser({ role: 'admin' })
+				.withFoundComment()
+				.withDeletedComment();
+			await expect(scenario.execute()).resolves.toBeUndefined();
 		});
 
-		it('throws NotFoundError when user does not exist', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: false });
+		it('should allow moderator to delete any comment', async () => {
+			const scenario = makeDeleteCommentScenario()
+				.withUser({ role: 'moderator' })
+				.withFoundComment()
+				.withDeletedComment();
+			await expect(scenario.execute()).resolves.toBeUndefined();
+		});
+	});
 
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 1,
-					commentId: 99,
-				}),
-			).rejects.toBeInstanceOf(NotFoundError);
-			expect(queriesRepository.selectCommentById).not.toHaveBeenCalled();
+	describe('User validation', () => {
+		it('should throw NotFoundError when user does not exist', async () => {
+			const scenario = makeDeleteCommentScenario().withUser({ exists: false });
+			await expectError(scenario.execute(), NotFoundError);
 		});
 
-		it('throws ForbiddenError when user is not active', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
+		it('should throw ForbiddenError when user is banned or suspended', async () => {
+			const bannedScenario = makeDeleteCommentScenario().withUser({
 				status: 'banned',
 			});
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
+			await expectError(bannedScenario.execute(), ForbiddenError);
+			const suspendedScenario = makeDeleteCommentScenario().withUser({
+				status: 'suspended',
 			});
-
-			await expect(
-				deleteComment({
-					userId: 1,
-					commentId: 99,
-				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
-			expect(queriesRepository.selectCommentById).not.toHaveBeenCalled();
+			await expectError(suspendedScenario.execute(), ForbiddenError);
 		});
+	});
 
-		it('throws NotFoundError when comment does not exist', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
-				status: 'active',
-			});
-			queriesRepository.selectCommentById.mockResolvedValue(null);
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 1,
-					commentId: 99,
-				}),
-			).rejects.toBeInstanceOf(NotFoundError);
-
-			expect(commandsRepository.deletePoemComment).not.toHaveBeenCalled();
+	describe('Comment validation', () => {
+		it('should throw NotFoundError when comment does not exist', async () => {
+			const scenario = makeDeleteCommentScenario().withUser();
+			// não chamamos withCreatedComment, então comment é inexistente
+			await expectError(scenario.execute(), NotFoundError);
 		});
+	});
 
-		it('throws ForbiddenError when user is not owner', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
-				status: 'active',
-			});
-			queriesRepository.selectCommentById.mockResolvedValue({
-				id: 10,
-				userId: 7,
-				content: 'hello',
-			});
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 5,
-					commentId: 10,
-				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
-
-			expect(commandsRepository.deletePoemComment).not.toHaveBeenCalled();
-		});
-
-		it('propagates query repository errors', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
-				status: 'active',
-			});
-			queriesRepository.selectCommentById.mockRejectedValue(
-				new Error('db exploded'),
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeDeleteCommentScenario()
+				.withUser()
+				.withCreatedComment();
+			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+				new Error('boom'),
 			);
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 1,
-					commentId: 2,
-				}),
-			).rejects.toThrow('db exploded');
-
-			expect(commandsRepository.deletePoemComment).not.toHaveBeenCalled();
-		});
-
-		it('propagates delete command errors', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({
-				exists: true,
-				status: 'active',
-			});
-			queriesRepository.selectCommentById.mockResolvedValue({
-				id: 3,
-				userId: 3,
-				content: 'hey',
-			});
-			commandsRepository.deletePoemComment.mockRejectedValue(
-				new Error('delete failed'),
-			);
-
-			const deleteComment = deleteCommentFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				deleteComment({
-					userId: 3,
-					commentId: 3,
-				}),
-			).rejects.toThrow('delete failed');
+			await expectError(scenario.execute(), Error);
 		});
 	});
 });

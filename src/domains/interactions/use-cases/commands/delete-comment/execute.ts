@@ -4,9 +4,9 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UsersContractForInteractions } from '../../../ports/ExternalServices';
-import { ForbiddenError, NotFoundError } from '@DomainError';
+import { validator } from '../../validators/Global';
 
-interface Dependencies {
+export interface DeleteCommentDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersContractForInteractions;
@@ -16,28 +16,26 @@ export function deleteCommentFactory({
 	commandsRepository,
 	queriesRepository,
 	usersContract,
-}: Dependencies) {
+}: DeleteCommentDependencies) {
 	return async function deleteComment(
 		params: DeleteCommentParams,
 	): Promise<void> {
 		const { userId, commentId } = params;
-
+		const v = validator();
 		const userInfo = await usersContract.getUserBasicInfo(userId);
-		if (!userInfo.exists) throw new NotFoundError('User not found');
-		if (userInfo.status !== 'active')
-			throw new ForbiddenError('Inactive users cannot delete comments');
 
-		const comment = await queriesRepository.selectCommentById({
-			commentId,
-		});
+		v.user(userInfo)
+			.withStatus(['active'])
+			.withRole(['author', 'admin', 'moderator']);
 
-		if (!comment) throw new NotFoundError('Comment not found');
+		const comment = await queriesRepository.selectCommentById({ commentId });
+		v.ensureResource(comment, `Comment with id ${commentId} not found`)
+			.notNull()
+			.notUndefined();
 
-		const isOwner = comment.userId === userId;
-		if (!isOwner) throw new ForbiddenError('Only comment owners can delete it');
+		if (userInfo.role === 'author')
+			v.compareIds(userId, comment!.userId).sameOwner();
 
-		return commandsRepository.deletePoemComment({
-			commentId,
-		});
+		return commandsRepository.deletePoemComment({ commentId });
 	};
 }

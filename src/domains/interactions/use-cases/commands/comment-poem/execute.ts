@@ -8,7 +8,7 @@ import type {
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
-import { v } from '../../validators/Global';
+import { validator } from '../../validators/Global';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -28,22 +28,19 @@ export function commentPoemFactory({
 	): Promise<PoemComment> {
 		const { userId, poemId, content } = params;
 		const trimmedContent = content.trim();
-
-		v()
-			.checkContent(trimmedContent)
+		const v = validator();
+		v.ensureResource(trimmedContent)
 			.minLength(1)
 			.maxLength(300)
 			.bannedWords(['badword1', 'badword2']);
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
-		v()
-			.user(userInfo)
+		v.user(userInfo)
 			.withStatus(['active'])
 			.withRole(['user', 'admin', 'author']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
-		v()
-			.poem(poemInfo)
+		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends']);
 
@@ -51,10 +48,10 @@ export function commentPoemFactory({
 			userId,
 			poemInfo.authorId,
 		);
-		v().relation(usersRelationInfo).withNoBlocking();
+		v.relation(usersRelationInfo).withNoBlocking();
 
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
-			v().relation(usersRelationInfo).withFriendhsip();
+			v.relation(usersRelationInfo).withFriendhsip();
 
 		return commandsRepository.createPoemComment({
 			userId,
