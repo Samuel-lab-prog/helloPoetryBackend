@@ -9,9 +9,11 @@ import type {
 
 import type { CommandsRepository, CommentPoemParams } from '../ports/Commands';
 import { createMockedContract, type MockedContract } from '@TestUtils';
+import type { QueriesRepository } from '../ports/Queries';
 
 type SutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
+	queriesRepository: MockedContract<QueriesRepository>;
 	poemsContract: MockedContract<PoemsContractForInteractions>;
 	usersContract: MockedContract<UsersContractForInteractions>;
 	friendsContract: MockedContract<FriendsContractForInteractions>;
@@ -114,8 +116,8 @@ type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
-function givenUser(mocks: SutMocks, overrides: UserBasicInfoOverride = {}) {
-	mocks.usersContract.getUserBasicInfo.mockResolvedValue({
+function givenUser(userContract: SutMocks['usersContract'], overrides: UserBasicInfoOverride = {}) {
+	userContract.getUserBasicInfo.mockResolvedValue({
 		exists: true,
 		status: DEFAULT_USER_STATUS,
 		id: DEFAULT_PERFORMER_USER_ID,
@@ -125,10 +127,10 @@ function givenUser(mocks: SutMocks, overrides: UserBasicInfoOverride = {}) {
 }
 
 function givenPoem(
-	mocks: SutMocks,
+	poemsContract: SutMocks['poemsContract'],
 	overrides: PoemInteractionInfoOverride = {},
 ) {
-	mocks.poemsContract.getPoemInteractionInfo.mockResolvedValue({
+	poemsContract.getPoemInteractionInfo.mockResolvedValue({
 		exists: true,
 		visibility: DEFAULT_POEM_VISIBILITY,
 		authorId: DEFAULT_POEM_OWNER_USER_ID,
@@ -140,10 +142,10 @@ function givenPoem(
 }
 
 function givenCreatedComment(
-	mocks: SutMocks,
+	commandsRepository: SutMocks['commandsRepository'],
 	overrides: CreatePoemCommentOverride = {},
 ) {
-	mocks.commandsRepository.createPoemComment.mockResolvedValue({
+	commandsRepository.createPoemComment.mockResolvedValue({
 		id: DEFAULT_COMMENT_ID,
 		userId: DEFAULT_PERFORMER_USER_ID,
 		poemId: DEFAULT_POEM_ID,
@@ -153,12 +155,12 @@ function givenCreatedComment(
 	});
 }
 
-function givenUsersAreBlocked(mocks: SutMocks) {
-	mocks.friendsContract.areBlocked.mockResolvedValue(true);
+function givenUsersAreBlocked(friendsContract: SutMocks['friendsContract']) {
+	friendsContract.areBlocked.mockResolvedValue(true);
 }
 
-function givenUsersAreFriends(mocks: SutMocks) {
-	mocks.friendsContract.areFriends.mockResolvedValue(true);
+function givenUsersAreFriends(friendsContract: SutMocks['friendsContract']) {
+	friendsContract.areFriends.mockResolvedValue(true);
 }
 
 export function makeCreateCommentScenario() {
@@ -166,27 +168,27 @@ export function makeCreateCommentScenario() {
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
-			givenUser(mocks, overrides);
+			givenUser(mocks['usersContract'], overrides);
 			return this;
 		},
 
 		withPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoem(mocks, overrides);
+			givenPoem(mocks['poemsContract'], overrides);
 			return this;
 		},
 
 		withUsersBlocked() {
-			givenUsersAreBlocked(mocks);
+			givenUsersAreBlocked(mocks['friendsContract']);
 			return this;
 		},
 
 		withUsersFriends() {
-			givenUsersAreFriends(mocks);
+			givenUsersAreFriends(mocks['friendsContract']);
 			return this;
 		},
 
 		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
-			givenCreatedComment(mocks, overrides);
+			givenCreatedComment(mocks['commandsRepository'], overrides);
 			return this;
 		},
 
