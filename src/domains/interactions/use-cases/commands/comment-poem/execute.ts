@@ -14,7 +14,7 @@ import {
 	UnprocessableEntityError,
 } from '@DomainError';
 
-interface Dependencies {
+export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
 	usersContract: UsersContractForInteractions;
@@ -26,7 +26,7 @@ export function commentPoemFactory({
 	poemsContract,
 	usersContract,
 	friendsContract,
-}: Dependencies) {
+}: CommentPoemDependencies) {
 	return async function commentPoem(
 		params: CommentPoemParams,
 	): Promise<PoemComment> {

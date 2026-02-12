@@ -14,12 +14,18 @@ import { expectError } from '@TestUtils';
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {
 		it('should create a comment', async () => {
-			const scenario = makeCreateCommentScenario().withCreatedComment();
+			const scenario = makeCreateCommentScenario()
+			.withUser()
+			.withPoem()
+			.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
 		});
 		it('should allow exactly 300 characters', async () => {
-			const scenario = makeCreateCommentScenario().withCreatedComment();
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem()
+				.withCreatedComment();
 			const result = await scenario.execute(
 				makeCreateCommentParams({ content: 'a'.repeat(300) }),
 			);

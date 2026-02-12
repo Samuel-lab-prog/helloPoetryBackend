@@ -1,5 +1,5 @@
 import { mock } from 'bun:test';
-import { commentPoemFactory } from './commands/Index';
+import { commentPoemFactory, type CommentPoemDependencies } from './commands/Index';
 
 import type {
 	UsersContractForInteractions,
@@ -10,6 +10,7 @@ import type {
 import type { CommandsRepository, CommentPoemParams } from '../ports/Commands';
 import { createMockedContract, type MockedContract } from '@TestUtils';
 import type { QueriesRepository } from '../ports/Queries';
+import type { PoemComment } from './Models';
 
 type SutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -34,63 +35,55 @@ const DEFAULT_COMMENT_ID = 1;
 
 const DEFAULT_COMMENT_CONTENT = 'hello';
 
-function makeCreateCommentSut() {
-	const commandsRepository = createMockedContract<CommandsRepository>();
-	const poemsContract = createMockedContract<PoemsContractForInteractions>();
-	const usersContract = createMockedContract<UsersContractForInteractions>();
-	const friendsContract =
-		createMockedContract<FriendsContractForInteractions>();
+type SutOptions = {
+	includeCommands?: boolean;
+	includeQueries?: boolean;
+	includePoems?: boolean;
+	includeUsers?: boolean;
+	includeFriends?: boolean;
+};
 
-	commandsRepository.createPoemComment =
-		mock<CommandsRepository['createPoemComment']>();
+// We could make this function even more generic following this idea:
+// 1. Aceept an array of objects each one containing:
+	//   - the name of the dependency (e.g. 'commandsRepository')
+	//   - The type of the dependency (e.g. CommandsRepository)
+	// 2. Loop through this array and create the mocks based on the provided info
+	// 3. This way we could reuse this function across different use-cases just by providing the right config
+function makeSut<TFactoryArgs, TResult>(
+	factory: (args: TFactoryArgs) => TResult,
+	options: SutOptions = {},
+) {
+	const mocks: SutMocks = {} as unknown as SutMocks;
 
-	poemsContract.getPoemInteractionInfo =
-		mock<PoemsContractForInteractions['getPoemInteractionInfo']>();
+	if (options.includeCommands) {
+		const commandsRepository = createMockedContract<CommandsRepository>();
+		commandsRepository.createPoemComment = mock();
+		mocks.commandsRepository = commandsRepository;
+	}
 
-	usersContract.getUserBasicInfo =
-		mock<UsersContractForInteractions['getUserBasicInfo']>();
+	if (options.includePoems) {
+		const poemsContract = createMockedContract<PoemsContractForInteractions>();
+		poemsContract.getPoemInteractionInfo = mock();
+		mocks.poemsContract = poemsContract;
+	}
 
-	friendsContract.areBlocked =
-		mock<FriendsContractForInteractions['areBlocked']>();
+	if (options.includeUsers) {
+		const usersContract = createMockedContract<UsersContractForInteractions>();
+		usersContract.getUserBasicInfo = mock();
+		mocks.usersContract = usersContract;
+	}
 
-	friendsContract.areFriends =
-		mock<FriendsContractForInteractions['areFriends']>();
+	if (options.includeFriends) {
+		const friendsContract =
+			createMockedContract<FriendsContractForInteractions>();
+		friendsContract.areBlocked = mock();
+		friendsContract.areFriends = mock();
+		mocks.friendsContract = friendsContract;
+	}
 
-	usersContract.getUserBasicInfo.mockResolvedValue({
-		exists: true,
-		status: DEFAULT_USER_STATUS,
-		id: DEFAULT_PERFORMER_USER_ID,
-		role: DEFAULT_USER_ROLE,
-	});
+	const sut = factory(mocks as unknown as TFactoryArgs);
 
-	poemsContract.getPoemInteractionInfo.mockResolvedValue({
-		exists: true,
-		visibility: DEFAULT_POEM_VISIBILITY,
-		status: DEFAULT_POEM_STATUS,
-		authorId: DEFAULT_POEM_OWNER_USER_ID,
-		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
-		deletedAt: null,
-	});
-
-	friendsContract.areBlocked.mockResolvedValue(false);
-	friendsContract.areFriends.mockResolvedValue(false);
-
-	const commentPoem = commentPoemFactory({
-		commandsRepository,
-		poemsContract,
-		usersContract,
-		friendsContract,
-	});
-
-	return {
-		commentPoem,
-		mocks: {
-			commandsRepository,
-			poemsContract,
-			usersContract,
-			friendsContract,
-		},
-	};
+	return { sut, mocks };
 }
 
 export function makeCreateCommentParams(
@@ -116,7 +109,10 @@ type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
-function givenUser(userContract: SutMocks['usersContract'], overrides: UserBasicInfoOverride = {}) {
+function givenUser(
+	userContract: SutMocks['usersContract'],
+	overrides: UserBasicInfoOverride = {},
+) {
 	userContract.getUserBasicInfo.mockResolvedValue({
 		exists: true,
 		status: DEFAULT_USER_STATUS,
@@ -164,8 +160,12 @@ function givenUsersAreFriends(friendsContract: SutMocks['friendsContract']) {
 }
 
 export function makeCreateCommentScenario() {
-	const { commentPoem, mocks } = makeCreateCommentSut();
-
+	const { sut: commentPoem, mocks } = makeSut<CommentPoemDependencies, (params: CommentPoemParams) => Promise<PoemComment>>(commentPoemFactory, {
+		includeCommands: true,
+		includePoems: true,
+		includeUsers: true,
+		includeFriends: true,
+	});
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
 			givenUser(mocks['usersContract'], overrides);
