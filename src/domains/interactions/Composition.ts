@@ -17,6 +17,7 @@ import type { CommandsRouterServices } from './ports/Commands';
 import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
+import { usersContract } from '@SharedKernel/contracts/users/Index';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
@@ -31,21 +32,26 @@ export const commandsRouterServices: CommandsRouterServices = {
 		queriesRepository,
 		poemsContract: poemsServicesForInteractions,
 		friendsServices: friendsServicesForInteractions,
+		usersContract: usersContract,
 	}),
 
 	unlikePoem: unlikePoemFactory({
 		commandsRepository,
 		poemsContract: poemsServicesForInteractions,
+		usersContract: usersContract,
 	}),
 
 	commentPoem: commentPoemFactory({
 		commandsRepository,
 		poemsContract: poemsServicesForInteractions,
+		usersContract: usersContract,
+		friendsContract: friendsServicesForInteractions,
 	}),
 
 	deleteComment: deleteCommentFactory({
 		commandsRepository,
 		queriesRepository,
+		usersContract: usersContract,
 	}),
 };
 

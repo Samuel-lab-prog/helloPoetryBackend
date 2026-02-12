@@ -14,6 +14,7 @@ export const ERROR_CODES = [
 	'VALIDATION',
 	'INTERNAL_SERVER_ERROR',
 	'UNKNOWN',
+	'UNPROCESSABLE_ENTITY',
 ] as const;
 
 /* ---------------------------------- */

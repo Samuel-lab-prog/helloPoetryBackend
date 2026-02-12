@@ -16,8 +16,8 @@ export function createInteractionsCommandsRouter(
 		.use(AuthPlugin)
 		.post(
 			'/poems/:id/like',
-			({ auth, params, set }) => {
-				const rs = services.likePoem({
+			async ({ auth, params, set }) => {
+				const rs = await services.likePoem({
 					userId: auth.clientId,
 					poemId: params.id,
 				});
@@ -42,8 +42,8 @@ export function createInteractionsCommandsRouter(
 		)
 		.delete(
 			'/poems/:id/like',
-			({ auth, params, set }) => {
-				const rs = services.unlikePoem({
+			async ({ auth, params, set }) => {
+				const rs = await services.unlikePoem({
 					userId: auth.clientId,
 					poemId: params.id,
 				});
@@ -67,8 +67,8 @@ export function createInteractionsCommandsRouter(
 		)
 		.post(
 			'/poems/:id/comments',
-			({ auth, params, body, set }) => {
-				const rs = services.commentPoem({
+			async ({ auth, params, body, set }) => {
+				const rs = await services.commentPoem({
 					userId: auth.clientId,
 					poemId: params.id,
 					content: body.content,

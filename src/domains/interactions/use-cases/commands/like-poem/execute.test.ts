@@ -1,12 +1,11 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { likePoemFactory } from './execute';
 import {
-	PoemNotFoundError,
-	AlreadyLikedError,
-	PrivatePoemError,
-	FriendsOnlyPoemError,
-	UserBlockedError,
-} from '../../Errors';
+	BadRequestError,
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@DomainError';
 
 describe('USE-CASE - Interactions', () => {
 	describe('Like Poem', () => {
@@ -26,6 +25,10 @@ describe('USE-CASE - Interactions', () => {
 
 		let poemsContract: {
 			getPoemInteractionInfo: ReturnType<typeof mock>;
+		};
+
+		let usersContract: {
+			getUserBasicInfo: ReturnType<typeof mock>;
 		};
 
 		let friendsServices: {
@@ -52,6 +55,10 @@ describe('USE-CASE - Interactions', () => {
 				getPoemInteractionInfo: mock(),
 			};
 
+			usersContract = {
+				getUserBasicInfo: mock(),
+			};
+
 			friendsServices = {
 				areFriends: mock(),
 				areBlocked: mock(),
@@ -59,12 +66,15 @@ describe('USE-CASE - Interactions', () => {
 		});
 
 		it('likes poem successfully', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({
 				exists: true,
 				authorId: 2,
 				visibility: 'public',
 			});
-
 			friendsServices.areBlocked.mockResolvedValue(false);
 			queriesRepository.existsPoemLike.mockResolvedValue(false);
 			commandsRepository.createPoemLike.mockResolvedValue({
@@ -77,6 +87,7 @@ describe('USE-CASE - Interactions', () => {
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			const result = await likePoem({ userId: 1, poemId: 10 });
@@ -88,7 +99,78 @@ describe('USE-CASE - Interactions', () => {
 			});
 		});
 
-		it('throws PoemNotFoundError when poem does not exist', async () => {
+		it('rejects invalid user id', async () => {
+			const likePoem = likePoemFactory({
+				commandsRepository,
+				queriesRepository,
+				poemsContract,
+				friendsServices,
+				usersContract,
+			});
+
+			await expect(likePoem({ userId: 0, poemId: 10 })).rejects.toBeInstanceOf(
+				BadRequestError,
+			);
+			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+		});
+
+		it('rejects invalid poem id', async () => {
+			const likePoem = likePoemFactory({
+				commandsRepository,
+				queriesRepository,
+				poemsContract,
+				friendsServices,
+				usersContract,
+			});
+
+			await expect(likePoem({ userId: 1, poemId: -1 })).rejects.toBeInstanceOf(
+				BadRequestError,
+			);
+			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+		});
+
+		it('throws NotFoundError when user does not exist', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({ exists: false });
+
+			const likePoem = likePoemFactory({
+				commandsRepository,
+				queriesRepository,
+				poemsContract,
+				friendsServices,
+				usersContract,
+			});
+
+			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
+				NotFoundError,
+			);
+			expect(poemsContract.getPoemInteractionInfo).not.toHaveBeenCalled();
+		});
+
+		it('throws ForbiddenError when user is not active', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'banned',
+			});
+
+			const likePoem = likePoemFactory({
+				commandsRepository,
+				queriesRepository,
+				poemsContract,
+				friendsServices,
+				usersContract,
+			});
+
+			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
+				ForbiddenError,
+			);
+			expect(poemsContract.getPoemInteractionInfo).not.toHaveBeenCalled();
+		});
+
+		it('throws NotFoundError when poem does not exist', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({ exists: false });
 
 			const likePoem = likePoemFactory({
@@ -96,15 +178,20 @@ describe('USE-CASE - Interactions', () => {
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
-				PoemNotFoundError,
+				NotFoundError,
 			);
 			expect(commandsRepository.createPoemLike).not.toHaveBeenCalled();
 		});
 
-		it('throws PrivatePoemError when poem is private and user is not author', async () => {
+		it('throws ForbiddenError when poem is private and user is not author', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({
 				exists: true,
 				authorId: 2,
@@ -116,21 +203,25 @@ describe('USE-CASE - Interactions', () => {
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
-				PrivatePoemError,
+				ForbiddenError,
 			);
 			expect(commandsRepository.createPoemLike).not.toHaveBeenCalled();
 		});
 
-		it('throws FriendsOnlyPoemError when poem is friends-only and users are not friends', async () => {
+		it('throws ForbiddenError when poem is friends-only and users are not friends', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({
 				exists: true,
 				authorId: 2,
 				visibility: 'friends',
 			});
-
 			friendsServices.areFriends.mockResolvedValue(false);
 
 			const likePoem = likePoemFactory({
@@ -138,70 +229,52 @@ describe('USE-CASE - Interactions', () => {
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
-				FriendsOnlyPoemError,
+				ForbiddenError,
 			);
 			expect(commandsRepository.createPoemLike).not.toHaveBeenCalled();
 		});
 
-		it('allows friends-only poem when users are friends', async () => {
+		it('throws ForbiddenError when users are blocked in either direction', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({
 				exists: true,
 				authorId: 2,
-				visibility: 'friends',
+				visibility: 'public',
 			});
-
-			friendsServices.areFriends.mockResolvedValue(true);
-			friendsServices.areBlocked.mockResolvedValue(false);
-			queriesRepository.existsPoemLike.mockResolvedValue(false);
-			commandsRepository.createPoemLike.mockResolvedValue({
-				userId: 1,
-				poemId: 10,
-			});
+			friendsServices.areBlocked.mockResolvedValueOnce(false);
+			friendsServices.areBlocked.mockResolvedValueOnce(true);
 
 			const likePoem = likePoemFactory({
 				commandsRepository,
 				queriesRepository,
 				poemsContract,
 				friendsServices,
-			});
-
-			const result = await likePoem({ userId: 1, poemId: 10 });
-
-			expect(result).toEqual({ userId: 1, poemId: 10 });
-		});
-
-		it('throws UserBlockedError when users are blocked', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValue({
-				exists: true,
-				authorId: 2,
-				visibility: 'public',
-			});
-
-			friendsServices.areBlocked.mockResolvedValue(true);
-
-			const likePoem = likePoemFactory({
-				commandsRepository,
-				queriesRepository,
-				poemsContract,
-				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
-				UserBlockedError,
+				ForbiddenError,
 			);
 			expect(commandsRepository.createPoemLike).not.toHaveBeenCalled();
 		});
 
-		it('throws AlreadyLikedError when poem already liked', async () => {
+		it('throws ConflictError when poem already liked', async () => {
+			usersContract.getUserBasicInfo.mockResolvedValue({
+				exists: true,
+				status: 'active',
+			});
 			poemsContract.getPoemInteractionInfo.mockResolvedValue({
 				exists: true,
 				authorId: 2,
 				visibility: 'public',
 			});
-
 			friendsServices.areBlocked.mockResolvedValue(false);
 			queriesRepository.existsPoemLike.mockResolvedValue(true);
 
@@ -210,22 +283,24 @@ describe('USE-CASE - Interactions', () => {
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toBeInstanceOf(
-				AlreadyLikedError,
+				ConflictError,
 			);
 			expect(commandsRepository.createPoemLike).not.toHaveBeenCalled();
 		});
 
 		it('does not swallow dependency errors', async () => {
-			poemsContract.getPoemInteractionInfo.mockRejectedValue(new Error('boom'));
+			usersContract.getUserBasicInfo.mockRejectedValue(new Error('boom'));
 
 			const likePoem = likePoemFactory({
 				commandsRepository,
 				queriesRepository,
 				poemsContract,
 				friendsServices,
+				usersContract,
 			});
 
 			await expect(likePoem({ userId: 1, poemId: 10 })).rejects.toThrow('boom');

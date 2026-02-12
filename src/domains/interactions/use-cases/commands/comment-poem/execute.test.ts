@@ -1,140 +1,91 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
-import { commentPoemFactory } from './execute';
-import { EmptyCommentError, PoemNotFoundError } from '../../Errors';
-import type { CommandsRepository } from '../../../ports/Commands';
+import { describe, it, expect } from 'bun:test';
+import {
+	ForbiddenError,
+	NotFoundError,
+	UnprocessableEntityError,
+} from '@DomainError';
 
-describe('USE-CASE - Interactions', () => {
-	describe('Comment Poem', () => {
-		let createCommentMock: ReturnType<typeof mock>;
-		let commandsRepository: CommandsRepository;
-		let poemsContract: {
-			getPoemInteractionInfo: ReturnType<typeof mock>;
-		};
+import { makeParams, makeCommentScenario } from '../../TestHelpers';
 
-		beforeEach(() => {
-			createCommentMock = mock();
+import { expectError } from 'tests/TestsUtils';
 
-			commandsRepository = {
-				createPoemLike: mock(),
-				deletePoemLike: mock(),
-				deletePoemComment: mock(),
-				findPoemLike: mock(),
-				createPoemComment: createCommentMock,
-			};
-
-			poemsContract = {
-				getPoemInteractionInfo: mock(),
-			};
+describe.concurrent('USE-CASE - Interactions', () => {
+	describe.concurrent('Comment Poem', () => {
+		it('creates a comment successfully with trimmed content', async () => {
+			const scenario = makeCommentScenario()
+				.withValidScenario()
+				.withValidComment();
+			const result = await scenario.execute(makeParams());
+			expect(result).toHaveProperty('id');
 		});
 
-		it('creates a comment when poem exists and content is valid', async () => {
-			const newComment = {
-				id: 1,
-				userId: 5,
-				poemId: 10,
-				content: 'hello',
-				createdAt: new Date(),
-			};
-
-			poemsContract.getPoemInteractionInfo.mockResolvedValue({
-				exists: true,
-			});
-
-			createCommentMock.mockResolvedValue(newComment);
-
-			const commentPoem = commentPoemFactory({
-				commandsRepository,
-				poemsContract,
-			});
-
-			const result = await commentPoem({
-				userId: 5,
-				poemId: 10,
-				content: 'hello',
-			});
-
-			expect(result).toHaveProperty('id', 1);
-			expect(result).toHaveProperty('content', 'hello');
+		it('does not allow unknown users', () => {
+			const scenario = makeCommentScenario().withUnknownUser();
+			expectError(scenario.execute(), NotFoundError);
 		});
 
-		it('trims whitespace from content before saving', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValue({
-				exists: true,
-			});
-
-			createCommentMock.mockResolvedValue({});
-
-			const commentPoem = commentPoemFactory({
-				commandsRepository,
-				poemsContract,
-			});
-
-			await commentPoem({
-				userId: 1,
-				poemId: 2,
-				content: '   nice poem   ',
-			});
-
-			expect(createCommentMock).toHaveBeenCalledWith({
-				userId: 1,
-				poemId: 2,
-				content: 'nice poem',
-			});
+		it('does not allow non-active users', () => {
+			const scenario = makeCommentScenario().withSuspendedUser();
+			expectError(scenario.execute(), ForbiddenError);
 		});
 
-		it('throws EmptyCommentError when content is empty or whitespace', async () => {
-			const commentPoem = commentPoemFactory({
-				commandsRepository,
-				poemsContract,
-			});
-
-			await expect(
-				commentPoem({
-					userId: 1,
-					poemId: 2,
-					content: '   ',
-				}),
-			).rejects.toBeInstanceOf(EmptyCommentError);
+		it('does not allow empty comments', () => {
+			const scenario = makeCommentScenario().withValidScenario();
+			expectError(
+				scenario.execute(makeParams({ content: '   ' })),
+				UnprocessableEntityError,
+			);
 		});
 
-		it('throws PoemNotFoundError when poem does not exist', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValue({
-				exists: false,
-			});
-
-			const commentPoem = commentPoemFactory({
-				commandsRepository,
-				poemsContract,
-			});
-
-			await expect(
-				commentPoem({
-					userId: 3,
-					poemId: 99,
-					content: 'hello',
-				}),
-			).rejects.toBeInstanceOf(PoemNotFoundError);
+		it('does not allow comments with more than 300 characters', () => {
+			const scenario = makeCommentScenario().withValidScenario();
+			expectError(
+				scenario.execute(makeParams({ content: 'a'.repeat(301) })),
+				UnprocessableEntityError,
+			);
 		});
 
-		it('propagates repository errors', async () => {
-			poemsContract.getPoemInteractionInfo.mockResolvedValue({
-				exists: true,
-			});
+		it('throws NotFoundError when poem does not exist', () => {
+			const scenario = makeCommentScenario().withUnknownPoem();
+			expectError(scenario.execute(), NotFoundError);
+		});
 
-			createCommentMock.mockRejectedValue(new Error('db exploded'));
+		it('throws ForbiddenError when users are blocked', () => {
+			const scenario = makeCommentScenario()
+				.withValidScenario()
+				.withUsersBlocked();
+			expectError(scenario.execute(), ForbiddenError);
+		});
 
-			const commentPoem = commentPoemFactory({
-				commandsRepository,
-				poemsContract,
-			});
+		it('throws ForbiddenError for private poems', () => {
+			const scenario = makeCommentScenario().withActiveUser().withPrivatePoem();
+			expectError(scenario.execute(), ForbiddenError);
+		});
 
-			await expect(
-				commentPoem({
-					userId: 1,
-					poemId: 2,
-					content: 'hi',
-				}),
-			).rejects.toThrow('db exploded');
+		it('throws ForbiddenError for friends-only poems when not friends', () => {
+			const scenario = makeCommentScenario()
+				.withActiveUser()
+				.withFriendsOnlyPoem();
+			expectError(scenario.execute(), ForbiddenError);
+		});
+
+		it('allows comments on friends-only poems when users are friends', async () => {
+			const scenario = makeCommentScenario()
+				.withActiveUser()
+				.withFriendsOnlyPoem()
+				.withUsersFriends()
+				.withValidComment();
+
+			const result = await scenario.execute();
+			expect(result).toHaveProperty('id');
+		});
+
+		it('does not swallow dependency errors', () => {
+			const scenario = makeCommentScenario().withActiveUser();
+			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+				new Error('boom'),
+			);
+			expectError(scenario.execute(), Error);
 		});
 	});
 });

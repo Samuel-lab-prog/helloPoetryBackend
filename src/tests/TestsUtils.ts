@@ -1,6 +1,6 @@
 import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
-import { expect } from 'bun:test';
+import { expect, mock } from 'bun:test';
 import { testServer } from '../index';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
@@ -76,6 +76,16 @@ export function expectAppError(result: unknown, statusCode: number) {
 	expect(error.statusCode).toBe(statusCode);
 }
 
+/** * Expects a promise to reject with an error of a specific type. Uses expect from Bun's test framework.
+ * @param promise The promise that is expected to reject.
+ * @param expectedType The constructor of the expected error type.
+ */
+export function expectError(
+	promise: Promise<unknown>,
+	expectedType: new (...args: any[]) => Error,
+) {
+	return expect(promise).rejects.toBeInstanceOf(expectedType);
+}
 /**
  * A constant representing a non-existent ID, useful for testing error cases where an ID is expected to not be found in the database.
  * We are not using -1 because the API might have validation that rejects negative IDs before it even checks if they exist, which would prevent us from testing the "not found" logic in the handlers.
@@ -90,4 +100,44 @@ export const API_INSTANCE = testServer;
  */
 export const API_PREFIX = 'http://test/api/v1';
 
+/**
+ * A constant representing the maximum time limit for queries in tests, useful for ensuring that tests do not run indefinitely and to catch performance issues.
+ */
 export const MAX_QUERY_TIME_LIMIT = 300;
+
+type AnyFn = (...args: any[]) => any;
+
+type MockedFn<T extends AnyFn> = ReturnType<typeof mock<T>> & {
+	(...args: Parameters<T>): ReturnType<T>;
+};
+
+/**
+ * A type representing a mocked version of a contract, where each function in the contract is replaced with a mocked function using Bun's mock utility.
+ * This allows for easy creation of mocks for testing purposes, while maintaining type safety and autocompletion for the mocked functions.
+ * For example, if you have a contract with a function `getUserById(id: number): Promise<User>`, the mocked contract will have a function `getUserById` that is a mocked function, allowing you to specify its behavior in tests.
+ *
+ * @template T The type of the contract to mock.
+ * returns A mocked contract of type T, where each function is replaced with a mocked function.
+ */
+export type MockedContract<T> = {
+	[K in keyof T]: T[K] extends AnyFn ? MockedFn<T[K]> : T[K];
+};
+
+/**
+ * A utility function to create a mocked contract for testing purposes. It takes a generic type T representing the contract interface and returns an object where each function is replaced with a mocked version using Bun's mock function.
+ * This allows us to easily create mocks for external services or repositories when testing our use cases without having to manually mock each function.
+ *
+ * We also get strict type checking and autocompletion for the mocked contract, since the returned object is typed as MockedContract<T>.
+ *
+ * @template T The type of the contract to mock.
+ * @returns A mocked contract of type T.
+ */
+export function createMockedContract<
+	T extends Record<string, any>,
+>(): MockedContract<T> {
+	const mocked: Partial<MockedContract<T>> = {};
+
+	for (const key in {} as T) mocked[key as keyof T] = mock<T[keyof T]>() as any;
+
+	return mocked as MockedContract<T>;
+}

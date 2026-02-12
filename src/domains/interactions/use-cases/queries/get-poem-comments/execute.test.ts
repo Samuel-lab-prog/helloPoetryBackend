@@ -1,7 +1,7 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 import { getPoemCommentsFactory } from './execute';
-import { PoemNotFoundError } from '../../Errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../Errors';
 
 describe('USE-CASE - Interactions', () => {
 	describe('Get Poem Comments', () => {
@@ -27,7 +27,7 @@ describe('USE-CASE - Interactions', () => {
 			};
 		});
 
-		it('Returns comments for an existing poem', async () => {
+		it('returns comments for an existing public poem', async () => {
 			const comments = [
 				{ id: 1, content: 'Nice' },
 				{ id: 2, content: 'Great' },
@@ -35,6 +35,7 @@ describe('USE-CASE - Interactions', () => {
 
 			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
 				exists: true,
+				visibility: 'public',
 			});
 
 			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce(comments);
@@ -54,7 +55,19 @@ describe('USE-CASE - Interactions', () => {
 			});
 		});
 
-		it('Throws PoemNotFoundError when poem does not exist', async () => {
+		it('rejects invalid poem id', async () => {
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
+
+			await expect(getPoemComments({ poemId: 0 })).rejects.toBeInstanceOf(
+				BadRequestError,
+			);
+			expect(poemsContract.getPoemInteractionInfo).not.toHaveBeenCalled();
+		});
+
+		it('throws NotFoundError when poem does not exist', async () => {
 			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
 				exists: false,
 			});
@@ -64,16 +77,34 @@ describe('USE-CASE - Interactions', () => {
 				poemsContract,
 			});
 
-			await expect(getPoemComments({ poemId: 10 })).rejects.toThrow(
-				PoemNotFoundError,
+			await expect(getPoemComments({ poemId: 10 })).rejects.toBeInstanceOf(
+				NotFoundError,
 			);
 
 			expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
 		});
 
-		it('Returns empty array when poem has no comments', async () => {
+		it('throws ForbiddenError when poem visibility is restricted', async () => {
 			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
 				exists: true,
+				visibility: 'friends',
+			});
+
+			const getPoemComments = getPoemCommentsFactory({
+				queriesRepository,
+				poemsContract,
+			});
+
+			await expect(getPoemComments({ poemId: 10 })).rejects.toBeInstanceOf(
+				ForbiddenError,
+			);
+			expect(queriesRepository.findCommentsByPoemId).not.toHaveBeenCalled();
+		});
+
+		it('returns empty array when poem has no comments', async () => {
+			poemsContract.getPoemInteractionInfo.mockResolvedValueOnce({
+				exists: true,
+				visibility: 'unlisted',
 			});
 
 			queriesRepository.findCommentsByPoemId.mockResolvedValueOnce([]);
@@ -88,7 +119,7 @@ describe('USE-CASE - Interactions', () => {
 			expect(result).toEqual([]);
 		});
 
-		it('Propagates unexpected dependency errors', async () => {
+		it('propagates unexpected dependency errors', async () => {
 			poemsContract.getPoemInteractionInfo.mockRejectedValueOnce(
 				new Error('boom'),
 			);

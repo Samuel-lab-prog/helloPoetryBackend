@@ -4,7 +4,7 @@ import type {
 } from '../../../ports/Queries';
 import type { PoemsContractForInteractions } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
-import { PoemNotFoundError } from '../../Errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -20,9 +20,19 @@ export function getPoemCommentsFactory({
 	): Promise<PoemComment[]> {
 		const { poemId } = params;
 
+		if (!Number.isInteger(poemId) || poemId <= 0) {
+			throw new BadRequestError('Invalid poem id');
+		}
+
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 
-		if (!poemInfo.exists) throw new PoemNotFoundError();
+		if (!poemInfo.exists) throw new NotFoundError('Poem not found');
+		if (
+			poemInfo.visibility === 'private' ||
+			poemInfo.visibility === 'friends'
+		) {
+			throw new ForbiddenError('Cannot list comments for this poem');
+		}
 
 		return queriesRepository.findCommentsByPoemId({
 			poemId,
