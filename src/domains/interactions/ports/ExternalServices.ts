@@ -7,27 +7,37 @@ import type {
 } from '@SharedKernel/Enums';
 
 export interface FriendsContractForInteractions {
-	areFriends(userAId: number, userBId: number): Promise<boolean>;
-	areBlocked(userAId: number, userBId: number): Promise<boolean>;
+	usersRelation(
+		userId1: number,
+		userId2: number,
+	): Promise<UsersRelationBasicInfo>;
 }
+
+export type UsersRelationBasicInfo = {
+	areFriends: boolean;
+	areBlocked: boolean;
+};
+
+export type UserBasicInfo = {
+	exists: boolean;
+	id: number;
+	status: UserStatus;
+	role: UserRole;
+};
+
+export type PoemBasicInfo = {
+	exists: boolean;
+	id: number;
+	authorId: number;
+	visibility: PoemVisibility;
+	moderationStatus: PoemModerationStatus;
+	deletedAt: Date | null;
+	status: PoemStatus;
+};
 
 export interface PoemsContractForInteractions {
-	getPoemInteractionInfo(poemId: number): Promise<{
-		exists: boolean;
-		authorId: number;
-		visibility: PoemVisibility | null;
-		moderationStatus: PoemModerationStatus | null;
-		deletedAt: Date | null;
-		status: PoemStatus | null;
-	}>;
+	getPoemInteractionInfo(poemId: number): Promise<PoemBasicInfo>;
 }
-
-type UserBasicInfo = {
-	exists: boolean;
-	id: number | null;
-	status: UserStatus | null;
-	role: UserRole | null;
-};
 
 export interface UsersContractForInteractions {
 	getUserBasicInfo(userId: number): Promise<UserBasicInfo>;

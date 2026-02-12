@@ -8,11 +8,7 @@ import type {
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
-import {
-	ForbiddenError,
-	NotFoundError,
-	UnprocessableEntityError,
-} from '@DomainError';
+import { v } from '../../validators/Global';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -31,47 +27,34 @@ export function commentPoemFactory({
 		params: CommentPoemParams,
 	): Promise<PoemComment> {
 		const { userId, poemId, content } = params;
+		const trimmedContent = content.trim();
 
-		const trimmedContent = content?.trim();
-
-		if (!trimmedContent)
-			throw new UnprocessableEntityError('Comment content cannot be empty');
-
-		if (trimmedContent.length > 300)
-			throw new UnprocessableEntityError(
-				'Comment content cannot exceed 300 characters',
-			);
+		v()
+			.checkContent(trimmedContent)
+			.minLength(1)
+			.maxLength(300)
+			.bannedWords(['badword1', 'badword2']);
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
-		if (!userInfo.exists) throw new NotFoundError('User not found');
-
-		if (userInfo.status !== 'active')
-			throw new ForbiddenError('Inactive users cannot comment on poems');
+		v()
+			.user(userInfo)
+			.withStatus(['active'])
+			.withRole(['user', 'admin', 'author']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
+		v()
+			.poem(poemInfo)
+			.withModerationStatus(['approved'])
+			.withVisibility(['public', 'friends']);
 
-		if (!poemInfo.exists) throw new NotFoundError('Poem not found');
+		const usersRelationInfo = await friendsContract.usersRelation(
+			userId,
+			poemInfo.authorId,
+		);
+		v().relation(usersRelationInfo).withNoBlocking();
 
-		if (poemInfo.moderationStatus !== 'approved')
-			throw new ForbiddenError('Cannot comment on this poem');
-
-		const authorId = poemInfo.authorId;
-
-		if (await friendsContract.areBlocked(userId, authorId))
-			throw new ForbiddenError(
-				'Cannot comment while a blocking relationship exists',
-			);
-
-		if (poemInfo.visibility === 'private')
-			throw new ForbiddenError('Cannot comment on this poem');
-
-		if (poemInfo.visibility === 'friends' && authorId !== userId) {
-			const areFriends = await friendsContract.areFriends(userId, authorId);
-			if (!areFriends)
-				throw new ForbiddenError(
-					'Cannot comment on poems shared with friends only',
-				);
-		}
+		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
+			v().relation(usersRelationInfo).withFriendhsip();
 
 		return commandsRepository.createPoemComment({
 			userId,

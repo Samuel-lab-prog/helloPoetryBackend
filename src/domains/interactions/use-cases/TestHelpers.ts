@@ -44,6 +44,10 @@ export type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
+export type UsersRelationInfoOverride = Partial<
+	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
+>;
+
 export function givenUser(
 	userContract: InteractionsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
@@ -63,6 +67,7 @@ export function givenPoem(
 ) {
 	poemsContract.getPoemInteractionInfo.mockResolvedValue({
 		exists: true,
+		id: DEFAULT_POEM_ID,
 		visibility: DEFAULT_POEM_VISIBILITY,
 		authorId: DEFAULT_POEM_OWNER_USER_ID,
 		status: DEFAULT_POEM_STATUS,
@@ -86,17 +91,17 @@ export function givenCreatedComment(
 	});
 }
 
-export function givenUsersAreBlocked(
+export function givenUsersRelation(
 	friendsContract: InteractionsSutMocks['friendsContract'],
+	overrides: UsersRelationInfoOverride = {},
 ) {
-	friendsContract.areBlocked.mockResolvedValue(true);
+	friendsContract.usersRelation.mockResolvedValue({
+		areBlocked: false,
+		areFriends: false,
+		...overrides,
+	});
 }
 
-export function givenUsersAreFriends(
-	friendsContract: InteractionsSutMocks['friendsContract'],
-) {
-	friendsContract.areFriends.mockResolvedValue(true);
-}
 type InteractionsSutBooleanConfig = {
 	includeCommands?: boolean;
 	includePoems?: boolean;
@@ -143,8 +148,10 @@ export function makeInteractionsSutWithConfig<
 		mocks.friendsContract = Object.assign(
 			createMockedContract<FriendsContractForInteractions>(),
 			{
-				areBlocked: mock(),
-				areFriends: mock(),
+				usersRelation: mock().mockResolvedValue({
+					areBlocked: false,
+					areFriends: false,
+				}),
 			},
 		);
 

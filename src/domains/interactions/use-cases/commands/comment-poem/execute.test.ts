@@ -9,8 +9,7 @@ import {
 	givenCreatedComment,
 	givenPoem,
 	givenUser,
-	givenUsersAreBlocked,
-	givenUsersAreFriends,
+	givenUsersRelation,
 	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
 	type PoemInteractionInfoOverride,
@@ -55,11 +54,11 @@ function makeCreateCommentScenario() {
 			return this;
 		},
 		withUsersBlocked() {
-			givenUsersAreBlocked(mocks.friendsContract);
+			givenUsersRelation(mocks.friendsContract, { areBlocked: true });
 			return this;
 		},
 		withUsersFriends() {
-			givenUsersAreFriends(mocks.friendsContract);
+			givenUsersRelation(mocks.friendsContract, { areFriends: true });
 			return this;
 		},
 		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
