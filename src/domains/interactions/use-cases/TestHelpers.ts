@@ -40,16 +40,8 @@ export type PoemInteractionInfoOverride = Partial<
 	Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
 >;
 
-export type CreatePoemCommentOverride = Partial<
-	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
->;
-
 export type UsersRelationInfoOverride = Partial<
 	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
->;
-
-export type SelectCommentByIdOverride = Partial<
-	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
 >;
 
 export function givenUser(
@@ -78,28 +70,6 @@ export function givenPoem(
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		deletedAt: null,
 		isCommentable: true,
-		...overrides,
-	});
-}
-
-export function givenDeletedComment(
-	commandsRepository: InteractionsSutMocks['commandsRepository'],
-) {
-	commandsRepository.deletePoemComment.mockResolvedValue(undefined);
-}
-
-export function givenFoundComment(
-	queriesRepository: InteractionsSutMocks['queriesRepository'],
-	overrides: Partial<
-		Awaited<ReturnType<QueriesRepository['selectCommentById']>>
-	> = {},
-) {
-	queriesRepository.selectCommentById.mockResolvedValue({
-		id: DEFAULT_COMMENT_ID,
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		createdAt: new Date(),
 		...overrides,
 	});
 }
@@ -136,7 +106,12 @@ export function makeInteractionsSutWithConfig<
 	if (config.includeCommands !== false)
 		mocks.commandsRepository = Object.assign(
 			createMockedContract<CommandsRepository>(),
-			{ createPoemComment: mock(), deletePoemComment: mock() },
+			{
+				createPoemComment: mock(),
+				deletePoemComment: mock(),
+				createPoemLike: mock(),
+				deletePoemLike: mock(),
+			},
 		);
 
 	if (config.includePoems !== false)
@@ -164,6 +139,7 @@ export function makeInteractionsSutWithConfig<
 				selectCommentById: mock(),
 				findCommentsByPoemId: mock(),
 				existsPoemLike: mock(),
+				findPoemLike: mock(),
 			},
 		);
 

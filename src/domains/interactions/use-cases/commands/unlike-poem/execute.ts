@@ -7,9 +7,12 @@ import type {
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemLike } from '../../Models';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@DomainError';
+import { NotFoundError } from '@DomainError';
+import { validator } from '../../validators/Global';
+import type { QueriesRepository } from '../../../ports/Queries';
 
-interface Dependencies {
+export interface UnlikePoemDependencies {
+	queriesRepository: QueriesRepository;
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
 	usersContract: UsersContractForInteractions;
@@ -18,42 +21,27 @@ interface Dependencies {
 export function unlikePoemFactory({
 	commandsRepository,
 	poemsContract,
+	queriesRepository,
 	usersContract,
-}: Dependencies) {
+}: UnlikePoemDependencies) {
 	return async function unlikePoem(
 		params: UnlikePoemParams,
 	): Promise<PoemLike> {
 		const { userId, poemId } = params;
-
-		if (!Number.isInteger(userId) || userId <= 0) {
-			throw new BadRequestError('Invalid user id');
-		}
-
-		if (!Number.isInteger(poemId) || poemId <= 0) {
-			throw new BadRequestError('Invalid poem id');
-		}
+		const v = validator();
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
 
-		if (!userInfo.exists) throw new NotFoundError('User not found');
-		if (userInfo.status !== 'active') {
-			throw new ForbiddenError('Inactive users cannot unlike poems');
-		}
+		v.user(userInfo).withStatus(['active'])
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
+		v.poem(poemInfo).withModerationStatus(['approved'])
+		.withStatus(['published'])
+		.withVisibility(['public', 'friends', 'unlisted']);
 
-		if (!poemInfo.exists) throw new NotFoundError('Poem not found');
-
-		const existingLike = await commandsRepository.findPoemLike({
-			userId,
-			poemId,
-		});
-
+		const existingLike = await queriesRepository.findPoemLike({ userId, poemId });
 		if (!existingLike) throw new NotFoundError('Like not found');
 
-		return commandsRepository.deletePoemLike({
-			userId,
-			poemId,
-		});
+		return commandsRepository.deletePoemLike({ userId, poemId });
 	};
 }

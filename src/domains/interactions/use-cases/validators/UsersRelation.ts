@@ -11,7 +11,7 @@ export function relation(relation: UsersRelationBasicInfo) {
 			}
 			return this;
 		},
-		withFriendhsip() {
+		withFriendship() {
 			if (!relation.areFriends) {
 				throw new ForbiddenError(
 					'Cannot perform this action without a friendship relationship',

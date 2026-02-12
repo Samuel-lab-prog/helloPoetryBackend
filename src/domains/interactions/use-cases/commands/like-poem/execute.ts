@@ -8,83 +8,55 @@ import type {
 	PoemsContractForInteractions,
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
-
 import type { PoemLike } from '../../Models';
-import {
-	BadRequestError,
-	ConflictError,
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError } from '@DomainError';
+import { validator } from '../../validators/Global';
 
-interface Dependencies {
+export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;
-	poemsContract: PoemsContractForInteractions;
-	friendsServices: FriendsContractForInteractions;
 	queriesRepository: QueriesRepository;
+	friendsContract: FriendsContractForInteractions;
 	usersContract: UsersContractForInteractions;
+	poemsContract: PoemsContractForInteractions;
 }
 
 export function likePoemFactory({
 	commandsRepository,
 	queriesRepository,
-	poemsContract,
-	friendsServices,
+	friendsContract,
 	usersContract,
-}: Dependencies) {
+	poemsContract,
+}: LikePoemDependencies) {
 	return async function likePoem(params: LikePoemParams): Promise<PoemLike> {
 		const { userId, poemId } = params;
-
-		if (!Number.isInteger(userId) || userId <= 0) {
-			throw new BadRequestError('Invalid user id');
-		}
-
-		if (!Number.isInteger(poemId) || poemId <= 0) {
-			throw new BadRequestError('Invalid poem id');
-		}
+		const v = validator();
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
-
-		if (!userInfo.exists) throw new NotFoundError('User not found');
-		if (userInfo.status !== 'active') {
-			throw new ForbiddenError('Inactive users cannot like poems');
-		}
+		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
-
-		if (!poemInfo.exists) throw new NotFoundError('Poem not found');
+		v.poem(poemInfo)
+			.withStatus(['published'])
+			.withVisibility(['public', 'friends', 'unlisted'])
+			.withStatus(['published'])
+			.withModerationStatus(['approved']);
 
 		const authorId = poemInfo.authorId;
+		const usersRelationInfo = await friendsContract.usersRelation(
+			userId,
+			authorId,
+		);
+		v.relation(usersRelationInfo).withNoBlocking();
 
-		if (poemInfo.visibility === 'private' && authorId !== userId)
-			throw new ForbiddenError('Cannot like this poem');
-
-		if (poemInfo.visibility === 'friends' && authorId !== userId) {
-			const areFriends = await friendsServices.areFriends(userId, authorId);
-			if (!areFriends) {
-				throw new ForbiddenError('Cannot like poems shared with friends only');
-			}
-		}
-
-		const blockedByActor = await friendsServices.areBlocked(userId, authorId);
-		const blockedByAuthor = await friendsServices.areBlocked(authorId, userId);
-
-		if (blockedByActor || blockedByAuthor) {
-			throw new ForbiddenError(
-				'Cannot like poems while a blocking relationship exists',
-			);
-		}
+		if (poemInfo.visibility === 'friends' && userId !== authorId)
+			v.relation(usersRelationInfo).withFriendship();
 
 		const alreadyLiked = await queriesRepository.existsPoemLike({
 			userId,
 			poemId,
 		});
-
 		if (alreadyLiked) throw new ConflictError('Poem already liked');
 
-		return commandsRepository.createPoemLike({
-			userId,
-			poemId,
-		});
+		return commandsRepository.createPoemLike({ userId, poemId });
 	};
 }

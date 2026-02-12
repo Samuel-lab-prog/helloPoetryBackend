@@ -22,10 +22,7 @@ export type UnlikePoemParams = {
 };
 
 export interface CommandsRepository {
-	findPoemLike(params: {
-		userId: number;
-		poemId: number;
-	}): Promise<PoemLike | null>;
+
 
 	createPoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
 	deletePoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;

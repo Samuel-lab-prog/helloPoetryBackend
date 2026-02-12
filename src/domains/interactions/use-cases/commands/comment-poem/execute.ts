@@ -35,14 +35,12 @@ export function commentPoemFactory({
 			.bannedWords(['badword1', 'badword2']);
 
 		const userInfo = await usersContract.getUserBasicInfo(userId);
-		v.user(userInfo)
-			.withStatus(['active'])
-			.withRole(['moderator', 'admin', 'author']);
+		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
-			.withVisibility(['public', 'friends'])
+			.withVisibility(['public', 'friends', 'unlisted'])
 			.withStatus(['published'])
 			.withCommentability(true);
 
@@ -53,7 +51,7 @@ export function commentPoemFactory({
 		v.relation(usersRelationInfo).withNoBlocking();
 
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
-			v.relation(usersRelationInfo).withFriendhsip();
+			v.relation(usersRelationInfo).withFriendship();
 
 		return commandsRepository.createPoemComment({
 			userId,

@@ -7,14 +7,39 @@ import {
 	type UserBasicInfoOverride,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_COMMENT_ID,
-	type SelectCommentByIdOverride,
-	givenFoundComment,
-	givenDeletedComment,
+	DEFAULT_COMMENT_CONTENT,
+	DEFAULT_POEM_ID,
+	type InteractionsSutMocks,
 } from '../../TestHelpers';
 
 import { expectError } from '@TestUtils';
 import { deleteCommentFactory } from './execute';
 import type { DeleteCommentParams } from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
+
+function givenDeletedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	commandsRepository.deletePoemComment.mockResolvedValue(undefined);
+}
+
+export type SelectCommentByIdOverride = Partial<
+	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
+>;
+
+function givenFoundComment(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	overrides: SelectCommentByIdOverride = {},
+) {
+	queriesRepository.selectCommentById.mockResolvedValue({
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		createdAt: new Date(),
+		...overrides,
+	});
+}
 
 function makeDeleteCommentParams(
 	overrides: Partial<DeleteCommentParams> = {},
@@ -115,16 +140,18 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 				.withUser({ id: 1, role: 'author' })
 				.withFoundComment({ userId: 2 });
 			await expectError(scenario.execute(), ForbiddenError);
+		});
 	});
-});
 
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeDeleteCommentScenario()
 				.withUser()
-				.withFoundComment()
+				.withFoundComment();
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
-				new Error('Somehing exploded in the server. Please, do not repeat the request otherw bad things will happen with you!'),
+				new Error(
+					'Somehing exploded in the server. Please, do not repeat the request otherw bad things will happen with you!',
+				),
 			);
 			await expectError(scenario.execute(), Error);
 		});

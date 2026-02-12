@@ -12,7 +12,6 @@ import {
 	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
 	type PoemInteractionInfoOverride,
-	type CreatePoemCommentOverride,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 	DEFAULT_COMMENT_CONTENT,
@@ -22,7 +21,10 @@ import {
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
-import type { CommentPoemParams } from '../../../ports/Commands';
+import type {
+	CommandsRepository,
+	CommentPoemParams,
+} from '../../../ports/Commands';
 
 function givenCreatedComment(
 	commandsRepository: InteractionsSutMocks['commandsRepository'],
@@ -37,7 +39,11 @@ function givenCreatedComment(
 		...overrides,
 	});
 }
-	
+
+type CreatePoemCommentOverride = Partial<
+	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
+>;
+
 function makeCreateCommentParams(
 	overrides: Partial<CommentPoemParams> = {},
 ): CommentPoemParams {
@@ -200,7 +206,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withUsersRelation({ areFriends: false, areBlocked: false })
-				.withPoem({ visibility: 'friends' })
+				.withPoem({ visibility: 'friends' });
 
 			await expectError(scenario.execute(), ForbiddenError);
 		});
