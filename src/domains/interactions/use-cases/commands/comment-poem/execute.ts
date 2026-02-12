@@ -37,13 +37,13 @@ export function commentPoemFactory({
 		const userInfo = await usersContract.getUserBasicInfo(userId);
 		v.user(userInfo)
 			.withStatus(['active'])
-			.withRole(['user', 'admin', 'author']);
+			.withRole(['moderator', 'admin', 'author']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends'])
-			.withStatus(['published', ])
+			.withStatus(['published'])
 			.withCommentability(true);
 
 		const usersRelationInfo = await friendsContract.usersRelation(

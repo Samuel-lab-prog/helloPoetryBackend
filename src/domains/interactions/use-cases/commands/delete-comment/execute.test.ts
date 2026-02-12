@@ -2,11 +2,9 @@ import { describe, it, expect } from 'bun:test';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 
 import {
-	givenCreatedComment,
 	givenUser,
 	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
-	type CreatePoemCommentOverride,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_COMMENT_ID,
 	type SelectCommentByIdOverride,
@@ -41,10 +39,6 @@ function makeDeleteCommentScenario() {
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
 			givenUser(mocks.usersContract, overrides);
-			return this;
-		},
-		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
-			givenCreatedComment(mocks.commandsRepository, overrides);
 			return this;
 		},
 		withFoundComment(overrides: SelectCommentByIdOverride = {}) {
@@ -113,18 +107,24 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 	describe('Comment validation', () => {
 		it('should throw NotFoundError when comment does not exist', async () => {
 			const scenario = makeDeleteCommentScenario().withUser();
-			// não chamamos withCreatedComment, então comment é inexistente
 			await expectError(scenario.execute(), NotFoundError);
 		});
+
+		it('should throw ForbiddenError when user is not the owner and not admin/moderator', async () => {
+			const scenario = makeDeleteCommentScenario()
+				.withUser({ id: 1, role: 'author' })
+				.withFoundComment({ userId: 2 });
+			await expectError(scenario.execute(), ForbiddenError);
 	});
+});
 
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeDeleteCommentScenario()
 				.withUser()
-				.withCreatedComment();
+				.withFoundComment()
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
-				new Error('boom'),
+				new Error('Somehing exploded in the server. Please, do not repeat the request otherw bad things will happen with you!'),
 			);
 			await expectError(scenario.execute(), Error);
 		});

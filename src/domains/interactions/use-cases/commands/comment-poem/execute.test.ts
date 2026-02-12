@@ -6,7 +6,6 @@ import {
 } from '@DomainError';
 
 import {
-	givenCreatedComment,
 	givenPoem,
 	givenUser,
 	givenUsersRelation,
@@ -18,11 +17,27 @@ import {
 	DEFAULT_POEM_ID,
 	DEFAULT_COMMENT_CONTENT,
 	type UsersRelationInfoOverride,
+	DEFAULT_COMMENT_ID,
+	type InteractionsSutMocks,
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
 import type { CommentPoemParams } from '../../../ports/Commands';
 
+function givenCreatedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+	overrides: CreatePoemCommentOverride = {},
+) {
+	commandsRepository.createPoemComment.mockResolvedValue({
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		createdAt: new Date(),
+		...overrides,
+	});
+}
+	
 function makeCreateCommentParams(
 	overrides: Partial<CommentPoemParams> = {},
 ): CommentPoemParams {

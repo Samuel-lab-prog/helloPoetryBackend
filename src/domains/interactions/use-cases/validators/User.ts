@@ -1,11 +1,12 @@
 import type { UserBasicInfo } from '../../ports/ExternalServices';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 
 export function user(user: UserBasicInfo) {
 	if (!user.exists)
-		throw new NotFoundError(`User with id ${user.id} not found`);
+		throw new NotFoundError(`User with id "${user.id}" not found`);
 	return {
-		withStatus(allowedStatuses: string[]) {
+		withStatus(allowedStatuses: UserStatus[]) {
 			if (!allowedStatuses.includes(user.status)) {
 				throw new ForbiddenError(
 					`User with status "${user.status}" cannot perform this action`,
@@ -13,7 +14,7 @@ export function user(user: UserBasicInfo) {
 			}
 			return this;
 		},
-		withRole(allowedRoles: string[]) {
+		withRole(allowedRoles: UserRole[]) {
 			if (!allowedRoles.includes(user.role)) {
 				throw new ForbiddenError(
 					`User with role "${user.role}" cannot perform this action`,

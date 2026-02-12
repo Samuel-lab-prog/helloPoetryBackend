@@ -82,20 +82,6 @@ export function givenPoem(
 	});
 }
 
-export function givenCreatedComment(
-	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: CreatePoemCommentOverride = {},
-) {
-	commandsRepository.createPoemComment.mockResolvedValue({
-		id: DEFAULT_COMMENT_ID,
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		createdAt: new Date(),
-		...overrides,
-	});
-}
-
 export function givenDeletedComment(
 	commandsRepository: InteractionsSutMocks['commandsRepository'],
 ) {
