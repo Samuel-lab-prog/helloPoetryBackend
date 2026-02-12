@@ -1,11 +1,15 @@
 import type { PoemBasicInfo } from '../../ports/ExternalServices';
 import { ForbiddenError, NotFoundError } from '@DomainError';
-import type { PoemStatus, PoemModerationStatus, PoemVisibility } from '@SharedKernel/Enums';
+import type {
+	PoemStatus,
+	PoemModerationStatus,
+	PoemVisibility,
+} from '@SharedKernel/Enums';
 
 export function poem(poem: PoemBasicInfo) {
-	if (!poem.exists) 
+	if (!poem.exists)
 		throw new NotFoundError(`Poem with id ${poem.id} not found`);
-	
+
 	return {
 		withVisibility(allowedVisibilities: PoemVisibility[]) {
 			if (!allowedVisibilities.includes(poem.visibility)) {

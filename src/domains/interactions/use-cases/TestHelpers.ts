@@ -77,6 +77,7 @@ export function givenPoem(
 		status: DEFAULT_POEM_STATUS,
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		deletedAt: null,
+		isCommentable: true,
 		...overrides,
 	});
 }

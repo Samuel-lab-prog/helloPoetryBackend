@@ -42,7 +42,9 @@ export function commentPoemFactory({
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
-			.withVisibility(['public', 'friends']);
+			.withVisibility(['public', 'friends'])
+			.withStatus(['published', ])
+			.withCommentability(true);
 
 		const usersRelationInfo = await friendsContract.usersRelation(
 			userId,

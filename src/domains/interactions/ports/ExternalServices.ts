@@ -34,7 +34,6 @@ export type PoemBasicInfo = {
 	deletedAt: Date | null;
 	status: PoemStatus;
 	isCommentable: boolean;
-
 };
 
 export interface PoemsContractForInteractions {

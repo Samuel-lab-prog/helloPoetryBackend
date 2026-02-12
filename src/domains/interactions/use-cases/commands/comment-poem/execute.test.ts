@@ -17,6 +17,7 @@ import {
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 	DEFAULT_COMMENT_CONTENT,
+	type UsersRelationInfoOverride,
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
@@ -53,12 +54,8 @@ function makeCreateCommentScenario() {
 			givenPoem(mocks.poemsContract, overrides);
 			return this;
 		},
-		withUsersBlocked() {
-			givenUsersRelation(mocks.friendsContract, { areBlocked: true });
-			return this;
-		},
-		withUsersFriends() {
-			givenUsersRelation(mocks.friendsContract, { areFriends: true });
+		withUsersRelation(overrides: UsersRelationInfoOverride = {}) {
+			givenUsersRelation(mocks.friendsContract, overrides);
 			return this;
 		},
 		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
@@ -80,6 +77,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withPoem()
+				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
@@ -88,6 +86,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withPoem()
+				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.execute(
 				makeCreateCommentParams({ content: 'a'.repeat(300) }),
@@ -116,7 +115,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withPoem()
-				.withUsersBlocked();
+				.withUsersRelation({ areFriends: false, areBlocked: true });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 	});
@@ -151,6 +150,18 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withPoem({ moderationStatus: 'removed' });
 			await expectError(scenario.execute(), ForbiddenError);
 		});
+		it('should throw ForbiddenError for poems that do not allow comments', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ isCommentable: false });
+			await expectError(scenario.execute(), ForbiddenError);
+		});
+		it('should throw ForbiddenError for unpublished poems', async () => {
+			const scenario = makeCreateCommentScenario()
+				.withUser()
+				.withPoem({ status: 'draft' });
+			await expectError(scenario.execute(), ForbiddenError);
+		});
 	});
 
 	describe('Comment content validation', () => {
@@ -173,14 +184,16 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
-				.withPoem({ visibility: 'friends' });
+				.withUsersRelation({ areFriends: false, areBlocked: false })
+				.withPoem({ visibility: 'friends' })
+
 			await expectError(scenario.execute(), ForbiddenError);
 		});
 		it('should allow comments on friends-only poems when users are friends', async () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser()
 				.withPoem({ visibility: 'friends' })
-				.withUsersFriends()
+				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
@@ -189,6 +202,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeCreateCommentScenario()
 				.withUser({ id: 1 })
 				.withPoem({ authorId: 1 })
+				.withUsersRelation({ areFriends: false, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.execute();
 			expect(result).toHaveProperty('id');
