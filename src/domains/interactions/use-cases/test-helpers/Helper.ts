@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mock } from 'bun:test';
 import type {
 	UsersContractForInteractions,
@@ -16,8 +15,12 @@ import type {
 	GetPoemCommentsParams,
 	QueriesRepository,
 } from '../../ports/Queries';
-import { createMockedContract } from '@TestUtils';
-import type { InteractionsSutMocks } from './SutMocks';
+import {
+	createMockedContract,
+	makeParams,
+	makeSut,
+	type MockedContract,
+} from '@TestUtils';
 import {
 	givenUser,
 	givenPoem,
@@ -75,6 +78,14 @@ const interactionsMockFactories = {
 	}),
 };
 
+export type InteractionsSutMocks = {
+	commandsRepository: MockedContract<CommandsRepository>;
+	queriesRepository: MockedContract<QueriesRepository>;
+	poemsContract: MockedContract<PoemsContractForInteractions>;
+	usersContract: MockedContract<UsersContractForInteractions>;
+	friendsContract: MockedContract<FriendsContractForInteractions>;
+};
+
 function interactionsFactory(deps: typeof interactionsMockFactories) {
 	return {
 		commentPoem: commentPoemFactory(deps),
@@ -85,25 +96,11 @@ function interactionsFactory(deps: typeof interactionsMockFactories) {
 	};
 }
 
-const interactionsTestModule = {
-	makeSut<TFactory extends (deps: typeof interactionsMockFactories) => any>(
-		factory: TFactory,
-	) {
-		const mocks: typeof interactionsMockFactories = {
-			...interactionsMockFactories,
-		};
-		const sut = factory(mocks);
-		return { sut, mocks };
-	},
-};
-
-function makeParams<T>(defaults: T, overrides?: Partial<T>): T {
-	return { ...defaults, ...overrides };
-}
-
 export const makeInteractionsScenario = (() => {
-	const { sut: sutFactory, mocks } =
-		interactionsTestModule.makeSut(interactionsFactory);
+	const { sut: sutFactory, mocks } = makeSut(
+		interactionsFactory,
+		interactionsMockFactories,
+	);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {

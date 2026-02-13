@@ -164,23 +164,44 @@ export function givenResolved<T extends Record<string, any>, K extends keyof T>(
 	).mockResolvedValue(value);
 }
 
-type MockConfigItem<T> = {
-	name: string; // nome do mock no objeto final
-	factory: () => T; // função que cria o mock
-};
+/**
+ * A utility function to create a new object by merging default values with overrides.
+ * This is useful for creating test data with default values while allowing specific properties
+ * to be overridden as needed in different test scenarios.
+ *
+ * @template T The type of the object being created.
+ * @param defaults An object containing the default values for the properties.
+ * @param overrides An optional object containing properties that should override the default values.
+ * @returns A new object with the merged default and override values.
+ */
+export function makeParams<T>(defaults: T, overrides?: Partial<T>): T {
+	return { ...defaults, ...overrides };
+}
 
-type SutConfig = MockConfigItem<any>[];
+type Factory<TMocks, TSut> = (mocks: TMocks) => TSut;
 
-export function makeSutGeneric<
-	TFactoryArgs,
-	TResult,
-	TDeps extends Record<string, any>,
->(factory: (args: TFactoryArgs) => TResult, config: SutConfig = []) {
-	const mocks: Partial<TDeps> = {};
+/**
+ * A generic utility function to create a System Under Test (SUT) along with its mocked dependencies.
+ * This function clones the provided mocks to avoid side effects between tests.
+ *
+ * It is designed to work with any bounded context (BC) and any set of mocks, providing a
+ * type-safe and reusable pattern for initializing SUTs in unit and integration tests.
+ *
+ * @template TMocks The type of the mocked dependencies.
+ * @template TSut The type of the SUT being created.
+ * @param factory A factory function that takes mocks and returns the SUT.
+ * @param mocks An object containing all the mocked dependencies required by the factory.
+ * @returns An object containing:
+ *   - `sut`: The instantiated System Under Test.
+ *   - `mocks`: The cloned mocks used to create the SUT, safe for individual test isolation.
+ */
+export function makeSut<TMocks extends Record<string, any>, TSut>(
+	factory: Factory<TMocks, TSut>,
+	mocks: TMocks,
+) {
+	const clonedMocks: TMocks = { ...mocks };
 
-	for (const item of config) mocks[item.name as keyof TDeps] = item.factory();
+	const sut = factory(clonedMocks);
 
-	const sut = factory(mocks as TFactoryArgs);
-
-	return { sut, mocks: mocks as TDeps };
+	return { sut, mocks: clonedMocks };
 }
