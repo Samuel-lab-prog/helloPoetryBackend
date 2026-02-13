@@ -103,6 +103,7 @@ export function givenNoFriendRequest(
 
 export function givenFriendRequestLookupSequence(
 	queriesRepository: FriendsManagementSutMocks['queriesRepository'],
+	commandsRepository: FriendsManagementSutMocks['commandsRepository'],
 	lookups: [FriendRequestRecordOverride | null, FriendRequestRecordOverride | null],
 ) {
 	const [outgoing, incoming] = lookups;
@@ -113,6 +114,38 @@ export function givenFriendRequestLookupSequence(
 	queriesRepository.findFriendRequest.mockResolvedValueOnce(
 		incoming ? makeFriendRequestRecord(incoming) : null,
 	);
+
+	if (incoming) {
+		resetMock(commandsRepository.acceptFriendRequest);
+		givenResolved(commandsRepository, 'acceptFriendRequest', {
+			ok: true,
+			data: {
+				id: DEFAULT_RECORD_ID,
+				userAId: DEFAULT_REQUESTER_ID,
+				userBId: DEFAULT_ADDRESSEE_ID,
+				createdAt: new Date(),
+			},
+		});
+		return;
+	}
+
+	resetMock(commandsRepository.acceptFriendRequest);
+	givenResolved(commandsRepository, 'acceptFriendRequest', {
+		ok: false,
+		data: null,
+		code: 'NOT_FOUND',
+		message: 'Friend request not found.',
+	});
+
+	if (outgoing) {
+		resetMock(commandsRepository.createFriendRequest);
+		givenResolved(commandsRepository, 'createFriendRequest', {
+			ok: false,
+			data: null,
+			code: 'CONFLICT',
+			message: 'A friend request has already been sent to this user.',
+		});
+	}
 }
 
 export function givenCreatedFriendRequest(

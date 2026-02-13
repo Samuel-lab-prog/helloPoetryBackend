@@ -2,39 +2,50 @@ import type {
 	CommandsRepository,
 	BlockUserParams,
 } from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+import type {
+	FriendsContractForInteractions,
+	UsersContractForInteractions,
+} from '@Domains/interactions/ports/ExternalServices';
 import type { BlockedUserRecord } from '../../Models';
 import { SelfReferenceError, UserBlockedError } from '../../Errors';
+import { validator } from '@SharedKernel/validators/Global';
 
 export interface BlockUserDependencies {
 	commandsRepository: CommandsRepository;
-	queriesRepository: QueriesRepository;
+	usersContract: UsersContractForInteractions;
+	friendsContract: FriendsContractForInteractions;
 }
 
 export function blockUserFactory({
 	commandsRepository,
-	queriesRepository,
+	usersContract,
+	friendsContract,
 }: BlockUserDependencies) {
 	return async function blockUser(
 		params: BlockUserParams,
 	): Promise<BlockedUserRecord> {
 		const { requesterId, addresseeId } = params;
+		const v = validator();
 
+		v.ensureResource(requesterId).notUndefined().notNull().minValue(1);
+		v.ensureResource(addresseeId).notUndefined().notNull().minValue(1);
 		if (requesterId === addresseeId) throw new SelfReferenceError();
 
-		const alreadyBlocked = await queriesRepository.findBlockedRelationship({
-			userId1: requesterId,
-			userId2: addresseeId,
-		});
+		const [requesterInfo, addresseeInfo] = await Promise.all([
+			usersContract.getUserBasicInfo(requesterId),
+			usersContract.getUserBasicInfo(addresseeId),
+		]);
+		v.user(requesterInfo).withStatus(['active']);
+		v.user(addresseeInfo).withStatus(['active']);
 
-		if (alreadyBlocked) throw new UserBlockedError();
+		const [requesterToAddressee, addresseeToRequester] = await Promise.all([
+			friendsContract.usersRelation(requesterId, addresseeId),
+			friendsContract.usersRelation(addresseeId, requesterId),
+		]);
+		if (requesterToAddressee.areBlocked || addresseeToRequester.areBlocked)
+			throw new UserBlockedError();
 
-		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: requesterId,
-			user2Id: addresseeId,
-		});
-
-		if (friendship) {
+		if (requesterToAddressee.areFriends || addresseeToRequester.areFriends) {
 			const result = await commandsRepository.deleteFriend(
 				requesterId,
 				addresseeId,

@@ -2,7 +2,10 @@ import type {
 	CommandsRepository,
 	SendFriendRequestParams,
 } from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+import type {
+	FriendsContractForInteractions,
+	UsersContractForInteractions,
+} from '@Domains/interactions/ports/ExternalServices';
 import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
 import {
 	SelfReferenceError,
@@ -10,64 +13,59 @@ import {
 	RequestAlreadySentError,
 	UserBlockedError,
 } from '../../Errors';
+import { validator } from '@SharedKernel/validators/Global';
 
 export interface SendFriendRequestDependencies {
 	commandsRepository: CommandsRepository;
-	queriesRepository: QueriesRepository;
+	usersContract: UsersContractForInteractions;
+	friendsContract: FriendsContractForInteractions;
 }
 
 export function sendFriendRequestFactory({
 	commandsRepository,
-	queriesRepository,
+	usersContract,
+	friendsContract,
 }: SendFriendRequestDependencies) {
 	return async function sendFriendRequest(
 		params: SendFriendRequestParams,
 	): Promise<FriendRequestRecord | FriendshipRecord> {
 		const { requesterId, addresseeId } = params;
+		const v = validator();
 
+		v.ensureResource(requesterId).notUndefined().notNull().minValue(1);
+		v.ensureResource(addresseeId).notUndefined().notNull().minValue(1);
 		if (requesterId === addresseeId) throw new SelfReferenceError();
 
-		const blocked = await queriesRepository.findBlockedRelationship({
-			userId1: requesterId,
-			userId2: addresseeId,
-		});
-		if (blocked) throw new UserBlockedError();
+		const [requesterInfo, addresseeInfo] = await Promise.all([
+			usersContract.getUserBasicInfo(requesterId),
+			usersContract.getUserBasicInfo(addresseeId),
+		]);
+		v.user(requesterInfo).withStatus(['active']);
+		v.user(addresseeInfo).withStatus(['active']);
 
-		const friendship = await queriesRepository.findFriendshipBetweenUsers({
-			user1Id: requesterId,
-			user2Id: addresseeId,
-		});
-		if (friendship) throw new FriendshipAlreadyExistsError();
+		const [requesterToAddressee, addresseeToRequester] = await Promise.all([
+			friendsContract.usersRelation(requesterId, addresseeId),
+			friendsContract.usersRelation(addresseeId, requesterId),
+		]);
+		if (requesterToAddressee.areBlocked || addresseeToRequester.areBlocked)
+			throw new UserBlockedError();
+		if (requesterToAddressee.areFriends || addresseeToRequester.areFriends)
+			throw new FriendshipAlreadyExistsError();
 
-		const existingOutgoingRequest = await queriesRepository.findFriendRequest({
-			requesterId,
+		const accepted = await commandsRepository.acceptFriendRequest(
 			addresseeId,
-		});
-		if (existingOutgoingRequest) throw new RequestAlreadySentError();
+			requesterId,
+		);
 
-		const existingIncomingRequest = await queriesRepository.findFriendRequest({
-			requesterId: addresseeId,
-			addresseeId: requesterId,
-		});
+		if (accepted.ok) return accepted.data;
 
-		if (existingIncomingRequest) {
-			const accepted = await commandsRepository.acceptFriendRequest(
-				addresseeId,
-				requesterId,
-			);
-
-			if (!accepted.ok) {
-				switch (accepted.code) {
-					case 'CONFLICT':
-						throw new FriendshipAlreadyExistsError();
-					case 'NOT_FOUND':
-						throw new RequestAlreadySentError();
-					default:
-						throw new Error(accepted.message);
-				}
-			}
-
-			return accepted.data;
+		switch (accepted.code) {
+			case 'CONFLICT':
+				throw new FriendshipAlreadyExistsError();
+			case 'NOT_FOUND':
+				break;
+			default:
+				throw new Error(accepted.message);
 		}
 
 		const result = await commandsRepository.createFriendRequest(
@@ -83,7 +81,6 @@ export function sendFriendRequestFactory({
 					throw new Error(result.message);
 			}
 		}
-
 		return result.data;
 	};
 }

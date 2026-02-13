@@ -69,7 +69,7 @@ describe.concurrent('USE-CASE - Friends Management - AcceptFriendRequest', () =>
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeFriendsManagementScenario.withNoFriendship();
-			scenario.mocks.queriesRepository.findFriendshipBetweenUsers.mockRejectedValue(
+			scenario.mocks.friendsContract.usersRelation.mockRejectedValue(
 				new Error('boom'),
 			);
 			await expectError(scenario.executeAcceptFriendRequest(), Error);

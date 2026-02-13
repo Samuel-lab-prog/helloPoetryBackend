@@ -58,7 +58,7 @@ describe.concurrent('USE-CASE - Friends Management - BlockUser', () => {
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeFriendsManagementScenario.withNoBlockedRelationship();
-			scenario.mocks.queriesRepository.findBlockedRelationship.mockRejectedValue(
+			scenario.mocks.friendsContract.usersRelation.mockRejectedValue(
 				new Error('boom'),
 			);
 			await expectError(scenario.executeBlockUser(), Error);

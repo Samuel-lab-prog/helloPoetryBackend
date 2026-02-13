@@ -10,6 +10,10 @@ import type {
 	UnblockUserParams,
 } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
+import type {
+	FriendsContractForInteractions,
+	UsersContractForInteractions,
+} from '@Domains/interactions/ports/ExternalServices';
 import {
 	createMockedContract,
 	makeParams,
@@ -70,11 +74,19 @@ const friendsManagementMockFactories = {
 		findFriendRequest: mock(),
 		findBlockedRelationship: mock(),
 	}),
+	usersContract: createMockedContract<UsersContractForInteractions>({
+		getUserBasicInfo: mock(),
+	}),
+	friendsContract: createMockedContract<FriendsContractForInteractions>({
+		usersRelation: mock(),
+	}),
 };
 
 export type FriendsManagementSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
+	usersContract: MockedContract<UsersContractForInteractions>;
+	friendsContract: MockedContract<FriendsContractForInteractions>;
 };
 
 function friendsManagementFactory(deps: typeof friendsManagementMockFactories) {
@@ -94,25 +106,59 @@ export const makeFriendsManagementScenario = (() => {
 		friendsManagementFactory,
 		friendsManagementMockFactories,
 	);
+	mocks.usersContract.getUserBasicInfo.mockImplementation(
+		async (userId: number) => ({
+			exists: true,
+			id: userId,
+			status: 'active',
+			role: 'author',
+		}),
+	);
+	mocks.friendsContract.usersRelation.mockResolvedValue({
+		areFriends: false,
+		areBlocked: false,
+	});
+	mocks.commandsRepository.acceptFriendRequest.mockResolvedValue({
+		ok: false,
+		data: null,
+		code: 'NOT_FOUND',
+		message: 'Friend request not found.',
+	});
 
 	return {
 		withFriendship(overrides: FriendshipRecordOverride = {}) {
 			givenFriendship(mocks.queriesRepository, overrides);
+			mocks.friendsContract.usersRelation.mockResolvedValue({
+				areFriends: true,
+				areBlocked: false,
+			});
 			return this;
 		},
 
 		withNoFriendship() {
 			givenNoFriendship(mocks.queriesRepository);
+			mocks.friendsContract.usersRelation.mockResolvedValue({
+				areFriends: false,
+				areBlocked: false,
+			});
 			return this;
 		},
 
 		withBlockedRelationship(overrides: BlockedUserRecordOverride = {}) {
 			givenBlockedRelationship(mocks.queriesRepository, overrides);
+			mocks.friendsContract.usersRelation.mockResolvedValue({
+				areFriends: false,
+				areBlocked: true,
+			});
 			return this;
 		},
 
 		withNoBlockedRelationship() {
 			givenNoBlockedRelationship(mocks.queriesRepository);
+			mocks.friendsContract.usersRelation.mockResolvedValue({
+				areFriends: false,
+				areBlocked: false,
+			});
 			return this;
 		},
 
@@ -132,7 +178,11 @@ export const makeFriendsManagementScenario = (() => {
 				FriendRequestRecordOverride | null,
 			],
 		) {
-			givenFriendRequestLookupSequence(mocks.queriesRepository, lookups);
+			givenFriendRequestLookupSequence(
+				mocks.queriesRepository,
+				mocks.commandsRepository,
+				lookups,
+			);
 			return this;
 		},
 
