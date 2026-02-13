@@ -144,6 +144,26 @@ export function createMockedContract<T extends Record<string, any>>(
 	return mocked;
 }
 
+/**
+ * A utility function to set up a mocked function to resolve with a specific value when called.
+ * This is useful for configuring the behavior of mocked contracts in tests, allowing us
+ * to specify what a mocked function should return when invoked.
+ *
+ * @template T The type of the contract being mocked.
+ * @param mockedContract The mocked contract containing the function to configure.
+ * @param key The key of the function in the mocked contract to configure.
+ * @param value The value that the mocked function should resolve to when called.
+ */
+export function givenResolved<T extends Record<string, any>, K extends keyof T>(
+	mockedContract: MockedContract<T>,
+	key: K,
+	value: Awaited<ReturnType<T[K]>>,
+) {
+	(
+		mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void }
+	).mockResolvedValue(value);
+}
+
 type MockConfigItem<T> = {
 	name: string; // nome do mock no objeto final
 	factory: () => T; // função que cria o mock

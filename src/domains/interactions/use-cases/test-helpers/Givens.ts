@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import type { MockedContract } from '@TestUtils';
 import type {
 	UsersContractForInteractions,
 	FriendsContractForInteractions,
@@ -21,16 +18,7 @@ import {
 	DEFAULT_COMMENT_CONTENT,
 	DEFAULT_COMMENT_ID,
 } from './Constants';
-
-function givenResolved<T extends Record<string, any>, K extends keyof T>(
-	mockedContract: MockedContract<T>,
-	key: K,
-	value: Awaited<ReturnType<T[K]>>,
-) {
-	(
-		mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void }
-	).mockResolvedValue(value);
-}
+import { givenResolved } from '@TestUtils';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersContractForInteractions['getUserBasicInfo']>>
