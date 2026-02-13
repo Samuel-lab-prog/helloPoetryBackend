@@ -154,3 +154,36 @@ export function makeInteractionsSutWithConfig<
 
 	return { sut, mocks: mocks as InteractionsSutMocks };
 }
+
+export const interactionsMockFactories = {
+  usersContract: createMockedContract<UsersContractForInteractions>({
+    getUserBasicInfo: mock(),
+  }),
+  poemsContract: createMockedContract<PoemsContractForInteractions>({
+    getPoemInteractionInfo: mock(),
+  }),
+  friendsContract: createMockedContract<FriendsContractForInteractions>({
+    usersRelation: mock(),
+  }),
+  commandsRepository: createMockedContract<CommandsRepository>({
+    createPoemComment: mock(),
+    deletePoemComment: mock(),
+    createPoemLike: mock(),
+    deletePoemLike: mock(),
+  }),
+  queriesRepository: createMockedContract<QueriesRepository>({
+    selectCommentById: mock(),
+    findCommentsByPoemId: mock(),
+    findPoemLike: mock(),
+  }),
+} as const;
+
+export const InteractionsTestModule = {
+  makeSut<TFactory extends (deps: typeof interactionsMockFactories) => any>(
+    factory: TFactory
+  ) {
+    const mocks: typeof interactionsMockFactories = { ...interactionsMockFactories };
+    const sut = factory(mocks);
+    return { sut, mocks };
+  },
+};

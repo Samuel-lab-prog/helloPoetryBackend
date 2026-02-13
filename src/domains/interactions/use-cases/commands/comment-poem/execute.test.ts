@@ -9,7 +9,6 @@ import {
 	givenPoem,
 	givenUser,
 	givenUsersRelation,
-	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
 	type PoemInteractionInfoOverride,
 	DEFAULT_PERFORMER_USER_ID,
@@ -18,6 +17,7 @@ import {
 	type UsersRelationInfoOverride,
 	DEFAULT_COMMENT_ID,
 	type InteractionsSutMocks,
+	InteractionsTestModule
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
@@ -56,15 +56,7 @@ function makeCreateCommentParams(
 }
 
 function makeCreateCommentScenario() {
-	const { sut: commentPoem, mocks } = makeInteractionsSutWithConfig(
-		commentPoemFactory,
-		{
-			includeCommands: true,
-			includePoems: true,
-			includeUsers: true,
-			includeFriends: true,
-		},
-	);
+	const { sut: commentPoem, mocks } = InteractionsTestModule.makeSut(commentPoemFactory);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
