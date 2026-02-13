@@ -9,10 +9,10 @@ import { unlikePoemFactory } from './execute';
 import {
 	givenUser,
 	givenPoem,
-	makeInteractionsSutWithConfig,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 	type InteractionsSutMocks,
+	interactionsTestModule,
 } from '../../TestHelpers';
 
 export type DeletePoemLikeOverride = Partial<
@@ -52,14 +52,7 @@ function givenPoemLikeDeleted(
 }
 
 function makeUnlikePoemScenario() {
-	const { sut: unlikePoem, mocks } = makeInteractionsSutWithConfig(
-		unlikePoemFactory,
-		{
-			includeCommands: true,
-			includePoems: true,
-			includeUsers: true,
-		},
-	);
+	const { sut: unlikePoem, mocks } = interactionsTestModule.makeSut(unlikePoemFactory);
 
 	return {
 		withUser(overrides = {}) {

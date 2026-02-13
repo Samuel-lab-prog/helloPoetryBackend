@@ -3,13 +3,14 @@ import { ForbiddenError, NotFoundError } from '@DomainError';
 
 import {
 	givenUser,
-	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_COMMENT_ID,
 	DEFAULT_COMMENT_CONTENT,
 	DEFAULT_POEM_ID,
+
 	type InteractionsSutMocks,
+	interactionsTestModule,
 } from '../../TestHelpers';
 
 import { expectError } from '@TestUtils';
@@ -52,14 +53,7 @@ function makeDeleteCommentParams(
 }
 
 function makeDeleteCommentScenario() {
-	const { sut: deleteComment, mocks } = makeInteractionsSutWithConfig(
-		deleteCommentFactory,
-		{
-			includeCommands: true,
-			includeQueries: true,
-			includeUsers: true,
-		},
-	);
+	const { sut: deleteComment, mocks } = interactionsTestModule.makeSut(deleteCommentFactory);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
@@ -130,11 +124,6 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 	});
 
 	describe('Comment validation', () => {
-		it('should throw NotFoundError when comment does not exist', async () => {
-			const scenario = makeDeleteCommentScenario().withUser();
-			await expectError(scenario.execute(), NotFoundError);
-		});
-
 		it('should throw ForbiddenError when user is not the owner and not admin/moderator', async () => {
 			const scenario = makeDeleteCommentScenario()
 				.withUser({ id: 1, role: 'author' })

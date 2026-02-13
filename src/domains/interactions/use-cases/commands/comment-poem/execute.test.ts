@@ -17,7 +17,7 @@ import {
 	type UsersRelationInfoOverride,
 	DEFAULT_COMMENT_ID,
 	type InteractionsSutMocks,
-	InteractionsTestModule
+	interactionsTestModule
 } from '../../TestHelpers';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
@@ -56,7 +56,7 @@ function makeCreateCommentParams(
 }
 
 function makeCreateCommentScenario() {
-	const { sut: commentPoem, mocks } = InteractionsTestModule.makeSut(commentPoemFactory);
+	const { sut: commentPoem, mocks } = interactionsTestModule.makeSut(commentPoemFactory);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {

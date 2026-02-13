@@ -5,13 +5,13 @@ import {
 	givenPoem,
 	givenUser,
 	givenUsersRelation,
-	makeInteractionsSutWithConfig,
 	type UserBasicInfoOverride,
 	type PoemInteractionInfoOverride,
 	type UsersRelationInfoOverride,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 	type InteractionsSutMocks,
+	interactionsTestModule,
 } from '../../TestHelpers';
 import type {
 	LikePoemParams,
@@ -56,16 +56,7 @@ function givenPoemLikeCreated(
 }
 
 function makeLikePoemScenario() {
-	const { sut: likePoem, mocks } = makeInteractionsSutWithConfig(
-		likePoemFactory,
-		{
-			includeCommands: true,
-			includePoems: true,
-			includeUsers: true,
-			includeFriends: true,
-			includeQueries: true,
-		},
-	);
+	const { sut: likePoem, mocks } = interactionsTestModule.makeSut(likePoemFactory);
 
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
