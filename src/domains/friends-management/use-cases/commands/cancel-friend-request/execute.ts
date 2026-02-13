@@ -6,7 +6,7 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type { CancelFriendRequestRecord } from '../../Models';
 import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
 
-interface Dependencies {
+export interface CancelFriendRequestDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -14,7 +14,7 @@ interface Dependencies {
 export function cancelFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: CancelFriendRequestDependencies) {
 	return async function cancelFriendRequest(
 		params: CancelFriendRequestParams,
 	): Promise<CancelFriendRequestRecord> {

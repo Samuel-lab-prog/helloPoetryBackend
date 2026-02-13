@@ -6,7 +6,7 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendRequestRejectionRecord } from '../../Models';
 import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
 
-interface Dependencies {
+export interface RejectFriendRequestDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -14,7 +14,7 @@ interface Dependencies {
 export function rejectFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: RejectFriendRequestDependencies) {
 	return async function rejectFriendRequest(
 		params: RejectFriendRequestParams,
 	): Promise<FriendRequestRejectionRecord> {

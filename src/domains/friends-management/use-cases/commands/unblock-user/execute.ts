@@ -9,7 +9,7 @@ import {
 	BlockedRelationshipNotFoundError,
 } from '../../Errors';
 
-interface Dependencies {
+export interface UnblockUserDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -17,7 +17,7 @@ interface Dependencies {
 export function unblockUserFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: UnblockUserDependencies) {
 	return async function unblockUser(
 		params: UnblockUserParams,
 	): Promise<UnblockUserRecord> {

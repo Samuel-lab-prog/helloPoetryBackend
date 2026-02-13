@@ -1,67 +1,56 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { unblockUserFactory } from './execute';
+import { describe, expect, it } from 'bun:test';
+import { expectError } from '@TestUtils';
 import {
-	SelfReferenceError,
 	BlockedRelationshipNotFoundError,
+	SelfReferenceError,
 } from '../../Errors';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let unblockUser: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			unblockUser: mock(),
-		};
-
-		queriesRepository = {
-			findBlockedRelationship: mock(),
-		};
-
-		unblockUser = unblockUserFactory({
-			commandsRepository,
-			queriesRepository,
+describe.concurrent('USE-CASE - Friends Management - UnblockUser', () => {
+	describe('Validation', () => {
+		it('should not allow self reference', async () => {
+			await expectError(
+				makeFriendsManagementScenario.executeUnblockUser({
+					requesterId: 1,
+					addresseeId: 1,
+				}),
+				SelfReferenceError,
+			);
 		});
 	});
 
-	describe('Unblock User', () => {
-		it('Does not allow self reference', () => {
-			expect(
-				unblockUser({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+	describe('Business rules', () => {
+		it('should abort when blocked relationship does not exist', async () => {
+			const scenario = makeFriendsManagementScenario.withNoBlockedRelationship();
+			await expectError(
+				scenario.executeUnblockUser(),
+				BlockedRelationshipNotFoundError,
+			);
 		});
+	});
 
-		it('Should abort when blocked relationship does not exist', () => {
-			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
+	describe('Successful execution', () => {
+		it('should unblock user when relationship exists', async () => {
+			const scenario = makeFriendsManagementScenario
+				.withBlockedRelationship()
+				.withUnblockedUser();
 
-			expect(
-				unblockUser({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(BlockedRelationshipNotFoundError);
-
-			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
-				userId1: 1,
-				userId2: 2,
-			});
+			const result = await scenario.executeUnblockUser();
+			expect(result).toEqual({ unblockerId: 1, unblockedId: 2 });
+			expect(scenario.mocks.commandsRepository.unblockUser).toHaveBeenCalledWith(
+				1,
+				2,
+			);
 		});
+	});
 
-		it('Should unblock friend request when relationship exists', async () => {
-			queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 10 });
-			commandsRepository.unblockUser.mockResolvedValue({
-				ok: true,
-				data: { unblockerId: 1, unblockedId: 2, id: 20, createdAt: new Date() },
-			});
-
-			const result = await unblockUser({ requesterId: 1, addresseeId: 2 });
-
-			expect(result).toEqual({
-				unblockerId: 1,
-				unblockedId: 2,
-				id: 20,
-				createdAt: expect.any(Date),
-			});
-
-			expect(commandsRepository.unblockUser).toHaveBeenCalledWith(1, 2);
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeFriendsManagementScenario.withBlockedRelationship();
+			scenario.mocks.commandsRepository.unblockUser.mockRejectedValue(
+				new Error('boom'),
+			);
+			await expectError(scenario.executeUnblockUser(), Error);
 		});
 	});
 });

@@ -1,68 +1,67 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { blockUserFactory } from './execute';
-
+import { describe, expect, it } from 'bun:test';
+import { expectError } from '@TestUtils';
 import { SelfReferenceError, UserBlockedError } from '../../Errors';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let blockUser: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			blockUser: mock(),
-			deleteFriendRequestIfExists: mock(),
-		};
-
-		queriesRepository = {
-			findFriendshipBetweenUsers: mock(),
-			findFriendRequest: mock(),
-			findBlockedRelationship: mock(),
-		};
-
-		blockUser = blockUserFactory({
-			commandsRepository,
-			queriesRepository,
+describe.concurrent('USE-CASE - Friends Management - BlockUser', () => {
+	describe('Validation', () => {
+		it('should not allow self request', async () => {
+			await expectError(
+				makeFriendsManagementScenario.executeBlockUser({
+					requesterId: 1,
+					addresseeId: 1,
+				}),
+				SelfReferenceError,
+			);
 		});
 	});
 
-	describe('Block User', () => {
-		it('Does not allow self request', () => {
+	describe('Business rules', () => {
+		it('should prevent blocking when relationship is already blocked', async () => {
+			const scenario = makeFriendsManagementScenario.withBlockedRelationship();
+			await expectError(scenario.executeBlockUser(), UserBlockedError);
+		});
+	});
+
+	describe('Successful execution', () => {
+		it('should block user and clean pending requests', async () => {
+			const scenario = makeFriendsManagementScenario
+				.withNoBlockedRelationship()
+				.withNoFriendship()
+				.withFriendRequestDeletion()
+				.withBlockedUser();
+
+			const result = await scenario.executeBlockUser();
+			expect(result).toHaveProperty('id');
 			expect(
-				blockUser({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+				scenario.mocks.commandsRepository.deleteFriendRequestIfExists,
+			).toHaveBeenCalledTimes(2);
 		});
 
-		it('Prevents blocking if one of the users has already blocked the other', () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-			queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
-			queriesRepository.findBlockedRelationship.mockResolvedValue(true);
+		it('should remove friendship before blocking when users are friends', async () => {
+			const scenario = makeFriendsManagementScenario
+				.withNoBlockedRelationship()
+				.withFriendship()
+				.withDeletedFriend()
+				.withFriendRequestDeletion()
+				.withBlockedUser();
 
-			expect(
-				blockUser({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(UserBlockedError);
-
-			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
-				userId1: 1,
-				userId2: 2,
-			});
+			const result = await scenario.executeBlockUser();
+			expect(result).toHaveProperty('id');
+			expect(scenario.mocks.commandsRepository.deleteFriend).toHaveBeenCalledWith(
+				1,
+				2,
+			);
 		});
+	});
 
-		it('Should block the user and return the result when no errors occur', async () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-			queriesRepository.findFriendRequest.mockResolvedValue(null);
-			queriesRepository.findBlockedRelationship.mockResolvedValue(false);
-
-			commandsRepository.deleteFriendRequestIfExists.mockResolvedValue({
-				ok: true,
-			});
-			commandsRepository.blockUser.mockResolvedValue({
-				ok: true,
-				data: { blockerId: 1, blockedId: 2 },
-			});
-
-			const result = await blockUser({ requesterId: 1, addresseeId: 2 });
-			expect(result).toEqual({ blockerId: 1, blockedId: 2 });
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeFriendsManagementScenario.withNoBlockedRelationship();
+			scenario.mocks.queriesRepository.findBlockedRelationship.mockRejectedValue(
+				new Error('boom'),
+			);
+			await expectError(scenario.executeBlockUser(), Error);
 		});
 	});
 });

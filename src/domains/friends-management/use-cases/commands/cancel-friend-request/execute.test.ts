@@ -1,57 +1,49 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { cancelFriendRequestFactory } from './execute';
-
+import { describe, expect, it } from 'bun:test';
+import { expectError } from '@TestUtils';
 import { RequestNotFoundError, SelfReferenceError } from '../../Errors';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let cancelFriendRequest: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			cancelFriendRequest: mock(),
-		};
-
-		queriesRepository = {
-			findFriendRequest: mock(),
-		};
-
-		cancelFriendRequest = cancelFriendRequestFactory({
-			commandsRepository,
-			queriesRepository,
+describe.concurrent('USE-CASE - Friends Management - CancelFriendRequest', () => {
+	describe('Validation', () => {
+		it('should not allow self request', async () => {
+			await expectError(
+				makeFriendsManagementScenario.executeCancelFriendRequest({
+					requesterId: 1,
+					addresseeId: 1,
+				}),
+				SelfReferenceError,
+			);
 		});
 	});
 
-	describe('Cancel Friend Request', () => {
-		it('Does not allow self request', () => {
-			expect(
-				cancelFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+	describe('Business rules', () => {
+		it('should not allow canceling when request does not exist', async () => {
+			const scenario = makeFriendsManagementScenario.withNoFriendRequest();
+			await expectError(
+				scenario.executeCancelFriendRequest(),
+				RequestNotFoundError,
+			);
 		});
+	});
 
-		it('Does not allow canceling if the request does not even exist', () => {
-			queriesRepository.findFriendRequest.mockResolvedValue(null);
+	describe('Successful execution', () => {
+		it('should cancel friend request when it exists', async () => {
+			const scenario = makeFriendsManagementScenario
+				.withFriendRequest()
+				.withCancelledFriendRequest();
 
-			expect(
-				cancelFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(RequestNotFoundError);
+			const result = await scenario.executeCancelFriendRequest();
+			expect(result).toEqual({ cancellerId: 1, cancelledId: 2 });
 		});
+	});
 
-		it('Should cancel the friend request and return the result when no errors occur', async () => {
-			const cancelledRequest = { id: 10, requesterId: 1, addresseeId: 2 };
-
-			queriesRepository.findFriendRequest.mockResolvedValue(cancelledRequest);
-			commandsRepository.cancelFriendRequest.mockResolvedValue({
-				ok: true,
-				data: cancelledRequest,
-			});
-
-			const result = await cancelFriendRequest({
-				requesterId: 1,
-				addresseeId: 2,
-			});
-			expect(result).toEqual(cancelledRequest);
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeFriendsManagementScenario.withFriendRequest();
+			scenario.mocks.commandsRepository.cancelFriendRequest.mockRejectedValue(
+				new Error('boom'),
+			);
+			await expectError(scenario.executeCancelFriendRequest(), Error);
 		});
 	});
 });

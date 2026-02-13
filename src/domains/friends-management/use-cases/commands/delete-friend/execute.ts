@@ -6,7 +6,7 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import { SelfReferenceError, FriendshipNotFoundError } from '../../Errors';
 import type { RemovedFriendRecord } from '../../Models';
 
-interface Dependencies {
+export interface DeleteFriendDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -14,7 +14,7 @@ interface Dependencies {
 export function deleteFriendFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: DeleteFriendDependencies) {
 	return async function deleteFriend(
 		params: DeleteFriendParams,
 	): Promise<RemovedFriendRecord> {

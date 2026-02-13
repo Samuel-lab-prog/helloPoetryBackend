@@ -13,7 +13,7 @@ import {
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
 
-const commandsServices: CommandsRouterServices = {
+export const commandsRouterServices: CommandsRouterServices = {
 	cancelFriendRequest: cancelFriendRequestFactory({
 		commandsRepository,
 		queriesRepository,
@@ -45,4 +45,4 @@ const commandsServices: CommandsRouterServices = {
 };
 
 export const friendsCommandsRouter =
-	createFriendsCommandsRouter(commandsServices);
+	createFriendsCommandsRouter(commandsRouterServices);

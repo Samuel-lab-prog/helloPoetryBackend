@@ -11,7 +11,7 @@ import {
 	UserBlockedError,
 } from '../../Errors';
 
-interface Dependencies {
+export interface AcceptFriendRequestDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -19,7 +19,7 @@ interface Dependencies {
 export function acceptFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: AcceptFriendRequestDependencies) {
 	return async function acceptFriendRequest(
 		params: AcceptFriendRequestParams,
 	): Promise<FriendshipRecord> {

@@ -6,7 +6,7 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type { BlockedUserRecord } from '../../Models';
 import { SelfReferenceError, UserBlockedError } from '../../Errors';
 
-interface Dependencies {
+export interface BlockUserDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 }
@@ -14,7 +14,7 @@ interface Dependencies {
 export function blockUserFactory({
 	commandsRepository,
 	queriesRepository,
-}: Dependencies) {
+}: BlockUserDependencies) {
 	return async function blockUser(
 		params: BlockUserParams,
 	): Promise<BlockedUserRecord> {
