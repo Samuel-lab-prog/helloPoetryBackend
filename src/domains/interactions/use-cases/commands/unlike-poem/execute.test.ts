@@ -1,165 +1,88 @@
 import { describe, it, expect } from 'bun:test';
 import { expectError } from '@TestUtils';
-import type {
-	UnlikePoemParams,
-	CommandsRepository,
-} from '../../../ports/Commands';
 import { NotFoundError, ForbiddenError } from '@DomainError';
-import { unlikePoemFactory } from './execute';
-import {
-	givenUser,
-	givenPoem,
-	DEFAULT_PERFORMER_USER_ID,
-	DEFAULT_POEM_ID,
-	type InteractionsSutMocks,
-	interactionsTestModule,
-} from '../../test-helpers/Helper';
-
-export type DeletePoemLikeOverride = Partial<
-	Awaited<ReturnType<CommandsRepository['deletePoemLike']>>
->;
-
-function makeUnlikePoemParams(
-	overrides: Partial<UnlikePoemParams> = {},
-): UnlikePoemParams {
-	return {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
-	};
-}
-
-function givenPoemLikeExists(
-	queriesRepository: InteractionsSutMocks['queriesRepository'],
-	exists: boolean,
-) {
-	queriesRepository.findPoemLike.mockResolvedValue(
-		exists
-			? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
-			: null,
-	);
-}
-
-function givenPoemLikeDeleted(
-	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: DeletePoemLikeOverride = {},
-) {
-	commandsRepository.deletePoemLike.mockResolvedValue({
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
-	});
-}
-
-function makeUnlikePoemScenario() {
-	const { sut: unlikePoem, mocks } = interactionsTestModule.makeSut(unlikePoemFactory);
-
-	return {
-		withUser(overrides = {}) {
-			givenUser(mocks.usersContract, overrides);
-			return this;
-		},
-		withPoem(overrides = {}) {
-			givenPoem(mocks.poemsContract, overrides);
-			return this;
-		},
-		withExistingLike(exists = true) {
-			givenPoemLikeExists(mocks.queriesRepository, exists);
-			return this;
-		},
-		withPoemLikeDeleted(overrides: DeletePoemLikeOverride = {}) {
-			givenPoemLikeDeleted(mocks.commandsRepository, overrides);
-			return this;
-		},
-		execute(params = makeUnlikePoemParams()) {
-			return unlikePoem(params);
-		},
-		get mocks() {
-			return mocks;
-		},
-	};
-}
+import { makeInteractionsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Interactions - UnlikePoem', () => {
 	describe('Successful execution', () => {
 		it('should unlike an existing poem like', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem()
-				.withExistingLike()
+				.withPoemLikeExists(true)
 				.withPoemLikeDeleted();
 
-			const result = await scenario.execute();
+			const result = await scenario.executeRemoveLike();
 			expect(result).toBeUndefined();
 		});
 	});
 
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeUnlikePoemScenario().withUser({ exists: false });
-			await expectError(scenario.execute(), NotFoundError);
+			const scenario = makeInteractionsScenario.withUser({ exists: false });
+			await expectError(scenario.executeRemoveLike(), NotFoundError);
 		});
 
 		it('should throw ForbiddenError when user is inactive', async () => {
-			const scenario = makeUnlikePoemScenario().withUser({
+			const scenario = makeInteractionsScenario.withUser({
 				status: 'suspended',
 			});
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeRemoveLike(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {
-			const scenario = makeUnlikePoemScenario().withUser({ status: 'banned' });
-			await expectError(scenario.execute(), ForbiddenError);
+			const scenario = makeInteractionsScenario.withUser({ status: 'banned' });
+			await expectError(scenario.executeRemoveLike(), ForbiddenError);
 		});
 	});
 
 	describe('Poem validation', () => {
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ exists: false });
-			await expectError(scenario.execute(), NotFoundError);
+			await expectError(scenario.executeRemoveLike(), NotFoundError);
 		});
 
 		it('should throw ForbiddenError when poem is not approved', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ moderationStatus: 'pending' });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeRemoveLike(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError when poem is not published', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ status: 'draft' });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeRemoveLike(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError when poem has invalid visibility', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'private' });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeRemoveLike(), ForbiddenError);
 		});
 	});
 
 	describe('Like existence', () => {
 		it('should throw NotFoundError when like does not exist', async () => {
-			const scenario = makeUnlikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem()
-				.withExistingLike(false);
-			await expectError(scenario.execute(), NotFoundError);
+				.withPoemLikeExists(false);
+			await expectError(scenario.executeRemoveLike(), NotFoundError);
 		});
 	});
 
 	describe('Error propagation', () => {
 		it('should propagate dependency errors', async () => {
-			const scenario = makeUnlikePoemScenario().withUser().withPoem();
+			const scenario = makeInteractionsScenario.withUser().withPoem();
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
-			await expectError(scenario.execute(), Error);
+			await expectError(scenario.executeRemoveLike(), Error);
 		});
 	});
 });

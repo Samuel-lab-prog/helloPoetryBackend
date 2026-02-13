@@ -133,13 +133,15 @@ export type MockedContract<T> = {
  * @template T The type of the contract to mock.
  * @returns A mocked contract of type T.
  */
-export function createMockedContract<T extends Record<string, any>>(overrides: Partial<T> = {}): MockedContract<T> {
-  const mocked = {} as MockedContract<T>;
+export function createMockedContract<T extends Record<string, any>>(
+	overrides: Partial<T> = {},
+): MockedContract<T> {
+	const mocked = {} as MockedContract<T>;
 
-  for (const key in overrides) 
-    mocked[key as keyof T] = overrides[key as keyof T] as any;
-  
-  return mocked;
+	for (const key in overrides)
+		mocked[key as keyof T] = overrides[key as keyof T] as any;
+
+	return mocked;
 }
 
 type MockConfigItem<T> = {

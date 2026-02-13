@@ -11,7 +11,12 @@ type DomainIsolationMetric = {
 	externalPercent: number;
 };
 
-const IGNORED_DOMAINS_IMPORTS_FROM = ['shared-kernel', 'utils', 'bun:test', 'generic-subdomains'];
+const IGNORED_DOMAINS_IMPORTS_FROM = [
+	'shared-kernel',
+	'utils',
+	'bun:test',
+	'generic-subdomains',
+];
 const IGNORED_DOMAINS: string[] = [];
 
 export function calculateDomainIsolation(
@@ -28,16 +33,15 @@ export function calculateDomainIsolation(
 		}
 
 		module.dependencies.forEach((dep) => {
-	const toDomain = extractDomainFromPath(dep.resolved);
+			const toDomain = extractDomainFromPath(dep.resolved);
 
-	if (!toDomain || IGNORED_DOMAINS_IMPORTS_FROM.includes(toDomain)) return;
+			if (!toDomain || IGNORED_DOMAINS_IMPORTS_FROM.includes(toDomain)) return;
 
-	const record = acc.get(fromDomain)!;
+			const record = acc.get(fromDomain)!;
 
-	if (toDomain === fromDomain) record.internal++;
-	else record.external++;
-});
-
+			if (toDomain === fromDomain) record.internal++;
+			else record.external++;
+		});
 	});
 
 	return [...acc.entries()].map(([domain, counts]) => {

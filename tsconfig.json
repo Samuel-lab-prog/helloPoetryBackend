@@ -23,7 +23,9 @@
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
 			"@SharedKernel/*": ["./shared-kernel/*"],
 			"@AuthPlugin": ["./generic-subdomains/authentication/Composition.ts"],
-			"@ClearDatabase": ["./generic-subdomains/persistance/prisma/ClearDatabase.ts"],
+			"@ClearDatabase": [
+				"./generic-subdomains/persistance/prisma/ClearDatabase.ts"
+			],
 
 			"@PrismaErrorHandler": [
 				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"

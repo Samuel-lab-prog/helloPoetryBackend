@@ -1,143 +1,58 @@
 import { describe, it, expect } from 'bun:test';
 import { ForbiddenError, NotFoundError, ConflictError } from '@DomainError';
-import { likePoemFactory } from './execute';
-import {
-	givenPoem,
-	givenUser,
-	givenUsersRelation,
-	type UserBasicInfoOverride,
-	type PoemInteractionInfoOverride,
-	type UsersRelationInfoOverride,
-	DEFAULT_PERFORMER_USER_ID,
-	DEFAULT_POEM_ID,
-	type InteractionsSutMocks,
-	interactionsTestModule,
-} from '../../test-helpers/Helper';
-import type {
-	LikePoemParams,
-	CommandsRepository,
-} from '../../../ports/Commands';
+import { makeInteractionsScenario } from '../../test-helpers/Helper';
 import { expectError } from '@TestUtils';
-
-function makeLikePoemParams(
-	overrides: Partial<LikePoemParams> = {},
-): LikePoemParams {
-	return {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
-	};
-}
-
-export type CreatePoemLikeOverride = Partial<
-	Awaited<ReturnType<CommandsRepository['createPoemLike']>>
->;
-
-function givenPoemLikeExists(
-	queriesRepository: InteractionsSutMocks['queriesRepository'],
-	exists: boolean,
-) {
-	queriesRepository.findPoemLike.mockResolvedValue(
-		exists
-			? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
-			: null,
-	);
-}
-
-function givenPoemLikeCreated(
-	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: CreatePoemLikeOverride = {},
-) {
-	commandsRepository.createPoemLike.mockResolvedValue({
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
-	});
-}
-
-function makeLikePoemScenario() {
-	const { sut: likePoem, mocks } = interactionsTestModule.makeSut(likePoemFactory);
-
-	return {
-		withUser(overrides: UserBasicInfoOverride = {}) {
-			givenUser(mocks.usersContract, overrides);
-			return this;
-		},
-		withPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoem(mocks.poemsContract, overrides);
-			return this;
-		},
-		withAlreadyLikedPoem(result: boolean = true) {
-			givenPoemLikeExists(mocks.queriesRepository, result);
-			return this;
-		},
-		withPoemLikeCreated(overrides: CreatePoemLikeOverride = {}) {
-			givenPoemLikeCreated(mocks.commandsRepository, overrides);
-			return this;
-		},
-		withUsersRelation(overrides: UsersRelationInfoOverride = {}) {
-			givenUsersRelation(mocks.friendsContract, overrides);
-			return this;
-		},
-		execute(params = makeLikePoemParams()) {
-			return likePoem(params);
-		},
-		get mocks() {
-			return mocks;
-		},
-	};
-}
 
 describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 	describe('Successful execution', () => {
 		it('should like a public poem', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'public' })
-				.withAlreadyLikedPoem(false)
+				.withPoemLikeExists(false)
 				.withUsersRelation({ areFriends: false, areBlocked: false })
 				.withPoemLikeCreated();
 
-			const result = await scenario.execute();
+			const result = await scenario.executeLikePoem();
 			expect(result).toHaveProperty('userId');
 			expect(result).toHaveProperty('poemId');
 		});
 
 		it('should like an unlisted poem', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'unlisted' })
-				.withAlreadyLikedPoem(false)
+				.withPoemLikeExists(false)
 				.withUsersRelation({ areFriends: false, areBlocked: false })
 				.withPoemLikeCreated();
 
-			const result = await scenario.execute();
+			const result = await scenario.executeLikePoem();
 			expect(result).toHaveProperty('userId');
 			expect(result).toHaveProperty('poemId');
 		});
 
 		it('should like a friends-only poem when users are friends', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'friends' })
-				.withAlreadyLikedPoem(false)
+				.withPoemLikeExists(false)
 				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withPoemLikeCreated();
 
-			const result = await scenario.execute();
+			const result = await scenario.executeLikePoem();
 			expect(result).toHaveProperty('userId');
 			expect(result).toHaveProperty('poemId');
 		});
 
 		it('should allow the author to like their own friends-only poem', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser({ id: 1 })
 				.withPoem({ visibility: 'friends', authorId: 1 })
-				.withAlreadyLikedPoem(false)
+				.withPoemLikeExists(false)
 				.withUsersRelation({ areFriends: false, areBlocked: false })
 				.withPoemLikeCreated();
 
-			const result = await scenario.execute();
+			const result = await scenario.executeLikePoem();
 			expect(result).toHaveProperty('userId', 1);
 			expect(result).toHaveProperty('poemId');
 		});
@@ -145,71 +60,73 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeLikePoemScenario().withUser({ exists: false });
-			await expectError(scenario.execute(), NotFoundError);
+			const scenario = makeInteractionsScenario.withUser({ exists: false });
+			await expectError(scenario.executeLikePoem(), NotFoundError);
 		});
 		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeLikePoemScenario().withUser({ status: 'suspended' });
-			await expectError(scenario.execute(), ForbiddenError);
+			const scenario = makeInteractionsScenario.withUser({
+				status: 'suspended',
+			});
+			await expectError(scenario.executeLikePoem(), ForbiddenError);
 		});
 		it('should throw ForbiddenError when user is banned', async () => {
-			const scenario = makeLikePoemScenario().withUser({ status: 'banned' });
-			await expectError(scenario.execute(), ForbiddenError);
+			const scenario = makeInteractionsScenario.withUser({ status: 'banned' });
+			await expectError(scenario.executeLikePoem(), ForbiddenError);
 		});
 	});
 
 	describe('Poem validation', () => {
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ exists: false });
-			await expectError(scenario.execute(), NotFoundError);
+			await expectError(scenario.executeLikePoem(), NotFoundError);
 		});
 
 		it('should throw ForbiddenError for private poems if user is not author', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser({ id: 2 })
 				.withPoem({ visibility: 'private', authorId: 1 });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeLikePoem(), ForbiddenError);
 		});
 	});
 
 	describe('Relation rules', () => {
 		it('should throw ForbiddenError when users are blocked', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areBlocked: true, areFriends: false });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeLikePoem(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: false, areBlocked: false });
-			await expectError(scenario.execute(), ForbiddenError);
+			await expectError(scenario.executeLikePoem(), ForbiddenError);
 		});
 	});
 
 	describe('Already liked', () => {
 		it('should throw ConflictError when poem is already liked', async () => {
-			const scenario = makeLikePoemScenario()
+			const scenario = makeInteractionsScenario
 				.withUser()
 				.withPoem({ visibility: 'public' })
-				.withAlreadyLikedPoem()
+				.withPoemLikeExists(true)
 				.withUsersRelation({ areFriends: false, areBlocked: false });
-			await expectError(scenario.execute(), ConflictError);
+			await expectError(scenario.executeLikePoem(), ConflictError);
 		});
 	});
 
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
-			const scenario = makeLikePoemScenario().withUser().withPoem();
+			const scenario = makeInteractionsScenario.withUser().withPoem();
 			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
-			await expectError(scenario.execute(), Error);
+			await expectError(scenario.executeLikePoem(), Error);
 		});
 	});
 });

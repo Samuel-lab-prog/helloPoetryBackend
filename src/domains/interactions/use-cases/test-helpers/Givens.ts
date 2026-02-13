@@ -2,156 +2,182 @@
 
 import type { MockedContract } from '@TestUtils';
 import type {
-  UsersContractForInteractions,
-  FriendsContractForInteractions,
-  PoemsContractForInteractions,
+	UsersContractForInteractions,
+	FriendsContractForInteractions,
+	PoemsContractForInteractions,
 } from '../../ports/ExternalServices';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { InteractionsSutMocks } from './SutMocks';
 import {
-  DEFAULT_PERFORMER_USER_ID,
-  DEFAULT_USER_ROLE,
-  DEFAULT_USER_STATUS,
-  DEFAULT_POEM_ID,
-  DEFAULT_POEM_OWNER_USER_ID,
-  DEFAULT_POEM_VISIBILITY,
-  DEFAULT_POEM_MODERATION_STATUS,
-  DEFAULT_POEM_STATUS,
-  DEFAULT_COMMENT_CONTENT,
-  DEFAULT_COMMENT_ID,
+	DEFAULT_PERFORMER_USER_ID,
+	DEFAULT_USER_ROLE,
+	DEFAULT_USER_STATUS,
+	DEFAULT_POEM_ID,
+	DEFAULT_POEM_OWNER_USER_ID,
+	DEFAULT_POEM_VISIBILITY,
+	DEFAULT_POEM_MODERATION_STATUS,
+	DEFAULT_POEM_STATUS,
+	DEFAULT_COMMENT_CONTENT,
+	DEFAULT_COMMENT_ID,
 } from './Constants';
 
 function givenResolved<T extends Record<string, any>, K extends keyof T>(
-  mockedContract: MockedContract<T>,
-  key: K,
-  value: Awaited<ReturnType<T[K]>>
+	mockedContract: MockedContract<T>,
+	key: K,
+	value: Awaited<ReturnType<T[K]>>,
 ) {
-  (mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void })
-    .mockResolvedValue(value);
+	(
+		mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void }
+	).mockResolvedValue(value);
 }
 
 export type UserBasicInfoOverride = Partial<
-  Awaited<ReturnType<UsersContractForInteractions['getUserBasicInfo']>>
+	Awaited<ReturnType<UsersContractForInteractions['getUserBasicInfo']>>
 >;
 export type PoemInteractionInfoOverride = Partial<
-  Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
+	Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
 >;
 export type UsersRelationInfoOverride = Partial<
-  Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
+	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
 >;
 export type DeletePoemLikeOverride = Partial<
-  Awaited<ReturnType<CommandsRepository['deletePoemLike']>>
+	Awaited<ReturnType<CommandsRepository['deletePoemLike']>>
 >;
 export type CreatePoemLikeOverride = Partial<
-  Awaited<ReturnType<CommandsRepository['createPoemLike']>>
+	Awaited<ReturnType<CommandsRepository['createPoemLike']>>
 >;
 export type CreatePoemCommentOverride = Partial<
-  Awaited<ReturnType<CommandsRepository['createPoemComment']>>
+	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 export type FindCommentsOverride = Partial<
-  Awaited<ReturnType<QueriesRepository['findCommentsByPoemId']>>[number]
+	Awaited<ReturnType<QueriesRepository['findCommentsByPoemId']>>[number]
+>;
+export type SelectCommentByIdOverride = Partial<
+	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
 >;
 
 export function givenUser(
-  userContract: InteractionsSutMocks['usersContract'],
-  overrides: UserBasicInfoOverride = {},
+	userContract: InteractionsSutMocks['usersContract'],
+	overrides: UserBasicInfoOverride = {},
 ) {
-  givenResolved(userContract, 'getUserBasicInfo', {
-    exists: true,
-    id: DEFAULT_PERFORMER_USER_ID,
-    status: DEFAULT_USER_STATUS,
-    role: DEFAULT_USER_ROLE,
-    ...overrides,
-  });
+	givenResolved(userContract, 'getUserBasicInfo', {
+		exists: true,
+		id: DEFAULT_PERFORMER_USER_ID,
+		status: DEFAULT_USER_STATUS,
+		role: DEFAULT_USER_ROLE,
+		...overrides,
+	});
 }
 
 export function givenPoem(
-  poemsContract: InteractionsSutMocks['poemsContract'],
-  overrides: PoemInteractionInfoOverride = {},
+	poemsContract: InteractionsSutMocks['poemsContract'],
+	overrides: PoemInteractionInfoOverride = {},
 ) {
-  givenResolved(poemsContract, 'getPoemInteractionInfo', {
-    exists: true,
-    id: DEFAULT_POEM_ID,
-    authorId: DEFAULT_POEM_OWNER_USER_ID,
-    visibility: DEFAULT_POEM_VISIBILITY,
-    moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
-    status: DEFAULT_POEM_STATUS,
-    isCommentable: true,
-    ...overrides,
-  });
+	givenResolved(poemsContract, 'getPoemInteractionInfo', {
+		exists: true,
+		id: DEFAULT_POEM_ID,
+		authorId: DEFAULT_POEM_OWNER_USER_ID,
+		visibility: DEFAULT_POEM_VISIBILITY,
+		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
+		status: DEFAULT_POEM_STATUS,
+		isCommentable: true,
+		...overrides,
+	});
 }
 
 export function givenUsersRelation(
-  friendsContract: InteractionsSutMocks['friendsContract'],
-  overrides: UsersRelationInfoOverride = {},
+	friendsContract: InteractionsSutMocks['friendsContract'],
+	overrides: UsersRelationInfoOverride = {},
 ) {
-  givenResolved(friendsContract, 'usersRelation', {
-    areFriends: false,
-    areBlocked: false,
-    ...overrides,
-  });
+	givenResolved(friendsContract, 'usersRelation', {
+		areFriends: false,
+		areBlocked: false,
+		...overrides,
+	});
 }
 
 export function givenPoemLikeDeleted(
-  commandsRepository: InteractionsSutMocks['commandsRepository'],
-  overrides: DeletePoemLikeOverride = {},
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+	overrides: DeletePoemLikeOverride = {},
 ) {
-  givenResolved(commandsRepository, 'deletePoemLike', {
-    userId: DEFAULT_PERFORMER_USER_ID,
-    poemId: DEFAULT_POEM_ID,
-    ...overrides,
-  });
+	givenResolved(commandsRepository, 'deletePoemLike', {
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		...overrides,
+	});
 }
 
 export function givenPoemLikeExists(
-  queriesRepository: InteractionsSutMocks['queriesRepository'],
-  exists: boolean,
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	exists: boolean,
 ) {
-  givenResolved(queriesRepository, 'findPoemLike', 
-    exists
-      ? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
-      : null
-  );
+	givenResolved(
+		queriesRepository,
+		'findPoemLike',
+		exists
+			? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
+			: null,
+	);
 }
 
 export function givenPoemLikeCreated(
-  commandsRepository: InteractionsSutMocks['commandsRepository'],
-  overrides: CreatePoemLikeOverride = {},
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+	overrides: CreatePoemLikeOverride = {},
 ) {
-  givenResolved(commandsRepository, 'createPoemLike', {
-    userId: DEFAULT_PERFORMER_USER_ID,
-    poemId: DEFAULT_POEM_ID,
-    ...overrides,
-  });
+	givenResolved(commandsRepository, 'createPoemLike', {
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		...overrides,
+	});
 }
 
 export function givenCreatedComment(
-  commandsRepository: InteractionsSutMocks['commandsRepository'],
-  overrides: CreatePoemCommentOverride = {},
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+	overrides: CreatePoemCommentOverride = {},
 ) {
-  givenResolved(commandsRepository, 'createPoemComment', {
-    id: DEFAULT_COMMENT_ID,
-    userId: DEFAULT_PERFORMER_USER_ID,
-    poemId: DEFAULT_POEM_ID,
-    content: DEFAULT_COMMENT_CONTENT,
-    createdAt: new Date(),
-    ...overrides,
-  });
+	givenResolved(commandsRepository, 'createPoemComment', {
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		createdAt: new Date(),
+		...overrides,
+	});
 }
 
 export function givenExistingComments(
-  queriesRepository: InteractionsSutMocks['queriesRepository'],
-  overrides: FindCommentsOverride = {},
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	overrides: FindCommentsOverride = {},
 ) {
-  givenResolved(queriesRepository, 'findCommentsByPoemId', [
-    {
-      id: DEFAULT_COMMENT_ID,
-      userId: DEFAULT_PERFORMER_USER_ID,
-      poemId: DEFAULT_POEM_ID,
-      content: DEFAULT_COMMENT_CONTENT,
-      createdAt: new Date(),
-      ...overrides,
-    },
-  ]);
+	givenResolved(queriesRepository, 'findCommentsByPoemId', [
+		{
+			id: DEFAULT_COMMENT_ID,
+			userId: DEFAULT_PERFORMER_USER_ID,
+			poemId: DEFAULT_POEM_ID,
+			content: DEFAULT_COMMENT_CONTENT,
+			createdAt: new Date(),
+			...overrides,
+		},
+	]);
+}
+
+export function givenFoundComment(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	overrides: SelectCommentByIdOverride = {},
+) {
+	givenResolved(queriesRepository, 'selectCommentById', {
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		poemId: DEFAULT_POEM_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		createdAt: new Date(),
+		...overrides,
+	});
+}
+
+export function givenDeletedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'deletePoemComment', undefined);
 }

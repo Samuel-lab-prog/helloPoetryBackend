@@ -5,9 +5,7 @@ import {
 	UnprocessableEntityError,
 } from '@DomainError';
 
-import {
-	makeInteractionsScenario,
-} from '../../test-helpers/Helper';
+import { makeInteractionsScenario } from '../../test-helpers/Helper';
 import { expectError } from '@TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
@@ -27,8 +25,10 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withPoem()
 				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
-			const result = await scenario.executeCommentPoem({ content: 'a'.repeat(300) });
-		
+			const result = await scenario.executeCommentPoem({
+				content: 'a'.repeat(300),
+			});
+
 			expect(result).toHaveProperty('id');
 		});
 	});

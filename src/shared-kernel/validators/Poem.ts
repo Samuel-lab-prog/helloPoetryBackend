@@ -12,7 +12,7 @@ export function poem(poem: PoemBasicInfo) {
 
 	return {
 		withVisibility(allowedVisibilities: PoemVisibility[]) {
-			if (!allowedVisibilities.includes(poem.visibility)) 
+			if (!allowedVisibilities.includes(poem.visibility))
 				throw new ForbiddenError(
 					`Cannot perform this action on a poem with visibility ${poem.visibility}`,
 				);
@@ -20,7 +20,7 @@ export function poem(poem: PoemBasicInfo) {
 		},
 
 		withModerationStatus(allowedModerationStatuses: PoemModerationStatus[]) {
-			if (!allowedModerationStatuses.includes(poem.moderationStatus)) 
+			if (!allowedModerationStatuses.includes(poem.moderationStatus))
 				throw new ForbiddenError(
 					`Cannot perform this action on a poem with moderation status ${poem.moderationStatus}`,
 				);
@@ -28,7 +28,7 @@ export function poem(poem: PoemBasicInfo) {
 		},
 
 		withCommentability(allowedCommentability: boolean) {
-			if (poem.isCommentable !== allowedCommentability) 
+			if (poem.isCommentable !== allowedCommentability)
 				throw new ForbiddenError(
 					`Cannot perform this action on a poem with commentability ${poem.isCommentable}`,
 				);
@@ -36,7 +36,7 @@ export function poem(poem: PoemBasicInfo) {
 		},
 
 		withStatus(allowedStatuses: PoemStatus[]) {
-			if (!allowedStatuses.includes(poem.status)) 
+			if (!allowedStatuses.includes(poem.status))
 				throw new ForbiddenError(
 					`Cannot perform this action on a poem with status ${poem.status}`,
 				);
