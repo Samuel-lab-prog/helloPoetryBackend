@@ -51,7 +51,7 @@ export function likePoemFactory({
 		if (poemInfo.visibility === 'friends' && userId !== authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		const alreadyLiked = await queriesRepository.existsPoemLike({
+		const alreadyLiked = await queriesRepository.findPoemLike({
 			userId,
 			poemId,
 		});

@@ -1,8 +1,8 @@
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
 
-import { poemsServicesForInteractions } from '@SharedKernel/contracts/poems/Index';
-import { friendsServicesForInteractions } from '@SharedKernel/contracts/friends/Index';
+import { poemsContractForInteractions } from '@SharedKernel/contracts/poems/Index';
+import { friendsContractForInteractions } from '@SharedKernel/contracts/friends/Index';
 
 import { getPoemCommentsFactory } from './use-cases/queries/Index';
 
@@ -22,8 +22,8 @@ import { usersContractForInteractions } from '@SharedKernel/contracts/users/Inde
 export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
 		queriesRepository,
-		poemsContract: poemsServicesForInteractions,
-		friendsContract: friendsServicesForInteractions,
+		poemsContract: poemsContractForInteractions,
+		friendsContract: friendsContractForInteractions,
 		usersContract: usersContractForInteractions,
 	}),
 };
@@ -32,23 +32,23 @@ export const commandsRouterServices: CommandsRouterServices = {
 	likePoem: likePoemFactory({
 		commandsRepository,
 		queriesRepository,
-		poemsContract: poemsServicesForInteractions,
-		friendsContract: friendsServicesForInteractions,
+		poemsContract: poemsContractForInteractions,
+		friendsContract: friendsContractForInteractions,
 		usersContract: usersContractForInteractions,
 	}),
 
 	unlikePoem: unlikePoemFactory({
 		commandsRepository,
-		poemsContract: poemsServicesForInteractions,
+		poemsContract: poemsContractForInteractions,
 		usersContract: usersContractForInteractions,
 		queriesRepository,
 	}),
 
 	commentPoem: commentPoemFactory({
 		commandsRepository,
-		poemsContract: poemsServicesForInteractions,
+		poemsContract: poemsContractForInteractions,
 		usersContract: usersContractForInteractions,
-		friendsContract: friendsServicesForInteractions,
+		friendsContract: friendsContractForInteractions,
 	}),
 
 	deleteComment: deleteCommentFactory({

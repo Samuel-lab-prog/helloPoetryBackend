@@ -34,7 +34,7 @@ export interface CommandsRepository {
 
 export interface CommandsRouterServices {
 	likePoem(params: LikePoemParams): Promise<PoemLike>;
-	unlikePoem(params: UnlikePoemParams): Promise<PoemLike>;
+	unlikePoem(params: UnlikePoemParams): Promise<void>;
 	commentPoem(params: CommentPoemParams): Promise<PoemComment>;
 	deleteComment(params: DeleteCommentParams): Promise<void>;
 }

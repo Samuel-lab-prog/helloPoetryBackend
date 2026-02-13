@@ -37,7 +37,11 @@ function givenPoemLikeExists(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	exists: boolean,
 ) {
-	queriesRepository.existsPoemLike.mockResolvedValue(exists);
+	queriesRepository.findPoemLike.mockResolvedValue(
+		exists
+			? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
+			: null,
+	);
 }
 
 function givenPoemLikeCreated(

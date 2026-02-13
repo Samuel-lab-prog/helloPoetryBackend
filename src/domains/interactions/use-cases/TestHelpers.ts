@@ -137,7 +137,6 @@ export function makeInteractionsSutWithConfig<
 			{
 				selectCommentById: mock(),
 				findCommentsByPoemId: mock(),
-				existsPoemLike: mock(),
 				findPoemLike: mock(),
 			},
 		);

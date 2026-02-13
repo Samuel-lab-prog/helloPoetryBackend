@@ -37,10 +37,6 @@ export function deletePoemLike(params: {
 	});
 }
 
-// ----------------------------------------
-// Poem Comments
-// ----------------------------------------
-
 export function createPoemComment(params: {
 	userId: number;
 	poemId: number;

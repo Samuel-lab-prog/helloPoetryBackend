@@ -6,7 +6,6 @@ import type {
 	PoemsContractForInteractions,
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
-import type { PoemLike } from '../../Models';
 import { NotFoundError } from '@DomainError';
 import { validator } from '../../validators/Global';
 import type { QueriesRepository } from '../../../ports/Queries';
@@ -24,9 +23,7 @@ export function unlikePoemFactory({
 	queriesRepository,
 	usersContract,
 }: UnlikePoemDependencies) {
-	return async function unlikePoem(
-		params: UnlikePoemParams,
-	): Promise<PoemLike> {
+	return async function unlikePoem(params: UnlikePoemParams): Promise<void> {
 		const { userId, poemId } = params;
 		const v = validator();
 
@@ -46,6 +43,6 @@ export function unlikePoemFactory({
 		});
 		if (!existingLike) throw new NotFoundError('Like not found');
 
-		return commandsRepository.deletePoemLike({ userId, poemId });
+		await commandsRepository.deletePoemLike({ userId, poemId });
 	};
 }

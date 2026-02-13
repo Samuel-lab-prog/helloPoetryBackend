@@ -79,6 +79,6 @@ export const friendsServicesForRecomendationEngine: FriendsContractForRecomendat
 		getBlockedUserIds,
 	};
 
-export const friendsServicesForInteractions: FriendsContractForInteractions = {
+export const friendsContractForInteractions: FriendsContractForInteractions = {
 	usersRelation: getUsersRelation,
 };

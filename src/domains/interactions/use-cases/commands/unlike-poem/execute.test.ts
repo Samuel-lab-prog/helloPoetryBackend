@@ -97,20 +97,7 @@ describe.concurrent('USE-CASE - Interactions - UnlikePoem', () => {
 				.withPoemLikeDeleted();
 
 			const result = await scenario.execute();
-			expect(result).toHaveProperty('userId', DEFAULT_PERFORMER_USER_ID);
-			expect(result).toHaveProperty('poemId', DEFAULT_POEM_ID);
-		});
-
-		it('should return custom deleted like when overrides are provided', async () => {
-			const scenario = makeUnlikePoemScenario()
-				.withUser()
-				.withPoem()
-				.withExistingLike()
-				.withPoemLikeDeleted({ poemId: 999, userId: 888 });
-
-			const result = await scenario.execute();
-			expect(result.userId).toBe(888);
-			expect(result.poemId).toBe(999);
+			expect(result).toBeUndefined();
 		});
 	});
 
@@ -180,22 +167,6 @@ describe.concurrent('USE-CASE - Interactions - UnlikePoem', () => {
 				new Error('boom'),
 			);
 			await expectError(scenario.execute(), Error);
-		});
-	});
-
-	describe('Parameter overrides', () => {
-		it('should handle custom userId and poemId in params', async () => {
-			const scenario = makeUnlikePoemScenario()
-				.withUser({ id: 555 })
-				.withPoem({ id: 777 })
-				.withExistingLike()
-				.withPoemLikeDeleted({ userId: 555, poemId: 777 });
-
-			const result = await scenario.execute(
-				makeUnlikePoemParams({ userId: 555, poemId: 777 }),
-			);
-			expect(result.userId).toBe(555);
-			expect(result.poemId).toBe(777);
 		});
 	});
 });

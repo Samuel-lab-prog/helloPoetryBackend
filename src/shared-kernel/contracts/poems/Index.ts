@@ -130,7 +130,7 @@ function getPoemsByIds(params: { ids: number[] }) {
 	});
 }
 
-export const poemsServicesForInteractions: PoemsContractForInteractions = {
+export const poemsContractForInteractions: PoemsContractForInteractions = {
 	getPoemInteractionInfo,
 };
 

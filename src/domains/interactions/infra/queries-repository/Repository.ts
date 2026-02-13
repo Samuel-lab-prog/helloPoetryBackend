@@ -18,9 +18,7 @@ export function selectCommentById(params: {
 				createdAt: true,
 			},
 		});
-		if (!comment) {
-			return null;
-		}
+		if (!comment) return null;
 		return {
 			id: comment.id,
 			content: comment.content,
@@ -28,27 +26,6 @@ export function selectCommentById(params: {
 			poemId: comment.poemId,
 			createdAt: comment.createdAt,
 		};
-	});
-}
-
-export function existsPoemLike(params: {
-	userId: number;
-	poemId: number;
-}): Promise<boolean> {
-	const { userId, poemId } = params;
-
-	return withPrismaErrorHandling(async () => {
-		const like = await prisma.poemLike.findUnique({
-			where: {
-				userId_poemId: {
-					userId,
-					poemId,
-				},
-			},
-			select: { userId: true },
-		});
-
-		return like !== null;
 	});
 }
 
@@ -77,6 +54,7 @@ export function findCommentsByPoemId(params: {
 		}));
 	});
 }
+
 export function findPoemLike(params: {
 	userId: number;
 	poemId: number;
@@ -97,6 +75,5 @@ export function findPoemLike(params: {
 export const queriesRepository: QueriesRepository = {
 	selectCommentById,
 	findCommentsByPoemId,
-	existsPoemLike,
 	findPoemLike,
 };
