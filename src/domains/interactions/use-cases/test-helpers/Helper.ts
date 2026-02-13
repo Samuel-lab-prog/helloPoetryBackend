@@ -40,6 +40,7 @@ import {
   unlikePoemFactory,
 } from '../commands/Index';
 import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
+import { DEFAULT_COMMENT_CONTENT, DEFAULT_PERFORMER_USER_ID, DEFAULT_POEM_ID } from './Constants';
 
 const interactionsMockFactories = {
   usersContract: createMockedContract<UsersContractForInteractions>({
@@ -74,7 +75,7 @@ function interactionsFactory(deps: typeof interactionsMockFactories) {
   };
 }
 
-export const interactionsTestModule = {
+const interactionsTestModule = {
   makeSut<TFactory extends (deps: typeof interactionsMockFactories) => any>(
     factory: TFactory
   ) {
@@ -88,7 +89,7 @@ function makeParams<T>(defaults: T, overrides?: Partial<T>): T {
   return { ...defaults, ...overrides };
 }
 
-export const interactionsScenario = (() => {
+export const makeInteractionsScenario = (() => {
   const { sut: sutFactory, mocks } = interactionsTestModule.makeSut(interactionsFactory);
 
   return {
@@ -134,27 +135,26 @@ export const interactionsScenario = (() => {
 
     executeCommentPoem(params: Partial<CommentPoemParams> = {}) {
       return sutFactory.commentPoem(
-        makeParams({ userId: 1, poemId: 1, content: 'hello' }, params)
+        makeParams({ userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID, content: DEFAULT_COMMENT_CONTENT }, params)
       );
     },
 
     executeLikePoem(params: Partial<LikePoemParams> = {}) {
-      return sutFactory.likePoem(makeParams({ userId: 1, poemId: 1 }, params));
+      return sutFactory.likePoem(makeParams({ userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }, params));
     },
 
     executeRemoveLike(params: Partial<LikePoemParams> = {}) {
-      return sutFactory.removeLikePoem(makeParams({ userId: 1, poemId: 1 }, params));
+      return sutFactory.removeLikePoem(makeParams({ userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }, params));
     },
 
     executeDeleteComment(params: Partial<CommentPoemParams> = {}) {
-      return sutFactory.deleteComment(makeParams({ userId: 1, poemId: 1, content: 'hello' }, params));
+      return sutFactory.deleteComment(makeParams({ userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID, content: DEFAULT_COMMENT_CONTENT }, params));
     },
 
     executeGetPoemComments(params: Partial<GetPoemCommentsParams> = {}) {
-      return sutFactory.getPoemComments(makeParams({ poemId: 1, userId: 1 }, params));
+      return sutFactory.getPoemComments(makeParams({ poemId: DEFAULT_POEM_ID, userId: DEFAULT_PERFORMER_USER_ID }, params));
     },
 
-    // ===== Getter de mocks =====
     get mocks(): InteractionsSutMocks {
       return mocks;
     },

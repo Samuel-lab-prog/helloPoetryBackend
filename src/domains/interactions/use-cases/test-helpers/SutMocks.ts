@@ -1,4 +1,3 @@
-// src/Interactions/TestHelpers/InteractionsSutMocks.ts
 import type { MockedContract } from '@TestUtils';
 import type {
   UsersContractForInteractions,

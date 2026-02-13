@@ -97,7 +97,7 @@ export function givenPoemLikeDeleted(
   commandsRepository: InteractionsSutMocks['commandsRepository'],
   overrides: DeletePoemLikeOverride = {},
 ) {
-  commandsRepository.deletePoemLike.mockResolvedValue({
+  givenResolved(commandsRepository, 'deletePoemLike', {
     userId: DEFAULT_PERFORMER_USER_ID,
     poemId: DEFAULT_POEM_ID,
     ...overrides,
@@ -108,10 +108,10 @@ export function givenPoemLikeExists(
   queriesRepository: InteractionsSutMocks['queriesRepository'],
   exists: boolean,
 ) {
-  queriesRepository.findPoemLike.mockResolvedValue(
+  givenResolved(queriesRepository, 'findPoemLike', 
     exists
       ? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
-      : null,
+      : null
   );
 }
 
@@ -119,7 +119,7 @@ export function givenPoemLikeCreated(
   commandsRepository: InteractionsSutMocks['commandsRepository'],
   overrides: CreatePoemLikeOverride = {},
 ) {
-  commandsRepository.createPoemLike.mockResolvedValue({
+  givenResolved(commandsRepository, 'createPoemLike', {
     userId: DEFAULT_PERFORMER_USER_ID,
     poemId: DEFAULT_POEM_ID,
     ...overrides,
@@ -130,7 +130,7 @@ export function givenCreatedComment(
   commandsRepository: InteractionsSutMocks['commandsRepository'],
   overrides: CreatePoemCommentOverride = {},
 ) {
-  commandsRepository.createPoemComment.mockResolvedValue({
+  givenResolved(commandsRepository, 'createPoemComment', {
     id: DEFAULT_COMMENT_ID,
     userId: DEFAULT_PERFORMER_USER_ID,
     poemId: DEFAULT_POEM_ID,
@@ -144,7 +144,7 @@ export function givenExistingComments(
   queriesRepository: InteractionsSutMocks['queriesRepository'],
   overrides: FindCommentsOverride = {},
 ) {
-  queriesRepository.findCommentsByPoemId.mockResolvedValue([
+  givenResolved(queriesRepository, 'findCommentsByPoemId', [
     {
       id: DEFAULT_COMMENT_ID,
       userId: DEFAULT_PERFORMER_USER_ID,
@@ -155,5 +155,3 @@ export function givenExistingComments(
     },
   ]);
 }
-
-  
