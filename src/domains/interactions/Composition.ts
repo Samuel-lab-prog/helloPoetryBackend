@@ -1,11 +1,10 @@
+import { poemsContractForInteractions } from '@SharedKernel/contracts/poems/Index';
+import { friendsContractForInteractions } from '@SharedKernel/contracts/friends/Index';
+import { usersContractForInteractions } from '@SharedKernel/contracts/users/Index';
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
 
-import { poemsContractForInteractions } from '@SharedKernel/contracts/poems/Index';
-import { friendsContractForInteractions } from '@SharedKernel/contracts/friends/Index';
-
 import { getPoemCommentsFactory } from './use-cases/queries/Index';
-
 import {
 	commentPoemFactory,
 	deleteCommentFactory,
@@ -17,7 +16,6 @@ import type { CommandsRouterServices } from './ports/Commands';
 import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
-import { usersContractForInteractions } from '@SharedKernel/contracts/users/Index';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
