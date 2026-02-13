@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@ClearDatabase';
+import { clearDatabase } from '@Prisma/ClearDatabase';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 import {
 	sendFriendRequest,

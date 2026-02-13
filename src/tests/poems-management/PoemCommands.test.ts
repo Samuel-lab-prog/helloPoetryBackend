@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { clearDatabase } from '@ClearDatabase';
+import { clearDatabase } from '@Prisma/ClearDatabase';
 
 import {
 	createPoem,
