@@ -44,44 +44,50 @@ type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 
+function makeParams<T>(defaults: T, overrides?: Partial<T>): T {
+  return { ...defaults, ...overrides };
+}
+
 function makeCreateCommentParams(
-	overrides: Partial<CommentPoemParams> = {},
+  overrides: Partial<CommentPoemParams> = {},
 ): CommentPoemParams {
-	return {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		...overrides,
-	};
+  return makeParams<CommentPoemParams>(
+    {
+      userId: DEFAULT_PERFORMER_USER_ID,
+      poemId: DEFAULT_POEM_ID,
+      content: DEFAULT_COMMENT_CONTENT,
+    },
+    overrides,
+  );
 }
 
 function makeCreateCommentScenario() {
-	const { sut: commentPoem, mocks } = interactionsTestModule.makeSut(commentPoemFactory);
+  const { sut: commentPoem, mocks } = interactionsTestModule.makeSut(commentPoemFactory);
 
-	return {
-		withUser(overrides: UserBasicInfoOverride = {}) {
-			givenUser(mocks.usersContract, overrides);
-			return this;
-		},
-		withPoem(overrides: PoemInteractionInfoOverride = {}) {
-			givenPoem(mocks.poemsContract, overrides);
-			return this;
-		},
-		withUsersRelation(overrides: UsersRelationInfoOverride = {}) {
-			givenUsersRelation(mocks.friendsContract, overrides);
-			return this;
-		},
-		withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
-			givenCreatedComment(mocks.commandsRepository, overrides);
-			return this;
-		},
-		execute(params = makeCreateCommentParams()) {
-			return commentPoem(params);
-		},
-		get mocks() {
-			return mocks;
-		},
-	};
+  return {
+    withUser(overrides: UserBasicInfoOverride = {}) {
+      givenUser(mocks.usersContract, overrides);
+      return this;
+    },
+    withPoem(overrides: PoemInteractionInfoOverride = {}) {
+      givenPoem(mocks.poemsContract, overrides);
+      return this;
+    },
+    withUsersRelation(overrides: UsersRelationInfoOverride = {}) {
+      givenUsersRelation(mocks.friendsContract, overrides);
+      return this;
+    },
+    withCreatedComment(overrides: CreatePoemCommentOverride = {}) {
+      givenCreatedComment(mocks.commandsRepository, overrides);
+      return this;
+    },
+    execute(params: Partial<CommentPoemParams> = {}) {
+      return commentPoem(makeCreateCommentParams(params));
+    },
+    get mocks() {
+      return mocks;
+    },
+  };
 }
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {

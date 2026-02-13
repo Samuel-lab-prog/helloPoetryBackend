@@ -43,14 +43,23 @@ export type UsersRelationInfoOverride = Partial<
 	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
 >;
 
+function givenResolved<T extends Record<string, any>, K extends keyof T>(
+  mockedContract: MockedContract<T>,
+  key: K,
+  value: Awaited<ReturnType<T[K]>>
+) {
+  (mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void })
+    .mockResolvedValue(value);
+}
+
 export function givenUser(
 	userContract: InteractionsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
 ) {
-	userContract.getUserBasicInfo.mockResolvedValue({
+	givenResolved(userContract, 'getUserBasicInfo', {
 		exists: true,
-		status: DEFAULT_USER_STATUS,
 		id: DEFAULT_PERFORMER_USER_ID,
+		status: DEFAULT_USER_STATUS,
 		role: DEFAULT_USER_ROLE,
 		...overrides,
 	});
@@ -60,13 +69,13 @@ export function givenPoem(
 	poemsContract: InteractionsSutMocks['poemsContract'],
 	overrides: PoemInteractionInfoOverride = {},
 ) {
-	poemsContract.getPoemInteractionInfo.mockResolvedValue({
+	givenResolved(poemsContract, 'getPoemInteractionInfo', {
 		exists: true,
 		id: DEFAULT_POEM_ID,
-		visibility: DEFAULT_POEM_VISIBILITY,
 		authorId: DEFAULT_POEM_OWNER_USER_ID,
-		status: DEFAULT_POEM_STATUS,
+		visibility: DEFAULT_POEM_VISIBILITY,
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
+		status: DEFAULT_POEM_STATUS,
 		isCommentable: true,
 		...overrides,
 	});
@@ -76,9 +85,9 @@ export function givenUsersRelation(
 	friendsContract: InteractionsSutMocks['friendsContract'],
 	overrides: UsersRelationInfoOverride = {},
 ) {
-	friendsContract.usersRelation.mockResolvedValue({
-		areBlocked: false,
+	givenResolved(friendsContract, 'usersRelation', {
 		areFriends: false,
+		areBlocked: false,
 		...overrides,
 	});
 }
@@ -104,7 +113,7 @@ export const interactionsMockFactories = {
     findCommentsByPoemId: mock(),
     findPoemLike: mock(),
   }),
-} as const;
+} 
 
 export const interactionsTestModule = {
   makeSut<TFactory extends (deps: typeof interactionsMockFactories) => any>(
