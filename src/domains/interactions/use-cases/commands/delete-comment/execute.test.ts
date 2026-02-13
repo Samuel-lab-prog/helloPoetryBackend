@@ -11,7 +11,7 @@ import {
 
 	type InteractionsSutMocks,
 	interactionsTestModule,
-} from '../../TestHelpers';
+} from '../../test-helpers/Helper';
 
 import { expectError } from '@TestUtils';
 import { deleteCommentFactory } from './execute';

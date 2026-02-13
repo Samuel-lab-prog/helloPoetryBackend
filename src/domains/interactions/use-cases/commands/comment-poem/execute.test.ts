@@ -18,7 +18,7 @@ import {
 	DEFAULT_COMMENT_ID,
 	type InteractionsSutMocks,
 	interactionsTestModule
-} from '../../TestHelpers';
+} from '../../test-helpers/Helper';
 import { expectError } from '@TestUtils';
 import { commentPoemFactory } from './execute';
 import type {

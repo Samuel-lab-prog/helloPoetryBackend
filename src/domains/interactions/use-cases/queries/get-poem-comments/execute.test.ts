@@ -12,7 +12,7 @@ import {
 	DEFAULT_POEM_ID,
 	type InteractionsSutMocks,
 	interactionsTestModule,
-} from '../../TestHelpers';
+} from '../../test-helpers/Helper';
 
 import { expectError } from '@TestUtils';
 import { getPoemCommentsFactory } from './execute';

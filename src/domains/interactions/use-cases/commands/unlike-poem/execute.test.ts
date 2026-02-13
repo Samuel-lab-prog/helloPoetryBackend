@@ -13,7 +13,7 @@ import {
 	DEFAULT_POEM_ID,
 	type InteractionsSutMocks,
 	interactionsTestModule,
-} from '../../TestHelpers';
+} from '../../test-helpers/Helper';
 
 export type DeletePoemLikeOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['deletePoemLike']>>

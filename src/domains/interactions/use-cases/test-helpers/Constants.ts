@@ -1,0 +1,10 @@
+export const DEFAULT_PERFORMER_USER_ID = 1;
+export const DEFAULT_POEM_OWNER_USER_ID = 2;
+export const DEFAULT_POEM_VISIBILITY = 'public';
+export const DEFAULT_POEM_MODERATION_STATUS = 'approved';
+export const DEFAULT_POEM_STATUS = 'published';
+export const DEFAULT_USER_STATUS = 'active';
+export const DEFAULT_USER_ROLE = 'author';
+export const DEFAULT_POEM_ID = 1;
+export const DEFAULT_COMMENT_ID = 1;
+export const DEFAULT_COMMENT_CONTENT = 'hello';
