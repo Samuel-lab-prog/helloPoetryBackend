@@ -1,6 +1,8 @@
 import type { ClocResult, DomainMetric, DomainAggregate } from '../Types';
 import { classifyDomainSize } from '../Classify';
 
+const IGNORED_DOMAINS: string[] = [];
+
 export function calculateDomainAggregates(
 	cloc: ClocResult,
 ): Map<string, DomainAggregate> {
@@ -16,6 +18,8 @@ export function calculateDomainAggregates(
 		if (!match) return;
 
 		const domainName = match[2]!;
+		if (IGNORED_DOMAINS.includes(domainName)) return;
+
 		const current = domainData.get(domainName) ?? { loc: 0, files: 0 };
 
 		if (!('code' in info)) return;

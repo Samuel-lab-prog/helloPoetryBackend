@@ -11,6 +11,9 @@ type DomainIsolationMetric = {
 	externalPercent: number;
 };
 
+const IGNORED_DOMAINS_IMPORTS_FROM = ['shared-kernel', 'utils', 'bun:test', 'generic-subdomains'];
+const IGNORED_DOMAINS: string[] = [];
+
 export function calculateDomainIsolation(
 	cruiseResult: DepcruiseResult,
 ): DomainIsolationMetric[] {
@@ -18,20 +21,23 @@ export function calculateDomainIsolation(
 
 	cruiseResult.modules.forEach((module) => {
 		const fromDomain = extractDomainFromPath(module.source);
-		if (!fromDomain) return;
+		if (!fromDomain || IGNORED_DOMAINS.includes(fromDomain)) return;
 
 		if (!acc.has(fromDomain)) {
 			acc.set(fromDomain, { internal: 0, external: 0 });
 		}
 
 		module.dependencies.forEach((dep) => {
-			const toDomain = extractDomainFromPath(dep.resolved);
-			if (!toDomain) return;
+	const toDomain = extractDomainFromPath(dep.resolved);
 
-			const record = acc.get(fromDomain)!;
-			if (toDomain === fromDomain) record.internal++;
-			else record.external++;
-		});
+	if (!toDomain || IGNORED_DOMAINS_IMPORTS_FROM.includes(toDomain)) return;
+
+	const record = acc.get(fromDomain)!;
+
+	if (toDomain === fromDomain) record.internal++;
+	else record.external++;
+});
+
 	});
 
 	return [...acc.entries()].map(([domain, counts]) => {
