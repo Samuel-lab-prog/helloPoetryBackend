@@ -1,4 +1,4 @@
-import type { UsersRelationBasicInfo } from '../../ports/ExternalServices';
+import type { UsersRelationBasicInfo } from '@SharedKernel/contracts/friends/Index';
 import { ForbiddenError } from '@DomainError';
 
 export function relation(relation: UsersRelationBasicInfo) {

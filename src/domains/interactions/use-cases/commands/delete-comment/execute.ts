@@ -4,7 +4,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UsersContractForInteractions } from '../../../ports/ExternalServices';
-import { validator } from '../../validators/Global';
+import { validator } from '@SharedKernel/validators/Global';
 
 export interface DeleteCommentDependencies {
 	commandsRepository: CommandsRepository;

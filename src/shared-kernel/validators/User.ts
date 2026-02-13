@@ -1,4 +1,4 @@
-import type { UserBasicInfo } from '../../ports/ExternalServices';
+import type { UserBasicInfo } from '@SharedKernel/contracts/users/Index';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 

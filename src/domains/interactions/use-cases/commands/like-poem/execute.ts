@@ -10,7 +10,7 @@ import type {
 } from '../../../ports/ExternalServices';
 import type { PoemLike } from '../../Models';
 import { ConflictError } from '@DomainError';
-import { validator } from '../../validators/Global';
+import { validator } from '@SharedKernel/validators/Global';
 
 export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;

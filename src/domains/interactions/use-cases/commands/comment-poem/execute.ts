@@ -8,7 +8,7 @@ import type {
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
-import { validator } from '../../validators/Global';
+import { validator } from '@SharedKernel/validators/Global';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;

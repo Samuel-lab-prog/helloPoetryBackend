@@ -7,7 +7,8 @@ import type {
 	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import { NotFoundError } from '@DomainError';
-import { validator } from '../../validators/Global';
+import { validator } from '@SharedKernel/validators/Global';
+
 import type { QueriesRepository } from '../../../ports/Queries';
 
 export interface UnlikePoemDependencies {

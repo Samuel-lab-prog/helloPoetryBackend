@@ -5,6 +5,14 @@ import type { UsersServicesForPoems } from '@Domains/poems-management/ports/Exte
 import type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
 import type { AuthRepository } from '@GenericSubdomains/authentication/ports/AuthRepository';
 import type { UsersContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
+import type { UserStatus, UserRole } from '../../Enums';
+
+export type UserBasicInfo = {
+	exists: boolean;
+	id: number;
+	status: UserStatus;
+	role: UserRole;
+};
 
 async function getUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {

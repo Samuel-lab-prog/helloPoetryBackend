@@ -62,7 +62,10 @@ async function areBlocked(userAId: number, userBId: number): Promise<boolean> {
 	});
 }
 
-async function getUsersRelation(userAId: number, userBId: number) {
+async function getUsersRelation(
+	userAId: number,
+	userBId: number,
+): Promise<UsersRelationBasicInfo> {
 	const [friends, blocked] = await Promise.all([
 		areFriends(userAId, userBId),
 		areBlocked(userAId, userBId),
@@ -81,4 +84,9 @@ export const friendsServicesForRecomendationEngine: FriendsContractForRecomendat
 
 export const friendsContractForInteractions: FriendsContractForInteractions = {
 	usersRelation: getUsersRelation,
+};
+
+export type UsersRelationBasicInfo = {
+	areFriends: boolean;
+	areBlocked: boolean;
 };

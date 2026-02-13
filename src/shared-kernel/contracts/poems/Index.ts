@@ -2,8 +2,23 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { PoemsContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
 import type { PoemsContractForRecomendationEngine } from '@Domains/feed-engine/ports/ExternalServices';
+import type {
+	PoemVisibility,
+	PoemModerationStatus,
+	PoemStatus,
+} from '../../Enums';
 
-async function getPoemInteractionInfo(poemId: number) {
+export type PoemBasicInfo = {
+	exists: boolean;
+	id: number;
+	authorId: number;
+	visibility: PoemVisibility;
+	moderationStatus: PoemModerationStatus;
+	status: PoemStatus;
+	isCommentable: boolean;
+};
+
+async function getPoemInteractionInfo(poemId: number): Promise<PoemBasicInfo> {
 	return await withPrismaErrorHandling(async () => {
 		const poem = await prisma.poem.findUnique({
 			where: { id: poemId, deletedAt: null },
