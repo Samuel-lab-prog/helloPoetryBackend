@@ -64,7 +64,7 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeInteractionsScenario.withUser().withFoundComment();
-			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error(
 					'Somehing exploded in the server. Please, do not repeat the request otherw bad things will happen with you!',
 				),

@@ -2,20 +2,11 @@ import type {
 	PoemModerationStatus,
 	PoemStatus,
 	PoemVisibility,
-	UserRole,
-	UserStatus,
 } from '@SharedKernel/Enums';
 
 export type UsersRelationBasicInfo = {
 	areFriends: boolean;
 	areBlocked: boolean;
-};
-
-export type UserBasicInfo = {
-	exists: boolean;
-	id: number;
-	status: UserStatus;
-	role: UserRole;
 };
 
 export type PoemBasicInfo = {
@@ -30,10 +21,6 @@ export type PoemBasicInfo = {
 
 export interface PoemsContractForInteractions {
 	getPoemInteractionInfo(poemId: number): Promise<PoemBasicInfo>;
-}
-
-export interface UsersContractForInteractions {
-	getUserBasicInfo(userId: number): Promise<UserBasicInfo>;
 }
 
 export interface FriendsContractForInteractions {

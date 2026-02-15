@@ -5,15 +5,15 @@ import type {
 import type {
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
-	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
 import { validator } from '@SharedKernel/validators/Global';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsContractForInteractions;
-	usersContract: UsersContractForInteractions;
+	usersContract: UsersPublicContract;
 	friendsContract: FriendsContractForInteractions;
 }
 
@@ -34,7 +34,7 @@ export function commentPoemFactory({
 			.maxLength(300)
 			.bannedWords(['badword1', 'badword2']);
 
-		const userInfo = await usersContract.getUserBasicInfo(userId);
+		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);

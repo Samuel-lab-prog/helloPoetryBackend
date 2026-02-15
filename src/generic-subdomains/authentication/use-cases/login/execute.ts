@@ -1,5 +1,5 @@
 import type { TokenService, TokenPayload } from '../../ports/TokenService';
-import type { AuthRepository } from '../../ports/AuthRepository';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { InvalidCredentialsError } from '../Errors';
 import type { LoginResponse } from '../Models';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
@@ -7,7 +7,7 @@ import type { HashServices } from '@SharedKernel/ports/HashServices';
 interface Dependencies {
 	tokenService: TokenService;
 	hashService: HashServices;
-	findClientByEmail: AuthRepository['findClientByEmail'];
+	findClientByEmail: UsersPublicContract['selectAuthUserByEmail'];
 }
 
 export function loginClientFactory(dependencies: Dependencies) {

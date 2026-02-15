@@ -12,5 +12,5 @@ type UserBasicInfo = {
 };
 
 export interface UsersServicesForPoems {
-	getUserBasicInfo(userId: number): Promise<UserBasicInfo>;
+	selectUserBasicInfo(userId: number): Promise<UserBasicInfo>;
 }

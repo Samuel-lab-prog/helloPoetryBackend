@@ -2,7 +2,7 @@ import { queriesRepository } from './infra/queries-repository/Repository';
 import type { QueriesRouterServices } from './ports/Queries';
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { slugifyService } from './infra/slug-service/Execute';
-import { usersContract } from '@SharedKernel/contracts/users/Index';
+import { usersPublicContract } from '@Domains/users-management/public/Index';
 import {
 	getMyPoemsFactory,
 	getAuthorPoemsFactory,
@@ -22,13 +22,13 @@ const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
 		commandsRepository,
 		slugService: slugifyService,
-		usersContract,
+		usersContract: usersPublicContract,
 	}),
 	updatePoem: updatePoemFactory({
 		commandsRepository,
 		queriesRepository,
 		slugService: slugifyService,
-		usersContract,
+		usersContract: usersPublicContract,
 	}),
 };
 

@@ -6,17 +6,17 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type {
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
-	UsersContractForInteractions,
 } from '../../../ports/ExternalServices';
 import type { PoemLike } from '../../Models';
 import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	friendsContract: FriendsContractForInteractions;
-	usersContract: UsersContractForInteractions;
+	usersContract: UsersPublicContract;
 	poemsContract: PoemsContractForInteractions;
 }
 
@@ -31,7 +31,7 @@ export function likePoemFactory({
 		const { userId, poemId } = params;
 		const v = validator();
 
-		const userInfo = await usersContract.getUserBasicInfo(userId);
+		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);

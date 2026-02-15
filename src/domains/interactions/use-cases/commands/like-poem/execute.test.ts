@@ -123,7 +123,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeInteractionsScenario.withUser().withPoem();
-			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
 			await expectError(scenario.executeLikePoem(), Error);

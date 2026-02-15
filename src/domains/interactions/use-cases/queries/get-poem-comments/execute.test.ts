@@ -126,7 +126,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makeInteractionsScenario.withUser().withPoem();
 
-			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
 

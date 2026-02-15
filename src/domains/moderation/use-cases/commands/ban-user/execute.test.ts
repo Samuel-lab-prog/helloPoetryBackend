@@ -24,7 +24,7 @@ describe('USE-CASE - Moderation', () => {
 				selectActiveSuspensionByUserId: mock(),
 			};
 			usersContract = {
-				getUserBasicInfo: mock(),
+				selectUserBasicInfo: mock(),
 			};
 		});
 
@@ -37,7 +37,7 @@ describe('USE-CASE - Moderation', () => {
 				bannedAt: new Date(),
 			};
 
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: true });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
 			queriesRepository.selectActiveBanByUserId.mockResolvedValue(null);
 			commandsRepository.createBan.mockResolvedValue(bannedResponse);
 
@@ -55,7 +55,7 @@ describe('USE-CASE - Moderation', () => {
 			});
 
 			expect(result).toEqual(bannedResponse);
-			expect(usersContract.getUserBasicInfo).toHaveBeenCalledWith(2);
+			expect(usersContract.selectUserBasicInfo).toHaveBeenCalledWith(2);
 			expect(queriesRepository.selectActiveBanByUserId).toHaveBeenCalledWith({
 				userId: 2,
 			});
@@ -82,7 +82,7 @@ describe('USE-CASE - Moderation', () => {
 				}),
 			).rejects.toBeInstanceOf(CannotBanSelfError);
 
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
 		});
 
@@ -102,12 +102,12 @@ describe('USE-CASE - Moderation', () => {
 				}),
 			).rejects.toBeInstanceOf(InsufficientPermissionsError);
 
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
 		});
 
 		it('throws UserNotFoundError if user does not exist', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: false });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: false });
 
 			const banUser = banUserFactory({
 				commandsRepository,
@@ -128,7 +128,7 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('throws UserAlreadyBannedError if user already has an active ban', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: true });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
 			queriesRepository.selectActiveBanByUserId.mockResolvedValue({
 				userId: 2,
 				reason: 'spam',
@@ -154,7 +154,7 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('does not swallow dependency errors', async () => {
-			usersContract.getUserBasicInfo.mockRejectedValue(new Error('boom'));
+			usersContract.selectUserBasicInfo.mockRejectedValue(new Error('boom'));
 
 			const banUser = banUserFactory({
 				commandsRepository,

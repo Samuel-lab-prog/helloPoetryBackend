@@ -5,9 +5,9 @@ import type {
 
 import type {
 	PoemsContractForInteractions,
-	UsersContractForInteractions,
 	FriendsContractForInteractions,
 } from '../../../ports/ExternalServices';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 import type { PoemComment } from '../../Models';
 import { validator } from '@SharedKernel/validators/Global';
@@ -15,7 +15,7 @@ import { validator } from '@SharedKernel/validators/Global';
 export interface GetPoemCommentsDependencies {
 	queriesRepository: QueriesRepository;
 	poemsContract: PoemsContractForInteractions;
-	usersContract: UsersContractForInteractions;
+	usersContract: UsersPublicContract;
 	friendsContract: FriendsContractForInteractions;
 }
 
@@ -32,7 +32,7 @@ export function getPoemCommentsFactory({
 
 		const v = validator();
 
-		const userInfo = await usersContract.getUserBasicInfo(userId);
+		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
 		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);

@@ -79,7 +79,7 @@ describe.concurrent('USE-CASE - Interactions - UnlikePoem', () => {
 	describe('Error propagation', () => {
 		it('should propagate dependency errors', async () => {
 			const scenario = makeInteractionsScenario.withUser().withPoem();
-			scenario.mocks.usersContract.getUserBasicInfo.mockRejectedValue(
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
 			await expectError(scenario.executeRemoveLike(), Error);

@@ -24,7 +24,7 @@ describe('USE-CASE - Moderation', () => {
 				selectActiveBanByUserId: mock(),
 			};
 			usersContract = {
-				getUserBasicInfo: mock(),
+				selectUserBasicInfo: mock(),
 			};
 		});
 
@@ -38,7 +38,7 @@ describe('USE-CASE - Moderation', () => {
 				endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days suspension
 			};
 
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: true });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
 			queriesRepository.selectActiveSuspensionByUserId.mockResolvedValue(null);
 			commandsRepository.createSuspension.mockResolvedValue(suspendedResponse);
 
@@ -56,7 +56,7 @@ describe('USE-CASE - Moderation', () => {
 			});
 
 			expect(result).toEqual(suspendedResponse);
-			expect(usersContract.getUserBasicInfo).toHaveBeenCalledWith(2);
+			expect(usersContract.selectUserBasicInfo).toHaveBeenCalledWith(2);
 			expect(
 				queriesRepository.selectActiveSuspensionByUserId,
 			).toHaveBeenCalledWith({ userId: 2 });
@@ -83,7 +83,7 @@ describe('USE-CASE - Moderation', () => {
 				}),
 			).rejects.toBeInstanceOf(CannotSuspendSelfError);
 
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
 		});
 
@@ -103,12 +103,12 @@ describe('USE-CASE - Moderation', () => {
 				}),
 			).rejects.toBeInstanceOf(InsufficientPermissionsError);
 
-			expect(usersContract.getUserBasicInfo).not.toHaveBeenCalled();
+			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
 		});
 
 		it('throws UserNotFoundError if user does not exist', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: false });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: false });
 
 			const suspendUser = suspendUserFactory({
 				commandsRepository,
@@ -129,7 +129,7 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('throws UserAlreadySuspendedError if user already has an active suspension', async () => {
-			usersContract.getUserBasicInfo.mockResolvedValue({ exists: true });
+			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
 			queriesRepository.selectActiveSuspensionByUserId.mockResolvedValue({
 				userId: 2,
 				reason: 'misconduct',
@@ -155,7 +155,7 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('does not swallow dependency errors', async () => {
-			usersContract.getUserBasicInfo.mockRejectedValue(new Error('boom'));
+			usersContract.selectUserBasicInfo.mockRejectedValue(new Error('boom'));
 
 			const suspendUser = suspendUserFactory({
 				commandsRepository,

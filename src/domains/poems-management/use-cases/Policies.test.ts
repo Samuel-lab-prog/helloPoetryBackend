@@ -37,7 +37,7 @@ describe('POLICY - Poems Management', () => {
 
 		it('Returns false when any dedicated user is inactive or missing', async () => {
 			const usersContract: UsersServicesForPoems = {
-				getUserBasicInfo: mock().mockResolvedValueOnce({
+				selectUserBasicInfo: mock().mockResolvedValueOnce({
 					id: 2,
 					status: 'banned',
 				}),
@@ -63,7 +63,7 @@ describe('POLICY - Poems Management', () => {
 
 		it('Denies creation when dedicated users are invalid', () => {
 			const usersContract: UsersServicesForPoems = {
-				getUserBasicInfo: mock().mockResolvedValue({
+				selectUserBasicInfo: mock().mockResolvedValue({
 					exists: true,
 					id: 2,
 					status: 'banned',

@@ -1,11 +1,11 @@
 import type { TokenService } from '../../ports/TokenService';
-import type { AuthRepository } from '../../ports/AuthRepository';
 import { ClientNotFoundError, InvalidTokenError } from '../Errors';
 import type { AuthClient } from '../Models';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 interface Dependencies {
 	tokenService: TokenService;
-	findClientByEmail: AuthRepository['findClientByEmail'];
+	findClientByEmail: UsersPublicContract['selectAuthUserByEmail'];
 }
 
 export function authenticateClientFactory(dependencies: Dependencies) {

@@ -8,5 +8,5 @@ type UserBasicInfo = {
 };
 
 export interface UsersServicesForModeration {
-	getUserBasicInfo(userId: number): Promise<UserBasicInfo>;
+	selectUserBasicInfo(userId: number): Promise<UserBasicInfo>;
 }

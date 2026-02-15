@@ -16,7 +16,7 @@ describe('USE-CASE - Poems', () => {
 		const updatePoemRepo = mock();
 		const selectPoemById = mock();
 		const generateSlug = mock();
-		const getUserBasicInfo = mock();
+		const selectUserBasicInfo = mock();
 
 		const commandsRepository: CommandsRepository = {
 			updatePoem: updatePoemRepo,
@@ -34,7 +34,7 @@ describe('USE-CASE - Poems', () => {
 		};
 
 		const usersContract: UsersServicesForPoems = {
-			getUserBasicInfo,
+			selectUserBasicInfo,
 		} as UsersServicesForPoems;
 
 		const updatePoem = updatePoemFactory({

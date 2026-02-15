@@ -10,6 +10,8 @@ type Violation = {
 	toDomain: string;
 };
 
+const ALLOWED_CROSS_DOMAIN_REGEX = /\/public\//;
+
 function checkDomainNamespaceIntegrity(
 	cruiseResult: DepcruiseResult,
 ): Violation[] {
@@ -29,6 +31,7 @@ function checkDomainNamespaceIntegrity(
 			const toDomain = extractDomainFromPath(to);
 			if (!toDomain) continue;
 			if (toDomain === fromDomain) continue;
+			if (ALLOWED_CROSS_DOMAIN_REGEX.test(to)) continue;
 
 			violations.push({
 				from,

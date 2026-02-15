@@ -1,9 +1,10 @@
 import { mock } from 'bun:test';
 import type {
-	UsersContractForInteractions,
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
 } from '../../ports/ExternalServices';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+
 import type {
 	CommandsRepository,
 	CommentPoemParams,
@@ -56,8 +57,8 @@ import {
 } from './Constants';
 
 const interactionsMockFactories = {
-	usersContract: createMockedContract<UsersContractForInteractions>({
-		getUserBasicInfo: mock(),
+	usersContract: createMockedContract<UsersPublicContract>({
+		selectUserBasicInfo: mock(),
 	}),
 	poemsContract: createMockedContract<PoemsContractForInteractions>({
 		getPoemInteractionInfo: mock(),
@@ -82,7 +83,7 @@ export type InteractionsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
 	poemsContract: MockedContract<PoemsContractForInteractions>;
-	usersContract: MockedContract<UsersContractForInteractions>;
+	usersContract: MockedContract<UsersPublicContract>;
 	friendsContract: MockedContract<FriendsContractForInteractions>;
 };
 

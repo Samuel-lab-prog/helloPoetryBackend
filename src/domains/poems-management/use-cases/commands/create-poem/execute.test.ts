@@ -14,7 +14,7 @@ describe('USE-CASE - Poems Management', () => {
 	describe('Create Poem', () => {
 		const insertPoem = mock();
 		const generateSlug = mock();
-		const getUserBasicInfo = mock();
+		const selectUserBasicInfo = mock();
 
 		const commandsRepository: CommandsRepository = {
 			insertPoem,
@@ -26,7 +26,7 @@ describe('USE-CASE - Poems Management', () => {
 		};
 
 		const usersContract: UsersServicesForPoems = {
-			getUserBasicInfo,
+			selectUserBasicInfo,
 		} as UsersServicesForPoems;
 
 		const createPoem = createPoemFactory({

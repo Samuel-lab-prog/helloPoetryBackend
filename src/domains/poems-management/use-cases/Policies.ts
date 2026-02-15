@@ -53,7 +53,7 @@ export async function validateDedicatedUsers(
 	}
 
 	const users = await Promise.all(
-		ids.map((id) => usersContract.getUserBasicInfo(id).catch(() => null)),
+		ids.map((id) => usersContract.selectUserBasicInfo(id).catch(() => null)),
 	);
 
 	const invalidUser = users.find((u) => !u || u.status !== 'active');

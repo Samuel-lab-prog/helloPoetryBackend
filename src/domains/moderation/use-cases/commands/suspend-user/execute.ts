@@ -32,7 +32,7 @@ export function suspendUserFactory({
 
 		if (requesterRole === 'author') throw new InsufficientPermissionsError();
 
-		const userExists = await usersContract.getUserBasicInfo(userId);
+		const userExists = await usersContract.selectUserBasicInfo(userId);
 
 		if (!userExists.exists) throw new UserNotFoundError();
 

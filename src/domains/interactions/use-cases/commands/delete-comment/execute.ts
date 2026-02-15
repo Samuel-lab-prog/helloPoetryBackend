@@ -3,13 +3,13 @@ import type {
 	DeleteCommentParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { UsersContractForInteractions } from '../../../ports/ExternalServices';
 import { validator } from '@SharedKernel/validators/Global';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export interface DeleteCommentDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	usersContract: UsersContractForInteractions;
+	usersContract: UsersPublicContract;
 }
 
 export function deleteCommentFactory({
@@ -22,7 +22,7 @@ export function deleteCommentFactory({
 	): Promise<void> {
 		const { userId, commentId } = params;
 		const v = validator();
-		const userInfo = await usersContract.getUserBasicInfo(userId);
+		const userInfo = await usersContract.selectUserBasicInfo(userId);
 
 		v.user(userInfo).withStatus(['active']);
 

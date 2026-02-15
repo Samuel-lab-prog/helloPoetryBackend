@@ -31,7 +31,7 @@ export function banUserFactory({
 		if (requesterId === userId) throw new CannotBanSelfError();
 		if (requesterRole === 'author') throw new InsufficientPermissionsError();
 
-		const userExists = await usersContract.getUserBasicInfo(userId);
+		const userExists = await usersContract.selectUserBasicInfo(userId);
 		if (!userExists.exists) throw new UserNotFoundError();
 
 		const activeBan = await queriesRepository.selectActiveBanByUserId({

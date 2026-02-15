@@ -1,11 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { UsersServicesForModeration } from '@Domains/moderation/ports/ExternalServices';
-import type { UsersServicesForPoems } from '@Domains/poems-management/ports/ExternalServices';
-import type { ClientAuthCredentials } from '@GenericSubdomains/authentication/use-cases/Models';
-import type { AuthRepository } from '@GenericSubdomains/authentication/ports/AuthRepository';
-import type { UsersContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
-import type { UserStatus, UserRole } from '../../Enums';
+import type { UserStatus, UserRole } from '../use-cases/Models';
 
 export type UserBasicInfo = {
 	exists: boolean;
@@ -14,7 +9,20 @@ export type UserBasicInfo = {
 	role: UserRole;
 };
 
-async function getUserBasicInfo(userId: number) {
+export type ClientAuthCredentials = {
+	id: number;
+	role: UserRole;
+	email: string;
+	status: UserStatus;
+	passwordHash: string;
+};
+
+export interface UsersPublicContract {
+	selectUserBasicInfo(userId: number): Promise<UserBasicInfo>;
+	selectAuthUserByEmail(email: string): Promise<ClientAuthCredentials | null>;
+}
+
+async function selectUserBasicInfo(userId: number) {
 	return await withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findUnique({
 			where: { id: userId },
@@ -43,18 +51,6 @@ async function getUserBasicInfo(userId: number) {
 	});
 }
 
-export const usersContract: UsersServicesForModeration = {
-	getUserBasicInfo,
-};
-
-export const usersContractForPoems: UsersServicesForPoems = {
-	getUserBasicInfo,
-};
-
-export const usersContractForInteractions: UsersContractForInteractions = {
-	getUserBasicInfo,
-};
-
 function selectAuthUserByEmail(
 	email: string,
 ): Promise<ClientAuthCredentials | null> {
@@ -72,6 +68,7 @@ function selectAuthUserByEmail(
 	);
 }
 
-export const usersContractForAuth: AuthRepository = {
-	findClientByEmail: selectAuthUserByEmail,
+export const usersPublicContract: UsersPublicContract = {
+	selectUserBasicInfo,
+	selectAuthUserByEmail,
 };

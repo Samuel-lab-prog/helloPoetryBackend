@@ -1,8 +1,9 @@
 import type {
-	UsersContractForInteractions,
 	FriendsContractForInteractions,
 	PoemsContractForInteractions,
 } from '../../ports/ExternalServices';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { InteractionsSutMocks } from './SutMocks';
@@ -21,7 +22,7 @@ import {
 import { givenResolved } from '@TestUtils';
 
 export type UserBasicInfoOverride = Partial<
-	Awaited<ReturnType<UsersContractForInteractions['getUserBasicInfo']>>
+	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>
 >;
 export type PoemInteractionInfoOverride = Partial<
 	Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
@@ -49,7 +50,7 @@ export function givenUser(
 	userContract: InteractionsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
 ) {
-	givenResolved(userContract, 'getUserBasicInfo', {
+	givenResolved(userContract, 'selectUserBasicInfo', {
 		exists: true,
 		id: DEFAULT_PERFORMER_USER_ID,
 		status: DEFAULT_USER_STATUS,
