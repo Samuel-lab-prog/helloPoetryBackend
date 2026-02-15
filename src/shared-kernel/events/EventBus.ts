@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export interface DomainEvents {
-  'poem.comment.created': {
-    commentId: number;
-    poemId: number;
-    authorId: number;
-    commenterId: number;
-  };
+	'poem.comment.created': {
+		commentId: number;
+		poemId: number;
+		authorId: number;
+		commenterId: number;
+	};
 
-  'user.followed': {
-    followerId: number;
-    followedId: number;
-  };
+	'user.followed': {
+		followerId: number;
+		followedId: number;
+	};
 }
 
 export type EventName = keyof DomainEvents;
@@ -19,77 +19,74 @@ export type EventName = keyof DomainEvents;
 export type EventPayload<N extends EventName> = DomainEvents[N];
 
 export type EventHandler<N extends EventName> = (
-  payload: EventPayload<N>
+	payload: EventPayload<N>,
 ) => Promise<void> | void;
 
 export type Unsubscribe = () => void;
 
 export interface EventBus {
-  publish<N extends EventName>(
-    name: N,
-    payload: EventPayload<N>
-  ): Promise<void>;
+	publish<N extends EventName>(
+		name: N,
+		payload: EventPayload<N>,
+	): Promise<void>;
 
-  subscribe<N extends EventName>(
-    name: N,
-    handler: EventHandler<N>
-  ): Unsubscribe;
+	subscribe<N extends EventName>(
+		name: N,
+		handler: EventHandler<N>,
+	): Unsubscribe;
 
-  once<N extends EventName>(
-    name: N,
-    handler: EventHandler<N>
-  ): Unsubscribe;
+	once<N extends EventName>(name: N, handler: EventHandler<N>): Unsubscribe;
 }
 
- export function createInMemoryEventBus(): EventBus {
-  const handlers: Record<string, Set<Function>> = {};
+export function createInMemoryEventBus(): EventBus {
+	const handlers: Record<string, Set<Function>> = {};
 
-  async function publish<N extends EventName>(
-    name: N,
-    payload: EventPayload<N>
-  ): Promise<void> {
-    const set = handlers[name];
+	async function publish<N extends EventName>(
+		name: N,
+		payload: EventPayload<N>,
+	): Promise<void> {
+		const set = handlers[name];
 
-    if (!set || set.size === 0) return;
+		if (!set || set.size === 0) return;
 
-    const list = Array.from(set);
-    
-    for (const handler of list) {
-      await (handler as EventHandler<N>)(payload);
-    }
-  }
+		const list = Array.from(set);
 
-  function subscribe<N extends EventName>(
-    name: N,
-    handler: EventHandler<N>
-  ): Unsubscribe {
-    const set = handlers[name] ?? new Set<Function>();
+		for (const handler of list) {
+			await (handler as EventHandler<N>)(payload);
+		}
+	}
 
-    set.add(handler);
-    handlers[name] = set;
+	function subscribe<N extends EventName>(
+		name: N,
+		handler: EventHandler<N>,
+	): Unsubscribe {
+		const set = handlers[name] ?? new Set<Function>();
 
-    return () => {
-      set.delete(handler);
-    };
-  }
+		set.add(handler);
+		handlers[name] = set;
 
-  function once<N extends EventName>(
-    name: N,
-    handler: EventHandler<N>
-  ): Unsubscribe {
-    const unsubscribe = subscribe(name, async (payload) => {
-      unsubscribe();
-      await handler(payload);
-    });
+		return () => {
+			set.delete(handler);
+		};
+	}
 
-    return unsubscribe;
-  }
+	function once<N extends EventName>(
+		name: N,
+		handler: EventHandler<N>,
+	): Unsubscribe {
+		const unsubscribe = subscribe(name, async (payload) => {
+			unsubscribe();
+			await handler(payload);
+		});
 
-  return {
-    publish,
-    subscribe,
-    once,
-  };
+		return unsubscribe;
+	}
+
+	return {
+		publish,
+		subscribe,
+		once,
+	};
 }
 
 export const eventBus = createInMemoryEventBus();

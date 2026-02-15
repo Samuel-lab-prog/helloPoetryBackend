@@ -12,5 +12,5 @@ export type InteractionsSutMocks = {
 	poemsContract: MockedContract<PoemsPublicContract>;
 	usersContract: MockedContract<UsersPublicContract>;
 	friendsContract: MockedContract<FriendsPublicContract>;
-	eventBus: EventBus
+	eventBus: EventBus;
 };

@@ -3,27 +3,25 @@ import { mkdir, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 
 const filePaths = [
-	join('adapters/queries', 'Services.ts'),
-	join('adapters/queries', 'QueriesRouter.ts'),
-	join('adapters/commands', 'Services.ts'),
-	join('adapters/commands', 'CommandsRouter.ts'),
+	join('adapters', 'CommandsRouter.ts'),
+	join('adapters', 'QueriesRouter.ts'),
 
 	join('infra/queries-repository', 'Repository.ts'),
-	join('infra/queries-repository', 'Repository.test.ts'),
 	join('infra/commands-repository', 'Repository.ts'),
-	join('infra/commands-repository', 'Repository.test.ts'),
 
-	join('use-cases/queries/', 'Errors.ts'),
+	join('use-cases', 'Models.ts'),
 	join('use-cases/queries/', 'Index.ts'),
-	join('use-cases/queries/', 'Models.ts'),
-	join('use-cases/commands/', 'Errors.ts'),
 	join('use-cases/commands/', 'Index.ts'),
-	join('use-cases/commands/', 'Models.ts'),
+	join('use-cases/test-helpers/', 'Index.ts'),
+	join('use-cases/test-helpers/', 'Constants.ts'),
+	join('use-cases/test-helpers/', 'Givens.ts'),
+	join('use-cases/test-helpers/', 'Helper.ts'),
 
-	join('ports', 'QueriesRepository.ts'),
-	join('ports', 'CommandsRepository.ts'),
-	join('schemas/queries', 'Index.ts'),
-	join('schemas/commands', 'Index.ts'),
+	join('Composition.ts'),
+
+	join('ports', 'Queries.ts'),
+	join('ports', 'Commands.ts'),
+	join('ports/schemas', 'Index.ts'),
 ];
 
 export async function generateBoundedContext(

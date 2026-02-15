@@ -48,7 +48,7 @@ export const commandsRouterServices: CommandsRouterServices = {
 		poemsContract: poemsPublicContract,
 		usersContract: usersPublicContract,
 		friendsContract: friendsPublicContract,
-		eventBus: eventBus, 
+		eventBus: eventBus,
 	}),
 
 	deleteComment: deleteCommentFactory({
