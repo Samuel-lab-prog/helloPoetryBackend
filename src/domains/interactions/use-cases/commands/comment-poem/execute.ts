@@ -27,7 +27,7 @@ export function commentPoemFactory({
 		const { userId, poemId, content } = params;
 		const trimmedContent = content.trim();
 		const v = validator();
-		v.ensureResource(trimmedContent)
+		v.ensure(trimmedContent)
 			.minLength(1)
 			.maxLength(300)
 			.bannedWords(['badword1', 'badword2']);

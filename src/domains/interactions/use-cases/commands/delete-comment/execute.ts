@@ -27,7 +27,7 @@ export function deleteCommentFactory({
 		v.user(userInfo).withStatus(['active']);
 
 		const comment = await queriesRepository.selectCommentById({ commentId });
-		v.ensureResource(comment, `Comment with id ${commentId} not found`)
+		v.ensure(comment, `Comment with id ${commentId} not found`)
 			.notNull()
 			.notUndefined();
 

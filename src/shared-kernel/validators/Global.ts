@@ -2,7 +2,7 @@ import { user } from './User';
 import { poem } from './Poem';
 import { relation } from './UsersRelation';
 import { compareIds } from './CompareNumbers';
-import { ensureResource } from './CheckResource';
+import { ensure } from './Esnure';
 
 export function validator() {
 	return {
@@ -10,6 +10,6 @@ export function validator() {
 		poem,
 		relation,
 		compareIds,
-		ensureResource,
+		ensure,
 	};
 }
