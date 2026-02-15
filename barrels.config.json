@@ -23,6 +23,8 @@
 		"./src/domains/feed-engine/ports/schemas",
 		"./src/domains/feed-engine/use-cases/queries",
 
+		"./src/domains/notifications/ports/schemas",
+
 		"./architecture-analysis/src/metrics",
 		"./src/tests/endpoints",
 		"./src/tests/data"

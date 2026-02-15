@@ -256,14 +256,13 @@ model Notification {
   title     String
   body      String
   data      Json?
-  isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
   readAt    DateTime?
+  deletedAt DateTime?
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
-  @@index([userId, isRead])
 }
 
 enum NotificationType {
