@@ -18,7 +18,6 @@ import {
 	createMockedContract,
 	makeParams,
 	makeSut,
-	type MockedContract,
 } from '@TestUtils';
 import {
 	givenUser,
@@ -53,6 +52,7 @@ import {
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 } from './Constants';
+import type { InteractionsSutMocks } from './SutMocks';
 
 const interactionsMockFactories = {
 	usersContract: createMockedContract<UsersPublicContract>({
@@ -75,14 +75,6 @@ const interactionsMockFactories = {
 		findCommentsByPoemId: mock(),
 		findPoemLike: mock(),
 	}),
-};
-
-export type InteractionsSutMocks = {
-	commandsRepository: MockedContract<CommandsRepository>;
-	queriesRepository: MockedContract<QueriesRepository>;
-	poemsContract: MockedContract<PoemsPublicContract>;
-	usersContract: MockedContract<UsersPublicContract>;
-	friendsContract: MockedContract<FriendsPublicContract>;
 };
 
 function interactionsFactory(deps: typeof interactionsMockFactories) {

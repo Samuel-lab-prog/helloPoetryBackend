@@ -1,9 +1,9 @@
 import type { MockedContract } from '@TestUtils';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export type InteractionsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
