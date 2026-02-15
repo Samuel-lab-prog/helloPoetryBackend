@@ -1,7 +1,5 @@
-import type {
-	FriendsContractForInteractions,
-	PoemsContractForInteractions,
-} from '../../ports/ExternalServices';
+import type { FriendsContractForInteractions } from '../../ports/ExternalServices';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 import type { CommandsRepository } from '../../ports/Commands';
@@ -25,7 +23,7 @@ export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>
 >;
 export type PoemInteractionInfoOverride = Partial<
-	Awaited<ReturnType<PoemsContractForInteractions['getPoemInteractionInfo']>>
+	Awaited<ReturnType<PoemsPublicContract['selectPoemBasicInfo']>>
 >;
 export type UsersRelationInfoOverride = Partial<
 	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
@@ -63,7 +61,7 @@ export function givenPoem(
 	poemsContract: InteractionsSutMocks['poemsContract'],
 	overrides: PoemInteractionInfoOverride = {},
 ) {
-	givenResolved(poemsContract, 'getPoemInteractionInfo', {
+	givenResolved(poemsContract, 'selectPoemBasicInfo', {
 		exists: true,
 		id: DEFAULT_POEM_ID,
 		authorId: DEFAULT_POEM_OWNER_USER_ID,

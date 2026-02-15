@@ -2,17 +2,15 @@ import type {
 	CommandsRepository,
 	CommentPoemParams,
 } from '../../../ports/Commands';
-import type {
-	FriendsContractForInteractions,
-	PoemsContractForInteractions,
-} from '../../../ports/ExternalServices';
 import type { PoemComment } from '../../Models';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
+import type { FriendsContractForInteractions } from '../../../ports/ExternalServices';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
-	poemsContract: PoemsContractForInteractions;
+	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
 	friendsContract: FriendsContractForInteractions;
 }
@@ -37,7 +35,7 @@ export function commentPoemFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
+		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])

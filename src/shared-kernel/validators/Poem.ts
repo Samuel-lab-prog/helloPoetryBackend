@@ -1,4 +1,4 @@
-import type { PoemBasicInfo } from '@SharedKernel/contracts/poems/Index';
+import type { PoemBasicInfo } from '@Domains/poems-management/public/Index';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 import type {
 	PoemStatus,

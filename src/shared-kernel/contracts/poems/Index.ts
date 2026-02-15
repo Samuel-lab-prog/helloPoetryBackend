@@ -1,6 +1,5 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-import type { PoemsContractForInteractions } from '@Domains/interactions/ports/ExternalServices';
 import type { PoemsContractForRecomendationEngine } from '@Domains/feed-engine/ports/ExternalServices';
 import type {
 	PoemVisibility,
@@ -17,44 +16,6 @@ export type PoemBasicInfo = {
 	status: PoemStatus;
 	isCommentable: boolean;
 };
-
-async function getPoemInteractionInfo(poemId: number): Promise<PoemBasicInfo> {
-	return await withPrismaErrorHandling(async () => {
-		const poem = await prisma.poem.findUnique({
-			where: { id: poemId, deletedAt: null },
-			select: {
-				id: true,
-				authorId: true,
-				visibility: true,
-				moderationStatus: true,
-				status: true,
-				isCommentable: true,
-			},
-		});
-
-		if (!poem) {
-			return {
-				id: -1,
-				exists: false,
-				authorId: -1,
-				visibility: 'private' as const,
-				moderationStatus: 'pending' as const,
-				status: 'draft' as const,
-				isCommentable: false,
-			};
-		}
-
-		return {
-			exists: true,
-			authorId: poem.authorId,
-			visibility: poem.visibility,
-			moderationStatus: poem.moderationStatus,
-			status: poem.status,
-			isCommentable: poem.isCommentable,
-			id: poem.id,
-		};
-	});
-}
 
 async function getPoemsByAuthorIds(params: {
 	authorIds: number[];
@@ -144,10 +105,6 @@ function getPoemsByIds(params: { ids: number[] }) {
 		};
 	});
 }
-
-export const poemsContractForInteractions: PoemsContractForInteractions = {
-	getPoemInteractionInfo,
-};
 
 export const poemsServicesForRecomendationEngine: PoemsContractForRecomendationEngine =
 	{

@@ -3,18 +3,16 @@ import type {
 	GetPoemCommentsParams,
 } from '../../../ports/Queries';
 
-import type {
-	PoemsContractForInteractions,
-	FriendsContractForInteractions,
-} from '../../../ports/ExternalServices';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 import type { PoemComment } from '../../Models';
 import { validator } from '@SharedKernel/validators/Global';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
+import type { FriendsContractForInteractions } from '../../../ports/ExternalServices';
 
 export interface GetPoemCommentsDependencies {
 	queriesRepository: QueriesRepository;
-	poemsContract: PoemsContractForInteractions;
+	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
 	friendsContract: FriendsContractForInteractions;
 }
@@ -35,7 +33,7 @@ export function getPoemCommentsFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
+		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])

@@ -2,17 +2,17 @@ import type {
 	CommandsRepository,
 	UnlikePoemParams,
 } from '../../../ports/Commands';
-import type { PoemsContractForInteractions } from '../../../ports/ExternalServices';
 import { NotFoundError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 
 import type { QueriesRepository } from '../../../ports/Queries';
 
 export interface UnlikePoemDependencies {
 	queriesRepository: QueriesRepository;
 	commandsRepository: CommandsRepository;
-	poemsContract: PoemsContractForInteractions;
+	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
 }
 
@@ -30,7 +30,7 @@ export function unlikePoemFactory({
 
 		v.user(userInfo).withStatus(['active']);
 
-		const poemInfo = await poemsContract.getPoemInteractionInfo(poemId);
+		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withStatus(['published'])
