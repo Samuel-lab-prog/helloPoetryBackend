@@ -1,5 +1,5 @@
 import { poemsPublicContract } from '@Domains/poems-management/public/Index';
-import { friendsContractForInteractions } from '@SharedKernel/contracts/friends/Index';
+import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
@@ -21,7 +21,7 @@ export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
 		queriesRepository,
 		poemsContract: poemsPublicContract,
-		friendsContract: friendsContractForInteractions,
+		friendsContract: friendsPublicContract,
 		usersContract: usersPublicContract,
 	}),
 };
@@ -31,7 +31,7 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		poemsContract: poemsPublicContract,
-		friendsContract: friendsContractForInteractions,
+		friendsContract: friendsPublicContract,
 		usersContract: usersPublicContract,
 	}),
 
@@ -46,7 +46,7 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		poemsContract: poemsPublicContract,
 		usersContract: usersPublicContract,
-		friendsContract: friendsContractForInteractions,
+		friendsContract: friendsPublicContract,
 	}),
 
 	deleteComment: deleteCommentFactory({

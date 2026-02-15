@@ -1,4 +1,4 @@
-import type { FriendsContractForInteractions } from '../../ports/ExternalServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
@@ -26,7 +26,7 @@ export type PoemInteractionInfoOverride = Partial<
 	Awaited<ReturnType<PoemsPublicContract['selectPoemBasicInfo']>>
 >;
 export type UsersRelationInfoOverride = Partial<
-	Awaited<ReturnType<FriendsContractForInteractions['usersRelation']>>
+	Awaited<ReturnType<FriendsPublicContract['selectUsersRelation']>>
 >;
 export type DeletePoemLikeOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['deletePoemLike']>>
@@ -77,7 +77,7 @@ export function givenUsersRelation(
 	friendsContract: InteractionsSutMocks['friendsContract'],
 	overrides: UsersRelationInfoOverride = {},
 ) {
-	givenResolved(friendsContract, 'usersRelation', {
+	givenResolved(friendsContract, 'selectUsersRelation', {
 		areFriends: false,
 		areBlocked: false,
 		...overrides,

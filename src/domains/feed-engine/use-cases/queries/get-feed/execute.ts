@@ -1,13 +1,11 @@
-import type {
-	PoemsContractForRecomendationEngine,
-	FriendsContractForRecomendationEngine,
-} from '../../../ports/ExternalServices';
 import type { FeedItem } from '../../Models';
 import type { GetFeedParams } from '../../../ports/Queries';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 interface Dependencies {
-	poemsServices: PoemsContractForRecomendationEngine;
-	friendsServices: FriendsContractForRecomendationEngine;
+	poemsServices: PoemsPublicContract;
+	friendsServices: FriendsPublicContract;
 }
 
 export function getFeedFactory({
@@ -19,8 +17,8 @@ export function getFeedFactory({
 
 		const FEED_LIMIT = 20;
 
-		const friendsIds = await friendsServices.getFollowedUserIds(userId);
-		const blockedIds = await friendsServices.getBlockedUserIds(userId);
+		const friendsIds = await friendsServices.selectFollowedUserIds(userId);
+		const blockedIds = await friendsServices.selectBlockedUserIds(userId);
 
 		const feedAuthorIds = friendsIds.filter((id) => !blockedIds.includes(id));
 

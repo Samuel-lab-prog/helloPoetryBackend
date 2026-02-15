@@ -1,13 +1,13 @@
 import { getFeedFactory } from './use-cases/queries/Index';
-import { poemsServicesForRecomendationEngine } from '@SharedKernel/contracts/poems/Index';
-import { friendsServicesForRecomendationEngine } from '@SharedKernel/contracts/friends/Index';
 import { createFeedQueriesRouter } from './adapters/QueriesRouter';
 import type { QueriesRouterServices } from './ports/Queries';
+import { poemsPublicContract } from '@Domains/poems-management/public/Index';
+import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getFeed: getFeedFactory({
-		poemsServices: poemsServicesForRecomendationEngine,
-		friendsServices: friendsServicesForRecomendationEngine,
+		poemsServices: poemsPublicContract,
+		friendsServices: friendsPublicContract,
 	}),
 };
 

@@ -1,5 +1,5 @@
 import type { MockedContract } from '@TestUtils';
-import type { FriendsContractForInteractions } from '../../ports/ExternalServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
@@ -10,5 +10,5 @@ export type InteractionsSutMocks = {
 	queriesRepository: MockedContract<QueriesRepository>;
 	poemsContract: MockedContract<PoemsPublicContract>;
 	usersContract: MockedContract<UsersPublicContract>;
-	friendsContract: MockedContract<FriendsContractForInteractions>;
+	friendsContract: MockedContract<FriendsPublicContract>;
 };

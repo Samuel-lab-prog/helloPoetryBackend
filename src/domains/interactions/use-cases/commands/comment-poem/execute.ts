@@ -6,13 +6,13 @@ import type { PoemComment } from '../../Models';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
-import type { FriendsContractForInteractions } from '../../../ports/ExternalServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
-	friendsContract: FriendsContractForInteractions;
+	friendsContract: FriendsPublicContract;
 }
 
 export function commentPoemFactory({
@@ -42,7 +42,7 @@ export function commentPoemFactory({
 			.withStatus(['published'])
 			.withCommentability(true);
 
-		const usersRelationInfo = await friendsContract.usersRelation(
+		const usersRelationInfo = await friendsContract.selectUsersRelation(
 			userId,
 			poemInfo.authorId,
 		);

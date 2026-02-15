@@ -1,4 +1,4 @@
-import type { UsersRelationBasicInfo } from '@SharedKernel/contracts/friends/Index';
+import type { UsersRelationBasicInfo } from '@Domains/friends-management/public/Index';
 import { ForbiddenError } from '@DomainError';
 
 export function relation(relation: UsersRelationBasicInfo) {

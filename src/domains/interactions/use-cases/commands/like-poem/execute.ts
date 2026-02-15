@@ -8,12 +8,12 @@ import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
-import type { FriendsContractForInteractions } from '../../../ports/ExternalServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	friendsContract: FriendsContractForInteractions;
+	friendsContract: FriendsPublicContract;
 	usersContract: UsersPublicContract;
 	poemsContract: PoemsPublicContract;
 }
@@ -40,7 +40,7 @@ export function likePoemFactory({
 			.withModerationStatus(['approved']);
 
 		const authorId = poemInfo.authorId;
-		const usersRelationInfo = await friendsContract.usersRelation(
+		const usersRelationInfo = await friendsContract.selectUsersRelation(
 			userId,
 			authorId,
 		);

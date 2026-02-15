@@ -1,5 +1,5 @@
 import { mock } from 'bun:test';
-import type { FriendsContractForInteractions } from '../../ports/ExternalServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
@@ -61,8 +61,8 @@ const interactionsMockFactories = {
 	poemsContract: createMockedContract<PoemsPublicContract>({
 		selectPoemBasicInfo: mock(),
 	}),
-	friendsContract: createMockedContract<FriendsContractForInteractions>({
-		usersRelation: mock(),
+	friendsContract: createMockedContract<FriendsPublicContract>({
+		selectUsersRelation: mock(),
 	}),
 	commandsRepository: createMockedContract<CommandsRepository>({
 		createPoemComment: mock(),
@@ -82,7 +82,7 @@ export type InteractionsSutMocks = {
 	queriesRepository: MockedContract<QueriesRepository>;
 	poemsContract: MockedContract<PoemsPublicContract>;
 	usersContract: MockedContract<UsersPublicContract>;
-	friendsContract: MockedContract<FriendsContractForInteractions>;
+	friendsContract: MockedContract<FriendsPublicContract>;
 };
 
 function interactionsFactory(deps: typeof interactionsMockFactories) {
