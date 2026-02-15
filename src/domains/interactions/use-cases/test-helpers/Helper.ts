@@ -49,6 +49,7 @@ import {
 	DEFAULT_POEM_ID,
 } from './Constants';
 import type { InteractionsSutMocks } from './SutMocks';
+import { createInMemoryEventBus } from '@SharedKernel/events/EventBus';
 
 const interactionsMockFactories = {
 	usersContract: createMockedContract<UsersPublicContract>({
@@ -79,6 +80,7 @@ const interactionsMockFactories = {
 		findCommentsByPoemId: mock(),
 		findPoemLike: mock(),
 	}),
+	eventBus: createInMemoryEventBus(),
 };
 
 function interactionsFactory(deps: typeof interactionsMockFactories) {

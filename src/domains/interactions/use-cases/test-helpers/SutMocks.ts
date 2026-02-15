@@ -4,6 +4,7 @@ import type { FriendsPublicContract } from '@Domains/friends-management/public/I
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
+import { type EventBus } from '@SharedKernel/events/EventBus';
 
 export type InteractionsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -11,4 +12,5 @@ export type InteractionsSutMocks = {
 	poemsContract: MockedContract<PoemsPublicContract>;
 	usersContract: MockedContract<UsersPublicContract>;
 	friendsContract: MockedContract<FriendsPublicContract>;
+	eventBus: EventBus
 };
