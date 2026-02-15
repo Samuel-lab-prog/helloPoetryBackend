@@ -121,7 +121,7 @@ type MockedFn<T extends AnyFn> = ReturnType<typeof mock<T>> & {
  * returns A mocked contract of type T, where each function is replaced with a mocked function.
  */
 export type MockedContract<T> = {
-	[K in keyof T]: T[K] extends AnyFn ? MockedFn<T[K]> : T[K];
+	readonly [K in keyof T]: T[K] extends AnyFn ? MockedFn<T[K]> : T[K];
 };
 
 /**
@@ -133,17 +133,11 @@ export type MockedContract<T> = {
  * @template T The type of the contract to mock.
  * @returns A mocked contract of type T.
  */
-export function createMockedContract<T extends Record<string, any>>(
-	overrides: Partial<T> = {},
+export function createMockedContract<T>(
+	overrides: MockedContract<T>,
 ): MockedContract<T> {
-	const mocked = {} as MockedContract<T>;
-
-	for (const key in overrides)
-		mocked[key as keyof T] = overrides[key as keyof T] as any;
-
-	return mocked;
+	return overrides;
 }
-
 /**
  * A utility function to set up a mocked function to resolve with a specific value when called.
  * This is useful for configuring the behavior of mocked contracts in tests, allowing us
@@ -154,14 +148,15 @@ export function createMockedContract<T extends Record<string, any>>(
  * @param key The key of the function in the mocked contract to configure.
  * @param value The value that the mocked function should resolve to when called.
  */
-export function givenResolved<T extends Record<string, any>, K extends keyof T>(
-	mockedContract: MockedContract<T>,
+export function givenResolved<
+	T extends Record<string, (...args: any[]) => any>,
+	K extends keyof T,
+>(
+	mocked: MockedContract<T>,
 	key: K,
-	value: Awaited<ReturnType<T[K]>>,
+	value: Parameters<MockedFn<T[K]>['mockResolvedValue']>[0],
 ) {
-	(
-		mockedContract[key] as unknown as { mockResolvedValue: (v: any) => void }
-	).mockResolvedValue(value);
+	(mocked[key] as MockedFn<T[K]>).mockResolvedValue(value);
 }
 
 /**

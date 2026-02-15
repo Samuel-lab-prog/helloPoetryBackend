@@ -14,11 +14,7 @@ import type {
 	GetPoemCommentsParams,
 	QueriesRepository,
 } from '../../ports/Queries';
-import {
-	createMockedContract,
-	makeParams,
-	makeSut,
-} from '@TestUtils';
+import { createMockedContract, makeParams, makeSut } from '@TestUtils';
 import {
 	givenUser,
 	givenPoem,
@@ -57,12 +53,20 @@ import type { InteractionsSutMocks } from './SutMocks';
 const interactionsMockFactories = {
 	usersContract: createMockedContract<UsersPublicContract>({
 		selectUserBasicInfo: mock(),
+		selectAuthUserByEmail: mock(),
 	}),
 	poemsContract: createMockedContract<PoemsPublicContract>({
 		selectPoemBasicInfo: mock(),
+		getPoemsByAuthorIds: mock(),
+		getPublicPoems: mock(),
+		getPoemsByIds: mock(),
 	}),
 	friendsContract: createMockedContract<FriendsPublicContract>({
 		selectUsersRelation: mock(),
+		selectBlockedUserIds: mock(),
+		selectFollowedUserIds: mock(),
+		areFriends: mock(),
+		areBlocked: mock(),
 	}),
 	commandsRepository: createMockedContract<CommandsRepository>({
 		createPoemComment: mock(),
