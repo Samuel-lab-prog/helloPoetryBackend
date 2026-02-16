@@ -50,17 +50,22 @@ export const notificationsCommandsRouter = createNotificationsCommandsRouter(
 	notificationsCommandsServices,
 );
 
-eventBus.subscribe('POEM_COMMENT_CREATED', async (payload) => {
+eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 	try {
 		await notificationsCommandsServices.createNotification({
-			userId: payload.authorId,
-			title: 'New comment on your poem',
-			body: `Your poem received a comment from ${payload.commenterId}`,
-			data: {
-				commentId: payload.commentId,
-				poemId: payload.poemId,
-			},
+			userId: p.authorId,
 			type: 'POEM_COMMENT_CREATED',
+			title: 'New comment on your poem',
+			actorId: p.commenterId,
+			entityId: p.poemId,
+			entityType: 'POEM',
+			body: `Your poem received a comment from ${p.commenterNickname}`,
+			data: {
+				commentId: p.commentId,
+				commenterNickname: p.commenterNickname,
+				poemTitle: p.poemTitle,
+			},
+			aggregateWindowMinutes: 60,
 		});
 	} catch (err) {
 		console.error('Error creating notification via eventBus:', err);

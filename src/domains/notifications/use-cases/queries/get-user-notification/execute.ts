@@ -26,8 +26,8 @@ export function getNotificationByIdFactory({
 		v.user(userInfo).withStatus(['active']);
 
 		const notification = await queriesRepository.selectNotificationById(
-			userId,
 			notificationId,
+			userId,
 		);
 
 		v.ensure(notification)

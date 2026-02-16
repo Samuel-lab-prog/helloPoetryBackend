@@ -74,6 +74,8 @@ export function commentPoemFactory({
 			poemId,
 			authorId: poemInfo.authorId,
 			commenterId: userId,
+			commenterNickname: userInfo.nickname,
+			poemTitle: poemInfo.poemTitle,
 		});
 
 		return comment;

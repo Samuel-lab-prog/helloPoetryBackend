@@ -17,7 +17,9 @@ type PrismaMappedError = {
 };
 
 function extractField(error: PrismaClientKnownRequestError) {
-	const metaRaw = JSON.stringify(error.meta?.driverAdapterError);
+	const raw = error.meta?.driverAdapterError;
+	if (!raw) return undefined;
+	const metaRaw = JSON.stringify(raw);
 	return metaRaw.match(/\\"[^_]+_([^\\"]+?)_key\\"/)?.[1];
 }
 

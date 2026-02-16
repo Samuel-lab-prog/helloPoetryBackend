@@ -24,8 +24,8 @@ export function deleteNotificationFactory({
 		v.user(userInfo).withStatus(['active']);
 
 		const notification = await commandsRepository.deleteNotification(
-			userId,
 			notificationId,
+			userId,
 		);
 
 		if (!notification.ok) {

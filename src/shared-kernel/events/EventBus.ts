@@ -1,37 +1,39 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 interface DomainEvents {
-  NEW_FRIEND: {
-    friendId: number;
-    userId: number;       
-  };
-  NEW_FRIEND_REQUEST: {
-    requesterId: number;   
-    recipientId: number;   
-  };
-  POEM_LIKED: {
-    poemId: number;
-    likerId: number;
-    authorId: number;      
-  };
-  POEM_COMMENT_CREATED: {
-    commentId: number;
-    poemId: number;
-    authorId: number;      
-    commenterId: number;
-  };
-  POEM_COMMENT_REPLIED: {
-    commentId: number;     
-    parentCommentId: number;
-    poemId: number;
-    replierId: number;
-    originalCommenterId: number;
-  };
-  POEM_DEDICATED: {
-    poemId: number;
-    dedicatorId: number;
-    recipientId: number;
-  };
+	NEW_FRIEND: {
+		friendId: number;
+		userId: number;
+	};
+	NEW_FRIEND_REQUEST: {
+		requesterId: number;
+		recipientId: number;
+	};
+	POEM_LIKED: {
+		poemId: number;
+		likerId: number;
+		authorId: number;
+	};
+	POEM_COMMENT_CREATED: {
+		commentId: number;
+		poemId: number;
+		poemTitle: string;
+		authorId: number;
+		commenterId: number;
+		commenterNickname: string;
+	};
+	POEM_COMMENT_REPLIED: {
+		commentId: number;
+		parentCommentId: number;
+		poemId: number;
+		replierId: number;
+		originalCommenterId: number;
+	};
+	POEM_DEDICATED: {
+		poemId: number;
+		dedicatorId: number;
+		recipientId: number;
+	};
 }
 
 export type EventName = keyof DomainEvents;

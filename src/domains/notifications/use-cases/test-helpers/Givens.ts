@@ -1,5 +1,8 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { CommandsRepository } from '../../ports/Commands';
+import type {
+	CommandsRepository,
+	CreateNotificationParams,
+} from '../../ports/Commands';
 import type { NotificationsSutMocks } from './SutMocks';
 import { givenResolved } from '@TestUtils';
 
@@ -37,13 +40,44 @@ export function givenNotificationInserted(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
 	overrides: InsertNotificationOverride = {},
 ) {
-	givenResolved(commandsRepository, 'insertNotification', {
-		ok: true,
-		data: {
-			id: DEFAULT_NOTIFICATION_ID,
-			...overrides,
+	let currentAggregatedCount = overrides?.aggregatedCount ?? 1;
+	const entityId = overrides?.entityId ?? 42;
+	const entityType = overrides?.entityType ?? 'POEM';
+	const type = overrides?.type ?? 'POEM_COMMENT_CREATED';
+
+	commandsRepository.insertNotification.mockImplementation(
+		// eslint-disable-next-line require-await
+		async (params: CreateNotificationParams) => {
+			if (
+				params.aggregateWindowMinutes &&
+				params.entityId === entityId &&
+				params.entityType === entityType &&
+				params.type === type
+			) {
+				currentAggregatedCount += 1;
+			} else {
+				currentAggregatedCount = overrides?.aggregatedCount ?? 1;
+			}
+
+			return {
+				ok: true,
+				data: {
+					id: overrides?.id ?? 1,
+					userId: overrides?.userId ?? DEFAULT_USER_ID,
+					type,
+					actorId: params.actorId ?? overrides?.actorId ?? 2,
+					entityId: params.entityId ?? entityId,
+					entityType: params.entityType ?? entityType,
+					aggregatedCount: currentAggregatedCount,
+					data: params.data ??
+						overrides?.data ?? { commentSnippet: 'Hello World' },
+					createdAt: overrides?.createdAt ?? new Date(),
+					updatedAt: overrides?.updatedAt ?? new Date(),
+					readAt: overrides?.readAt ?? null,
+				},
+			};
 		},
-	});
+	);
 }
 
 export function givenNotificationInsertFailure(
@@ -58,15 +92,15 @@ export function givenNotificationInsertFailure(
 	});
 }
 
-export type SoftDeleteNotificationOverride = Partial<
+export type DeleteNotificationOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['deleteNotification']>>['data']
 >;
 
 export function givenNotificationDeleted(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
-	overrides: SoftDeleteNotificationOverride = {},
+	overrides: DeleteNotificationOverride = {},
 ) {
-	givenResolved(commandsRepository, 'softDeleteNotification', {
+	givenResolved(commandsRepository, 'deleteNotification', {
 		ok: true,
 		data: {
 			id: DEFAULT_NOTIFICATION_ID,
@@ -81,7 +115,7 @@ export function givenNotificationDeleteFailure(
 	code = 'UNKNOWN_ERROR',
 	message = 'Failed to delete notification',
 ) {
-	givenResolved(commandsRepository, 'softDeleteNotification', {
+	givenResolved(commandsRepository, 'deleteNotification', {
 		ok: false,
 		code,
 		message,

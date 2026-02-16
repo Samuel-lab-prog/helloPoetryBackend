@@ -1,8 +1,6 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
-
 import type { QueriesRepository } from '../../ports/Queries';
-
 import type { NotificationPage } from '../../ports/Models';
 
 export function selectUserNotifications(
@@ -14,7 +12,6 @@ export function selectUserNotifications(
 	return withPrismaErrorHandling(async () => {
 		const where = {
 			userId,
-			deletedAt: null,
 			...(onlyUnread && { readAt: null }),
 		};
 
@@ -32,11 +29,12 @@ export function selectUserNotifications(
 
 		const hasMore = notifications.length > limit;
 		const items = hasMore ? notifications.slice(0, limit) : notifications;
+		const nextCursorId = hasMore ? items[items.length - 1]?.id : undefined;
 
 		return {
 			notifications: items,
 			hasMore,
-			nextCursor: hasMore ? items[items.length - 1]?.id : undefined,
+			nextCursor: nextCursorId,
 		};
 	});
 }

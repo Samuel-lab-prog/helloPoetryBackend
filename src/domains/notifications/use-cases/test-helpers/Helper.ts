@@ -19,7 +19,7 @@ import {
 	type InsertNotificationOverride,
 	givenNotificationDeleteFailure,
 	givenNotificationDeleted,
-	type SoftDeleteNotificationOverride,
+	type DeleteNotificationOverride,
 	givenNotificationMarkedAsRead,
 	type MarkNotificationAsReadOverride,
 	givenMarkNotificationAsReadFailure,
@@ -37,7 +37,6 @@ import {
 
 import {
 	DEFAULT_USER_ID,
-	DEFAULT_NOTIFICATION_TYPE,
 	DEFAULT_NOTIFICATION_TITLE,
 	DEFAULT_NOTIFICATION_BODY,
 	DEFAULT_NOTIFICATION_ID,
@@ -103,7 +102,7 @@ export function makeNotificationsScenario() {
 			givenNotificationInsertFailure(mocks.commandsRepository, code, message);
 			return api;
 		},
-		withNotificationDeleted(overrides: SoftDeleteNotificationOverride = {}) {
+		withNotificationDeleted(overrides: DeleteNotificationOverride = {}) {
 			givenNotificationDeleted(mocks.commandsRepository, overrides);
 			return api;
 		},
@@ -147,15 +146,20 @@ export function makeNotificationsScenario() {
 				makeParams(
 					{
 						userId: DEFAULT_USER_ID,
-						type: DEFAULT_NOTIFICATION_TYPE,
+						type: 'POEM_COMMENT_CREATED',
 						title: DEFAULT_NOTIFICATION_TITLE,
 						body: DEFAULT_NOTIFICATION_BODY,
+						actorId: 2,
+						entityId: 42,
+						entityType: 'POEM',
+						data: { commentSnippet: 'Hello World' },
 						...params,
 					},
 					params,
 				),
 			);
 		},
+
 		deleteNotification(params: Partial<DeleteNotificationParams> = {}) {
 			return sut.deleteNotification(
 				makeParams(

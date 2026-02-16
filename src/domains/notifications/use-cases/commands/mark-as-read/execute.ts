@@ -26,8 +26,8 @@ export function markNotificationAsReadFactory({
 		v.user(userInfo).withStatus(['active']);
 
 		const notification = await commandsRepository.markNotificationAsRead(
-			userId,
 			notificationId,
+			userId,
 		);
 
 		if (!notification.ok) {

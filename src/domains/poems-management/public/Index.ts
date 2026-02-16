@@ -15,6 +15,7 @@ export type PoemBasicInfo = {
 	moderationStatus: PoemModerationStatus;
 	status: PoemStatus;
 	isCommentable: boolean;
+	poemTitle: string;
 };
 
 export type FeedPoem = {
@@ -71,6 +72,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 				moderationStatus: true,
 				status: true,
 				isCommentable: true,
+				title: true,
 			},
 		});
 
@@ -83,6 +85,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 				moderationStatus: 'pending',
 				status: 'draft',
 				isCommentable: false,
+				poemTitle: '',
 			};
 		}
 
@@ -94,6 +97,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 			moderationStatus: poem.moderationStatus,
 			status: poem.status,
 			isCommentable: poem.isCommentable,
+			poemTitle: poem.title,
 		};
 	});
 }

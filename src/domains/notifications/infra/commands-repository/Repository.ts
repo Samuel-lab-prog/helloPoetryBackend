@@ -3,89 +3,108 @@ import { withPrismaResult } from '@PrismaErrorHandler';
 import type { CommandResult } from '@SharedKernel/Types';
 
 import type {
-  CommandsRepository,
-  CreateNotificationParams,
+	CommandsRepository,
+	CreateNotificationParams,
 } from '../../ports/Commands';
 import type {
-  NotificationCreateResult,
-  NotificationUpdateResult,
-  NotificationDeleteResult,
+	NotificationCreateResult,
+	NotificationUpdateResult,
+	NotificationDeleteResult,
 } from '@Domains/notifications/ports/Models';
 import type { NotificationCreateInput } from '@PrismaGenerated/models';
 
 function toPrismaCreateInput(
-  params: CreateNotificationParams,
+	params: CreateNotificationParams,
 ): NotificationCreateInput {
-  return {
-    user: { connect: { id: params.userId } },
-    type: params.type,
-    data: params.data ? JSON.stringify(params.data) : undefined,
-    actorId: params.actorId ?? undefined,
-    entityId: params.entityId ?? undefined,
-    entityType: params.entityType ?? undefined,
-    aggregatedCount: params.aggregatedCount ?? 1,
-  };
+	return {
+		user: { connect: { id: params.userId } },
+		type: params.type,
+		data: params.data ? params.data : undefined,
+		actorId: params.actorId ?? undefined,
+		entityId: params.entityId ?? undefined,
+		entityType: params.entityType ?? undefined,
+		aggregatedCount: params.aggregatedCount ?? 1,
+	};
 }
 
 async function insertNotification(
-  params: CreateNotificationParams,
+	params: CreateNotificationParams,
 ): Promise<CommandResult<NotificationCreateResult>> {
-  return await withPrismaResult(async () => {
-    // Tenta buscar notificação existente para agregação (Opção A)
-    if (params.aggregateWindowMinutes && params.entityId && params.entityType) {
-      const existing = await prisma.notification.findFirst({
-        where: {
-          userId: params.userId,
-          type: params.type,
-          entityId: params.entityId,
-          entityType: params.entityType,
-          createdAt: {
-            gte: new Date(Date.now() - params.aggregateWindowMinutes * 60 * 1000),
-          },
-        },
-      });
+	return await withPrismaResult(async () => {
+		let notification;
+		if (params.aggregateWindowMinutes && params.entityId && params.entityType) {
+			// 1. First, try to find an existing notification to aggregate with base criteria
+			const existing = await prisma.notification.findFirst({
+				where: {
+					userId: params.userId,
+					type: params.type,
+					entityId: params.entityId,
+					entityType: params.entityType,
+					createdAt: {
+						gte: new Date(
+							Date.now() - params.aggregateWindowMinutes * 60 * 1000,
+						),
+					},
+				},
+			});
+			// 2. If found, update it by incrementing the aggregatedCount and updating the timestamp
+			if (existing) {
+				notification = await prisma.notification.update({
+					where: { id: existing.id },
+					data: {
+						aggregatedCount: existing.aggregatedCount + 1,
+						updatedAt: new Date(),
+					},
+				});
+			}
+		}
+		// 3. If no existing notification to aggregate with, create a new one
+		if (!notification) {
+			notification = await prisma.notification.create({
+				data: toPrismaCreateInput(params),
+			});
+		}
 
-      if (existing) {
-        const updated = await prisma.notification.update({
-          where: { id: existing.id },
-          data: { aggregatedCount: existing.aggregatedCount + 1, updatedAt: new Date() },
-        });
-        return updated
-      }
-    }
-
-    const notification = await prisma.notification.create({
-      data: toPrismaCreateInput(params),
-    });
-    return notification;
-  });
+		return {
+			id: notification.id,
+			userId: notification.userId,
+			type: notification.type,
+			actorId: notification.actorId,
+			entityId: notification.entityId,
+			entityType: notification.entityType,
+			aggregatedCount: notification.aggregatedCount,
+			data: notification.data,
+			createdAt: notification.createdAt,
+			updatedAt: notification.updatedAt,
+			readAt: notification.readAt,
+		};
+	});
 }
 
 async function markNotificationAsRead(
-  notificationId: number,
+	notificationId: number,
 ): Promise<CommandResult<NotificationUpdateResult>> {
-  return await withPrismaResult(async () => {
-    const notification = await prisma.notification.update({
-      where: { id: notificationId },
-      data: { readAt: new Date() },
-    });
-    return notification;
-  });
+	console.table({ notificationId });
+	return await withPrismaResult(() => {
+		return prisma.notification.update({
+			where: { id: notificationId },
+			data: { readAt: new Date() },
+		});
+	});
 }
 
 async function deleteNotification(
-  notificationId: number,
+	notificationId: number,
 ): Promise<CommandResult<NotificationDeleteResult>> {
-  return await withPrismaResult(async () => {
-    const notification = await prisma.notification.delete({
-      where: { id: notificationId },
-    });
-    return notification;
-  });
+	return await withPrismaResult(() => {
+		return prisma.notification.delete({
+			where: { id: notificationId },
+		});
+	});
 }
 
 export const commandsRepository: CommandsRepository = {
-  insertNotification,
-  markNotificationAsRead,
-  deleteNotification,
+	insertNotification,
+	markNotificationAsRead,
+	deleteNotification,
 };
