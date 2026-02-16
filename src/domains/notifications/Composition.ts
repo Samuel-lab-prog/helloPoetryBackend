@@ -14,7 +14,7 @@ import {
 	markNotificationAsReadFactory,
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
-import { createNotificationFactory } from './use-cases/create-notification/execute';
+import { createNotificationFactory } from './use-cases/commands/create-notification/execute';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
@@ -60,7 +60,7 @@ eventBus.subscribe('poem.comment.created', async (payload) => {
 				commentId: payload.commentId,
 				poemId: payload.poemId,
 			},
-			type: 'POEM_COMMENT_CREATED',
+			type: 'poem.comment.created',
 		});
 	} catch (err) {
 		console.error('Erro ao criar notificação via eventBus:', err);

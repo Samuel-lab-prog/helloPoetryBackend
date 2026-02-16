@@ -14,7 +14,7 @@ interface DomainEvents {
 	};
 }
 
-type EventName = keyof DomainEvents;
+export type EventName = keyof DomainEvents;
 
 type EventPayload<N extends EventName> = DomainEvents[N];
 
@@ -51,8 +51,7 @@ export function createInMemoryEventBus(): EventBus {
 
 		const list = Array.from(set);
 
-		for (const handler of list) 
-			await (handler as EventHandler<N>)(payload);
+		for (const handler of list) await (handler as EventHandler<N>)(payload);
 	}
 
 	function subscribe<N extends EventName>(
@@ -65,7 +64,6 @@ export function createInMemoryEventBus(): EventBus {
 		handlers[name] = set;
 
 		return () => set.delete(handler);
-		
 	}
 
 	function once<N extends EventName>(

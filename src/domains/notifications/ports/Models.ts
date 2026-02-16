@@ -1,5 +1,6 @@
 import {
 	DeleteNotificationResultSchema,
+	NotficationsPageSchema,
 	NotificationCreateResultSchema,
 	NotificationSchema,
 	NotificationTypeSchema,
@@ -15,8 +16,4 @@ export type NotificationUpdateResult =
 export type NotificationDeleteResult =
 	(typeof DeleteNotificationResultSchema)['static'];
 
-export type NotificationPage = {
-	notifications: Notification[];
-	hasMore: boolean;
-	nextCursor: number | undefined;
-};
+export type NotificationPage = (typeof NotficationsPageSchema)['static'];

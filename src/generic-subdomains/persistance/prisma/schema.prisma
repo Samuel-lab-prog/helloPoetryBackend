@@ -252,7 +252,7 @@ enum PoemModerationStatus {
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int
-  type      NotificationType
+  type      String
   title     String
   body      String
   data      Json?
@@ -263,12 +263,4 @@ model Notification {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
-}
-
-enum NotificationType {
-  POEM_COMMENT_CREATED
-  POEM_LIKED
-  USER_FOLLOWED
-  FRIEND_REQUEST_ACCEPTED
-  FRIEND_REQUEST_RECEIVED
 }

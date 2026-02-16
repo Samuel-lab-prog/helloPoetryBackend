@@ -2,6 +2,7 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/Queries';
+import { toNotificationModel, toNotificationModels } from '../Mappers';
 
 import type { NotificationPage } from '../../ports/Models';
 
@@ -34,22 +35,25 @@ export function selectUserNotifications(
 		const items = hasMore ? notifications.slice(0, limit) : notifications;
 
 		return {
-			notifications: items,
+			notifications: toNotificationModels(items),
 			hasMore,
-			nextCursor: items.at(-1)?.id ?? undefined,
+			nextCursor: hasMore ? items[items.length - 1]?.id : undefined,
 		};
 	});
 }
 
 function selectNotificationById(notificationId: number, userId: number) {
-	return withPrismaErrorHandling(() =>
-		prisma.notification.findFirst({
+	return withPrismaErrorHandling(async () => {
+		const notification = await prisma.notification.findFirst({
 			where: {
 				id: notificationId,
 				userId,
 			},
-		}),
-	);
+		});
+
+		if (!notification) return null;
+		return toNotificationModel(notification);
+	});
 }
 
 export const queriesRepository: QueriesRepository = {

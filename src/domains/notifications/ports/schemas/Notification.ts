@@ -1,13 +1,17 @@
 import { t } from 'elysia';
-import { DateSchema, idSchema } from '@SharedKernel/Schemas';
+import {
+	DateSchema,
+	idSchema,
+	NullableDateSchema,
+} from '@SharedKernel/Schemas';
+import type { EventName } from '@SharedKernel/events/EventBus';
 
-export const NotificationTypeSchema = t.UnionEnum([
-	'POEM_COMMENT_CREATED',
-	'POEM_LIKED',
-	'USER_FOLLOWED',
-	'FRIEND_REQUEST_ACCEPTED',
-	'FRIEND_REQUEST_RECEIVED',
-]);
+const notificationTypes = [
+	'poem.comment.created',
+	'user.followed',
+] as const satisfies readonly EventName[];
+
+export const NotificationTypeSchema = t.UnionEnum(notificationTypes);
 
 export const NotificationSchema = t.Object({
 	id: idSchema,
@@ -17,7 +21,13 @@ export const NotificationSchema = t.Object({
 	body: t.String(),
 	data: t.Optional(t.Any()),
 	createdAt: DateSchema,
-	readAt: t.Nullable(DateSchema),
+	readAt: NullableDateSchema,
+});
+
+export const NotficationsPageSchema = t.Object({
+	notifications: t.Array(NotificationSchema),
+	hasMore: t.Boolean(),
+	nextCursor: t.Optional(t.Number()),
 });
 
 export const NotificationCreateResultSchema = NotificationSchema;

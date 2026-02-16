@@ -5,6 +5,7 @@ import type {
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { NotFoundError } from '@DomainError';
 
 export interface DeleteNotificationDependencies {
 	commandsRepository: CommandsRepository;
@@ -29,7 +30,7 @@ export function deleteNotificationFactory({
 
 		if (!notification.ok) {
 			if (notification.code === 'NOT_FOUND')
-				v.throwNew('NOT_FOUND', 'Notification not found');
+				throw new NotFoundError('Notification not found');
 			else
 				v.throwNew(
 					notification.code,
