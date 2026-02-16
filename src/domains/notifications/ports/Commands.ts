@@ -27,10 +27,13 @@ export type DeleteNotificationParams = {
 export interface NotificationsCommandsServices {
 	markAsRead: (
 		params: MarkNotificationAsReadParams,
-	) => Promise<NotificationCreateResult>;
-	deleteNotification?: (
+	) => Promise<NotificationUpdateResult>;
+	deleteNotification: (
 		params: DeleteNotificationParams,
 	) => Promise<NotificationDeleteResult>;
+	createNotification: (
+		params: CreateNotificationParams,
+	) => Promise<NotificationCreateResult>;
 }
 
 export interface CommandsRepository {

@@ -5,6 +5,7 @@ import { commandsRepository } from './infra/commands-repository/Repository';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import type { NotificationsQueriesServices } from './ports/Queries';
 import type { NotificationsCommandsServices } from './ports/Commands';
+import { eventBus } from '@SharedKernel/events/EventBus';
 import {
 	getUserNotificationsFactory,
 	getNotificationByIdFactory,
@@ -13,6 +14,7 @@ import {
 	markNotificationAsReadFactory,
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
+import { createNotificationFactory } from './use-cases/create-notification/execute';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
@@ -34,8 +36,11 @@ const notificationsCommandsServices: NotificationsCommandsServices = {
 		commandsRepository,
 		usersContract: usersPublicContract,
 	}),
+  createNotification: createNotificationFactory({
+    commandsRepository,
+    usersContract: usersPublicContract,
+  }),
 };
-
 
 export const notificationsQueriesRouter = createNotificationsQueriesRouter(
 	notificationsQueriesServices,
@@ -44,3 +49,20 @@ export const notificationsQueriesRouter = createNotificationsQueriesRouter(
 export const notificationsCommandsRouter = createNotificationsCommandsRouter(
 	notificationsCommandsServices,
 );
+
+eventBus.subscribe('poem.comment.created', async (payload) => {
+  try {
+    await notificationsCommandsServices.createNotification({
+      userId: payload.authorId, 
+      title: 'Novo comentário no seu poema',
+      body: `Seu poema recebeu um comentário de ${payload.commenterId}`,
+      data: {
+        commentId: payload.commentId,
+        poemId: payload.poemId,
+      },
+      type: 'POEM_COMMENT_CREATED',
+    });
+  } catch (err) {
+    console.error('Erro ao criar notificação via eventBus:', err);
+  }
+});
