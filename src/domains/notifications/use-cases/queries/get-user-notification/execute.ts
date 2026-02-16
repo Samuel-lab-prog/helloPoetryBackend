@@ -5,6 +5,7 @@ import type {
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { Notification } from '@Domains/notifications/ports/Models';
 
 export interface GetNotificationByIdDependencies {
 	queriesRepository: QueriesRepository;
@@ -15,14 +16,16 @@ export function getNotificationByIdFactory({
 	queriesRepository,
 	usersContract,
 }: GetNotificationByIdDependencies) {
-	return async function getNotificationById(params: GetNotificationByIdParams) {
+	return async function getNotificationById(
+		params: GetNotificationByIdParams,
+	): Promise<Notification> {
 		const { userId, notificationId } = params;
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const notification = await queriesRepository.findNotificationById(
+		const notification = await queriesRepository.selectNotificationById(
 			userId,
 			notificationId,
 		);
@@ -31,6 +34,6 @@ export function getNotificationByIdFactory({
 			.notNull('Notification not found')
 			.notUndefined('Notification not found');
 
-		return notification;
+		return notification!;
 	};
 }

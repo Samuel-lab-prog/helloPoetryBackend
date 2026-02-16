@@ -1,9 +1,5 @@
 import { t } from 'elysia';
 
-/* ---------------------------------- */
-/* Single Source Of Truth */
-/* ---------------------------------- */
-
 export const ERROR_CODES = [
 	'BAD_REQUEST',
 	'UNAUTHORIZED',
@@ -17,10 +13,6 @@ export const ERROR_CODES = [
 	'UNPROCESSABLE_ENTITY',
 ] as const;
 
-/* ---------------------------------- */
-/* Types */
-/* ---------------------------------- */
-
 export type AppErrorCode = (typeof ERROR_CODES)[number];
 
 export interface AppErrorType {
@@ -29,10 +21,6 @@ export interface AppErrorType {
 	code: AppErrorCode;
 	originalError?: Error;
 }
-
-/* ---------------------------------- */
-/* Schema */
-/* ---------------------------------- */
 
 export const appErrorSchema = t.Object({
 	message: t.String(),
@@ -43,10 +31,6 @@ export const appErrorSchema = t.Object({
 	code: t.UnionEnum(ERROR_CODES),
 	originalError: t.Optional(t.Any()),
 });
-
-/* ---------------------------------- */
-/* Error Class */
-/* ---------------------------------- */
 
 export class AppError extends Error {
 	public readonly statusCode: number;

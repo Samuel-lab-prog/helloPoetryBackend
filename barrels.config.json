@@ -24,6 +24,8 @@
 		"./src/domains/feed-engine/use-cases/queries",
 
 		"./src/domains/notifications/ports/schemas",
+		"./src/domains/notifications/use-cases/commands",
+		"./src/domains/notifications/use-cases/queries",
 
 		"./architecture-analysis/src/metrics",
 		"./src/tests/endpoints",

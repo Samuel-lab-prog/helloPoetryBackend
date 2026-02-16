@@ -1,4 +1,4 @@
-import type { Notification } from './Models';
+import type { Notification, NotificationPage } from './Models';
 
 export type GetUserNotificationsParams = {
 	userId: number;
@@ -15,19 +15,19 @@ export type GetNotificationByIdParams = {
 export interface NotificationsQueriesServices {
 	getUserNotifications: (
 		params: GetUserNotificationsParams,
-	) => Promise<Notification[]>;
+	) => Promise<NotificationPage>;
 	getNotificationById: (
 		params: GetNotificationByIdParams,
 	) => Promise<Notification>;
 }
 
 export interface QueriesRepository {
-	findUserNotifications: (
+	selectUserNotifications: (
 		userId: number,
-		options?: { onlyUnread?: boolean; limit?: number; offset?: number },
-	) => Promise<Notification[]>;
+		options: { onlyUnread: boolean; limit: number; offset: number },
+	) => Promise<NotificationPage>;
 
-	findNotificationById: (
+	selectNotificationById: (
 		notificationId: number,
 		userId: number,
 	) => Promise<Notification | null>;

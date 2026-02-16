@@ -14,3 +14,9 @@ export type NotificationUpdateResult =
 	(typeof UpdateNotificationresultSchema)['static'];
 export type NotificationDeleteResult =
 	(typeof DeleteNotificationResultSchema)['static'];
+
+export type NotificationPage = {
+	notifications: Notification[];
+	hasMore: boolean;
+	nextCursor: number | undefined;
+};

@@ -27,6 +27,15 @@ export function deleteNotificationFactory({
 			notificationId,
 		);
 
-		return notification;
+		if (!notification.ok) {
+			if (notification.code === 'NOT_FOUND')
+				v.throwNew('NOT_FOUND', 'Notification not found');
+			else
+				v.throwNew(
+					notification.code,
+					notification.message || 'Failed to delete notification',
+				);
+		}
+		return notification.data!;
 	};
 }
