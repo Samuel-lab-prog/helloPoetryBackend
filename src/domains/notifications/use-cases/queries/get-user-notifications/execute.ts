@@ -12,6 +12,8 @@ export interface GetUserNotificationsDependencies {
 	usersContract: UsersPublicContract;
 }
 
+const DEFAULT_LIMIT = 20;
+const DEFAULT_ONLY_UNREAD = false;
 export function getUserNotificationsFactory({
 	queriesRepository,
 	usersContract,
@@ -19,7 +21,12 @@ export function getUserNotificationsFactory({
 	return async function getUserNotifications(
 		params: GetUserNotificationsParams,
 	): Promise<NotificationPage> {
-		const { userId, onlyUnread = false, limit = 20, offset = 0 } = params;
+		const {
+			userId,
+			onlyUnread = DEFAULT_ONLY_UNREAD,
+			limit = DEFAULT_LIMIT,
+			nextCursor,
+		} = params;
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
@@ -30,7 +37,7 @@ export function getUserNotificationsFactory({
 			{
 				onlyUnread,
 				limit,
-				offset,
+				nextCursor,
 			},
 		);
 

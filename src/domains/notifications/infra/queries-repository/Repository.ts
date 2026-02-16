@@ -8,9 +8,9 @@ import type { NotificationPage } from '../../ports/Models';
 
 export function selectUserNotifications(
 	userId: number,
-	params: { onlyUnread: boolean; limit: number; offset: number },
+	params: { onlyUnread: boolean; limit: number; nextCursor?: number },
 ): Promise<NotificationPage> {
-	const { onlyUnread = false, limit = 20, offset } = params;
+	const { onlyUnread, limit, nextCursor } = params;
 
 	return withPrismaErrorHandling(async () => {
 		const where = {
@@ -25,8 +25,8 @@ export function selectUserNotifications(
 				createdAt: 'desc',
 			},
 			take: limit + 1,
-			...(offset && {
-				cursor: { id: offset },
+			...(nextCursor && {
+				cursor: { id: nextCursor },
 				skip: 1,
 			}),
 		});

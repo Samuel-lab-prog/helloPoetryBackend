@@ -54,8 +54,8 @@ eventBus.subscribe('poem.comment.created', async (payload) => {
 	try {
 		await notificationsCommandsServices.createNotification({
 			userId: payload.authorId,
-			title: 'Novo comentário no seu poema',
-			body: `Seu poema recebeu um comentário de ${payload.commenterId}`,
+			title: 'New comment on your poem',
+			body: `Your poem received a comment from ${payload.commenterId}`,
 			data: {
 				commentId: payload.commentId,
 				poemId: payload.poemId,
@@ -63,6 +63,6 @@ eventBus.subscribe('poem.comment.created', async (payload) => {
 			type: 'poem.comment.created',
 		});
 	} catch (err) {
-		console.error('Erro ao criar notificação via eventBus:', err);
+		console.error('Error creating notification via eventBus:', err);
 	}
 });

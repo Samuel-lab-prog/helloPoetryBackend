@@ -1,9 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthPlugin } from '@AuthPlugin';
-import { idSchema } from '@SharedKernel/Schemas';
+import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
 
-import { NotificationSchema } from '../ports/schemas//Notification';
+import {
+	NotificationSchema,
+	NotficationsPageSchema,
+} from '../ports/schemas//Notification';
 import { type NotificationsQueriesServices } from '../ports/Queries';
 
 export function createNotificationsQueriesRouter(
@@ -18,21 +21,19 @@ export function createNotificationsQueriesRouter(
 					userId: auth.clientId,
 					onlyUnread: query.onlyUnread,
 					limit: query.limit,
-					offset: query.offset,
+					nextCursor: query.nextCursor,
 				});
 			},
 			{
-				query: t.Object({
-					onlyUnread: t.Optional(t.Boolean()),
-					limit: t.Optional(t.Number()),
-					offset: t.Optional(t.Number()),
-				}),
-				response: {
-					200: t.Object({
-						notifications: t.Array(NotificationSchema),
-						hasMore: t.Boolean(),
-						nextCursor: t.Optional(idSchema),
+				query: t.Partial(
+					t.Object({
+						onlyUnread: t.Boolean(),
+						limit: NonNegativeIntegerSchema,
+						nextCursor: idSchema,
 					}),
+				),
+				response: {
+					200: NotficationsPageSchema,
 					403: appErrorSchema,
 				},
 				detail: {
@@ -52,7 +53,9 @@ export function createNotificationsQueriesRouter(
 				});
 			},
 			{
-				params: t.Object({ id: idSchema }),
+				params: t.Object({
+					id: idSchema,
+				}),
 				response: {
 					200: NotificationSchema,
 					403: appErrorSchema,

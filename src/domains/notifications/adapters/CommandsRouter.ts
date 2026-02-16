@@ -36,7 +36,6 @@ export function createNotificationsCommandsRouter(
 		.delete(
 			'/:id',
 			({ params, auth }) => {
-				if (!services.deleteNotification) throw new Error('Not implemented');
 				return services.deleteNotification({
 					notificationId: params.id,
 					userId: auth.clientId,

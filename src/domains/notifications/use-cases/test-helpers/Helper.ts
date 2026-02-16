@@ -199,7 +199,7 @@ export function makeNotificationsScenario() {
 						userId: DEFAULT_USER_ID,
 						onlyUnread: false,
 						limit: 20,
-						offset: 0,
+						nextCursor: undefined,
 					},
 					params,
 				),

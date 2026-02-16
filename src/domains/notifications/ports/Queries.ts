@@ -4,7 +4,7 @@ export type GetUserNotificationsParams = {
 	userId: number;
 	onlyUnread?: boolean;
 	limit?: number;
-	offset?: number;
+	nextCursor?: number;
 };
 
 export type GetNotificationByIdParams = {
@@ -24,7 +24,7 @@ export interface NotificationsQueriesServices {
 export interface QueriesRepository {
 	selectUserNotifications: (
 		userId: number,
-		options: { onlyUnread: boolean; limit: number; offset: number },
+		options: { onlyUnread: boolean; limit: number; nextCursor?: number },
 	) => Promise<NotificationPage>;
 
 	selectNotificationById: (
