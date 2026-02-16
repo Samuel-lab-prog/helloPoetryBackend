@@ -22,7 +22,7 @@ describe.concurrent('USE-CASE - Notifications - CreateNotification', () => {
 				.withNotificationInserted();
 
 			const result = await scenario.createNotification({
-				type: 'poem.comment.created',
+				type: 'POEM_COMMENT_CREATED',
 			});
 
 			expect(result).toHaveProperty('id');

@@ -59,7 +59,7 @@ export function givenNotificationInsertFailure(
 }
 
 export type SoftDeleteNotificationOverride = Partial<
-	Awaited<ReturnType<CommandsRepository['softDeleteNotification']>>['data']
+	Awaited<ReturnType<CommandsRepository['deleteNotification']>>['data']
 >;
 
 export function givenNotificationDeleted(

@@ -1,35 +1,42 @@
 import { t } from 'elysia';
 import {
-	DateSchema,
-	idSchema,
-	NullableDateSchema,
+  DateSchema,
+  idSchema,
+  NullableDateSchema,
 } from '@SharedKernel/Schemas';
 import type { EventName } from '@SharedKernel/events/EventBus';
 
 const notificationTypes = [
-	'poem.comment.created',
-	'user.followed',
+  'POEM_COMMENT_CREATED',
+	'NEW_FRIEND',
+	'NEW_FRIEND_REQUEST',
+	'POEM_LIKED',
+	'POEM_COMMENT_REPLIED',
+	'POEM_DEDICATED',
 ] as const satisfies readonly EventName[];
 
 export const NotificationTypeSchema = t.UnionEnum(notificationTypes);
 
 export const NotificationSchema = t.Object({
-	id: idSchema,
-	userId: idSchema,
-	type: NotificationTypeSchema,
-	title: t.String(),
-	body: t.String(),
-	data: t.Optional(t.Any()),
-	createdAt: DateSchema,
-	readAt: NullableDateSchema,
+  id: idSchema,
+  userId: idSchema,
+  type: NotificationTypeSchema,
+  actorId: t.Nullable(idSchema),
+  entityId: t.Nullable(idSchema),
+  entityType: t.Nullable(t.String()),
+  aggregatedCount: t.Number(),           // contador agregado
+  data: t.Nullable(t.Any()),
+  createdAt: DateSchema,
+  updatedAt: DateSchema,
+  readAt: NullableDateSchema,
 });
 
-export const NotficationsPageSchema = t.Object({
-	notifications: t.Array(NotificationSchema),
-	hasMore: t.Boolean(),
-	nextCursor: t.Optional(t.Number()),
+export const NotificationsPageSchema = t.Object({
+  notifications: t.Array(NotificationSchema),
+  hasMore: t.Boolean(),
+  nextCursor: t.Optional(t.Number()),
 });
 
 export const NotificationCreateResultSchema = NotificationSchema;
-export const UpdateNotificationresultSchema = NotificationSchema;
+export const UpdateNotificationResultSchema = NotificationSchema;
 export const DeleteNotificationResultSchema = NotificationSchema;

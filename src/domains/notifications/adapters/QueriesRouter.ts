@@ -5,7 +5,7 @@ import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
 
 import {
 	NotificationSchema,
-	NotficationsPageSchema,
+	NotificationsPageSchema,
 } from '../ports/schemas//Notification';
 import { type NotificationsQueriesServices } from '../ports/Queries';
 
@@ -33,7 +33,7 @@ export function createNotificationsQueriesRouter(
 					}),
 				),
 				response: {
-					200: NotficationsPageSchema,
+					200: NotificationsPageSchema,
 					403: appErrorSchema,
 				},
 				detail: {

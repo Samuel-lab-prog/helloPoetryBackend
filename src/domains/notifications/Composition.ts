@@ -50,7 +50,7 @@ export const notificationsCommandsRouter = createNotificationsCommandsRouter(
 	notificationsCommandsServices,
 );
 
-eventBus.subscribe('poem.comment.created', async (payload) => {
+eventBus.subscribe('POEM_COMMENT_CREATED', async (payload) => {
 	try {
 		await notificationsCommandsServices.createNotification({
 			userId: payload.authorId,
@@ -60,7 +60,7 @@ eventBus.subscribe('poem.comment.created', async (payload) => {
 				commentId: payload.commentId,
 				poemId: payload.poemId,
 			},
-			type: 'poem.comment.created',
+			type: 'POEM_COMMENT_CREATED',
 		});
 	} catch (err) {
 		console.error('Error creating notification via eventBus:', err);

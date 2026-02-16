@@ -64,7 +64,7 @@ const notificationsMockFactories = {
 	commandsRepository: createMockedContract<CommandsRepository>({
 		insertNotification: mock(),
 		markNotificationAsRead: mock(),
-		softDeleteNotification: mock(),
+		deleteNotification: mock(),
 	}),
 	queriesRepository: createMockedContract<QueriesRepository>({
 		selectUserNotifications: mock(),

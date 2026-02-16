@@ -69,7 +69,7 @@ export function commentPoemFactory({
 			content: trimmedContent,
 		});
 
-		await eventBus.publish('poem.comment.created', {
+		await eventBus.publish('POEM_COMMENT_CREATED', {
 			commentId: comment.id,
 			poemId,
 			authorId: poemInfo.authorId,

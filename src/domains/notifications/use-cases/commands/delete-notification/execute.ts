@@ -23,7 +23,7 @@ export function deleteNotificationFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const notification = await commandsRepository.softDeleteNotification(
+		const notification = await commandsRepository.deleteNotification(
 			userId,
 			notificationId,
 		);

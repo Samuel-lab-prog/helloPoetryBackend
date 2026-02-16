@@ -6,7 +6,7 @@ export const DEFAULT_USER_ROLE: UserRole = 'author';
 export const DEFAULT_USER_STATUS: UserStatus = 'active';
 export const DEFAULT_NOTIFICATION_ID = 1;
 export const DEFAULT_NOTIFICATION_TYPE: NotificationType =
-	'poem.comment.created';
+	'POEM_COMMENT_CREATED';
 export const DEFAULT_NOTIFICATION_TITLE = 'Test Notification';
 export const DEFAULT_NOTIFICATION_BODY = 'This is a test notification.';
 
