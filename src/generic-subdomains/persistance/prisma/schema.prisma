@@ -45,6 +45,8 @@ model User {
   userSanctions UserSanction[] @relation("ModeratorSanctions")
 
   notifications Notification[]
+
+  userNotificationSettings UserNotificationSetting[]
 }
 
 enum UserRole {
@@ -251,16 +253,44 @@ enum PoemModerationStatus {
 
 model Notification {
   id        Int      @id @default(autoincrement())
+
   userId    Int
-  type      String
-  title     String
-  body      String
+  type      NotificationType
+
+  actorId   Int?
+  entityId  Int?
+  entityType String?
+
+  aggregatedCount Int @default(1)
+
   data      Json?
+
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   readAt    DateTime?
-  deletedAt DateTime?
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
+}
+
+model UserNotificationSetting {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  type   NotificationType
+  enabled Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+}
+
+enum NotificationType {
+  NEW_FRIEND
+  NEW_FRIEND_REQUEST
+  POEM_LIKED
+  POEM_COMMENT_CREATED
+  POEM_COMMENT_REPLIED
+  POEM_DEDICATED
 }
