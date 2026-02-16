@@ -37,7 +37,7 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					authorId: params.authorId,
 					requesterId: auth.clientId,
 					requesterRole: auth.clientRole,
-					requesterStatus: auth.clientStatus
+					requesterStatus: auth.clientStatus,
 				});
 			},
 			{

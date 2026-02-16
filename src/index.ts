@@ -29,7 +29,10 @@ import {
 } from '@Domains/interactions/Composition';
 import { moderationCommandsRouter } from '@Domains/moderation/Composition';
 import { feedQueriesRouter } from '@Domains/feed-engine/Composition';
-import { notificationsCommandsRouter, notificationsQueriesRouter } from '@Domains/notifications/Composition';
+import {
+	notificationsCommandsRouter,
+	notificationsQueriesRouter,
+} from '@Domains/notifications/Composition';
 
 export const PREFIX = '/api/v1';
 export const MAIN_INSTANCE_NAME = 'mainServerInstance';

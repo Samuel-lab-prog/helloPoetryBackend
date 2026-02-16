@@ -36,10 +36,10 @@ const notificationsCommandsServices: NotificationsCommandsServices = {
 		commandsRepository,
 		usersContract: usersPublicContract,
 	}),
-  createNotification: createNotificationFactory({
-    commandsRepository,
-    usersContract: usersPublicContract,
-  }),
+	createNotification: createNotificationFactory({
+		commandsRepository,
+		usersContract: usersPublicContract,
+	}),
 };
 
 export const notificationsQueriesRouter = createNotificationsQueriesRouter(
@@ -51,18 +51,18 @@ export const notificationsCommandsRouter = createNotificationsCommandsRouter(
 );
 
 eventBus.subscribe('poem.comment.created', async (payload) => {
-  try {
-    await notificationsCommandsServices.createNotification({
-      userId: payload.authorId, 
-      title: 'Novo comentário no seu poema',
-      body: `Seu poema recebeu um comentário de ${payload.commenterId}`,
-      data: {
-        commentId: payload.commentId,
-        poemId: payload.poemId,
-      },
-      type: 'POEM_COMMENT_CREATED',
-    });
-  } catch (err) {
-    console.error('Erro ao criar notificação via eventBus:', err);
-  }
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: payload.authorId,
+			title: 'Novo comentário no seu poema',
+			body: `Seu poema recebeu um comentário de ${payload.commenterId}`,
+			data: {
+				commentId: payload.commentId,
+				poemId: payload.poemId,
+			},
+			type: 'POEM_COMMENT_CREATED',
+		});
+	} catch (err) {
+		console.error('Erro ao criar notificação via eventBus:', err);
+	}
 });

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
-export interface DomainEvents {
+interface DomainEvents {
 	'poem.comment.created': {
 		commentId: number;
 		poemId: number;
@@ -14,15 +14,15 @@ export interface DomainEvents {
 	};
 }
 
-export type EventName = keyof DomainEvents;
+type EventName = keyof DomainEvents;
 
-export type EventPayload<N extends EventName> = DomainEvents[N];
+type EventPayload<N extends EventName> = DomainEvents[N];
 
-export type EventHandler<N extends EventName> = (
+type EventHandler<N extends EventName> = (
 	payload: EventPayload<N>,
 ) => Promise<void> | void;
 
-export type Unsubscribe = () => void;
+type Unsubscribe = () => void;
 
 export interface EventBus {
 	publish<N extends EventName>(
@@ -51,9 +51,8 @@ export function createInMemoryEventBus(): EventBus {
 
 		const list = Array.from(set);
 
-		for (const handler of list) {
+		for (const handler of list) 
 			await (handler as EventHandler<N>)(payload);
-		}
 	}
 
 	function subscribe<N extends EventName>(
@@ -65,9 +64,8 @@ export function createInMemoryEventBus(): EventBus {
 		set.add(handler);
 		handlers[name] = set;
 
-		return () => {
-			set.delete(handler);
-		};
+		return () => set.delete(handler);
+		
 	}
 
 	function once<N extends EventName>(

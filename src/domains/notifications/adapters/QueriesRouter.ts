@@ -16,9 +16,9 @@ export function createNotificationsQueriesRouter(
 			({ query, auth }) => {
 				return services.getUserNotifications({
 					userId: auth.clientId,
-					onlyUnread: query.onlyUnread ?? false,
-					limit: query.limit ?? 50,
-					offset: query.offset ?? 0,
+					onlyUnread: query.onlyUnread,
+					limit: query.limit,
+					offset: query.offset,
 				});
 			},
 			{
@@ -31,7 +31,7 @@ export function createNotificationsQueriesRouter(
 					200: t.Object({
 						notifications: t.Array(NotificationSchema),
 						hasMore: t.Boolean(),
-						nextCursor: t.Optional(t.Number()),
+						nextCursor: t.Optional(idSchema),
 					}),
 					403: appErrorSchema,
 				},
