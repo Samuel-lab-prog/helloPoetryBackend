@@ -28,7 +28,11 @@ export function createNotificationsQueriesRouter(
 					offset: t.Optional(t.Number()),
 				}),
 				response: {
-					200: t.Array(NotificationSchema),
+					200: t.Object({
+						notifications: t.Array(NotificationSchema),
+						hasMore: t.Boolean(),
+						nextCursor: t.Optional(t.Number()),
+					}),
 					403: appErrorSchema,
 				},
 				detail: {
