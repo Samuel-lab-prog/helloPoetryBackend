@@ -99,7 +99,8 @@ function createCommentReply(params: {
 			createdAt: reply.createdAt,
 			userId: reply.authorId,
 			poemId: reply.poemId,
-			parentId: reply.parentId, 
+			parentId: reply.parentId,
+			status: reply.status,
 		};
 	});
 }

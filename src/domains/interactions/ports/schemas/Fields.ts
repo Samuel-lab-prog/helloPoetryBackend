@@ -5,3 +5,9 @@ export const commentContentSchema = t.String({
 	maxLength: 300,
 	examples: ['Awesome poem! Loved every bit of it.'],
 });
+
+export const CommentStatusSchema = t.UnionEnum([
+	'visible',
+	'deletedByAuthor',
+	'deletedByModerator',
+]);

@@ -8,7 +8,6 @@ import type {
 	CommentPoemParams,
 	DeleteCommentParams,
 	LikePoemParams,
-	ReplyCommentParams,
 	UnlikePoemParams,
 } from '../../ports/Commands';
 import type {
@@ -215,13 +214,14 @@ export const makeInteractionsScenario = (() => {
 			);
 		},
 
-		executeReplyComment(params: Partial<ReplyCommentParams> = {}) {
+		executeReplyComment(params: Partial<CommentPoemParams> = {}) {
 			return sutFactory.replyComment(
 				makeParams(
 					{
 						userId: DEFAULT_PERFORMER_USER_ID,
 						parentCommentId: DEFAULT_COMMENT_ID,
 						content: DEFAULT_COMMENT_CONTENT,
+						poemId: DEFAULT_POEM_ID,
 					},
 					params,
 				),

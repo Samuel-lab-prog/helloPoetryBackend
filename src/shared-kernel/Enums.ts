@@ -8,3 +8,8 @@ export type PoemModerationStatus =
 	| 'approved'
 	| 'rejected'
 	| 'removed';
+
+export type CommentStatus =
+	| 'visible'
+	| 'deletedByAuthor'
+	| 'deletedByModerator';

@@ -1,6 +1,6 @@
 import { t } from 'elysia';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
-import { commentContentSchema } from './Fields';
+import { commentContentSchema, CommentStatusSchema } from './Fields';
 
 export const PoemCommentSchema = t.Object({
 	id: idSchema,
@@ -8,5 +8,6 @@ export const PoemCommentSchema = t.Object({
 	poemId: idSchema,
 	content: commentContentSchema,
 	createdAt: DateSchema,
-	parentId: t.Nullable(idSchema)
+	status: CommentStatusSchema,
+	parentId: t.Nullable(idSchema),
 });

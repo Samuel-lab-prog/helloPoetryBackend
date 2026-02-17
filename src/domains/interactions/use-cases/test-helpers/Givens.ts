@@ -18,6 +18,8 @@ import {
 	DEFAULT_COMMENT_ID,
 	DEFAULT_USER_NICKNAME,
 	DEFAULT_POEM_TITLE,
+	DEFAULT_COMMENT_STATUS,
+	DEFAULT_COMMENT_PARENT_ID,
 } from './Constants';
 import { givenResolved } from '@TestUtils';
 
@@ -132,6 +134,8 @@ export function givenCreatedComment(
 		userId: DEFAULT_PERFORMER_USER_ID,
 		poemId: DEFAULT_POEM_ID,
 		content: DEFAULT_COMMENT_CONTENT,
+		status: DEFAULT_COMMENT_STATUS,
+		parentId: DEFAULT_COMMENT_PARENT_ID,
 		createdAt: new Date(),
 		...overrides,
 	});
@@ -146,6 +150,7 @@ export function givenReplyCreatedComment(
 		userId: DEFAULT_PERFORMER_USER_ID,
 		content: DEFAULT_COMMENT_CONTENT,
 		parentId: DEFAULT_COMMENT_ID,
+		status: DEFAULT_COMMENT_STATUS,
 		poemId: DEFAULT_POEM_ID,
 		createdAt: new Date(),
 		...overrides,
@@ -167,6 +172,8 @@ export function givenExistingComments(
 			id: DEFAULT_COMMENT_ID,
 			userId: DEFAULT_PERFORMER_USER_ID,
 			poemId: DEFAULT_POEM_ID,
+			status: DEFAULT_COMMENT_STATUS,
+			parentId: DEFAULT_COMMENT_PARENT_ID,
 			content: DEFAULT_COMMENT_CONTENT,
 			createdAt: new Date(),
 			...overrides,
@@ -181,6 +188,8 @@ export function givenFoundComment(
 	givenResolved(queriesRepository, 'selectCommentById', {
 		id: DEFAULT_COMMENT_ID,
 		userId: DEFAULT_PERFORMER_USER_ID,
+		status: DEFAULT_COMMENT_STATUS,
+		parentId: DEFAULT_COMMENT_PARENT_ID,
 		poemId: DEFAULT_POEM_ID,
 		content: DEFAULT_COMMENT_CONTENT,
 		createdAt: new Date(),

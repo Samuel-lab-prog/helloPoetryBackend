@@ -88,7 +88,7 @@ export function sendFriendRequestFactory({
 		);
 
 		if (!result.ok) {
-		switch (result.code) {
+			switch (result.code) {
 				case 'CONFLICT':
 					throw new RequestAlreadySentError();
 				default:
@@ -101,7 +101,9 @@ export function sendFriendRequestFactory({
 			recipientId: addresseeId,
 			requesterNickname: addresseeInfo.nickname,
 		});
-		console.log('The event was successfully published for new friend request in the UC');
+		console.log(
+			'The event was successfully published for new friend request in the UC',
+		);
 		return result.data;
 	};
 }

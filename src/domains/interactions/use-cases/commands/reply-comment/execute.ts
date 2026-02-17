@@ -1,10 +1,10 @@
 import type {
 	CommandsRepository,
-	ReplyCommentParams,
+	CommentPoemParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 
-import type { CommentReply } from '../../../ports/Models';
+import type { PoemComment } from '../../../ports/Models';
 import { validator } from '@SharedKernel/validators/Global';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
@@ -32,8 +32,8 @@ export function replyCommentFactory({
 	eventBus,
 }: ReplyCommentDependencies) {
 	return async function replyComment(
-		params: ReplyCommentParams,
-	): Promise<CommentReply> {
+		params: CommentPoemParams,
+	): Promise<PoemComment> {
 		const { userId, parentCommentId, content } = params;
 
 		const trimmedContent = content.trim();
@@ -47,6 +47,8 @@ export function replyCommentFactory({
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
+		if (!parentCommentId)
+			throw new NotFoundError('Parent comment ID must be provided for a reply');
 
 		const parentComment = await queriesRepository.selectCommentById({
 			commentId: parentCommentId,
