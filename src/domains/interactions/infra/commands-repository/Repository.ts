@@ -1,7 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/Commands';
-import type { PoemLike, PoemComment, CommentReply } from '../../ports/Models';
+import type { PoemLike, PoemComment } from '../../ports/Models';
 
 function createPoemLike(params: {
 	userId: number;
@@ -76,7 +76,7 @@ function createCommentReply(params: {
 	userId: number;
 	parentCommentId: number;
 	content: string;
-}): Promise<CommentReply> {
+}): Promise<PoemComment> {
 	const { userId, parentCommentId, content } = params;
 	return withPrismaErrorHandling(async () => {
 		const parentComment = await prisma.comment.findUnique({
@@ -99,7 +99,7 @@ function createCommentReply(params: {
 			createdAt: reply.createdAt,
 			userId: reply.authorId,
 			poemId: reply.poemId,
-			parentId: reply.parentId!, // parentId will always be defined for a reply
+			parentId: reply.parentId, 
 		};
 	});
 }

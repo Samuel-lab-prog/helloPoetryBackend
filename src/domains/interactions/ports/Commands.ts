@@ -1,15 +1,10 @@
-import type { PoemLike, PoemComment, CommentReply } from './Models';
+import type { PoemLike, PoemComment } from './Models';
 
 export type CommentPoemParams = {
 	userId: number;
 	poemId: number;
 	content: string;
-};
-
-export type ReplyCommentParams = {
-	userId: number;
-	parentCommentId: number;
-	content: string;
+	parentCommentId?: number;
 };
 
 export type DeleteCommentParams = {
@@ -40,7 +35,7 @@ export interface CommandsRepository {
 		userId: number;
 		parentCommentId: number;
 		content: string;
-	}): Promise<CommentReply>;
+	}): Promise<PoemComment>;
 }
 
 export interface CommandsRouterServices {
@@ -48,5 +43,5 @@ export interface CommandsRouterServices {
 	unlikePoem(params: UnlikePoemParams): Promise<void>;
 	commentPoem(params: CommentPoemParams): Promise<PoemComment>;
 	deleteComment(params: DeleteCommentParams): Promise<void>;
-	replyComment(params: ReplyCommentParams): Promise<CommentReply>;
+	replyComment(params: CommentPoemParams): Promise<PoemComment>;
 }

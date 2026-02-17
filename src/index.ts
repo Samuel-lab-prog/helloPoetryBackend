@@ -8,6 +8,7 @@ import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
+import '@Domains/notifications/EventListeners.ts';
 
 import {
 	userQueriesRouter,

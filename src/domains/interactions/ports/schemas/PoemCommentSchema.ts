@@ -8,4 +8,5 @@ export const PoemCommentSchema = t.Object({
 	poemId: idSchema,
 	content: commentContentSchema,
 	createdAt: DateSchema,
+	parentId: t.Nullable(idSchema)
 });

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type {
 	CommandsRepository,
 	SendFriendRequestParams,
@@ -19,7 +20,6 @@ interface Dependencies {
 	usersContract: UsersPublicContract;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function sendFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
@@ -88,7 +88,7 @@ export function sendFriendRequestFactory({
 		);
 
 		if (!result.ok) {
-			switch (result.code) {
+		switch (result.code) {
 				case 'CONFLICT':
 					throw new RequestAlreadySentError();
 				default:
@@ -101,6 +101,7 @@ export function sendFriendRequestFactory({
 			recipientId: addresseeId,
 			requesterNickname: addresseeInfo.nickname,
 		});
+		console.log('The event was successfully published for new friend request in the UC');
 		return result.data;
 	};
 }

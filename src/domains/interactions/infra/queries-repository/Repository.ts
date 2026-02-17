@@ -16,6 +16,7 @@ export function selectCommentById(params: {
 				authorId: true,
 				poemId: true,
 				createdAt: true,
+				parentId: true,
 			},
 		});
 		if (!comment) return null;
@@ -25,6 +26,7 @@ export function selectCommentById(params: {
 			userId: comment.authorId,
 			poemId: comment.poemId,
 			createdAt: comment.createdAt,
+			parentId: comment.parentId,
 		};
 	});
 }
@@ -43,6 +45,7 @@ export function findCommentsByPoemId(params: {
 				authorId: true,
 				poemId: true,
 				createdAt: true,
+				parentId: true,
 			},
 		});
 		return rs.map((comment) => ({
@@ -51,6 +54,8 @@ export function findCommentsByPoemId(params: {
 			userId: comment.authorId,
 			poemId: comment.poemId,
 			createdAt: comment.createdAt,
+			parentId: comment.parentId,
+			
 		}));
 	});
 }

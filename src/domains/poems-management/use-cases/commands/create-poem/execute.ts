@@ -47,8 +47,8 @@ export function createPoemFactory(deps: Dependencies) {
 			for (const toUserId of data?.toUserIds || [])
 				eventBus.publish('POEM_DEDICATED', {
 					poemId: result.data.id,
-					userId: authorCtx.id,
-					dedicatorId: toUserId,
+					userId: toUserId,
+					dedicatorId: meta.requesterId,
 					dedicatorNickname: userInfo.nickname,
 					poemTitle: data.title,
 				});
