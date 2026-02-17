@@ -12,7 +12,6 @@ export const ERROR_CODES = [
 	'UNKNOWN',
 	'UNPROCESSABLE_ENTITY',
 ] as const;
-
 export type AppErrorCode = (typeof ERROR_CODES)[number];
 
 export interface AppErrorType {

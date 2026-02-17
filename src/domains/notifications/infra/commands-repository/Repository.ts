@@ -22,7 +22,7 @@ function toPrismaCreateInput(
 		data: params.data ? params.data : undefined,
 		actorId: params.actorId ?? undefined,
 		entityId: params.entityId ?? undefined,
-		entityType: params.entityType ?? undefined,
+		entityType: params.entityType ?? null,
 		aggregatedCount: params.aggregatedCount ?? 1,
 	};
 }

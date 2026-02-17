@@ -54,6 +54,7 @@ import {
 	getUserNotificationsFactory,
 } from '../queries/Index';
 import type { NotificationPage } from '@Domains/notifications/ports/Models';
+import type { AppErrorCode } from '@AppError';
 
 const notificationsMockFactories = {
 	usersContract: createMockedContract<UsersPublicContract>({
@@ -98,7 +99,7 @@ export function makeNotificationsScenario() {
 			return api;
 		},
 
-		withNotificationInsertFailure(code?: string, message?: string) {
+		withNotificationInsertFailure(code?: AppErrorCode, message?: string) {
 			givenNotificationInsertFailure(mocks.commandsRepository, code, message);
 			return api;
 		},
@@ -107,7 +108,7 @@ export function makeNotificationsScenario() {
 			return api;
 		},
 
-		withNotificationDeleteFailure(code?: string, message?: string) {
+		withNotificationDeleteFailure(code?: AppErrorCode, message?: string) {
 			givenNotificationDeleteFailure(mocks.commandsRepository, code, message);
 			return api;
 		},
@@ -118,7 +119,7 @@ export function makeNotificationsScenario() {
 			return api;
 		},
 
-		withMarkNotificationAsReadFailure(code?: string, message?: string) {
+		withMarkNotificationAsReadFailure(code?: AppErrorCode, message?: string) {
 			givenMarkNotificationAsReadFailure(
 				mocks.commandsRepository,
 				code,

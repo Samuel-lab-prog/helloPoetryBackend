@@ -151,12 +151,8 @@ export function createMockedContract<T>(
 export function givenResolved<
 	T extends Record<string, (...args: any[]) => any>,
 	K extends keyof T,
->(
-	mocked: MockedContract<T>,
-	key: K,
-	value: Parameters<MockedFn<T[K]>['mockResolvedValue']>[0],
-) {
-	(mocked[key] as MockedFn<T[K]>).mockResolvedValue(value);
+>(mocked: T, key: K, value: Awaited<ReturnType<T[K]>>) {
+	(mocked[key] as any).mockResolvedValue(value);
 }
 
 /**

@@ -8,3 +8,5 @@ export const DEFAULT_USER_ROLE = 'author';
 export const DEFAULT_POEM_ID = 1;
 export const DEFAULT_COMMENT_ID = 1;
 export const DEFAULT_COMMENT_CONTENT = 'hello';
+export const DEFAULT_USER_NICKNAME = 'TestUser';
+export const DEFAULT_POEM_TITLE = 'Test Poem';

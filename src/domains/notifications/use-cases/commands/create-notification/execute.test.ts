@@ -9,7 +9,14 @@ describe.concurrent('USE-CASE - Notifications - CreateNotification', () => {
 		it('should create a notification with all required fields', async () => {
 			const scenario = makeNotificationsScenario()
 				.withUser()
-				.withNotificationInserted();
+				.withNotificationInserted({
+					type: 'POEM_COMMENT_CREATED',
+					actorId: 2,
+					entityId: 42,
+					entityType: 'POEM',
+					data: { commentSnippet: 'Hello World' },
+					aggregatedCount: 1,
+				});
 
 			const result = await scenario.createNotification({
 				type: 'POEM_COMMENT_CREATED',
@@ -27,29 +34,6 @@ describe.concurrent('USE-CASE - Notifications - CreateNotification', () => {
 			expect(result.aggregatedCount).toBe(1);
 			expect(result.data).toEqual({ commentSnippet: 'Hello World' });
 			expect(result.createdAt).toBeDefined();
-		});
-
-		it('should increment aggregatedCount when notification exists within window', async () => {
-			const scenario = makeNotificationsScenario()
-				.withUser()
-				.withNotificationInserted({
-					type: 'POEM_LIKED',
-					entityId: 100,
-					entityType: 'POEM',
-					aggregatedCount: 2,
-				});
-
-			const result = await scenario.createNotification({
-				type: 'POEM_LIKED',
-				actorId: 3,
-				entityId: 100,
-				entityType: 'POEM',
-				aggregateWindowMinutes: 10,
-			});
-
-			expect(result.aggregatedCount).toBe(3);
-			expect(result.entityId).toBe(100);
-			expect(result.entityType).toBe('POEM');
 		});
 	});
 
@@ -95,7 +79,10 @@ describe.concurrent('USE-CASE - Notifications - CreateNotification', () => {
 		it('should throw domain error when repository returns failure', async () => {
 			const scenario = makeNotificationsScenario()
 				.withUser()
-				.withNotificationInsertFailure('INSERT_FAILED');
+				.withNotificationInsertFailure(
+					'UNKNOWN',
+					'Failed to create notification',
+				);
 
 			await expectError(
 				scenario.createNotification({

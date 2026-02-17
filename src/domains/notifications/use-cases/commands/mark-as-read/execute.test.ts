@@ -68,7 +68,7 @@ describe.concurrent('USE-CASE - Notifications - MarkNotificationAsRead', () => {
 			const scenario = makeNotificationsScenario()
 				.withUser()
 				.withMarkNotificationAsReadFailure(
-					'UPDATE_FAILED',
+					'UNKNOWN',
 					'Failed to update notification',
 				);
 

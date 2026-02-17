@@ -16,6 +16,8 @@ import {
 	DEFAULT_POEM_STATUS,
 	DEFAULT_COMMENT_CONTENT,
 	DEFAULT_COMMENT_ID,
+	DEFAULT_USER_NICKNAME,
+	DEFAULT_POEM_TITLE,
 } from './Constants';
 import { givenResolved } from '@TestUtils';
 
@@ -53,6 +55,7 @@ export function givenUser(
 		id: DEFAULT_PERFORMER_USER_ID,
 		status: DEFAULT_USER_STATUS,
 		role: DEFAULT_USER_ROLE,
+		nickname: DEFAULT_USER_NICKNAME,
 		...overrides,
 	});
 }
@@ -69,6 +72,7 @@ export function givenPoem(
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		status: DEFAULT_POEM_STATUS,
 		isCommentable: true,
+		poemTitle: DEFAULT_POEM_TITLE,
 		...overrides,
 	});
 }

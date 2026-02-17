@@ -4,7 +4,7 @@ import {
 	idSchema,
 	NullableDateSchema,
 } from '@SharedKernel/Schemas';
-import type { EventName } from '@SharedKernel/events/EventBus';
+import type { Entity, EventName } from '@SharedKernel/events/EventBus';
 
 const notificationTypes = [
 	'POEM_COMMENT_CREATED',
@@ -14,8 +14,14 @@ const notificationTypes = [
 	'POEM_COMMENT_REPLIED',
 	'POEM_DEDICATED',
 ] as const satisfies readonly EventName[];
+const entityTypes = [
+	'POEM',
+	'COMMENT',
+	'USER',
+] as const satisfies readonly Entity[];
 
 export const NotificationTypeSchema = t.UnionEnum(notificationTypes);
+export const EntityTypeSchema = t.UnionEnum(entityTypes);
 
 export const NotificationSchema = t.Object({
 	id: idSchema,
@@ -23,8 +29,8 @@ export const NotificationSchema = t.Object({
 	type: NotificationTypeSchema,
 	actorId: t.Nullable(idSchema),
 	entityId: t.Nullable(idSchema),
-	entityType: t.Nullable(t.String()),
-	aggregatedCount: t.Number(), // contador agregado
+	entityType: t.Nullable(EntityTypeSchema),
+	aggregatedCount: t.Number(),
 	data: t.Nullable(t.Any()),
 	createdAt: DateSchema,
 	updatedAt: DateSchema,
@@ -34,7 +40,7 @@ export const NotificationSchema = t.Object({
 export const NotificationsPageSchema = t.Object({
 	notifications: t.Array(NotificationSchema),
 	hasMore: t.Boolean(),
-	nextCursor: t.Optional(t.Number()),
+	nextCursor: t.Optional(idSchema),
 });
 
 export const NotificationCreateResultSchema = NotificationSchema;

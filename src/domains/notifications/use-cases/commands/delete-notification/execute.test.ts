@@ -67,7 +67,7 @@ describe.concurrent('USE-CASE - Notifications - DeleteNotification', () => {
 			const scenario = makeNotificationsScenario()
 				.withUser()
 				.withNotificationDeleteFailure(
-					'DELETE_FAILED',
+					'UNKNOWN',
 					'Failed to delete notification',
 				);
 

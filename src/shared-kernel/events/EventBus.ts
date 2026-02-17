@@ -37,6 +37,7 @@ interface DomainEvents {
 }
 
 export type EventName = keyof DomainEvents;
+export type Entity = 'POEM' | 'COMMENT' | 'USER';
 
 type EventPayload<N extends EventName> = DomainEvents[N];
 
