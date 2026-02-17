@@ -10,15 +10,20 @@ import {
 	RequestAlreadySentError,
 	UserBlockedError,
 } from '../../Errors';
+import { eventBus } from '@SharedKernel/events/EventBus';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
+	usersContract: UsersPublicContract;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function sendFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
+	usersContract,
 }: Dependencies) {
 	return async function sendFriendRequest(
 		params: SendFriendRequestParams,
@@ -26,6 +31,8 @@ export function sendFriendRequestFactory({
 		const { requesterId, addresseeId } = params;
 
 		if (requesterId === addresseeId) throw new SelfReferenceError();
+
+		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
@@ -66,6 +73,11 @@ export function sendFriendRequestFactory({
 						throw new Error(accepted.message);
 				}
 			}
+			eventBus.publish('NEW_FRIEND', {
+				newFriendId: addresseeId,
+				newFriendNickname: addresseeInfo.nickname,
+				userId: requesterId,
+			});
 
 			return accepted.data;
 		}
@@ -84,6 +96,11 @@ export function sendFriendRequestFactory({
 			}
 		}
 
+		eventBus.publish('NEW_FRIEND_REQUEST', {
+			requesterId,
+			recipientId: addresseeId,
+			requesterNickname: addresseeInfo.nickname,
+		});
 		return result.data;
 	};
 }

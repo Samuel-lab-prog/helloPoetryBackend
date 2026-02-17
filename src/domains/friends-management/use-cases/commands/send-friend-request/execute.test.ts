@@ -10,6 +10,7 @@ import {
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
 	let queriesRepository: any;
+	let usersContract: any;
 	let sendFriendRequest: any;
 
 	beforeEach(() => {
@@ -24,9 +25,14 @@ describe('USE-CASE - Friends Management', () => {
 			findFriendRequest: mock(),
 		};
 
+		usersContract = {
+			selectUserBasicInfo: mock(),
+		} as any;
+
 		sendFriendRequest = sendFriendRequestFactory({
 			commandsRepository,
 			queriesRepository,
+			usersContract,
 		});
 	});
 

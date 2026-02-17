@@ -1,5 +1,5 @@
-import type { UsersServicesForPoems } from '../ports/ExternalServices';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 import type { QueriesRepository } from '../ports/Queries';
 
@@ -28,7 +28,7 @@ type PoemPolicyContext = {
 
 export type PoemCreationPolicyParams = {
 	ctx: PoemPolicyContext;
-	usersContract: UsersServicesForPoems;
+	usersContract: UsersPublicContract;
 	toUserIds?: number[];
 };
 
@@ -38,7 +38,7 @@ export type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
 };
 
 export async function validateDedicatedUsers(
-	usersContract: UsersServicesForPoems,
+	usersContract: UsersPublicContract,
 	requesterId: number,
 	userIds?: number[],
 ): Promise<boolean> {
@@ -69,9 +69,8 @@ export async function canCreatePoem(
 	const { ctx, usersContract, toUserIds } = params;
 	const { author } = ctx;
 
-	if (author.status !== 'active') {
+	if (author.status !== 'active')
 		throw new PoemCreationDeniedError('Author is not active');
-	}
 
 	const areIdsValid = await validateDedicatedUsers(
 		usersContract,
@@ -95,21 +94,16 @@ export async function canUpdatePoem(
 
 	const existingPoem = await params.queriesRepository.selectPoemById(poemId);
 
-	if (!existingPoem) {
-		throw new PoemNotFoundError();
-	}
+	if (!existingPoem) throw new PoemNotFoundError();
 
-	if (existingPoem.author.id !== author.id) {
+	if (existingPoem.author.id !== author.id)
 		throw new PoemUpdateDeniedError('User is not the author of the poem');
-	}
 
-	if (existingPoem.status === 'published') {
+	if (existingPoem.status === 'published')
 		throw new PoemUpdateDeniedError('Cannot update a published poem');
-	}
 
-	if (existingPoem.moderationStatus === 'removed') {
+	if (existingPoem.moderationStatus === 'removed')
 		throw new PoemUpdateDeniedError('Cannot update a removed poem');
-	}
 
 	await validateDedicatedUsers(usersContract, author.id, toUserIds);
 }

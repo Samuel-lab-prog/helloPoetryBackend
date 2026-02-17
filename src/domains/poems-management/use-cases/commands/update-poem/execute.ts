@@ -1,7 +1,4 @@
-import type {
-	UsersServicesForPoems,
-	SlugService,
-} from '../../../ports/ExternalServices';
+import type { SlugService } from '../../../ports/ExternalServices';
 import type {
 	UpdatePoemParams,
 	CommandsRepository,
@@ -10,11 +7,12 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type { UpdatePoemResult } from '../../Models';
 import { PoemAlreadyExistsError } from '../../Errors';
 import { canUpdatePoem } from '../../Policies';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
-	usersContract: UsersServicesForPoems;
+	usersContract: UsersPublicContract;
 	slugService: SlugService;
 }
 

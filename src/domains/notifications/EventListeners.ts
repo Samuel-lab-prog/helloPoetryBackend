@@ -74,3 +74,109 @@ eventBus.subscribe('POEM_LIKED', async (p) => {
 		);
 	}
 });
+
+eventBus.subscribe('POEM_DEDICATED', async (p) => {
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: p.userId,
+			type: 'POEM_DEDICATED',
+			title: 'A poem was dedicated to you',
+			actorId: p.dedicatorId,
+			entityId: p.poemId,
+			entityType: 'POEM',
+			body: `The poem "${p.poemTitle}" was dedicated to you by ${p.dedicatorNickname}`,
+			data: {
+				poemId: p.poemId,
+				poemTitle: p.poemTitle,
+				dedicatorNickname: p.dedicatorNickname,
+			},
+			aggregateWindowMinutes: 60,
+		});
+		log.info(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+			},
+			'New notification created for poem dedication',
+		);
+	} catch (err) {
+		log.error(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for poem dedication',
+		);
+	}
+});
+
+eventBus.subscribe('NEW_FRIEND_REQUEST', async (p) => {
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: p.recipientId,
+			type: 'NEW_FRIEND_REQUEST',
+			title: 'New friend request',
+			actorId: p.requesterId,
+			entityId: p.requesterId,
+			entityType: 'USER',
+			body: `${p.requesterNickname} sent you a friend request`,
+			data: {
+				requesterId: p.requesterId,
+				requesterNickname: p.requesterNickname,
+			},
+			aggregateWindowMinutes: 60,
+		});
+		log.info(
+			{
+				entityType: 'USER',
+				userId: p.recipientId,
+			},
+			'New notification created for friend request',
+		);
+	} catch (err) {
+		log.error(
+			{
+				entityType: 'USER',
+				userId: p.recipientId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for friend request',
+		);
+	}
+});
+
+eventBus.subscribe('NEW_FRIEND', async (p) => {
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: p.userId,
+			type: 'NEW_FRIEND',
+			title: 'You have a new friend',
+			actorId: p.newFriendId,
+			entityId: p.newFriendId,
+			entityType: 'USER',
+			body: `You are now friends with ${p.newFriendNickname}`,
+			data: {
+				newFriendId: p.newFriendId,
+				newFriendNickname: p.newFriendNickname,
+			},
+			aggregateWindowMinutes: 60,
+		});
+		log.info(
+			{
+				entityType: 'USER',
+				userId: p.userId,
+			},
+			'New notification created for new friend',
+		);
+	} catch (err) {
+		log.error(
+			{
+				entityType: 'USER',
+				userId: p.userId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for new friend',
+		);
+	}
+});

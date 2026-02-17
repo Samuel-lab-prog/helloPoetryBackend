@@ -1,7 +1,4 @@
-import type {
-	SlugService,
-	UsersServicesForPoems,
-} from '../../../ports/ExternalServices';
+import type { SlugService } from '../../../ports/ExternalServices';
 import type {
 	CommandsRepository,
 	CreatePoemParams,
@@ -9,16 +6,17 @@ import type {
 import { PoemAlreadyExistsError } from '../../Errors';
 import type { CreatePoemDB, CreatePoemResult } from '../../Models';
 import { canCreatePoem } from '../../Policies';
+import { eventBus } from '@SharedKernel/events/EventBus';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	slugService: SlugService;
-	usersContract: UsersServicesForPoems;
+	usersContract: UsersPublicContract;
 }
 
 export function createPoemFactory(deps: Dependencies) {
 	const { commandsRepository, slugService, usersContract } = deps;
-
 	return async function createPoem(
 		params: CreatePoemParams,
 	): Promise<CreatePoemResult> {
@@ -28,6 +26,8 @@ export function createPoemFactory(deps: Dependencies) {
 			status: meta.requesterStatus,
 			role: meta.requesterRole,
 		};
+		const userInfo = await usersContract.selectUserBasicInfo(meta.requesterId);
+
 		await canCreatePoem({
 			ctx: {
 				author: authorCtx,
@@ -43,7 +43,18 @@ export function createPoemFactory(deps: Dependencies) {
 		};
 
 		const result = await commandsRepository.insertPoem(poem);
-		if (result.ok === true) return result.data;
+		if (result.ok === true) {
+			for (const toUserId of data?.toUserIds || [])
+				eventBus.publish('POEM_DEDICATED', {
+					poemId: result.data.id,
+					userId: authorCtx.id,
+					dedicatorId: toUserId,
+					dedicatorNickname: userInfo.nickname,
+					poemTitle: data.title,
+				});
+
+			return result.data;
+		}
 
 		if (result.ok === false && result.code === 'CONFLICT')
 			throw new PoemAlreadyExistsError();

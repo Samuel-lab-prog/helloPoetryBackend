@@ -10,15 +10,19 @@ import {
 	FriendshipAlreadyExistsError,
 	UserBlockedError,
 } from '../../Errors';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
+	usersContract: UsersPublicContract;
 }
 
 export function acceptFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
+	usersContract,
 }: Dependencies) {
 	return async function acceptFriendRequest(
 		params: AcceptFriendRequestParams,
@@ -27,6 +31,7 @@ export function acceptFriendRequestFactory({
 
 		if (requesterId === addresseeId) throw new SelfReferenceError();
 
+		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
@@ -65,7 +70,11 @@ export function acceptFriendRequestFactory({
 					throw new Error(result.message);
 			}
 		}
-
+		eventBus.publish('NEW_FRIEND', {
+			newFriendId: requesterId,
+			newFriendNickname: addresseeInfo.nickname,
+			userId: addresseeId,
+		});
 		return result.data;
 	};
 }

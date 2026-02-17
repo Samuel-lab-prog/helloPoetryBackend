@@ -4,11 +4,9 @@ import { createPoemFactory } from './execute';
 import { PoemAlreadyExistsError } from '../../Errors';
 
 import type { CommandsRepository } from '../../../ports/Commands';
-import type {
-	SlugService,
-	UsersServicesForPoems,
-} from '../../../ports/ExternalServices';
+import type { SlugService } from '../../../ports/ExternalServices';
 import type { CreatePoem } from '../../Models';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 describe('USE-CASE - Poems Management', () => {
 	describe('Create Poem', () => {
@@ -25,9 +23,10 @@ describe('USE-CASE - Poems Management', () => {
 			generateSlug,
 		};
 
-		const usersContract: UsersServicesForPoems = {
+		const usersContract: UsersPublicContract = {
 			selectUserBasicInfo,
-		} as UsersServicesForPoems;
+			selectAuthUserByEmail: mock(),
+		} as UsersPublicContract;
 
 		const createPoem = createPoemFactory({
 			commandsRepository,

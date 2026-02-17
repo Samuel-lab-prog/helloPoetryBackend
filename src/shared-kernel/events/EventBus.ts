@@ -2,10 +2,12 @@
 
 interface DomainEvents {
 	NEW_FRIEND: {
-		friendId: number;
+		newFriendId: number;
+		newFriendNickname: string;
 		userId: number;
 	};
 	NEW_FRIEND_REQUEST: {
+		requesterNickname: string;
 		requesterId: number;
 		recipientId: number;
 	};
@@ -32,8 +34,10 @@ interface DomainEvents {
 	};
 	POEM_DEDICATED: {
 		poemId: number;
+		poemTitle: string;
 		dedicatorId: number;
-		recipientId: number;
+		dedicatorNickname: string;
+		userId: number;
 	};
 }
 

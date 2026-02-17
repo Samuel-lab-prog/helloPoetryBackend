@@ -14,13 +14,13 @@ import {
 	InvalidDedicatedUsersError,
 } from './Errors';
 
-import type { UsersServicesForPoems } from '../ports/ExternalServices';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { QueriesRepository } from '../ports/Queries';
 
 describe('POLICY - Poems Management', () => {
 	describe('validateDedicatedUsers', () => {
 		it('Returns true when no user ids are provided', async () => {
-			const usersContract = {} as UsersServicesForPoems;
+			const usersContract = {} as UsersPublicContract;
 
 			const result = await validateDedicatedUsers(usersContract, 1);
 
@@ -28,7 +28,7 @@ describe('POLICY - Poems Management', () => {
 		});
 
 		it('Throws when author tries to dedicate poem to themselves', async () => {
-			const usersContract = {} as UsersServicesForPoems;
+			const usersContract = {} as UsersPublicContract;
 
 			await expect(
 				validateDedicatedUsers(usersContract, 1, [1]),
@@ -36,7 +36,7 @@ describe('POLICY - Poems Management', () => {
 		});
 
 		it('Returns false when any dedicated user is inactive or missing', async () => {
-			const usersContract: UsersServicesForPoems = {
+			const usersContract: UsersPublicContract = {
 				selectUserBasicInfo: mock().mockResolvedValueOnce({
 					id: 2,
 					status: 'banned',
@@ -56,13 +56,13 @@ describe('POLICY - Poems Management', () => {
 					ctx: {
 						author: { id: 1, status: 'banned', role: 'author' },
 					},
-					usersContract: {} as UsersServicesForPoems,
+					usersContract: {} as UsersPublicContract,
 				}),
 			).rejects.toThrow(PoemCreationDeniedError);
 		});
 
 		it('Denies creation when dedicated users are invalid', () => {
-			const usersContract: UsersServicesForPoems = {
+			const usersContract: UsersPublicContract = {
 				selectUserBasicInfo: mock().mockResolvedValue({
 					exists: true,
 					id: 2,
@@ -101,7 +101,7 @@ describe('POLICY - Poems Management', () => {
 					ctx: {
 						author: { id: 1, status: 'active', role: 'author' },
 					},
-					usersContract: {} as UsersServicesForPoems,
+					usersContract: {} as UsersPublicContract,
 					queriesRepository,
 				}),
 			).rejects.toThrow(PoemNotFoundError);
@@ -121,7 +121,7 @@ describe('POLICY - Poems Management', () => {
 					ctx: {
 						author: { id: 1, status: 'active', role: 'author' },
 					},
-					usersContract: {} as UsersServicesForPoems,
+					usersContract: {} as UsersPublicContract,
 					queriesRepository,
 				}),
 			).rejects.toThrow(PoemUpdateDeniedError);
