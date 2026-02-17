@@ -9,7 +9,6 @@ import {
 	commentPoemFactory,
 	deleteCommentFactory,
 	likePoemFactory,
-	replyCommentFactory,
 	unlikePoemFactory,
 } from './use-cases/commands/Index';
 
@@ -56,15 +55,6 @@ export const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		usersContract: usersPublicContract,
-	}),
-
-	replyComment: replyCommentFactory({
-		commandsRepository,
-		queriesRepository,
-		usersContract: usersPublicContract,
-		friendsContract: friendsPublicContract,
-		poemsContract: poemsPublicContract,
-		eventBus: eventBus,
 	}),
 };
 

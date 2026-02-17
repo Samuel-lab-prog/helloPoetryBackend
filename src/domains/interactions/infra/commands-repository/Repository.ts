@@ -72,43 +72,9 @@ function deletePoemComment(params: { commentId: number }): Promise<void> {
 	});
 }
 
-function createCommentReply(params: {
-	userId: number;
-	parentCommentId: number;
-	content: string;
-}): Promise<PoemComment> {
-	const { userId, parentCommentId, content } = params;
-	return withPrismaErrorHandling(async () => {
-		const parentComment = await prisma.comment.findUnique({
-			where: { id: parentCommentId },
-		});
-
-		if (!parentComment) throw new Error('Parent comment not found');
-
-		const reply = await prisma.comment.create({
-			data: {
-				authorId: userId,
-				poemId: parentComment.poemId,
-				content,
-				parentId: parentCommentId,
-			},
-		});
-		return {
-			id: reply.id,
-			content: reply.content,
-			createdAt: reply.createdAt,
-			userId: reply.authorId,
-			poemId: reply.poemId,
-			parentId: reply.parentId,
-			status: reply.status,
-		};
-	});
-}
-
 export const commandsRepository: CommandsRepository = {
 	createPoemLike,
 	deletePoemLike,
 	createPoemComment,
 	deletePoemComment,
-	createCommentReply,
 };

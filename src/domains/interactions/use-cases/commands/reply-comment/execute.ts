@@ -73,10 +73,11 @@ export function replyCommentFactory({
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		const reply = await commandsRepository.createCommentReply({
+		const reply = await commandsRepository.createPoemComment({
 			userId,
-			parentCommentId,
+			poemId: parentComment.poemId,
 			content: trimmedContent,
+			parentId: parentCommentId,
 		});
 
 		eventBus.publish('POEM_COMMENT_REPLIED', {

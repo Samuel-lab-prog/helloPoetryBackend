@@ -34,7 +34,6 @@ import {
 	type CreatePoemCommentOverride,
 	type FindCommentsOverride,
 	type SelectCommentByIdOverride,
-	givenReplyCreatedComment,
 	givenCommentNotFound,
 } from './Givens';
 import {
@@ -77,7 +76,6 @@ const interactionsMockFactories = {
 		deletePoemComment: mock(),
 		createPoemLike: mock(),
 		deletePoemLike: mock(),
-		createCommentReply: mock(),
 	}),
 	queriesRepository: createMockedContract<QueriesRepository>({
 		selectCommentById: mock(),
@@ -156,7 +154,11 @@ export const makeInteractionsScenario = (() => {
 		},
 
 		withCommentReply(overrides: CreatePoemCommentOverride = {}) {
-			givenReplyCreatedComment(mocks.commandsRepository, overrides);
+			givenCreatedComment(mocks.commandsRepository, {
+				id: DEFAULT_COMMENT_ID + 1,
+				parentId: DEFAULT_COMMENT_ID,
+				...overrides,
+			});
 			return this;
 		},
 

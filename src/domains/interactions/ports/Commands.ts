@@ -29,13 +29,9 @@ export interface CommandsRepository {
 		userId: number;
 		poemId: number;
 		content: string;
+		parentId?: number;
 	}): Promise<PoemComment>;
 	deletePoemComment(params: { commentId: number }): Promise<void>;
-	createCommentReply(params: {
-		userId: number;
-		parentCommentId: number;
-		content: string;
-	}): Promise<PoemComment>;
 }
 
 export interface CommandsRouterServices {
@@ -43,5 +39,4 @@ export interface CommandsRouterServices {
 	unlikePoem(params: UnlikePoemParams): Promise<void>;
 	commentPoem(params: CommentPoemParams): Promise<PoemComment>;
 	deleteComment(params: DeleteCommentParams): Promise<void>;
-	replyComment(params: CommentPoemParams): Promise<PoemComment>;
 }

@@ -141,22 +141,6 @@ export function givenCreatedComment(
 	});
 }
 
-export function givenReplyCreatedComment(
-	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: CreatePoemCommentOverride = {},
-) {
-	givenResolved(commandsRepository, 'createCommentReply', {
-		id: DEFAULT_COMMENT_ID,
-		userId: DEFAULT_PERFORMER_USER_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		parentId: DEFAULT_COMMENT_ID,
-		status: DEFAULT_COMMENT_STATUS,
-		poemId: DEFAULT_POEM_ID,
-		createdAt: new Date(),
-		...overrides,
-	});
-}
-
 export function givenCommentNotFound(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 ) {
