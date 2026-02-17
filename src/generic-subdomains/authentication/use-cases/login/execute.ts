@@ -1,7 +1,8 @@
-import type { TokenService, TokenPayload } from '../../ports/TokenService';
+import type { TokenService, TokenPayload } from '../../ports/Services';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { InvalidCredentialsError } from '../Errors';
-import type { LoginResponse } from '../Models';
+import { UnauthorizedError } from '@DomainError';
+
+import type { LoginResponse } from '../../ports/Models';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 
 interface Dependencies {
@@ -18,14 +19,14 @@ export function loginClientFactory(dependencies: Dependencies) {
 		const { tokenService, hashService, findClientByEmail } = dependencies;
 		const client = await findClientByEmail(clientEmail);
 
-		if (!client) throw new InvalidCredentialsError();
+		if (!client) throw new UnauthorizedError('Invalid credentials');
 
 		const isPasswordValid = await hashService.compare(
 			clientPassword,
 			client.passwordHash,
 		);
 
-		if (!isPasswordValid) throw new InvalidCredentialsError();
+		if (!isPasswordValid) throw new UnauthorizedError('Invalid credentials');
 
 		const tokenPayload: TokenPayload = {
 			clientId: client.id,

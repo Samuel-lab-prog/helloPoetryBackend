@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { authenticateClientFactory } from './execute';
-import { InvalidTokenError, ClientNotFoundError } from '../Errors';
+import { UnprocessableEntityError, UnauthorizedError } from '@DomainError';
 
 describe('USE-CASE - Authentication', () => {
 	let tokenService: any;
@@ -21,32 +21,32 @@ describe('USE-CASE - Authentication', () => {
 	});
 
 	describe('Authenticate Client', () => {
-		it('Should throw InvalidTokenError if token is invalid', async () => {
+		it('Should throw UnprocessableEntityError if token is invalid', async () => {
 			tokenService.verifyToken.mockReturnValue(null);
 
 			await expect(authenticateClient('some-token')).rejects.toBeInstanceOf(
-				InvalidTokenError,
+				UnprocessableEntityError,
 			);
 
 			expect(tokenService.verifyToken).toHaveBeenCalledWith('some-token');
 		});
 
-		it('Should throw InvalidTokenError if token payload does not contain email', async () => {
+		it('Should throw UnprocessableEntityError if token payload does not contain email', async () => {
 			tokenService.verifyToken.mockReturnValue({});
 
 			await expect(authenticateClient('some-token')).rejects.toBeInstanceOf(
-				InvalidTokenError,
+				UnprocessableEntityError,
 			);
 
 			expect(tokenService.verifyToken).toHaveBeenCalledWith('some-token');
 		});
 
-		it('Should throw ClientNotFoundError if no client exists with the token email', async () => {
+		it('Should throw UnauthorizedError if no client exists with the token email', async () => {
 			tokenService.verifyToken.mockReturnValue({ email: 'user@example.com' });
 			findClientByEmail.mockResolvedValue(null);
 
 			await expect(authenticateClient('valid-token')).rejects.toBeInstanceOf(
-				ClientNotFoundError,
+				UnauthorizedError,
 			);
 
 			expect(tokenService.verifyToken).toHaveBeenCalledWith('valid-token');

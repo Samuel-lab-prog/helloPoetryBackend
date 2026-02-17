@@ -1,5 +1,5 @@
 import { JwtTokenService } from './JwtTokenService';
-import type { TokenPayload } from '../../ports/TokenService';
+import type { TokenPayload } from '../ports/Services';
 
 import { it, expect, describe, beforeAll } from 'bun:test';
 

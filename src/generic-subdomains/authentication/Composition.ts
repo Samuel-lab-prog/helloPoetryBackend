@@ -1,12 +1,12 @@
-import { createAuthRouter } from './adapters/http/auth-router/AuthRouter';
+import { createAuthRouter } from './adapters/AuthRouter';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
 import { authenticateClientFactory } from './use-cases/authenticate/execute';
 import { loginClientFactory } from './use-cases/login/execute';
 import {
 	JwtTokenService,
 	FakeJwtTokenService,
-} from './infra/token/JwtTokenService';
-import { createAuthPlugin } from './adapters/http/auth-plugin/AuthPlugin';
+} from './infra/JwtTokenService';
+import { createAuthPlugin } from './adapters/AuthPlugin';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 
 const login = loginClientFactory({

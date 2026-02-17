@@ -1,5 +1,5 @@
 import jwt, { type SignOptions } from 'jsonwebtoken';
-import type { TokenService, TokenPayload } from '../../ports/TokenService';
+import type { TokenService, TokenPayload } from '../ports/Services';
 
 const secretKey = String(process.env.JWT_SECRET_KEY);
 

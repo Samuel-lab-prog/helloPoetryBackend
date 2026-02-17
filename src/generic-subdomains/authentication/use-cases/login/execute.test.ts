@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { loginClientFactory } from './execute';
-import { InvalidCredentialsError } from '../Errors';
+import { UnauthorizedError } from '@DomainError';
 
 describe('USE-CASE - Authentication', () => {
 	let tokenService: any;
@@ -26,17 +26,17 @@ describe('USE-CASE - Authentication', () => {
 		});
 	});
 	describe('Login Client', () => {
-		it('Should throw InvalidCredentialsError if client email does not exist', async () => {
+		it('Should throw UnauthorizedError if client email does not exist', async () => {
 			findClientByEmail.mockResolvedValue(null);
 
 			await expect(
 				loginClient('user@example.com', 'password'),
-			).rejects.toBeInstanceOf(InvalidCredentialsError);
+			).rejects.toBeInstanceOf(UnauthorizedError);
 
 			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
 		});
 
-		it('Should throw InvalidCredentialsError if password is invalid', async () => {
+		it('Should throw UnauthorizedError if password is invalid', async () => {
 			const client = {
 				id: 1,
 				email: 'user@example.com',
@@ -50,7 +50,7 @@ describe('USE-CASE - Authentication', () => {
 
 			await expect(
 				loginClient('user@example.com', 'wrong-password'),
-			).rejects.toBeInstanceOf(InvalidCredentialsError);
+			).rejects.toBeInstanceOf(UnauthorizedError);
 
 			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
 			expect(hashService.compare).toHaveBeenCalledWith(

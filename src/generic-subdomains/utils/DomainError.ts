@@ -47,3 +47,9 @@ export class UnprocessableEntityError extends DomainError {
 		super('UNPROCESSABLE_ENTITY', message);
 	}
 }
+
+export class UnauthorizedError extends DomainError {
+	public constructor(message: string) {
+		super('UNAUTHORIZED', message);
+	}
+}
