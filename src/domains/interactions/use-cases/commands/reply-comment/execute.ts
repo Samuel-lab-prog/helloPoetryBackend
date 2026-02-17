@@ -1,9 +1,10 @@
 import type {
 	CommandsRepository,
-	CommentPoemParams,
+	ReplyCommentParams,
 } from '../../../ports/Commands';
+import type { QueriesRepository } from '../../../ports/Queries';
 
-import type { PoemComment } from '../../../ports/Models';
+import type { CommentReply } from '../../../ports/Models';
 import { validator } from '@SharedKernel/validators/Global';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
@@ -11,26 +12,29 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
+import { NotFoundError } from '@DomainError';
 
-export interface CommentPoemDependencies {
+export interface ReplyCommentDependencies {
 	commandsRepository: CommandsRepository;
 	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
 	friendsContract: FriendsPublicContract;
+	queriesRepository: QueriesRepository;
 	eventBus: EventBus;
 }
 
-export function commentPoemFactory({
+export function replyCommentFactory({
 	commandsRepository,
+	queriesRepository,
 	poemsContract,
 	usersContract,
 	friendsContract,
 	eventBus,
-}: CommentPoemDependencies) {
-	return async function commentPoem(
-		params: CommentPoemParams,
-	): Promise<PoemComment> {
-		const { userId, poemId, content } = params;
+}: ReplyCommentDependencies) {
+	return async function replyComment(
+		params: ReplyCommentParams,
+	): Promise<CommentReply> {
+		const { userId, parentCommentId, content } = params;
 
 		const trimmedContent = content.trim();
 
@@ -42,11 +46,16 @@ export function commentPoemFactory({
 			.bannedWords(['badword1', 'badword2']);
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
-
 		v.user(userInfo).withStatus(['active']);
 
-		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
+		const parentComment = await queriesRepository.selectCommentById({
+			commentId: parentCommentId,
+		});
+		if (!parentComment) throw new NotFoundError('Parent comment not found');
 
+		const poemInfo = await poemsContract.selectPoemBasicInfo(
+			parentComment.poemId,
+		);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])
@@ -57,27 +66,27 @@ export function commentPoemFactory({
 			userId,
 			poemInfo.authorId,
 		);
-
 		v.relation(usersRelationInfo).withNoBlocking();
 
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		const comment = await commandsRepository.createPoemComment({
+		const reply = await commandsRepository.createCommentReply({
 			userId,
-			poemId,
+			parentCommentId,
 			content: trimmedContent,
 		});
 
-		await eventBus.publish('POEM_COMMENT_CREATED', {
-			commentId: comment.id,
-			poemId,
-			authorId: poemInfo.authorId,
-			commenterId: userId,
-			commenterNickname: userInfo.nickname,
+		eventBus.publish('POEM_COMMENT_REPLIED', {
+			commentId: reply.id,
+			parentCommentId,
+			poemId: parentComment.poemId,
+			replierId: userId,
+			originalCommenterId: parentComment.userId,
+			replierNickname: userInfo.nickname,
 			poemTitle: poemInfo.poemTitle,
 		});
 
-		return comment;
+		return reply;
 	};
 }

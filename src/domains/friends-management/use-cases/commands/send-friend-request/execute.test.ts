@@ -25,8 +25,13 @@ describe('USE-CASE - Friends Management', () => {
 			findFriendRequest: mock(),
 		};
 
+		// 🚨 Mock atualizado para incluir nickname e status
 		usersContract = {
-			selectUserBasicInfo: mock(),
+			selectUserBasicInfo: mock().mockResolvedValue({
+				id: 2,
+				nickname: 'TestUser',
+				status: 'active',
+			}),
 		} as any;
 
 		sendFriendRequest = sendFriendRequestFactory({
@@ -37,40 +42,40 @@ describe('USE-CASE - Friends Management', () => {
 	});
 
 	describe('Send Friend Request', () => {
-		it('Does not allow self reference', () => {
-			expect(
+		it('Does not allow self reference', async () => {
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 1 }),
 			).rejects.toBeInstanceOf(SelfReferenceError);
 		});
 
-		it('Should abort when users are blocked', () => {
+		it('Should abort when users are blocked', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue({ id: 1 });
 
-			expect(
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 			).rejects.toBeInstanceOf(UserBlockedError);
 		});
 
-		it('Should abort when friendship already exists', () => {
+		it('Should abort when friendship already exists', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({ id: 5 });
 
-			expect(
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 			).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
 		});
 
-		it('Should abort when outgoing request already exists', () => {
+		it('Should abort when outgoing request already exists', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest.mockResolvedValueOnce({ id: 10 });
 
-			expect(
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 			).rejects.toBeInstanceOf(RequestAlreadySentError);
 		});
 
-		it('Should accept request when incoming request exists', () => {
+		it('Should accept request when incoming request exists', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest
@@ -82,12 +87,12 @@ describe('USE-CASE - Friends Management', () => {
 				data: { id: 30 },
 			});
 
-			expect(
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 			).resolves.toEqual({ id: 30 });
 		});
 
-		it('Should create friend request when no errors occur', () => {
+		it('Should create friend request when no errors occur', async () => {
 			queriesRepository.findBlockedRelationship.mockResolvedValue(null);
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest
@@ -99,7 +104,7 @@ describe('USE-CASE - Friends Management', () => {
 				data: { id: 40 },
 			});
 
-			expect(
+			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
 			).resolves.toEqual({ id: 40 });
 		});

@@ -12,6 +12,7 @@ describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
 	let queriesRepository: any;
 	let acceptFriendRequest: any;
+	let usersContract: any;
 
 	beforeEach(() => {
 		commandsRepository = {
@@ -23,10 +24,14 @@ describe('USE-CASE - Friends Management', () => {
 			findFriendRequest: mock(),
 			findBlockedRelationship: mock(),
 		};
+		usersContract = {
+			selectUserBasicInfo: mock(),
+		} as any;
 
 		acceptFriendRequest = acceptFriendRequestFactory({
 			commandsRepository,
 			queriesRepository,
+			usersContract: usersContract,
 		});
 	});
 
@@ -89,6 +94,7 @@ describe('USE-CASE - Friends Management', () => {
 			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
 			queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
 			queriesRepository.findBlockedRelationship.mockResolvedValue(false);
+			usersContract.selectUserBasicInfo.mockResolvedValue({ nickname: 'John' });
 
 			commandsRepository.acceptFriendRequest.mockResolvedValue({
 				ok: true,

@@ -1,9 +1,9 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/Commands';
-import type { PoemLike, PoemComment } from '../../use-cases/Models';
+import type { PoemLike, PoemComment, CommentReply } from '../../ports/Models';
 
-export function createPoemLike(params: {
+function createPoemLike(params: {
 	userId: number;
 	poemId: number;
 }): Promise<PoemLike> {
@@ -19,7 +19,7 @@ export function createPoemLike(params: {
 	});
 }
 
-export function deletePoemLike(params: {
+function deletePoemLike(params: {
 	userId: number;
 	poemId: number;
 }): Promise<PoemLike> {
@@ -37,7 +37,7 @@ export function deletePoemLike(params: {
 	});
 }
 
-export function createPoemComment(params: {
+function createPoemComment(params: {
 	userId: number;
 	poemId: number;
 	content: string;
@@ -63,9 +63,7 @@ export function createPoemComment(params: {
 	});
 }
 
-export function deletePoemComment(params: {
-	commentId: number;
-}): Promise<void> {
+function deletePoemComment(params: { commentId: number }): Promise<void> {
 	const { commentId } = params;
 	return withPrismaErrorHandling(async () => {
 		await prisma.comment.delete({
@@ -74,9 +72,42 @@ export function deletePoemComment(params: {
 	});
 }
 
+function createCommentReply(params: {
+	userId: number;
+	parentCommentId: number;
+	content: string;
+}): Promise<CommentReply> {
+	const { userId, parentCommentId, content } = params;
+	return withPrismaErrorHandling(async () => {
+		const parentComment = await prisma.comment.findUnique({
+			where: { id: parentCommentId },
+		});
+
+		if (!parentComment) throw new Error('Parent comment not found');
+
+		const reply = await prisma.comment.create({
+			data: {
+				authorId: userId,
+				poemId: parentComment.poemId,
+				content,
+				parentId: parentCommentId,
+			},
+		});
+		return {
+			id: reply.id,
+			content: reply.content,
+			createdAt: reply.createdAt,
+			userId: reply.authorId,
+			poemId: reply.poemId,
+			parentId: reply.parentId!, // parentId will always be defined for a reply
+		};
+	});
+}
+
 export const commandsRepository: CommandsRepository = {
 	createPoemLike,
 	deletePoemLike,
 	createPoemComment,
 	deletePoemComment,
+	createCommentReply,
 };

@@ -5,7 +5,7 @@ import type {
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
-import type { PoemComment } from '../../Models';
+import type { PoemComment } from '../../../ports/Models';
 import { validator } from '@SharedKernel/validators/Global';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';

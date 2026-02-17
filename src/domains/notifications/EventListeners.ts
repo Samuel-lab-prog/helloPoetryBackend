@@ -180,3 +180,42 @@ eventBus.subscribe('NEW_FRIEND', async (p) => {
 		);
 	}
 });
+
+eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: p.originalCommenterId,
+			type: 'POEM_COMMENT_REPLIED',
+			title: 'Your comment received a reply',
+			actorId: p.replierId,
+			entityId: p.commentId,
+			entityType: 'COMMENT',
+			body: `Your comment on the poem "${p.poemTitle}" received a reply from ${p.replierNickname}`,
+			data: {
+				commentId: p.commentId,
+				parentCommentId: p.parentCommentId,
+				poemId: p.poemId,
+				replierId: p.replierId,
+				replierNickname: p.replierNickname,
+				poemTitle: p.poemTitle,
+			},
+			aggregateWindowMinutes: 60,
+		});
+		log.info(
+			{
+				entityType: 'COMMENT',
+				commentId: p.commentId,
+			},
+			'New notification created for comment reply',
+		);
+	} catch (err) {
+		log.error(
+			{
+				entityType: 'COMMENT',
+				commentId: p.commentId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for comment reply',
+		);
+	}
+});

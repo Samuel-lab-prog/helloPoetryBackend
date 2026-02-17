@@ -3,7 +3,7 @@ import type {
 	LikePoemParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { PoemLike } from '../../Models';
+import type { PoemLike } from '../../../ports/Models';
 import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

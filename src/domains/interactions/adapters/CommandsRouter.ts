@@ -8,6 +8,8 @@ import { PoemLikeSchema } from '../ports/schemas/PoemLikeSchema';
 import { type CommandsRouterServices } from '../ports/Commands';
 import { appErrorSchema } from '@AppError';
 import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
+import { CommentReplySchema } from '../ports/schemas/Index';
+import { PoemContentSchema } from '@Domains/poems-management/ports/schemas/PoemFieldsSchemas';
 
 export function createInteractionsCommandsRouter(
 	services: CommandsRouterServices,
@@ -81,7 +83,7 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				body: t.Object({
-					content: PoemCommentSchema['properties']['content'],
+					content: PoemContentSchema,
 				}),
 				response: {
 					201: PoemCommentSchema,
@@ -90,6 +92,35 @@ export function createInteractionsCommandsRouter(
 				detail: {
 					summary: 'Comment Poem',
 					description: 'Adds a comment to a poem by the authenticated user.',
+					tags: ['Interactions'],
+				},
+			},
+		)
+		.post(
+			'/comments/:id/reply',
+			async ({ auth, params, body, set }) => {
+				const rs = await services.replyComment({
+					userId: auth.clientId,
+					parentCommentId: params.id,
+					content: body.content,
+				});
+				set.status = 201;
+				return rs;
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				body: t.Object({
+					content: PoemContentSchema,
+				}),
+				response: {
+					201: CommentReplySchema,
+					404: appErrorSchema,
+				},
+				detail: {
+					summary: 'Reply Comment',
+					description: 'Adds a reply to a comment by the authenticated user.',
 					tags: ['Interactions'],
 				},
 			},

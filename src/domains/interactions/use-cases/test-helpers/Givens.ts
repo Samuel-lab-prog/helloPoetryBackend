@@ -137,6 +137,27 @@ export function givenCreatedComment(
 	});
 }
 
+export function givenReplyCreatedComment(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+	overrides: CreatePoemCommentOverride = {},
+) {
+	givenResolved(commandsRepository, 'createCommentReply', {
+		id: DEFAULT_COMMENT_ID,
+		userId: DEFAULT_PERFORMER_USER_ID,
+		content: DEFAULT_COMMENT_CONTENT,
+		parentId: DEFAULT_COMMENT_ID,
+		poemId: DEFAULT_POEM_ID,
+		createdAt: new Date(),
+		...overrides,
+	});
+}
+
+export function givenCommentNotFound(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+) {
+	givenResolved(queriesRepository, 'selectCommentById', null);
+}
+
 export function givenExistingComments(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	overrides: FindCommentsOverride = {},

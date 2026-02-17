@@ -12,6 +12,7 @@ import {
 
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
+import { usersPublicContract } from '@Domains/users-management/public/Index';
 
 const commandsServices: CommandsRouterServices = {
 	cancelFriendRequest: cancelFriendRequestFactory({
@@ -25,10 +26,12 @@ const commandsServices: CommandsRouterServices = {
 	sendFriendRequest: sendFriendRequestFactory({
 		commandsRepository,
 		queriesRepository,
+		usersContract: usersPublicContract,
 	}),
 	acceptFriendRequest: acceptFriendRequestFactory({
 		commandsRepository,
 		queriesRepository,
+		usersContract: usersPublicContract,
 	}),
 	blockUser: blockUserFactory({
 		commandsRepository,

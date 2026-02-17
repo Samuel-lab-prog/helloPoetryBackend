@@ -31,6 +31,8 @@ interface DomainEvents {
 		poemId: number;
 		replierId: number;
 		originalCommenterId: number;
+		replierNickname: string;
+		poemTitle: string;
 	};
 	POEM_DEDICATED: {
 		poemId: number;

@@ -8,6 +8,7 @@ import type {
 	CommentPoemParams,
 	DeleteCommentParams,
 	LikePoemParams,
+	ReplyCommentParams,
 	UnlikePoemParams,
 } from '../../ports/Commands';
 import type {
@@ -34,12 +35,15 @@ import {
 	type CreatePoemCommentOverride,
 	type FindCommentsOverride,
 	type SelectCommentByIdOverride,
+	givenReplyCreatedComment,
+	givenCommentNotFound,
 } from './Givens';
 import {
 	commentPoemFactory,
 	likePoemFactory,
 	deleteCommentFactory,
 	unlikePoemFactory,
+	replyCommentFactory,
 } from '../commands/Index';
 import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
 import {
@@ -74,6 +78,7 @@ const interactionsMockFactories = {
 		deletePoemComment: mock(),
 		createPoemLike: mock(),
 		deletePoemLike: mock(),
+		createCommentReply: mock(),
 	}),
 	queriesRepository: createMockedContract<QueriesRepository>({
 		selectCommentById: mock(),
@@ -89,6 +94,7 @@ function interactionsFactory(deps: typeof interactionsMockFactories) {
 		likePoem: likePoemFactory(deps),
 		removeLikePoem: unlikePoemFactory(deps),
 		deleteComment: deleteCommentFactory(deps),
+		replyComment: replyCommentFactory(deps),
 		getPoemComments: getPoemCommentsFactory(deps),
 	};
 }
@@ -150,6 +156,16 @@ export const makeInteractionsScenario = (() => {
 			return this;
 		},
 
+		withCommentReply(overrides: CreatePoemCommentOverride = {}) {
+			givenReplyCreatedComment(mocks.commandsRepository, overrides);
+			return this;
+		},
+
+		withCommentNotFound() {
+			givenCommentNotFound(mocks.queriesRepository);
+			return this;
+		},
+
 		executeCommentPoem(params: Partial<CommentPoemParams> = {}) {
 			return sutFactory.commentPoem(
 				makeParams(
@@ -194,6 +210,19 @@ export const makeInteractionsScenario = (() => {
 			return sutFactory.getPoemComments(
 				makeParams(
 					{ poemId: DEFAULT_POEM_ID, userId: DEFAULT_PERFORMER_USER_ID },
+					params,
+				),
+			);
+		},
+
+		executeReplyComment(params: Partial<ReplyCommentParams> = {}) {
+			return sutFactory.replyComment(
+				makeParams(
+					{
+						userId: DEFAULT_PERFORMER_USER_ID,
+						parentCommentId: DEFAULT_COMMENT_ID,
+						content: DEFAULT_COMMENT_CONTENT,
+					},
 					params,
 				),
 			);

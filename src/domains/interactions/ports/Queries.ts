@@ -1,4 +1,4 @@
-import type { PoemComment, PoemLike } from '../use-cases/Models';
+import type { PoemComment, PoemLike } from './Models';
 
 export type GetPoemCommentsParams = {
 	poemId: number;
