@@ -3,12 +3,8 @@ import Elysia from 'elysia';
 import { AppError, type AppErrorCode } from '../AppError.ts';
 import { DomainError } from '../DomainError.ts';
 import { DatabaseError } from '@DatabaseError';
-import { log } from '../logger.ts';
-import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
-
-/* ---------------------------------- */
-/* Normalization */
-/* ---------------------------------- */
+import { log } from '../Logger.ts';
+import { SetupPlugin, type SetupPluginContext } from './SetupPlugin.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) return error;
@@ -24,10 +20,6 @@ function normalizeError(code: unknown, error: unknown): AppError {
 		error instanceof Error ? error : undefined,
 	);
 }
-
-/* ---------------------------------- */
-/* Converters */
-/* ---------------------------------- */
 
 function convertDatabaseError(error: DatabaseError): AppError {
 	switch (error.type) {
@@ -134,16 +126,11 @@ const domainStatusMap: Record<AppErrorCode, number> = {
 	UNKNOWN: 500,
 };
 
-/* ---------------------------------- */
-/* Logging */
-/* ---------------------------------- */
-
 function logError(
 	context: ReturnType<typeof buildErrorContext>,
 	status: number,
 	message: string,
 	code: AppErrorCode,
-	originalError?: Error,
 ) {
 	log.error(
 		{
@@ -152,16 +139,11 @@ function logError(
 				status,
 				message,
 				code,
-				originalError: originalError?.message,
 			},
 		},
 		'An error occurred while processing the request',
 	);
 }
-
-/* ---------------------------------- */
-/* Context Builder */
-/* ---------------------------------- */
 
 function buildErrorContext(request: Request, ctx: SetupPluginContext) {
 	const url = new URL(request.url);
@@ -196,10 +178,6 @@ function buildErrorContext(request: Request, ctx: SetupPluginContext) {
 	};
 }
 
-/* ---------------------------------- */
-/* Helpers */
-/* ---------------------------------- */
-
 function extractNumericSegment(segments: string[]): number | undefined {
 	const candidate = segments.at(-1);
 	if (!candidate) return undefined;
@@ -207,10 +185,6 @@ function extractNumericSegment(segments: string[]): number | undefined {
 	const parsed = Number(candidate);
 	return Number.isInteger(parsed) ? parsed : undefined;
 }
-
-/* ---------------------------------- */
-/* Handler */
-/* ---------------------------------- */
 
 type HandleErrorContext = {
 	set: any;
@@ -229,13 +203,7 @@ function handleError(ctx: HandleErrorContext) {
 
 	set.status = appError.statusCode;
 
-	logError(
-		context,
-		appError.statusCode,
-		appError.message,
-		appError.code,
-		appError.originalError,
-	);
+	logError(context, appError.statusCode, appError.message, appError.code);
 
 	return sendAppError(appError);
 }
@@ -245,13 +213,8 @@ function sendAppError(err: AppError) {
 		message: err.message,
 		statusCode: err.statusCode,
 		code: err.code,
-		originalError: err.originalError?.message,
 	};
 }
-
-/* ---------------------------------- */
-/* Plugin */
-/* ---------------------------------- */
 
 export const ErrorPlugin = new Elysia()
 	.use(SetupPlugin)

@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { SetupPlugin } from '@SetupPlugin';
+import { SetupPlugin } from '@GenericSubdomains/utils/plugins/SetupPlugin';
 import { appErrorSchema } from '@AppError';
 import { CookieTokenSchema } from '../ports/schemas/CookieTokenSchema';
 import type { AuthPluginServices } from '../ports/Services';

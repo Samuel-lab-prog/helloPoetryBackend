@@ -2,7 +2,7 @@
 import type { AppError } from '@AppError';
 import type { HeadersInit } from 'bun';
 import { expect, mock } from 'bun:test';
-import { testServer } from '../../index';
+import { testServer } from '../../Index';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,

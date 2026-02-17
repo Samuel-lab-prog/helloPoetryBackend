@@ -1,6 +1,6 @@
 import Elysia from 'elysia';
 import { appErrorSchema } from '../AppError';
-import { log } from '../logger';
+import { log } from '../Logger';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 type AuthType = {

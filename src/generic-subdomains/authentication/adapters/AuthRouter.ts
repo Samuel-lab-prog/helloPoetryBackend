@@ -1,7 +1,7 @@
 import { Elysia, type CookieOptions } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
-import { SetupPlugin } from '../../utils/plugins/setupPlugin';
+import { SetupPlugin } from '../../utils/plugins/SetupPlugin';
 import { LoginSchema } from '../ports/schemas/LoginSchema';
 import type { AuthControllerServices } from '../ports/Services';
 

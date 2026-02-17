@@ -6,10 +6,6 @@ import {
 } from '@DatabaseError';
 import type { CommandResult } from '@SharedKernel/Types';
 
-/* ---------------------------------- */
-/* Helpers                            */
-/* ---------------------------------- */
-
 type PrismaMappedError = {
 	code: 'CONFLICT' | 'NOT_FOUND' | 'UNKNOWN';
 	message: string;
@@ -60,10 +56,6 @@ function mapPrismaError(
 	}
 }
 
-/* ---------------------------------- */
-/* Throw style                        */
-/* ---------------------------------- */
-
 function handlePrismaError(error: PrismaClientKnownRequestError): never {
 	const mapped = mapPrismaError(error);
 
@@ -94,10 +86,6 @@ export async function withPrismaErrorHandling<T>(
 		);
 	}
 }
-
-/* ---------------------------------- */
-/* Result style                       */
-/* ---------------------------------- */
 
 export async function withPrismaResult<T>(
 	callback: () => Promise<T>,

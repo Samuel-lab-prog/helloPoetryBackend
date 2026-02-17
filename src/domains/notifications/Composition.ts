@@ -15,7 +15,7 @@ import {
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
 import { createNotificationFactory } from './use-cases/commands/create-notification/execute';
-import { log } from '@GenericSubdomains/utils/logger';
+import { log } from '@GenericSubdomains/utils/Logger';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
