@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@AppError';
-import { cookieTokenSchema } from '../ports/schemas/CookieTokenSchema';
+import { CookieTokenSchema } from '../ports/schemas/CookieTokenSchema';
 import type { AuthPluginServices } from '../ports/Services';
 
 export function createAuthPlugin({ authenticate }: AuthPluginServices) {
@@ -24,6 +24,6 @@ export function createAuthPlugin({ authenticate }: AuthPluginServices) {
 		response: {
 			401: appErrorSchema,
 		},
-		cookie: cookieTokenSchema,
+		cookie: CookieTokenSchema,
 	});
 }

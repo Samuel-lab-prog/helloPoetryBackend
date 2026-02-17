@@ -1,8 +1,12 @@
 import type { AuthClient, LoginResponse } from './Models';
 import type { UserRole } from '@SharedKernel/Enums';
 
+export type LoginClientParams = {
+	email: string;
+	password: string;
+};
 export interface AuthControllerServices {
-	login: (email: string, password: string) => Promise<LoginResponse>;
+	login: (params: LoginClientParams) => Promise<LoginResponse>;
 }
 
 export interface AuthPluginServices {

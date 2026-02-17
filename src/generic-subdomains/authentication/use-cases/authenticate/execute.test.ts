@@ -1,73 +1,142 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { authenticateClientFactory } from './execute';
-import { UnprocessableEntityError, UnauthorizedError } from '@DomainError';
+import { describe, it, expect } from 'bun:test';
+import { UnauthorizedError, UnprocessableEntityError } from '@DomainError';
+import { makeAuthScenario } from '../test-helpers/Helper';
+import { expectError } from '@TestUtils';
 
-describe('USE-CASE - Authentication', () => {
-	let tokenService: any;
-	let findClientByEmail: any;
-	let authenticateClient: any;
+describe.concurrent('USE-CASE - Authentication - AuthenticateClient', () => {
+	describe('Successful execution', () => {
+		it('should authenticate client with valid token', async () => {
+			const scenario = makeAuthScenario().withTokenValid().withAuthUser();
+			const result = await scenario.executeAuthenticate();
 
-	beforeEach(() => {
-		tokenService = {
-			verifyToken: mock(),
-		};
+			expect(result).toEqual({
+				id: expect.any(Number),
+				role: expect.any(String),
+				status: expect.any(String),
+			});
+		});
 
-		findClientByEmail = mock();
+		it('should return correct client data', async () => {
+			const scenario = makeAuthScenario().withTokenValid().withAuthUser({
+				id: 99,
+				role: 'admin',
+				status: 'active',
+			});
 
-		authenticateClient = authenticateClientFactory({
-			tokenService,
-			findClientByEmail,
+			const result = await scenario.executeAuthenticate();
+
+			expect(result).toEqual({
+				id: 99,
+				role: 'admin',
+				status: 'active',
+			});
 		});
 	});
 
-	describe('Authenticate Client', () => {
-		it('Should throw UnprocessableEntityError if token is invalid', async () => {
-			tokenService.verifyToken.mockReturnValue(null);
-
-			await expect(authenticateClient('some-token')).rejects.toBeInstanceOf(
+	describe('Token validation', () => {
+		it('should throw UnprocessableEntityError when token is invalid', async () => {
+			const scenario = makeAuthScenario().withTokenInvalid();
+			await expectError(
+				scenario.executeAuthenticate(),
 				UnprocessableEntityError,
 			);
-
-			expect(tokenService.verifyToken).toHaveBeenCalledWith('some-token');
 		});
 
-		it('Should throw UnprocessableEntityError if token payload does not contain email', async () => {
-			tokenService.verifyToken.mockReturnValue({});
+		it('should throw UnprocessableEntityError when token has no email', async () => {
+			const scenario = makeAuthScenario().withTokenValid({ email: undefined });
 
-			await expect(authenticateClient('some-token')).rejects.toBeInstanceOf(
+			await expectError(
+				scenario.executeAuthenticate(),
 				UnprocessableEntityError,
 			);
-
-			expect(tokenService.verifyToken).toHaveBeenCalledWith('some-token');
 		});
+	});
 
-		it('Should throw UnauthorizedError if no client exists with the token email', async () => {
-			tokenService.verifyToken.mockReturnValue({ email: 'user@example.com' });
-			findClientByEmail.mockResolvedValue(null);
+	describe('Client validation', () => {
+		it('should throw UnauthorizedError when client does not exist', async () => {
+			const scenario = makeAuthScenario()
+				.withTokenValid()
+				.withAuthUserNotFound();
 
-			await expect(authenticateClient('valid-token')).rejects.toBeInstanceOf(
-				UnauthorizedError,
+			await expectError(scenario.executeAuthenticate(), UnauthorizedError);
+		});
+	});
+
+	it('should throw UnauthorizedError when client is banned', async () => {
+		const scenario = makeAuthScenario()
+			.withTokenValid()
+			.withAuthUser({ status: 'banned' });
+
+		await expectError(scenario.executeAuthenticate(), UnauthorizedError);
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeAuthScenario().withTokenValid();
+
+			scenario.mocks.usersContract.selectAuthUserByEmail.mockRejectedValue(
+				new Error('boom'),
 			);
 
-			expect(tokenService.verifyToken).toHaveBeenCalledWith('valid-token');
-			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
+			await expectError(scenario.executeAuthenticate(), Error);
+		});
+	});
+
+	it('should not fetch client when token is invalid', async () => {
+		const scenario = makeAuthScenario().withTokenInvalid();
+
+		await expectError(scenario.executeAuthenticate(), UnprocessableEntityError);
+
+		expect(
+			scenario.mocks.usersContract.selectUserBasicInfo,
+		).not.toHaveBeenCalled();
+	});
+	it('should not fetch client when token has no email', async () => {
+		const scenario = makeAuthScenario().withTokenValid({ email: undefined });
+
+		await expectError(scenario.executeAuthenticate(), UnprocessableEntityError);
+
+		expect(
+			scenario.mocks.usersContract.selectUserBasicInfo,
+		).not.toHaveBeenCalled();
+	});
+	it('should call verifyToken with provided token', async () => {
+		const scenario = makeAuthScenario().withTokenValid().withAuthUser();
+
+		await scenario.executeAuthenticate('my-token');
+
+		expect(scenario.mocks.tokenService.verifyToken).toHaveBeenCalledWith(
+			'my-token',
+		);
+	});
+	it('should fetch client using email from token payload', async () => {
+		const scenario = makeAuthScenario()
+			.withTokenValid({ email: 'john@mail.com' })
+			.withAuthUser();
+
+		await scenario.executeAuthenticate();
+
+		expect(
+			scenario.mocks.usersContract.selectAuthUserByEmail,
+		).toHaveBeenCalledWith('john@mail.com');
+	});
+	it('should not return sensitive client fields', async () => {
+		const scenario = makeAuthScenario().withTokenValid().withAuthUser({
+			passwordHash: 'secret',
 		});
 
-		it('Should return client info when token and client are valid', async () => {
-			const client = { id: 1, role: 'admin', status: 'active' };
-			tokenService.verifyToken.mockReturnValue({ email: 'user@example.com' });
-			findClientByEmail.mockResolvedValue(client);
+		const result = await scenario.executeAuthenticate();
 
-			const result = await authenticateClient('valid-token');
+		expect(result).not.toHaveProperty('passwordHash');
+	});
 
-			expect(result).toEqual({
-				id: client.id,
-				role: client.role,
-				status: client.status,
-			});
+	it('should propagate usersContract errors', async () => {
+		const scenario = makeAuthScenario().withTokenValid();
 
-			expect(tokenService.verifyToken).toHaveBeenCalledWith('valid-token');
-			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
-		});
+		scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
+			new Error('db error'),
+		);
+
+		await expectError(scenario.executeAuthenticate(), Error);
 	});
 });

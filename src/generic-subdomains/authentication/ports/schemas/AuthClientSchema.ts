@@ -5,7 +5,7 @@ import {
 	UserStatusSchema,
 } from '@SharedKernel/Schemas';
 
-export const loginResponseSchema = t.Object({
+export const AuthClientSchema = t.Object({
 	id: idSchema,
 	role: UserRoleSchema,
 	status: UserStatusSchema,

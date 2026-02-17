@@ -5,17 +5,22 @@ import type { UsersPublicContract } from '@Domains/users-management/public/Index
 
 export interface AuthenticateClientDependencies {
 	tokenService: TokenService;
-	findClientByEmail: UsersPublicContract['selectAuthUserByEmail'];
+	usersContract: UsersPublicContract;
 }
 
-export function authenticateClientFactory(dependencies: AuthenticateClientDependencies) {
-	const { tokenService, findClientByEmail } = dependencies;
+export function authenticateClientFactory(
+	dependencies: AuthenticateClientDependencies,
+) {
+	const { tokenService, usersContract } = dependencies;
 	return async function authenticateClient(token: string): Promise<AuthClient> {
-		const payload = tokenService.verifyToken(token);
-		if (!payload || !payload.email) throw new UnprocessableEntityError('Invalid token');
+		const payload = await tokenService.verifyToken(token);
+		if (!payload || !payload.email)
+			throw new UnprocessableEntityError('Invalid token');
 
-		const client = await findClientByEmail(payload.email);
+		const client = await usersContract.selectAuthUserByEmail(payload.email);
 		if (!client) throw new UnauthorizedError('Client not found');
+		if (client.status === 'banned')
+			throw new UnauthorizedError('Client is banned');
 
 		return {
 			id: client.id,

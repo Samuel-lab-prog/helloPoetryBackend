@@ -29,7 +29,9 @@
 
 		"./architecture-analysis/src/metrics",
 		"./src/tests/endpoints",
-		"./src/tests/data"
+		"./src/tests/data",
+
+		"./src/generic-subdomains/authentication/ports/schemas"
 	],
 	"delete": true,
 	"location": "top",

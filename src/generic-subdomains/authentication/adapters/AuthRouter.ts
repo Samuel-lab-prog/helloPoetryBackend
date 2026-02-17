@@ -1,16 +1,17 @@
 import { Elysia, type CookieOptions } from 'elysia';
-import { SetupPlugin } from '@GenericSubdomains/utils/plugins/setupPlugin';
 import { appErrorSchema } from '@AppError';
-import { loginSchema } from '../ports/schemas/loginSchema';
+import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
+import { SetupPlugin } from '../../utils/plugins/setupPlugin';
+import { LoginSchema } from '../ports/schemas/loginSchema';
 import type { AuthControllerServices } from '../ports/Services';
-import { loginResponseSchema } from '@GenericSubdomains/authentication/ports/schemas/LoginResponseSchema';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
-	token.httpOnly = process.env.NODE_ENV === 'prod';
+	token.httpOnly = process.env.NODE_ENV === 'production';
 	token.path = '/';
-	token.maxAge = process.env.NODE_ENV === 'prod' ? 60 * 60 * 24 * 7 : 60 * 60;
-	token.secure = process.env.NODE_ENV === 'prod';
-	token.sameSite = process.env.NODE_ENV === 'prod' ? 'none' : 'lax';
+	token.maxAge =
+		process.env.NODE_ENV === 'production' ? 60 * 60 * 24 * 7 : 60 * 60;
+	token.secure = process.env.NODE_ENV === 'production';
+	token.sameSite = process.env.NODE_ENV === 'production' ? 'none' : 'lax';
 }
 
 export function createAuthRouter(services: AuthControllerServices) {
@@ -30,9 +31,9 @@ export function createAuthRouter(services: AuthControllerServices) {
 			return result.client;
 		},
 		{
-			body: loginSchema,
+			body: LoginSchema,
 			response: {
-				200: loginResponseSchema,
+				200: AuthClientSchema,
 				400: appErrorSchema,
 				401: appErrorSchema,
 			},

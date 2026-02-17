@@ -1,97 +1,126 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { loginClientFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import { UnauthorizedError } from '@DomainError';
 
-describe('USE-CASE - Authentication', () => {
-	let tokenService: any;
-	let hashService: any;
-	let findClientByEmail: any;
-	let loginClient: any;
+import { makeAuthScenario } from '../test-helpers/Helper';
+import { expectError } from '@TestUtils';
 
-	beforeEach(() => {
-		tokenService = {
-			generateToken: mock(),
-		};
+describe.concurrent('USE-CASE - Authentication - LoginClient', () => {
+	describe('Successful execution', () => {
+		it('should login with valid credentials', async () => {
+			const scenario = makeAuthScenario()
+				.withAuthUser()
+				.withPasswordValid()
+				.withTokenGenerated();
 
-		hashService = {
-			compare: mock(),
-		};
-
-		findClientByEmail = mock();
-
-		loginClient = loginClientFactory({
-			tokenService,
-			hashService,
-			findClientByEmail,
-		});
-	});
-	describe('Login Client', () => {
-		it('Should throw UnauthorizedError if client email does not exist', async () => {
-			findClientByEmail.mockResolvedValue(null);
-
-			await expect(
-				loginClient('user@example.com', 'password'),
-			).rejects.toBeInstanceOf(UnauthorizedError);
-
-			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
-		});
-
-		it('Should throw UnauthorizedError if password is invalid', async () => {
-			const client = {
-				id: 1,
-				email: 'user@example.com',
-				role: 'admin',
-				status: 'active',
-				passwordHash: 'hashed-password',
-			};
-
-			findClientByEmail.mockResolvedValue(client);
-			hashService.compare.mockResolvedValue(false);
-
-			await expect(
-				loginClient('user@example.com', 'wrong-password'),
-			).rejects.toBeInstanceOf(UnauthorizedError);
-
-			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
-			expect(hashService.compare).toHaveBeenCalledWith(
-				'wrong-password',
-				client.passwordHash,
-			);
-		});
-
-		it('Should return token and client info when credentials are valid', async () => {
-			const client = {
-				id: 1,
-				email: 'user@example.com',
-				role: 'admin',
-				status: 'active',
-				passwordHash: 'hashed-password',
-			};
-
-			findClientByEmail.mockResolvedValue(client);
-			hashService.compare.mockResolvedValue(true);
-			tokenService.generateToken.mockReturnValue('jwt-token');
-
-			const result = await loginClient('user@example.com', 'correct-password');
-
+			const result = await scenario.executeLogin();
 			expect(result).toEqual({
-				token: 'jwt-token',
+				token: expect.any(String),
 				client: {
-					id: client.id,
-					role: client.role,
-					status: client.status,
+					id: expect.any(Number),
+					role: expect.any(String),
+					status: expect.any(String),
 				},
 			});
+		});
+		it('should return correct client data', async () => {
+			const scenario = makeAuthScenario()
+				.withAuthUser({
+					id: 10,
+					role: 'admin',
+					status: 'active',
+				})
+				.withPasswordValid()
+				.withTokenGenerated('my-token');
 
-			expect(findClientByEmail).toHaveBeenCalledWith('user@example.com');
-			expect(hashService.compare).toHaveBeenCalledWith(
-				'correct-password',
-				client.passwordHash,
+			const result = await scenario.executeLogin();
+
+			expect(result).toEqual({
+				token: 'my-token',
+				client: {
+					id: 10,
+					role: 'admin',
+					status: 'active',
+				},
+			});
+		});
+	});
+	describe('Credentials validation', () => {
+		it('should throw UnauthorizedError when client does not exist', async () => {
+			const scenario = makeAuthScenario().withAuthUserNotFound();
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+		});
+
+		it('should throw UnauthorizedError when client is banned', async () => {
+			const scenario = makeAuthScenario().withAuthUser({ status: 'banned' });
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+		});
+
+		it('should throw UnauthorizedError when password is invalid', async () => {
+			const scenario = makeAuthScenario()
+				.withAuthUser()
+				.withPasswordValid(false);
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+		});
+
+		it('should generate token with correct payload', async () => {
+			const scenario = makeAuthScenario()
+				.withAuthUser({
+					id: 42,
+					role: 'author',
+					email: 'test@mail.com',
+				})
+				.withPasswordValid()
+				.withTokenGenerated();
+
+			await scenario.executeLogin();
+
+			expect(scenario.mocks.tokenService.generateToken).toHaveBeenCalledWith(
+				{
+					clientId: 42,
+					role: 'author',
+					email: 'test@mail.com',
+				},
+				expect.any(Number),
 			);
-			expect(tokenService.generateToken).toHaveBeenCalledWith(
-				{ clientId: client.id, role: client.role, email: client.email },
-				3600,
-			);
+		});
+
+		it('should not compare password when client does not exist', async () => {
+			const scenario = makeAuthScenario().withAuthUserNotFound();
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+
+			expect(scenario.mocks.hashService.compare).not.toHaveBeenCalled();
+		});
+
+		it('should not generate token when password is invalid', async () => {
+			const scenario = makeAuthScenario()
+				.withAuthUser()
+				.withPasswordValid(false);
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+
+			expect(scenario.mocks.tokenService.generateToken).not.toHaveBeenCalled();
+		});
+
+		it('should not compare password when client is banned', async () => {
+			const scenario = makeAuthScenario().withAuthUser({ status: 'banned' });
+
+			await expectError(scenario.executeLogin(), UnauthorizedError);
+
+			expect(scenario.mocks.hashService.compare).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makeAuthScenario().withAuthUser();
+
+			scenario.mocks.hashService.compare.mockRejectedValue(new Error('boom'));
+
+			await expectError(scenario.executeLogin(), Error);
 		});
 	});
 });
