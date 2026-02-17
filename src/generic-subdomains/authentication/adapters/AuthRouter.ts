@@ -2,7 +2,7 @@ import { Elysia, type CookieOptions } from 'elysia';
 import { appErrorSchema } from '@AppError';
 import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
 import { SetupPlugin } from '../../utils/plugins/setupPlugin';
-import { LoginSchema } from '../ports/schemas/loginSchema';
+import { LoginSchema } from '../ports/schemas/LoginSchema';
 import type { AuthControllerServices } from '../ports/Services';
 
 function setUpCookieTokenOptions(token: CookieOptions) {
@@ -20,7 +20,10 @@ export function createAuthRouter(services: AuthControllerServices) {
 	return new Elysia({ prefix: '/auth' }).use(SetupPlugin).post(
 		'/login',
 		async ({ body, cookie, auth }) => {
-			const result = await login(body.email, body.password);
+			const result = await login({
+				email: body.email,
+				password: body.password,
+			});
 
 			cookie.token!.value = result.token;
 			setUpCookieTokenOptions(cookie.token!);

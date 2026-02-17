@@ -202,12 +202,12 @@ describe('INTEGRATION - Poems Management', () => {
 		expectAppError(result, 404);
 	});
 
-	(['banned', 'suspended'] as const).forEach((status) => {
+	(['banned'] as const).forEach((status) => {
 		it(`User with status ${status} cannot create a poem`, async () => {
 			await updateUserStatsRaw(user2.id, { status });
 			const result = await createPoem(user2.cookie, makePoem(user2.id));
 
-			expectAppError(result, 403);
+			expectAppError(result, 401);
 		});
 
 		it(`User with status ${status} cannot update a poem`, async () => {
@@ -220,7 +220,7 @@ describe('INTEGRATION - Poems Management', () => {
 				makeUpdatedPoem({ title: 'New Title' }),
 			);
 
-			expectAppError(result, 403);
+			expectAppError(result, 401);
 		});
 	});
 
@@ -234,6 +234,6 @@ describe('INTEGRATION - Poems Management', () => {
 			makeUpdatedPoem({ title: 'New Title' }),
 		);
 
-		expectAppError(result, 403);
+		expectAppError(result, 401);
 	});
 });

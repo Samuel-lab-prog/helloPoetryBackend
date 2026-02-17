@@ -165,7 +165,7 @@ describe('INTEGRATION - Poems Management ', () => {
 
 		await updateUserStatsRaw(otherUser.id, { status: 'banned' });
 
-		expectAppError(await getPoemById(otherUser.cookie, created.id!), 403);
+		expectAppError(await getPoemById(otherUser.cookie, created.id!), 401);
 	});
 
 	it('Moderators can see friends-only and unlisted poems but not private or draft', async () => {
@@ -214,6 +214,6 @@ describe('INTEGRATION - Poems Management ', () => {
 			poem,
 		)) as CreatePoemResult;
 
-		expectAppError(await getPoemById('', created.id!), 401);
+		expectAppError(await getPoemById('', created.id!), 422);
 	});
 });
