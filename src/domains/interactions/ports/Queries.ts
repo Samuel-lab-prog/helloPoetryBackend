@@ -1,4 +1,4 @@
-import type { PoemComment, PoemLike } from './Models';
+import type { PoemComment } from './Models';
 
 export type GetPoemCommentsParams = {
 	poemId: number;
@@ -8,10 +8,11 @@ export type GetPoemCommentsParams = {
 export interface QueriesRepository {
 	selectCommentById(params: { commentId: number }): Promise<PoemComment | null>;
 	findCommentsByPoemId(params: { poemId: number }): Promise<PoemComment[]>;
-	findPoemLike(params: {
+	findPoemLike(params: { userId: number; poemId: number }): Promise<boolean>;
+	findCommentLike(params: {
 		userId: number;
-		poemId: number;
-	}): Promise<PoemLike | null>;
+		commentId: number;
+	}): Promise<boolean>;
 }
 
 export interface QueriesRouterServices {

@@ -4,7 +4,6 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 
-import type { PoemComment } from '../../../ports/Models';
 import { validator } from '@SharedKernel/validators/Global';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
@@ -12,7 +11,7 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
-import { NotFoundError } from '@DomainError';
+import { NotFoundError, UnknownError } from '@DomainError';
 
 export interface ReplyCommentDependencies {
 	commandsRepository: CommandsRepository;
@@ -33,7 +32,7 @@ export function replyCommentFactory({
 }: ReplyCommentDependencies) {
 	return async function replyComment(
 		params: CommentPoemParams,
-	): Promise<PoemComment> {
+	): Promise<{ commentId: number }> {
 		const { userId, parentCommentId, content } = params;
 
 		const trimmedContent = content.trim();
@@ -73,15 +72,19 @@ export function replyCommentFactory({
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		const reply = await commandsRepository.createPoemComment({
+		const result = await commandsRepository.createPoemComment({
 			userId,
 			poemId: parentComment.poemId,
 			content: trimmedContent,
 			parentId: parentCommentId,
 		});
 
+		if (!result.ok) throw new UnknownError('Failed to create comment');
+
+		const reply = result.data;
+
 		eventBus.publish('POEM_COMMENT_REPLIED', {
-			commentId: reply.id,
+			commentId: reply.commentId,
 			parentCommentId,
 			poemId: parentComment.poemId,
 			replierId: userId,

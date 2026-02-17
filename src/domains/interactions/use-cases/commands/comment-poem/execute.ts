@@ -3,7 +3,6 @@ import type {
 	CommentPoemParams,
 } from '../../../ports/Commands';
 
-import type { PoemComment } from '../../../ports/Models';
 import { validator } from '@SharedKernel/validators/Global';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
@@ -11,6 +10,7 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
+import { UnknownError } from '@DomainError';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -29,7 +29,7 @@ export function commentPoemFactory({
 }: CommentPoemDependencies) {
 	return async function commentPoem(
 		params: CommentPoemParams,
-	): Promise<PoemComment> {
+	): Promise<{ commentId: number }> {
 		const { userId, poemId, content } = params;
 
 		const trimmedContent = content.trim();
@@ -63,21 +63,24 @@ export function commentPoemFactory({
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		const comment = await commandsRepository.createPoemComment({
+		const result = await commandsRepository.createPoemComment({
 			userId,
 			poemId,
 			content: trimmedContent,
 		});
 
+		if (!result.ok) throw new UnknownError('Failed to create comment');
+
+		const comment = result.data;
+
 		await eventBus.publish('POEM_COMMENT_CREATED', {
-			commentId: comment.id,
+			commentId: comment.commentId,
 			poemId,
 			authorId: poemInfo.authorId,
 			commenterId: userId,
 			commenterNickname: userInfo.nickname,
 			poemTitle: poemInfo.poemTitle,
 		});
-
 		return comment;
 	};
 }

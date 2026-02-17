@@ -19,7 +19,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 				.withCreatedComment()
 				.withCommentReply();
 			const result = await scenario.executeReplyComment();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 
 		it('should allow exactly 300 characters', async () => {
@@ -33,7 +33,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 			const result = await scenario.executeReplyComment({
 				content: 'a'.repeat(300),
 			});
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 	});
 
@@ -175,7 +175,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 				.withFoundComment()
 				.withCommentReply();
 			const result = await scenario.executeReplyComment();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 
 		it('should allow owner to reply to their own poem', async () => {
@@ -186,7 +186,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 				.withFoundComment()
 				.withCommentReply();
 			const result = await scenario.executeReplyComment();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 
 		it('should throw ForbiddenError when owner replies to their own private poem', async () => {

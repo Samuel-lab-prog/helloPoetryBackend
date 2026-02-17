@@ -92,12 +92,10 @@ export function givenUsersRelation(
 
 export function givenPoemLikeDeleted(
 	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: DeletePoemLikeOverride = {},
 ) {
 	givenResolved(commandsRepository, 'deletePoemLike', {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
+		ok: true,
+		data: undefined,
 	});
 }
 
@@ -105,23 +103,15 @@ export function givenPoemLikeExists(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	exists: boolean,
 ) {
-	givenResolved(
-		queriesRepository,
-		'findPoemLike',
-		exists
-			? { userId: DEFAULT_PERFORMER_USER_ID, poemId: DEFAULT_POEM_ID }
-			: null,
-	);
+	givenResolved(queriesRepository, 'findPoemLike', exists);
 }
 
 export function givenPoemLikeCreated(
 	commandsRepository: InteractionsSutMocks['commandsRepository'],
-	overrides: CreatePoemLikeOverride = {},
 ) {
 	givenResolved(commandsRepository, 'createPoemLike', {
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		...overrides,
+		ok: true,
+		data: undefined,
 	});
 }
 
@@ -130,14 +120,10 @@ export function givenCreatedComment(
 	overrides: CreatePoemCommentOverride = {},
 ) {
 	givenResolved(commandsRepository, 'createPoemComment', {
-		id: DEFAULT_COMMENT_ID,
-		userId: DEFAULT_PERFORMER_USER_ID,
-		poemId: DEFAULT_POEM_ID,
-		content: DEFAULT_COMMENT_CONTENT,
-		status: DEFAULT_COMMENT_STATUS,
-		parentId: DEFAULT_COMMENT_PARENT_ID,
-		createdAt: new Date(),
-		...overrides,
+		ok: true,
+		data: {
+			commentId: overrides.data?.commentId ?? DEFAULT_COMMENT_ID,
+		},
 	});
 }
 
@@ -184,5 +170,8 @@ export function givenFoundComment(
 export function givenDeletedComment(
 	commandsRepository: InteractionsSutMocks['commandsRepository'],
 ) {
-	givenResolved(commandsRepository, 'deletePoemComment', undefined);
+	givenResolved(commandsRepository, 'deletePoemComment', {
+		ok: true,
+		data: undefined,
+	});
 }

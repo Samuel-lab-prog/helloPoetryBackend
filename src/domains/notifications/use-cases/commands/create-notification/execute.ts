@@ -23,9 +23,7 @@ export function createNotificationFactory({
 		const result = await commandsRepository.insertNotification(params);
 
 		if (!result.ok) {
-			throw new Error(
-				result.error?.message || 'Failed to create notification',
-			);
+			throw new Error(result.error?.message || 'Failed to create notification');
 		}
 
 		return result.data!;

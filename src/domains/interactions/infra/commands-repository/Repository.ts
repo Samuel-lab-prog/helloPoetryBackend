@@ -42,20 +42,27 @@ function createPoemComment(params: {
 	userId: number;
 	poemId: number;
 	content: string;
-}): Promise<CommandResult<void>> {
+}): Promise<CommandResult<{ commentId: number }>> {
 	const { userId, poemId, content } = params;
 	return withPrismaResult(async () => {
-		 await prisma.comment.create({
+		const rs = await prisma.comment.create({
 			data: {
 				authorId: userId,
 				poemId,
 				content,
 			},
+			select: {
+				id: true,
+			},
 		});
+		return { commentId: rs.id };
 	});
 }
 
-function deletePoemComment(params: { commentId: number, deletedBy: CommentStatus }): Promise<CommandResult<void>> {
+function deletePoemComment(params: {
+	commentId: number;
+	deletedBy: CommentStatus;
+}): Promise<CommandResult<void>> {
 	const { commentId, deletedBy } = params;
 	return withPrismaResult(async () => {
 		await prisma.comment.update({
@@ -65,8 +72,11 @@ function deletePoemComment(params: { commentId: number, deletedBy: CommentStatus
 	});
 }
 
-function createCommentLike(params: {	userId: number; commentId: number}): Promise<CommandResult<void>> {
-	const { userId, commentId} = params;
+function createCommentLike(params: {
+	userId: number;
+	commentId: number;
+}): Promise<CommandResult<void>> {
+	const { userId, commentId } = params;
 	return withPrismaResult(async () => {
 		await prisma.commentLike.create({
 			data: {
@@ -77,8 +87,11 @@ function createCommentLike(params: {	userId: number; commentId: number}): Promis
 	});
 }
 
-function deleteCommentLike(params: {	userId: number; commentId: number}): Promise<CommandResult<void>> {
-	const { userId, commentId} = params;
+function deleteCommentLike(params: {
+	userId: number;
+	commentId: number;
+}): Promise<CommandResult<void>> {
+	const { userId, commentId } = params;
 	return withPrismaResult(async () => {
 		await prisma.commentLike.delete({
 			where: {

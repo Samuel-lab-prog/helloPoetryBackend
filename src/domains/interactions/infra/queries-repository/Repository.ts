@@ -1,7 +1,7 @@
 import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/Queries';
-import type { PoemComment, PoemLike } from '../../ports/Models';
+import type { PoemComment } from '../../ports/Models';
 
 export function selectCommentById(params: {
 	commentId: number;
@@ -66,10 +66,10 @@ export function findCommentsByPoemId(params: {
 export function findPoemLike(params: {
 	userId: number;
 	poemId: number;
-}): Promise<PoemLike | null> {
+}): Promise<boolean> {
 	const { userId, poemId } = params;
-	return withPrismaErrorHandling(() => {
-		return prisma.poemLike.findUnique({
+	return withPrismaErrorHandling(async () => {
+		const like = await prisma.poemLike.findUnique({
 			where: {
 				userId_poemId: {
 					userId,
@@ -77,6 +77,25 @@ export function findPoemLike(params: {
 				},
 			},
 		});
+		return !!like;
+	});
+}
+
+export function findCommentLike(params: {
+	userId: number;
+	commentId: number;
+}): Promise<boolean> {
+	const { userId, commentId } = params;
+	return withPrismaErrorHandling(async () => {
+		const like = await prisma.commentLike.findUnique({
+			where: {
+				userId_commentId: {
+					userId,
+					commentId,
+				},
+			},
+		});
+		return !!like;
 	});
 }
 
@@ -84,4 +103,5 @@ export const queriesRepository: QueriesRepository = {
 	selectCommentById,
 	findCommentsByPoemId,
 	findPoemLike,
+	findCommentLike,
 };

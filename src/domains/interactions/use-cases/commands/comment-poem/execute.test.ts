@@ -17,7 +17,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.executeCommentPoem();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId');
 		});
 		it('should allow exactly 300 characters', async () => {
 			const scenario = makeInteractionsScenario()
@@ -29,7 +29,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				content: 'a'.repeat(300),
 			});
 
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId');
 		});
 	});
 	describe('User validation', () => {
@@ -134,7 +134,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.executeCommentPoem();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 		it('should allow owner to comment on their own non-private poem', async () => {
 			const scenario = makeInteractionsScenario()
@@ -143,7 +143,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withUsersRelation({ areFriends: false, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.executeCommentPoem();
-			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('commentId', 1);
 		});
 		it('should throw ForbiddenError when owner comments on their own private poem', async () => {
 			const scenario = makeInteractionsScenario()

@@ -33,8 +33,7 @@ export function markNotificationAsReadFactory({
 		if (!notification.ok) {
 			if (notification.code === 'NOT_FOUND')
 				throw new NotFoundError('Notification not found');
-			else
-				throw new NotFoundError('Failed to mark notification as read');
+			else throw new NotFoundError('Failed to mark notification as read');
 		}
 		return notification.data!;
 	};

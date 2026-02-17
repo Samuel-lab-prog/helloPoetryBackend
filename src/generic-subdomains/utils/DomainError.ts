@@ -53,3 +53,9 @@ export class UnauthorizedError extends DomainError {
 		super('UNAUTHORIZED', message);
 	}
 }
+
+export class UnknownError extends DomainError {
+	public constructor(message: string = 'An unknown error occurred') {
+		super('UNKNOWN', message);
+	}
+}

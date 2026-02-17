@@ -14,8 +14,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 				.withPoemLikeCreated();
 
 			const result = await scenario.executeLikePoem();
-			expect(result).toHaveProperty('userId');
-			expect(result).toHaveProperty('poemId');
+			expect(result).toBeUndefined();
 		});
 
 		it('should like an unlisted poem', async () => {
@@ -27,8 +26,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 				.withPoemLikeCreated();
 
 			const result = await scenario.executeLikePoem();
-			expect(result).toHaveProperty('userId');
-			expect(result).toHaveProperty('poemId');
+			expect(result).toBeUndefined();
 		});
 
 		it('should like a friends-only poem when users are friends', async () => {
@@ -40,8 +38,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 				.withPoemLikeCreated();
 
 			const result = await scenario.executeLikePoem();
-			expect(result).toHaveProperty('userId');
-			expect(result).toHaveProperty('poemId');
+			expect(result).toBeUndefined();
 		});
 
 		it('should allow the author to like their own friends-only poem', async () => {
@@ -53,8 +50,7 @@ describe.concurrent('USE-CASE - Interactions - LikePoem', () => {
 				.withPoemLikeCreated();
 
 			const result = await scenario.executeLikePoem();
-			expect(result).toHaveProperty('userId', 1);
-			expect(result).toHaveProperty('poemId');
+			expect(result).toBeUndefined();
 		});
 	});
 

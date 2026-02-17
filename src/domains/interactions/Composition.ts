@@ -56,6 +56,9 @@ export const commandsRouterServices: CommandsRouterServices = {
 		queriesRepository,
 		usersContract: usersPublicContract,
 	}),
+
+	likeComment: async (_params) => {},
+	unlikeComment: async (_params) => {},
 };
 
 export const interactionsQueriesRouter = createInteractionsQueriesRouter(

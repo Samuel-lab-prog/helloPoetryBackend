@@ -3,7 +3,6 @@ import type {
 	LikePoemParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { PoemLike } from '../../../ports/Models';
 import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
@@ -26,7 +25,7 @@ export function likePoemFactory({
 	usersContract,
 	poemsContract,
 }: LikePoemDependencies) {
-	return async function likePoem(params: LikePoemParams): Promise<PoemLike> {
+	return async function likePoem(params: LikePoemParams): Promise<void> {
 		const { userId, poemId } = params;
 		const v = validator();
 
@@ -63,6 +62,9 @@ export function likePoemFactory({
 			likerNickname: userInfo.nickname,
 		});
 
-		return commandsRepository.createPoemLike({ userId, poemId });
+		await commandsRepository.createPoemLike({
+			userId,
+			poemId,
+		});
 	};
 }

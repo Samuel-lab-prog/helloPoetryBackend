@@ -101,9 +101,6 @@ export function sendFriendRequestFactory({
 			recipientId: addresseeId,
 			requesterNickname: addresseeInfo.nickname,
 		});
-		console.log(
-			'The event was successfully published for new friend request in the UC',
-		);
 		return result.data;
 	};
 }

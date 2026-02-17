@@ -29,8 +29,6 @@ import {
 	type UserBasicInfoOverride,
 	type PoemInteractionInfoOverride,
 	type UsersRelationInfoOverride,
-	type DeletePoemLikeOverride,
-	type CreatePoemLikeOverride,
 	type CreatePoemCommentOverride,
 	type FindCommentsOverride,
 	type SelectCommentByIdOverride,
@@ -88,6 +86,7 @@ function interactionsMockFactories() {
 			selectCommentById: mock(),
 			findCommentsByPoemId: mock(),
 			findPoemLike: mock(),
+			findCommentLike: mock(),
 		}),
 
 		eventBus: createInMemoryEventBus(),
@@ -144,13 +143,13 @@ export function makeInteractionsScenario() {
 			return this;
 		},
 
-		withPoemLikeCreated(overrides: CreatePoemLikeOverride = {}) {
-			givenPoemLikeCreated(mocks.commandsRepository, overrides);
+		withPoemLikeCreated() {
+			givenPoemLikeCreated(mocks.commandsRepository);
 			return this;
 		},
 
-		withPoemLikeDeleted(overrides: DeletePoemLikeOverride = {}) {
-			givenPoemLikeDeleted(mocks.commandsRepository, overrides);
+		withPoemLikeDeleted() {
+			givenPoemLikeDeleted(mocks.commandsRepository);
 			return this;
 		},
 
@@ -164,11 +163,10 @@ export function makeInteractionsScenario() {
 			return this;
 		},
 
-		withCommentReply(overrides: CreatePoemCommentOverride = {}) {
+		withCommentReply(commentId: number = DEFAULT_COMMENT_ID) {
 			givenCreatedComment(mocks.commandsRepository, {
-				id: DEFAULT_COMMENT_ID + 1,
-				parentId: DEFAULT_COMMENT_ID,
-				...overrides,
+				ok: true,
+				data: { commentId },
 			});
 			return this;
 		},
