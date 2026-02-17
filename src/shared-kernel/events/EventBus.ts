@@ -10,9 +10,10 @@ interface DomainEvents {
 		recipientId: number;
 	};
 	POEM_LIKED: {
+		userId: number;
 		poemId: number;
 		likerId: number;
-		authorId: number;
+		likerNickname: string;
 	};
 	POEM_COMMENT_CREATED: {
 		commentId: number;

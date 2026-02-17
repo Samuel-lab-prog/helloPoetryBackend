@@ -15,6 +15,7 @@ import {
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
 import { createNotificationFactory } from './use-cases/commands/create-notification/execute';
+import { log } from '@GenericSubdomains/utils/logger';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
@@ -27,7 +28,7 @@ const notificationsQueriesServices: NotificationsQueriesServices = {
 	}),
 };
 
-const notificationsCommandsServices: NotificationsCommandsServices = {
+export const notificationsCommandsServices: NotificationsCommandsServices = {
 	markAsRead: markNotificationAsReadFactory({
 		commandsRepository,
 		usersContract: usersPublicContract,
@@ -67,7 +68,23 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 			},
 			aggregateWindowMinutes: 60,
 		});
+		log.info(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+				commentId: p.commentId,
+			},
+			'New notification created for poem comment',
+		);
 	} catch (err) {
-		console.error('Error creating notification via eventBus:', err);
+		log.error(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+				commentId: p.commentId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for poem comment',
+		);
 	}
 });

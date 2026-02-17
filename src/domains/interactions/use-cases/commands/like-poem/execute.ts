@@ -9,6 +9,7 @@ import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -54,6 +55,13 @@ export function likePoemFactory({
 			poemId,
 		});
 		if (alreadyLiked) throw new ConflictError('Poem already liked');
+
+		eventBus.publish('POEM_LIKED', {
+			poemId,
+			userId,
+			likerId: userId,
+			likerNickname: userInfo.nickname,
+		});
 
 		return commandsRepository.createPoemLike({ userId, poemId });
 	};
