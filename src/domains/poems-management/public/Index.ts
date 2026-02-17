@@ -79,7 +79,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 		if (!poem) {
 			return {
 				exists: false,
-				id: -1,
+				id: poemId,
 				authorId: -1,
 				visibility: 'private',
 				moderationStatus: 'pending',

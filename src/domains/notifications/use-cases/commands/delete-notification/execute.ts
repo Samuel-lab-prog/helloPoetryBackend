@@ -32,10 +32,7 @@ export function deleteNotificationFactory({
 			if (notification.code === 'NOT_FOUND')
 				throw new NotFoundError('Notification not found');
 			else
-				v.throwNew(
-					notification.code,
-					notification.message || 'Failed to delete notification',
-				);
+				throw new NotFoundError('Failed to delete notification');
 		}
 		return notification.data!;
 	};

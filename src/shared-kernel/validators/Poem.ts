@@ -11,34 +11,41 @@ export function poem(poem: PoemBasicInfo) {
 		throw new NotFoundError(`Poem with id ${poem.id} not found`);
 
 	return {
-		withVisibility(allowedVisibilities: PoemVisibility[]) {
+		withVisibility(allowedVisibilities: PoemVisibility[], msg?: string) {
 			if (!allowedVisibilities.includes(poem.visibility))
 				throw new ForbiddenError(
-					`Cannot perform this action on a poem with visibility ${poem.visibility}`,
+					msg ||
+						`Cannot perform this action on a poem with visibility ${poem.visibility}`,
 				);
 			return this;
 		},
 
-		withModerationStatus(allowedModerationStatuses: PoemModerationStatus[]) {
+		withModerationStatus(
+			allowedModerationStatuses: PoemModerationStatus[],
+			msg?: string,
+		) {
 			if (!allowedModerationStatuses.includes(poem.moderationStatus))
 				throw new ForbiddenError(
-					`Cannot perform this action on a poem with moderation status ${poem.moderationStatus}`,
+					msg ||
+						`Cannot perform this action on a poem with moderation status ${poem.moderationStatus}`,
 				);
 			return this;
 		},
 
-		withCommentability(allowedCommentability: boolean) {
+		withCommentability(allowedCommentability: boolean, msg?: string) {
 			if (poem.isCommentable !== allowedCommentability)
 				throw new ForbiddenError(
-					`Cannot perform this action on a poem with commentability ${poem.isCommentable}`,
+					msg ||
+						`Cannot perform this action on a poem with commentability ${poem.isCommentable}`,
 				);
 			return this;
 		},
 
-		withStatus(allowedStatuses: PoemStatus[]) {
+		withStatus(allowedStatuses: PoemStatus[], msg?: string) {
 			if (!allowedStatuses.includes(poem.status))
 				throw new ForbiddenError(
-					`Cannot perform this action on a poem with status ${poem.status}`,
+					msg ||
+						`Cannot perform this action on a poem with status ${poem.status}`,
 				);
 			return this;
 		},

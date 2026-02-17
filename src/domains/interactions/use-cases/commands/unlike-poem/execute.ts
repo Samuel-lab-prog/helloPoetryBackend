@@ -1,6 +1,6 @@
 import type {
 	CommandsRepository,
-	UnlikePoemParams,
+	LikePoemParams,
 } from '../../../ports/Commands';
 import { NotFoundError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
@@ -22,7 +22,7 @@ export function unlikePoemFactory({
 	queriesRepository,
 	usersContract,
 }: UnlikePoemDependencies) {
-	return async function unlikePoem(params: UnlikePoemParams): Promise<void> {
+	return async function unlikePoem(params: LikePoemParams): Promise<void> {
 		const { userId, poemId } = params;
 		const v = validator();
 

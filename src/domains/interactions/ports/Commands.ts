@@ -1,4 +1,13 @@
-import type { PoemLike, PoemComment } from './Models';
+import type { CommandResult } from '../../../shared-kernel/Types';
+import type {
+	CommentStatus,
+} from './Models';
+
+export type LikeCommentParams = {
+	userId: number;
+	commentId: number;
+	poemId: number;
+};
 
 export type CommentPoemParams = {
 	userId: number;
@@ -17,26 +26,28 @@ export type LikePoemParams = {
 	poemId: number;
 };
 
-export type UnlikePoemParams = {
-	userId: number;
-	poemId: number;
-};
-
 export interface CommandsRepository {
-	createPoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
-	deletePoemLike(params: { userId: number; poemId: number }): Promise<PoemLike>;
+	createPoemLike(params: { userId: number; poemId: number }): Promise<CommandResult<void>>;
+	deletePoemLike(params: { userId: number; poemId: number }): Promise<CommandResult<void>>;
+	createCommentLike(params: LikeCommentParams): Promise<CommandResult<void>>;
+	deleteCommentLike(params: LikeCommentParams): Promise<CommandResult<void>>;
 	createPoemComment(params: {
 		userId: number;
 		poemId: number;
 		content: string;
 		parentId?: number;
-	}): Promise<PoemComment>;
-	deletePoemComment(params: { commentId: number }): Promise<void>;
+	}): Promise<CommandResult<void>>;
+	deletePoemComment(params: {
+		commentId: number;
+		deletedBy: CommentStatus;
+	}): Promise<CommandResult<void>>;
 }
 
 export interface CommandsRouterServices {
-	likePoem(params: LikePoemParams): Promise<PoemLike>;
-	unlikePoem(params: UnlikePoemParams): Promise<void>;
-	commentPoem(params: CommentPoemParams): Promise<PoemComment>;
+	likePoem(params: LikePoemParams): Promise<void>;
+	unlikePoem(params: LikePoemParams): Promise<void>;
+	commentPoem(params: CommentPoemParams): Promise<void>;
 	deleteComment(params: DeleteCommentParams): Promise<void>;
+	likeComment(params: LikeCommentParams): Promise<void>;
+	unlikeComment(params: LikeCommentParams): Promise<void>;
 }

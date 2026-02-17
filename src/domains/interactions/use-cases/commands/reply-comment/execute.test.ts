@@ -11,7 +11,7 @@ import { expectError } from '@TestUtils';
 describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 	describe('Successful execution', () => {
 		it('should create a reply', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withUsersRelation({ areFriends: true, areBlocked: false })
@@ -23,7 +23,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should allow exactly 300 characters', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withUsersRelation({ areFriends: true, areBlocked: false })
@@ -39,26 +39,26 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeInteractionsScenario.withUser({ exists: false });
+			const scenario = makeInteractionsScenario().withUser({ exists: false });
 			await expectError(scenario.executeReplyComment(), NotFoundError);
 		});
 
 		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeInteractionsScenario.withUser({
+			const scenario = makeInteractionsScenario().withUser({
 				status: 'suspended',
 			});
 			await expectError(scenario.executeReplyComment(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {
-			const scenario = makeInteractionsScenario.withUser({
+			const scenario = makeInteractionsScenario().withUser({
 				status: 'banned',
 			});
 			await expectError(scenario.executeReplyComment(), ForbiddenError);
 		});
 
 		it('should throw ForbiddenError when users are blocked', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withFoundComment()
@@ -69,7 +69,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('Parent comment validation', () => {
 		it('should throw NotFoundError when parent comment does not exist', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withCommentNotFound();
 			await expectError(scenario.executeReplyComment(), NotFoundError);
@@ -78,14 +78,14 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('Poem validation', () => {
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ exists: false });
 			await expectError(scenario.executeReplyComment(), NotFoundError);
 		});
 
 		it('should throw ForbiddenError for private poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'private' })
 				.withFoundComment();
@@ -93,7 +93,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw ForbiddenError for poems under moderation', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ moderationStatus: 'pending' })
 				.withFoundComment();
@@ -101,7 +101,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw ForbiddenError for rejected poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ moderationStatus: 'rejected' })
 				.withFoundComment();
@@ -109,7 +109,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw ForbiddenError for removed poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ moderationStatus: 'removed' })
 				.withFoundComment();
@@ -117,7 +117,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw ForbiddenError for poems that do not allow comments', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ isCommentable: false })
 				.withFoundComment();
@@ -125,7 +125,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw ForbiddenError for unpublished poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ status: 'draft' })
 				.withFoundComment();
@@ -135,7 +135,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('Reply content validation', () => {
 		it('should throw UnprocessableEntityError for empty replies', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withFoundComment();
@@ -146,7 +146,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should throw UnprocessableEntityError when content exceeds 300 characters', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withFoundComment();
@@ -159,7 +159,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('Visibility rules', () => {
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: false, areBlocked: false })
@@ -168,27 +168,29 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 		});
 
 		it('should allow replies on friends-only poems when users are friends', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: true, areBlocked: false })
-				.withFoundComment();
+				.withFoundComment()
+				.withCommentReply();
 			const result = await scenario.executeReplyComment();
 			expect(result).toHaveProperty('id');
 		});
 
-		it('should allow owner to reply to their own non-private poem', async () => {
-			const scenario = makeInteractionsScenario
+		it('should allow owner to reply to their own poem', async () => {
+			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1 })
 				.withPoem({ authorId: 1 })
 				.withUsersRelation({ areFriends: false, areBlocked: false })
-				.withFoundComment();
+				.withFoundComment()
+				.withCommentReply();
 			const result = await scenario.executeReplyComment();
 			expect(result).toHaveProperty('id');
 		});
 
 		it('should throw ForbiddenError when owner replies to their own private poem', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1 })
 				.withPoem({ authorId: 1, visibility: 'private' })
 				.withFoundComment();
@@ -198,7 +200,7 @@ describe.concurrent('USE-CASE - Interactions - ReplyComment', () => {
 
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withFoundComment();

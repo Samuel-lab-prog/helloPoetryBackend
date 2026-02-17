@@ -3,11 +3,9 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
-import { PoemLikeSchema } from '../ports/schemas/PoemLikeSchema';
 
 import { type CommandsRouterServices } from '../ports/Commands';
 import { appErrorSchema } from '@AppError';
-import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
 import { commentContentSchema } from '../ports/schemas/Index';
 
 export function createInteractionsCommandsRouter(
@@ -30,7 +28,7 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				response: {
-					201: PoemLikeSchema,
+					201: t.Void(),
 					404: appErrorSchema,
 					409: appErrorSchema,
 				},
@@ -85,7 +83,7 @@ export function createInteractionsCommandsRouter(
 					content: commentContentSchema,
 				}),
 				response: {
-					201: PoemCommentSchema,
+					201: t.Void(),
 					404: appErrorSchema,
 				},
 				detail: {

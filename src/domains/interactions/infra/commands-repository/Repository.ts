@@ -1,16 +1,17 @@
 import { prisma } from '@PrismaClient';
-import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import { withPrismaResult } from '@PrismaErrorHandler';
 import type { CommandsRepository } from '../../ports/Commands';
-import type { PoemLike, PoemComment } from '../../ports/Models';
+import type { CommentStatus } from '../../ports/Models';
+import type { CommandResult } from '@SharedKernel/Types';
 
 function createPoemLike(params: {
 	userId: number;
 	poemId: number;
-}): Promise<PoemLike> {
+}): Promise<CommandResult<void>> {
 	const { userId, poemId } = params;
 
-	return withPrismaErrorHandling(() => {
-		return prisma.poemLike.create({
+	return withPrismaResult(async () => {
+		await prisma.poemLike.create({
 			data: {
 				userId,
 				poemId,
@@ -22,11 +23,11 @@ function createPoemLike(params: {
 function deletePoemLike(params: {
 	userId: number;
 	poemId: number;
-}): Promise<PoemLike> {
+}): Promise<CommandResult<void>> {
 	const { userId, poemId } = params;
 
-	return withPrismaErrorHandling(() => {
-		return prisma.poemLike.delete({
+	return withPrismaResult(async () => {
+		await prisma.poemLike.delete({
 			where: {
 				userId_poemId: {
 					userId,
@@ -41,33 +42,51 @@ function createPoemComment(params: {
 	userId: number;
 	poemId: number;
 	content: string;
-}): Promise<PoemComment> {
+}): Promise<CommandResult<void>> {
 	const { userId, poemId, content } = params;
-	return withPrismaErrorHandling(async () => {
-		const comment = await prisma.comment.create({
+	return withPrismaResult(async () => {
+		 await prisma.comment.create({
 			data: {
 				authorId: userId,
 				poemId,
 				content,
 			},
 		});
-		return {
-			id: comment.id,
-			content: comment.content,
-			createdAt: comment.createdAt,
-			status: comment.status,
-			userId: comment.authorId,
-			poemId: comment.poemId,
-			parentId: comment.parentId,
-		};
 	});
 }
 
-function deletePoemComment(params: { commentId: number }): Promise<void> {
-	const { commentId } = params;
-	return withPrismaErrorHandling(async () => {
-		await prisma.comment.delete({
+function deletePoemComment(params: { commentId: number, deletedBy: CommentStatus }): Promise<CommandResult<void>> {
+	const { commentId, deletedBy } = params;
+	return withPrismaResult(async () => {
+		await prisma.comment.update({
 			where: { id: commentId },
+			data: { status: deletedBy },
+		});
+	});
+}
+
+function createCommentLike(params: {	userId: number; commentId: number}): Promise<CommandResult<void>> {
+	const { userId, commentId} = params;
+	return withPrismaResult(async () => {
+		await prisma.commentLike.create({
+			data: {
+				userId,
+				commentId,
+			},
+		});
+	});
+}
+
+function deleteCommentLike(params: {	userId: number; commentId: number}): Promise<CommandResult<void>> {
+	const { userId, commentId} = params;
+	return withPrismaResult(async () => {
+		await prisma.commentLike.delete({
+			where: {
+				userId_commentId: {
+					userId,
+					commentId,
+				},
+			},
 		});
 	});
 }
@@ -77,4 +96,6 @@ export const commandsRepository: CommandsRepository = {
 	deletePoemLike,
 	createPoemComment,
 	deletePoemComment,
+	createCommentLike,
+	deleteCommentLike,
 };

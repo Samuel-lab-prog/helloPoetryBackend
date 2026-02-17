@@ -6,7 +6,7 @@ import { expectError } from '@TestUtils';
 describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 	describe('Successful execution', () => {
 		it('should list comments for public poem', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withUsersRelation({ areBlocked: false })
@@ -18,7 +18,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should allow friend to list comments for friends-only poem', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: true, areBlocked: false })
@@ -30,7 +30,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should allow author to list comments even if not friends', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1 })
 				.withPoem({ authorId: 1, visibility: 'friends' })
 				.withUsersRelation({ areFriends: false, areBlocked: false })
@@ -44,7 +44,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeInteractionsScenario.withUser({
+			const scenario = makeInteractionsScenario().withUser({
 				exists: false,
 			});
 
@@ -52,7 +52,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeInteractionsScenario.withUser({
+			const scenario = makeInteractionsScenario().withUser({
 				status: 'suspended',
 			});
 
@@ -60,7 +60,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError when users are blocked', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withUsersRelation({ areBlocked: true });
@@ -71,7 +71,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 	describe('Poem validation', () => {
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ exists: false });
 
@@ -79,7 +79,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError for private poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'private' });
 
@@ -87,7 +87,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError for unapproved poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ moderationStatus: 'pending' });
 
@@ -95,7 +95,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError for draft poems', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ status: 'draft' });
 
@@ -103,7 +103,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 		});
 
 		it('should throw ForbiddenError when comments are disabled', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ isCommentable: false });
 
@@ -113,7 +113,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 	describe('Visibility rules', () => {
 		it('should throw ForbiddenError for friends-only poem when not friends', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem({ visibility: 'friends' })
 				.withUsersRelation({ areFriends: false, areBlocked: false });
@@ -124,7 +124,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 	describe('Error propagation', () => {
 		it('should not swallow dependency errors', async () => {
-			const scenario = makeInteractionsScenario.withUser().withPoem();
+			const scenario = makeInteractionsScenario().withUser().withPoem();
 
 			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error('boom'),

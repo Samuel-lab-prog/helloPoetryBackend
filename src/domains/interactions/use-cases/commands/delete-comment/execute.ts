@@ -5,6 +5,7 @@ import type {
 import type { QueriesRepository } from '../../../ports/Queries';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { CommentStatus } from '@Domains/interactions/ports/Models';
 
 export interface DeleteCommentDependencies {
 	commandsRepository: CommandsRepository;
@@ -22,18 +23,22 @@ export function deleteCommentFactory({
 	): Promise<void> {
 		const { userId, commentId } = params;
 		const v = validator();
-		const userInfo = await usersContract.selectUserBasicInfo(userId);
 
+		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const comment = await queriesRepository.selectCommentById({ commentId });
-		v.ensure(comment, `Comment with id ${commentId} not found`)
-			.notNull()
-			.notUndefined();
+		const rawComment = await queriesRepository.selectCommentById({ commentId });
 
-		if (userInfo.role === 'author')
-			v.compareIds(userId, comment!.userId).sameOwner();
+		const comment = v
+			.comment(rawComment)
+			.withStatus(['visible'], 'Comment is already deleted');
 
-		return commandsRepository.deletePoemComment({ commentId });
+		let deletedBy: CommentStatus = 'deletedByModerator';
+		if (userInfo.role === 'author') {
+			v.sameOwner(userId, comment.userId);
+			deletedBy = 'deletedByAuthor';
+		}
+
+		await commandsRepository.deletePoemComment({ commentId, deletedBy });
 	};
 }

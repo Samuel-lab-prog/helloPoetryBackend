@@ -6,69 +6,147 @@ import { expectError } from '@TestUtils';
 describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 	describe('Successful execution', () => {
 		it('should delete a comment for the owner', async () => {
-			const scenario = makeInteractionsScenario
-				.withUser()
-				.withFoundComment()
+			const scenario = makeInteractionsScenario()
+				.withUser({ id: 10 })
+				.withFoundComment({ userId: 10 })
 				.withDeletedComment();
 
-			await expect(scenario.executeDeleteComment()).resolves.toBeUndefined();
+			const result = await scenario.executeDeleteComment({
+				userId: 10,
+				commentId: 5,
+			});
+			expect(result).toBeUndefined();
 		});
 
 		it('should allow admin to delete any comment', async () => {
-			const scenario = makeInteractionsScenario
-				.withUser({ role: 'admin' })
-				.withFoundComment()
+			const scenario = makeInteractionsScenario()
+				.withUser({ role: 'admin', id: 1 })
+				.withFoundComment({ userId: 999 })
 				.withDeletedComment();
+
 			await expect(scenario.executeDeleteComment()).resolves.toBeUndefined();
+			expect(
+				scenario.mocks.commandsRepository.deletePoemComment,
+			).toHaveBeenCalledWith({
+				commentId: 1,
+				deletedBy: 'deletedByModerator',
+			});
 		});
 
 		it('should allow moderator to delete any comment', async () => {
-			const scenario = makeInteractionsScenario
-				.withUser({ role: 'moderator' })
-				.withFoundComment()
+			const scenario = makeInteractionsScenario()
+				.withUser({ role: 'moderator', id: 1 })
+				.withFoundComment({ userId: 999 })
 				.withDeletedComment();
+
 			await expect(scenario.executeDeleteComment()).resolves.toBeUndefined();
+			expect(
+				scenario.mocks.commandsRepository.deletePoemComment,
+			).toHaveBeenCalledWith({
+				commentId: 1,
+				deletedBy: 'deletedByModerator',
+			});
 		});
 	});
 
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
-			const scenario = makeInteractionsScenario.withUser({ exists: false });
+			const scenario = makeInteractionsScenario().withUser({ exists: false });
+
 			await expectError(scenario.executeDeleteComment(), NotFoundError);
 		});
 
-		it('should throw ForbiddenError when user is banned or suspended', async () => {
-			const bannedScenario = makeInteractionsScenario.withUser({
+		it('should throw ForbiddenError when user is banned', async () => {
+			const scenario = makeInteractionsScenario().withUser({
 				status: 'banned',
 			});
-			await expectError(bannedScenario.executeDeleteComment(), ForbiddenError);
-			const suspendedScenario = makeInteractionsScenario.withUser({
+
+			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when user is suspended', async () => {
+			const scenario = makeInteractionsScenario().withUser({
 				status: 'suspended',
 			});
-			await expectError(
-				suspendedScenario.executeDeleteComment(),
-				ForbiddenError,
-			);
+
+			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+		});
+
+		it('should not query comment when user is invalid (fail fast)', () => {
+			const scenario = makeInteractionsScenario().withUser({ exists: false });
+
+			expectError(scenario.executeDeleteComment(), NotFoundError);
+
+			expect(
+				scenario.mocks.queriesRepository.selectCommentById,
+			).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('Comment validation', () => {
+		it('should throw NotFoundError when comment does not exist', async () => {
+			const scenario = makeInteractionsScenario().withUser();
+
+			await expectError(scenario.executeDeleteComment(), NotFoundError);
+		});
+
+		it('should throw ForbiddenError when comment is already deleted by author', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withFoundComment({ status: 'deletedByAuthor' });
+
+			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when comment is already deleted by moderator', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withFoundComment({ status: 'deletedByModerator' });
+
+			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+		});
+
 		it('should throw ForbiddenError when user is not the owner and not admin/moderator', async () => {
-			const scenario = makeInteractionsScenario
+			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1, role: 'author' })
 				.withFoundComment({ userId: 2 });
+
 			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+		});
+
+		it('should not call delete when validation fails', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser({ id: 1, role: 'author' })
+				.withFoundComment({ userId: 2 });
+
+			await expectError(scenario.executeDeleteComment(), ForbiddenError);
+
+			expect(
+				scenario.mocks.commandsRepository.deletePoemComment,
+			).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('Error propagation', () => {
-		it('should not swallow dependency errors', async () => {
-			const scenario = makeInteractionsScenario.withUser().withFoundComment();
+		it('should not swallow usersContract errors', async () => {
+			const scenario = makeInteractionsScenario().withUser().withFoundComment();
+
 			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
 				new Error(
-					'Somehing exploded in the server. Please, do not repeat the request otherw bad things will happen with you!',
+					'Something exploded in the server. Please do not repeat the request.',
 				),
 			);
+
+			await expectError(scenario.executeDeleteComment(), Error);
+		});
+
+		it('should propagate delete repository errors', async () => {
+			const scenario = makeInteractionsScenario().withUser().withFoundComment();
+
+			scenario.mocks.commandsRepository.deletePoemComment.mockRejectedValue(
+				new Error('DB exploded'),
+			);
+
 			await expectError(scenario.executeDeleteComment(), Error);
 		});
 	});
