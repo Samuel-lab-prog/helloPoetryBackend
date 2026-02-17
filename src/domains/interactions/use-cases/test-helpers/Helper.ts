@@ -8,6 +8,7 @@ import type {
 	CommandsRepository,
 	CommentPoemParams,
 	DeleteCommentParams,
+	LikeCommentParams,
 	LikePoemParams,
 } from '../../ports/Commands';
 import type {
@@ -33,6 +34,9 @@ import {
 	type FindCommentsOverride,
 	type SelectCommentByIdOverride,
 	givenCommentNotFound,
+	givenCommentLikeCreated,
+	givenCommentLikeDeleted,
+	givenCommentLikeExists,
 } from './Givens';
 import {
 	commentPoemFactory,
@@ -50,6 +54,8 @@ import {
 } from './Constants';
 import type { InteractionsSutMocks } from './SutMocks';
 import { createInMemoryEventBus } from '@SharedKernel/events/EventBus';
+import { likeCommentFactory } from '../commands/like-comment/execute';
+import { unlikeCommentFactory } from '../commands/unlike-comment/execute';
 
 function interactionsMockFactories() {
 	return {
@@ -103,6 +109,8 @@ function interactionsFactory(deps: InteractionsDeps) {
 		deleteComment: deleteCommentFactory(deps),
 		replyComment: replyCommentFactory(deps),
 		getPoemComments: getPoemCommentsFactory(deps),
+		likeComment: likeCommentFactory(deps),
+		unlikeComment: unlikeCommentFactory(deps),
 	};
 }
 
@@ -135,6 +143,21 @@ export function makeInteractionsScenario() {
 
 		withExistingComments(overrides: FindCommentsOverride = {}) {
 			givenExistingComments(mocks.queriesRepository, overrides);
+			return this;
+		},
+
+		withFoundCommentLike() {
+			givenCommentLikeExists(mocks.queriesRepository, true);
+			return this;
+		},
+
+		withCommentLikeCreated() {
+			givenCommentLikeCreated(mocks.commandsRepository);
+			return this;
+		},
+
+		withCommentLikeDeleted() {
+			givenCommentLikeDeleted(mocks.commandsRepository);
 			return this;
 		},
 
@@ -189,6 +212,23 @@ export function makeInteractionsScenario() {
 			);
 		},
 
+		executeLikeComment(params: Partial<LikeCommentParams> = {}) {
+			return sutFactory.likeComment(
+				makeParams(
+					{ userId: DEFAULT_PERFORMER_USER_ID, commentId: DEFAULT_COMMENT_ID },
+					params,
+				),
+			);
+		},
+
+		executeUnlikeComment(params: Partial<LikeCommentParams> = {}) {
+			return sutFactory.unlikeComment(
+				makeParams(
+					{ userId: DEFAULT_PERFORMER_USER_ID, commentId: DEFAULT_COMMENT_ID },
+					params,
+				),
+			);
+		},
 		executeLikePoem(params: Partial<LikePoemParams> = {}) {
 			return sutFactory.likePoem(
 				makeParams(

@@ -117,5 +117,56 @@ export function createInteractionsCommandsRouter(
 					tags: ['Interactions'],
 				},
 			},
+		)
+		.post(
+			'/comments/:id/like',
+			async ({ auth, params, set }) => {
+				await services.likeComment({
+					userId: auth.clientId,
+					commentId: params.id,
+				});
+				set.status = 201;
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				response: {
+					201: t.Void(),
+					404: appErrorSchema,
+					409: appErrorSchema,
+				},
+				detail: {
+					summary: 'Like Comment',
+					description: 'Adds a like to a comment by the authenticated user.',
+					tags: ['Interactions'],
+				},
+			},
+		)
+		.delete(
+			'/comments/:id/like',
+			async ({ auth, params, set }) => {
+				await services.unlikeComment({
+					userId: auth.clientId,
+					commentId: params.id,
+				});
+				set.status = 204;
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				response: {
+					204: t.Void(),
+					404: appErrorSchema,
+					409: appErrorSchema,
+				},
+				detail: {
+					summary: 'Unlike Comment',
+					description:
+						'Removes a like from a comment by the authenticated user.',
+					tags: ['Interactions'],
+				},
+			},
 		);
 }

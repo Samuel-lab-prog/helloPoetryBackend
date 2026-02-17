@@ -17,6 +17,8 @@ import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
 import { eventBus } from '@SharedKernel/events/EventBus';
+import { likeCommentFactory } from './use-cases/commands/like-comment/execute';
+import { unlikeCommentFactory } from './use-cases/commands/unlike-comment/execute';
 
 export const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
@@ -57,8 +59,16 @@ export const commandsRouterServices: CommandsRouterServices = {
 		usersContract: usersPublicContract,
 	}),
 
-	likeComment: async (_params) => {},
-	unlikeComment: async (_params) => {},
+	likeComment: likeCommentFactory({
+		commandsRepository,
+		queriesRepository,
+		usersContract: usersPublicContract,
+	}),
+	unlikeComment: unlikeCommentFactory({
+		commandsRepository,
+		queriesRepository,
+		usersContract: usersPublicContract,
+	}),
 };
 
 export const interactionsQueriesRouter = createInteractionsQueriesRouter(

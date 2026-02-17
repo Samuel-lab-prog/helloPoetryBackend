@@ -133,6 +133,31 @@ export function givenCommentNotFound(
 	givenResolved(queriesRepository, 'selectCommentById', null);
 }
 
+export function givenCommentLikeExists(
+	queriesRepository: InteractionsSutMocks['queriesRepository'],
+	exists: boolean,
+) {
+	givenResolved(queriesRepository, 'findCommentLike', exists);
+}
+
+export function givenCommentLikeDeleted(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'deleteCommentLike', {
+		ok: true,
+		data: undefined,
+	});
+}
+
+export function givenCommentLikeCreated(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'createCommentLike', {
+		ok: true,
+		data: undefined,
+	});
+}
+
 export function givenExistingComments(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	overrides: FindCommentsOverride = {},

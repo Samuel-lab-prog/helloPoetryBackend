@@ -17,6 +17,12 @@ interface DomainEvents {
 		likerId: number;
 		likerNickname: string;
 	};
+	COMMENT_LIKED: {
+		userId: number;
+		commentId: number;
+		likerId: number;
+		likerNickname: string;
+	};
 	POEM_COMMENT_CREATED: {
 		commentId: number;
 		poemId: number;

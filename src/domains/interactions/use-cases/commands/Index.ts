@@ -4,6 +4,8 @@
 
 export * from './comment-poem/execute';
 export * from './delete-comment/execute';
+export * from './like-comment/execute';
 export * from './like-poem/execute';
 export * from './reply-comment/execute';
+export * from './unlike-comment/execute';
 export * from './unlike-poem/execute';

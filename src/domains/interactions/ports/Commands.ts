@@ -4,7 +4,6 @@ import type { CommentStatus } from './Models';
 export type LikeCommentParams = {
 	userId: number;
 	commentId: number;
-	poemId: number;
 };
 
 export type CommentPoemParams = {
