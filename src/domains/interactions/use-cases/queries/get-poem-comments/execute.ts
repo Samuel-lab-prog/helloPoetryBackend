@@ -26,7 +26,7 @@ export function getPoemCommentsFactory({
 	return async function getPoemComments(
 		params: GetPoemCommentsParams,
 	): Promise<PoemComment[]> {
-		const { poemId, userId } = params;
+		const { poemId, userId, parentId } = params;
 
 		const v = validator();
 
@@ -49,6 +49,10 @@ export function getPoemCommentsFactory({
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		return queriesRepository.selectCommentsByPoemId({ poemId });
+		return queriesRepository.selectCommentsByPoemId({
+			poemId,
+			parentId,
+			currentUserId: userId,
+		});
 	};
 }

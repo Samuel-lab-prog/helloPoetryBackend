@@ -27,7 +27,6 @@ import {
 	likePoemFactory,
 	deleteCommentFactory,
 	unlikePoemFactory,
-	replyCommentFactory,
 } from '../commands/Index';
 
 export function interactionsMockFactories() {
@@ -80,7 +79,6 @@ export function interactionsFactory(deps: InteractionsDeps) {
 		likePoem: likePoemFactory(deps),
 		removeLikePoem: unlikePoemFactory(deps),
 		deleteComment: deleteCommentFactory(deps),
-		replyComment: replyCommentFactory(deps),
 		getPoemComments: getPoemCommentsFactory(deps),
 		likeComment: likeCommentFactory(deps),
 		unlikeComment: unlikeCommentFactory(deps),

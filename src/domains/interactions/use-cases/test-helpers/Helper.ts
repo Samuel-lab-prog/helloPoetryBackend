@@ -186,20 +186,10 @@ export function makeInteractionsScenario() {
 		executeGetPoemComments(params: Partial<GetPoemCommentsParams> = {}) {
 			return sutFactory.getPoemComments(
 				makeParams(
-					{ poemId: DEFAULT_POEM_ID, userId: DEFAULT_PERFORMER_USER_ID },
-					params,
-				),
-			);
-		},
-
-		executeReplyComment(params: Partial<CommentPoemParams> = {}) {
-			return sutFactory.replyComment(
-				makeParams(
 					{
-						userId: DEFAULT_PERFORMER_USER_ID,
-						parentCommentId: DEFAULT_COMMENT_ID,
-						content: DEFAULT_COMMENT_CONTENT,
 						poemId: DEFAULT_POEM_ID,
+						userId: DEFAULT_PERFORMER_USER_ID,
+						parentId: undefined,
 					},
 					params,
 				),

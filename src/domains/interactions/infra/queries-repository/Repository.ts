@@ -71,12 +71,17 @@ export function selectCommentById(params: {
 export function selectCommentsByPoemId(params: {
 	poemId: number;
 	currentUserId?: number;
+	parentId?: number;
 }): Promise<PoemComment[]> {
-	const { poemId, currentUserId } = params;
+	const { poemId, currentUserId, parentId } = params;
 
 	return withPrismaErrorHandling(async () => {
+		// 1️⃣ Buscar comentários com dados do autor
 		const comments = await prisma.comment.findMany({
-			where: { poemId },
+			where: {
+				poemId,
+				parentId: parentId ?? null, // garante que comentários principais sejam buscados corretamente
+			},
 			orderBy: { createdAt: 'desc' },
 			select: poemCommentSelect,
 		});
@@ -84,28 +89,27 @@ export function selectCommentsByPoemId(params: {
 		const commentIds = comments.map((c) => c.id);
 		if (commentIds.length === 0) return [];
 
+		// 2️⃣ Contagem de replies
 		const repliesCounts = await prisma.comment.groupBy({
 			by: ['parentId'],
-			where: {
-				parentId: { in: commentIds },
-			},
+			where: { parentId: { in: commentIds } },
 			_count: { id: true },
 		});
 		const repliesMap = new Map(
 			repliesCounts.map((r) => [r.parentId!, r._count.id]),
 		);
 
+		// 3️⃣ Contagem de likes
 		const likesCounts = await prisma.commentLike.groupBy({
 			by: ['commentId'],
-			where: {
-				commentId: { in: commentIds },
-			},
+			where: { commentId: { in: commentIds } },
 			_count: { userId: true },
 		});
 		const likesMap = new Map(
 			likesCounts.map((l) => [l.commentId, l._count.userId]),
 		);
 
+		// 4️⃣ Likes do usuário atual
 		let likedMap = new Map<number, boolean>();
 		if (currentUserId) {
 			const likedComments = await prisma.commentLike.findMany({
@@ -115,9 +119,11 @@ export function selectCommentsByPoemId(params: {
 				},
 				select: { commentId: true },
 			});
-			likedMap = new Map(likedComments.map((c) => [c.commentId, true]));
+			// ⚡ Corrige BigInt/number mismatch
+			likedMap = new Map(likedComments.map((c) => [Number(c.commentId), true]));
 		}
 
+		// 5️⃣ Mapear para PoemComment
 		return comments.map((c) => ({
 			id: c.id,
 			content: c.content,
