@@ -30,7 +30,7 @@ export function commentPoemFactory({
 	return async function commentPoem(
 		params: CommentPoemParams,
 	): Promise<{ commentId: number }> {
-		const { userId, poemId, content } = params;
+		const { userId, poemId, content, parentId } = params;
 
 		const trimmedContent = content.trim();
 
@@ -67,6 +67,7 @@ export function commentPoemFactory({
 			userId,
 			poemId,
 			content: trimmedContent,
+			parentId,
 		});
 
 		if (!result.ok) throw new UnknownError('Failed to create comment');

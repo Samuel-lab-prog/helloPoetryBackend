@@ -33,7 +33,7 @@ export function replyCommentFactory({
 	return async function replyComment(
 		params: CommentPoemParams,
 	): Promise<{ commentId: number }> {
-		const { userId, parentCommentId, content } = params;
+		const { userId, parentId, content } = params;
 
 		const trimmedContent = content.trim();
 
@@ -46,11 +46,11 @@ export function replyCommentFactory({
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
-		if (!parentCommentId)
+		if (!parentId)
 			throw new NotFoundError('Parent comment ID must be provided for a reply');
 
 		const parentComment = await queriesRepository.selectCommentById({
-			commentId: parentCommentId,
+			commentId: parentId,
 		});
 		if (!parentComment) throw new NotFoundError('Parent comment not found');
 
@@ -76,7 +76,7 @@ export function replyCommentFactory({
 			userId,
 			poemId: parentComment.poemId,
 			content: trimmedContent,
-			parentId: parentCommentId,
+			parentId: parentId,
 		});
 
 		if (!result.ok) throw new UnknownError('Failed to create comment');
@@ -85,7 +85,7 @@ export function replyCommentFactory({
 
 		eventBus.publish('POEM_COMMENT_REPLIED', {
 			commentId: reply.commentId,
-			parentCommentId,
+			parentCommentId: parentId,
 			poemId: parentComment.poemId,
 			replierId: userId,
 			originalCommenterId: parentComment.author.id,

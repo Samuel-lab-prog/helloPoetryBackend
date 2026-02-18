@@ -42,14 +42,16 @@ function createPoemComment(params: {
 	userId: number;
 	poemId: number;
 	content: string;
+	parentId?: number;
 }): Promise<CommandResult<{ commentId: number }>> {
-	const { userId, poemId, content } = params;
+	const { userId, poemId, content, parentId } = params;
 	return withPrismaResult(async () => {
 		const rs = await prisma.comment.create({
 			data: {
 				authorId: userId,
 				poemId,
 				content,
+				parentId,
 			},
 			select: {
 				id: true,

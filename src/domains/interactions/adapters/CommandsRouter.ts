@@ -71,6 +71,7 @@ export function createInteractionsCommandsRouter(
 					userId: auth.clientId,
 					poemId: params.id,
 					content: body.content,
+					parentId: body.parentId,
 				});
 				set.status = 201;
 			},
@@ -80,7 +81,9 @@ export function createInteractionsCommandsRouter(
 				}),
 				body: t.Object({
 					content: CommentContentSchema,
+					parentId: t.Optional(idSchema),
 				}),
+
 				response: {
 					201: t.Void(),
 					404: appErrorSchema,

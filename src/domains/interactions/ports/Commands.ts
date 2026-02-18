@@ -10,7 +10,7 @@ export type CommentPoemParams = {
 	userId: number;
 	poemId: number;
 	content: string;
-	parentCommentId?: number;
+	parentId?: number;
 };
 
 export type DeleteCommentParams = {
