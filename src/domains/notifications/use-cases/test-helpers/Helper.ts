@@ -29,8 +29,6 @@ import {
 
 import {
 	DEFAULT_USER_ID,
-	DEFAULT_NOTIFICATION_TITLE,
-	DEFAULT_NOTIFICATION_BODY,
 	DEFAULT_NOTIFICATION_ID,
 	DEFAULT_PAGE,
 } from './Constants';
@@ -121,8 +119,6 @@ export function makeNotificationsScenario() {
 					{
 						userId: DEFAULT_USER_ID,
 						type: 'POEM_COMMENT_CREATED',
-						title: DEFAULT_NOTIFICATION_TITLE,
-						body: DEFAULT_NOTIFICATION_BODY,
 						actorId: 2,
 						entityId: 42,
 						entityType: 'POEM',

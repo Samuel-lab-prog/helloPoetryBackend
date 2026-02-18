@@ -11,8 +11,6 @@ import type { Entity } from '@SharedKernel/events/EventBus';
 export type CreateNotificationParams = {
 	userId: number;
 	type: NotificationType;
-	title: string;
-	body: string;
 	actorId?: number;
 	entityId?: number;
 

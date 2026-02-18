@@ -7,15 +7,15 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.authorId,
 			type: 'POEM_COMMENT_CREATED',
-			title: 'New comment on your poem',
 			actorId: p.commenterId,
 			entityId: p.poemId,
 			entityType: 'POEM',
-			body: `Your poem received a comment from ${p.commenterNickname}`,
 			data: {
 				commentId: p.commentId,
 				commenterNickname: p.commenterNickname,
 				poemTitle: p.poemTitle,
+				body: `Your poem received a comment from ${p.commenterNickname}`,
+				title: 'New comment on your poem',
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -45,12 +45,12 @@ eventBus.subscribe('POEM_LIKED', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'POEM_LIKED',
-			title: 'Your poem was liked',
 			actorId: p.likerId,
 			entityId: p.poemId,
 			entityType: 'POEM',
-			body: `Your poem was liked by ${p.likerNickname}`,
 			data: {
+				title: 'Your poem was liked',
+				body: `Your poem received a like from ${p.likerNickname}`,
 				poemId: p.poemId,
 				likerNickname: p.likerNickname,
 			},
@@ -80,12 +80,13 @@ eventBus.subscribe('POEM_DEDICATED', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'POEM_DEDICATED',
-			title: 'A poem was dedicated to you',
 			actorId: p.dedicatorId,
 			entityId: p.poemId,
 			entityType: 'POEM',
-			body: `The poem ${p.poemTitle} was dedicated to you by ${p.dedicatorNickname}`,
 			data: {
+				title: 'A poem was dedicated to you',
+				body: `The poem ${p.poemTitle} was dedicated to you by ${p.dedicatorNickname}`,
+
 				poemId: p.poemId,
 				poemTitle: p.poemTitle,
 				dedicatorNickname: p.dedicatorNickname,
@@ -116,12 +117,13 @@ eventBus.subscribe('NEW_FRIEND_REQUEST', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.recipientId,
 			type: 'NEW_FRIEND_REQUEST',
-			title: 'New friend request',
 			actorId: p.requesterId,
 			entityId: p.requesterId,
 			entityType: 'USER',
-			body: `${p.requesterNickname} sent you a friend request`,
 			data: {
+				title: 'New friend request',
+				body: `${p.requesterNickname} sent you a friend request`,
+
 				requesterId: p.requesterId,
 				requesterNickname: p.requesterNickname,
 			},
@@ -151,13 +153,13 @@ eventBus.subscribe('NEW_FRIEND', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'NEW_FRIEND',
-			title: 'You have a new friend',
 			actorId: p.newFriendId,
 			entityId: p.newFriendId,
 			entityType: 'USER',
-			body: `You are now friends with ${p.newFriendNickname}`,
 			data: {
 				newFriendId: p.newFriendId,
+				title: 'You have a new friend',
+				body: `You are now friends with ${p.newFriendNickname}`,
 				newFriendNickname: p.newFriendNickname,
 			},
 			aggregateWindowMinutes: 60,
@@ -186,16 +188,16 @@ eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.originalCommenterId,
 			type: 'POEM_COMMENT_REPLIED',
-			title: 'Your comment received a reply',
 			actorId: p.replierId,
 			entityId: p.commentId,
 			entityType: 'COMMENT',
-			body: `Your comment on the poem ${p.poemTitle} received a reply from ${p.replierNickname}`,
 			data: {
 				commentId: p.commentId,
 				parentCommentId: p.parentCommentId,
 				poemId: p.poemId,
 				replierId: p.replierId,
+				title: 'Your comment received a reply',
+				body: `Your comment on the poem ${p.poemTitle} received a reply from ${p.replierNickname}`,
 				replierNickname: p.replierNickname,
 				poemTitle: p.poemTitle,
 			},
@@ -225,14 +227,14 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 		await notificationsCommandsServices.createNotification({
 			userId: p.authorId,
 			type: 'POEM_COMMENT_CREATED',
-			title: 'New comment on your poem',
 			actorId: p.commenterId,
 			entityId: p.poemId,
 			entityType: 'POEM',
-			body: `Your poem received a comment from ${p.commenterNickname}`,
 			data: {
 				commentId: p.commentId,
+				title: 'New comment on your poem',
 				commenterNickname: p.commenterNickname,
+				body: `Your poem received a comment from ${p.commenterNickname}`,
 				poemTitle: p.poemTitle,
 			},
 			aggregateWindowMinutes: 60,
