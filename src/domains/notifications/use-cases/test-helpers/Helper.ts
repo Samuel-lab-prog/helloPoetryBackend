@@ -1,15 +1,12 @@
 /* eslint-disable max-lines-per-function */
-import { mock } from 'bun:test';
 
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type {
-	CommandsRepository,
 	CreateNotificationParams,
 	DeleteNotificationParams,
 	MarkNotificationAsReadParams,
 } from '../../ports/Commands';
 
-import { createMockedContract, makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@TestUtils';
 
 import {
 	givenUser,
@@ -30,12 +27,6 @@ import {
 } from './Givens';
 
 import {
-	createNotificationFactory,
-	deleteNotificationFactory,
-	markNotificationAsReadFactory,
-} from '../commands/Index';
-
-import {
 	DEFAULT_USER_ID,
 	DEFAULT_NOTIFICATION_TITLE,
 	DEFAULT_NOTIFICATION_BODY,
@@ -43,80 +34,54 @@ import {
 	DEFAULT_PAGE,
 } from './Constants';
 
-import type { NotificationsSutMocks } from './SutMocks';
+import {
+	type NotificationsSutMocks,
+	notificationsFactory,
+	notificationsMockFactory,
+} from './SutMocks';
 import type {
 	GetNotificationByIdParams,
 	GetUserNotificationsParams,
-	QueriesRepository,
 } from '../../ports/Queries';
-import {
-	getNotificationByIdFactory,
-	getUserNotificationsFactory,
-} from '../queries/Index';
+
 import type { NotificationPage } from '@Domains/notifications/ports/Models';
 import type { AppErrorCode } from '@AppError';
-
-const notificationsMockFactories = {
-	usersContract: createMockedContract<UsersPublicContract>({
-		selectUserBasicInfo: mock(),
-		selectAuthUserByEmail: mock(),
-	}),
-	commandsRepository: createMockedContract<CommandsRepository>({
-		insertNotification: mock(),
-		markNotificationAsRead: mock(),
-		deleteNotification: mock(),
-	}),
-	queriesRepository: createMockedContract<QueriesRepository>({
-		selectUserNotifications: mock(),
-		selectNotificationById: mock(),
-	}),
-};
-
-function notificationsFactory(deps: typeof notificationsMockFactories) {
-	return {
-		createNotification: createNotificationFactory(deps),
-		deleteNotification: deleteNotificationFactory(deps),
-		markNotificationAsRead: markNotificationAsReadFactory(deps),
-		getUserNotifications: getUserNotificationsFactory(deps),
-		getNotificationById: getNotificationByIdFactory(deps),
-	};
-}
 
 export function makeNotificationsScenario() {
 	const { sut, mocks } = makeSut(
 		notificationsFactory,
-		notificationsMockFactories,
+		notificationsMockFactory(),
 	);
 
-	const api = {
+	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
 			givenUser(mocks.usersContract, overrides);
-			return api;
+			return this;
 		},
 
 		withNotificationInserted(overrides: InsertNotificationOverride = {}) {
 			givenNotificationInserted(mocks.commandsRepository, overrides);
-			return api;
+			return this;
 		},
 
 		withNotificationInsertFailure(code?: AppErrorCode, message?: string) {
 			givenNotificationInsertFailure(mocks.commandsRepository, code, message);
-			return api;
+			return this;
 		},
 		withNotificationDeleted(overrides: DeleteNotificationOverride = {}) {
 			givenNotificationDeleted(mocks.commandsRepository, overrides);
-			return api;
+			return this;
 		},
 
 		withNotificationDeleteFailure(code?: AppErrorCode, message?: string) {
 			givenNotificationDeleteFailure(mocks.commandsRepository, code, message);
-			return api;
+			return this;
 		},
 		withNotificationMarkedAsRead(
 			overrides: MarkNotificationAsReadOverride = {},
 		) {
 			givenNotificationMarkedAsRead(mocks.commandsRepository, overrides);
-			return api;
+			return this;
 		},
 
 		withMarkNotificationAsReadFailure(code?: AppErrorCode, message?: string) {
@@ -125,21 +90,21 @@ export function makeNotificationsScenario() {
 				code,
 				message,
 			);
-			return api;
+			return this;
 		},
 		withNotificationFound(overrides: NotificationOverride = {}) {
 			givenNotificationFound(mocks.queriesRepository, overrides);
-			return api;
+			return this;
 		},
 
 		withNotificationNotFound() {
 			givenNotificationNotFound(mocks.queriesRepository);
-			return api;
+			return this;
 		},
 
 		withUserNotifications(page: NotificationPage = DEFAULT_PAGE) {
 			givenUserNotifications(mocks.queriesRepository, page);
-			return api;
+			return this;
 		},
 
 		createNotification(params: Partial<CreateNotificationParams> = {}) {
@@ -215,6 +180,4 @@ export function makeNotificationsScenario() {
 			return mocks;
 		},
 	};
-
-	return api;
 }

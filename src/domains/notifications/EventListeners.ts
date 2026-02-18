@@ -219,3 +219,41 @@ eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 		);
 	}
 });
+
+eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
+	try {
+		await notificationsCommandsServices.createNotification({
+			userId: p.authorId,
+			type: 'POEM_COMMENT_CREATED',
+			title: 'New comment on your poem',
+			actorId: p.commenterId,
+			entityId: p.poemId,
+			entityType: 'POEM',
+			body: `Your poem received a comment from ${p.commenterNickname}`,
+			data: {
+				commentId: p.commentId,
+				commenterNickname: p.commenterNickname,
+				poemTitle: p.poemTitle,
+			},
+			aggregateWindowMinutes: 60,
+		});
+		log.info(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+				commentId: p.commentId,
+			},
+			'New notification created for poem comment',
+		);
+	} catch (err) {
+		log.error(
+			{
+				entityType: 'POEM',
+				poemId: p.poemId,
+				commentId: p.commentId,
+				error: err instanceof Error ? err.message : String(err),
+			},
+			'Failed to create notification for poem comment',
+		);
+	}
+});

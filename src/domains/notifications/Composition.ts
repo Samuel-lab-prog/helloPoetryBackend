@@ -5,7 +5,6 @@ import { commandsRepository } from './infra/commands-repository/Repository';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import type { NotificationsQueriesServices } from './ports/Queries';
 import type { NotificationsCommandsServices } from './ports/Commands';
-import { eventBus } from '@SharedKernel/events/EventBus';
 import {
 	getUserNotificationsFactory,
 	getNotificationByIdFactory,
@@ -15,7 +14,6 @@ import {
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
 import { createNotificationFactory } from './use-cases/commands/create-notification/execute';
-import { log } from '@GenericSubdomains/utils/Logger';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
@@ -50,41 +48,3 @@ export const notificationsQueriesRouter = createNotificationsQueriesRouter(
 export const notificationsCommandsRouter = createNotificationsCommandsRouter(
 	notificationsCommandsServices,
 );
-
-eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
-	try {
-		await notificationsCommandsServices.createNotification({
-			userId: p.authorId,
-			type: 'POEM_COMMENT_CREATED',
-			title: 'New comment on your poem',
-			actorId: p.commenterId,
-			entityId: p.poemId,
-			entityType: 'POEM',
-			body: `Your poem received a comment from ${p.commenterNickname}`,
-			data: {
-				commentId: p.commentId,
-				commenterNickname: p.commenterNickname,
-				poemTitle: p.poemTitle,
-			},
-			aggregateWindowMinutes: 60,
-		});
-		log.info(
-			{
-				entityType: 'POEM',
-				poemId: p.poemId,
-				commentId: p.commentId,
-			},
-			'New notification created for poem comment',
-		);
-	} catch (err) {
-		log.error(
-			{
-				entityType: 'POEM',
-				poemId: p.poemId,
-				commentId: p.commentId,
-				error: err instanceof Error ? err.message : String(err),
-			},
-			'Failed to create notification for poem comment',
-		);
-	}
-});
