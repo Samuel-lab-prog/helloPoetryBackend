@@ -1,21 +1,12 @@
 /* eslint-disable max-lines-per-function */
-import { mock } from 'bun:test';
-import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
-import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-
 import type {
-	CommandsRepository,
 	CommentPoemParams,
 	DeleteCommentParams,
 	LikeCommentParams,
 	LikePoemParams,
 } from '../../ports/Commands';
-import type {
-	GetPoemCommentsParams,
-	QueriesRepository,
-} from '../../ports/Queries';
-import { createMockedContract, makeParams, makeSut } from '@TestUtils';
+import type { GetPoemCommentsParams } from '../../ports/Queries';
+import { makeParams, makeSut } from '@TestUtils';
 import {
 	givenUser,
 	givenPoem,
@@ -39,80 +30,16 @@ import {
 	givenCommentLikeExists,
 } from './Givens';
 import {
-	commentPoemFactory,
-	likePoemFactory,
-	deleteCommentFactory,
-	unlikePoemFactory,
-	replyCommentFactory,
-} from '../commands/Index';
-import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
-import {
 	DEFAULT_COMMENT_CONTENT,
 	DEFAULT_COMMENT_ID,
 	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_POEM_ID,
 } from './Constants';
-import type { InteractionsSutMocks } from './SutMocks';
-import { createInMemoryEventBus } from '@SharedKernel/events/EventBus';
-import { likeCommentFactory } from '../commands/like-comment/execute';
-import { unlikeCommentFactory } from '../commands/unlike-comment/execute';
-
-function interactionsMockFactories() {
-	return {
-		usersContract: createMockedContract<UsersPublicContract>({
-			selectUserBasicInfo: mock(),
-			selectAuthUserByEmail: mock(),
-		}),
-
-		poemsContract: createMockedContract<PoemsPublicContract>({
-			selectPoemBasicInfo: mock(),
-			getPoemsByAuthorIds: mock(),
-			getPublicPoems: mock(),
-			getPoemsByIds: mock(),
-		}),
-
-		friendsContract: createMockedContract<FriendsPublicContract>({
-			selectUsersRelation: mock(),
-			selectBlockedUserIds: mock(),
-			selectFollowedUserIds: mock(),
-			areFriends: mock(),
-			areBlocked: mock(),
-		}),
-
-		commandsRepository: createMockedContract<CommandsRepository>({
-			createPoemComment: mock(),
-			deletePoemComment: mock(),
-			createPoemLike: mock(),
-			deletePoemLike: mock(),
-			deleteCommentLike: mock(),
-			createCommentLike: mock(),
-		}),
-
-		queriesRepository: createMockedContract<QueriesRepository>({
-			selectCommentById: mock(),
-			findCommentsByPoemId: mock(),
-			findPoemLike: mock(),
-			findCommentLike: mock(),
-		}),
-
-		eventBus: createInMemoryEventBus(),
-	};
-}
-
-type InteractionsDeps = ReturnType<typeof interactionsMockFactories>;
-
-function interactionsFactory(deps: InteractionsDeps) {
-	return {
-		commentPoem: commentPoemFactory(deps),
-		likePoem: likePoemFactory(deps),
-		removeLikePoem: unlikePoemFactory(deps),
-		deleteComment: deleteCommentFactory(deps),
-		replyComment: replyCommentFactory(deps),
-		getPoemComments: getPoemCommentsFactory(deps),
-		likeComment: likeCommentFactory(deps),
-		unlikeComment: unlikeCommentFactory(deps),
-	};
-}
+import {
+	type InteractionsSutMocks,
+	interactionsFactory,
+	interactionsMockFactories,
+} from './SutMocks';
 
 export function makeInteractionsScenario() {
 	const { sut: sutFactory, mocks } = makeSut(

@@ -122,7 +122,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 		it('should throw ForbiddenError for friends-only poems when users are not friends', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser()
-				.withUsersRelation({ areFriends: false, areBlocked: false })
+				.withUsersRelation()
 				.withPoem({ visibility: 'friends' });
 
 			await expectError(scenario.executeCommentPoem(), ForbiddenError);
@@ -140,7 +140,7 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1 })
 				.withPoem({ authorId: 1 })
-				.withUsersRelation({ areFriends: false, areBlocked: false })
+				.withUsersRelation()
 				.withCreatedComment();
 			const result = await scenario.executeCommentPoem();
 			expect(result).toHaveProperty('commentId', 1);

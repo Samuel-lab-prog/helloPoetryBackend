@@ -132,6 +132,10 @@ export function printDomainCodeStats(cloc: ClocResult): void {
 			},
 		},
 	];
-
-	printTable('Domain Code Metrics (by lines of test code)', columns, metrics);
+	const sortedMetrics = metrics.sort((a, b) => b.testPercent - a.testPercent);
+	printTable(
+		'Domain Code Metrics (by lines of test code)',
+		columns,
+		sortedMetrics,
+	);
 }

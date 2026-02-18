@@ -6,7 +6,7 @@ import { idSchema } from '@SharedKernel/Schemas';
 
 import { type CommandsRouterServices } from '../ports/Commands';
 import { appErrorSchema } from '@AppError';
-import { commentContentSchema } from '../ports/schemas/Index';
+import { CommentContentSchema } from '../ports/schemas/Index';
 
 export function createInteractionsCommandsRouter(
 	services: CommandsRouterServices,
@@ -80,7 +80,7 @@ export function createInteractionsCommandsRouter(
 					id: idSchema,
 				}),
 				body: t.Object({
-					content: commentContentSchema,
+					content: CommentContentSchema,
 				}),
 				response: {
 					201: t.Void(),

@@ -1,8 +1,7 @@
 import { poemsPublicContract } from '@Domains/poems-management/public/Index';
 import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
-import { commandsRepository } from './infra/commands-repository/Repository';
-import { queriesRepository } from './infra/queries-repository/Repository';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 import { getPoemCommentsFactory } from './use-cases/queries/Index';
 import {
@@ -11,16 +10,17 @@ import {
 	likePoemFactory,
 	unlikePoemFactory,
 } from './use-cases/commands/Index';
+import { unlikeCommentFactory } from './use-cases/commands/unlike-comment/execute';
 
+import { commandsRepository } from './infra/commands-repository/Repository';
+import { queriesRepository } from './infra/queries-repository/Repository';
 import type { CommandsRouterServices } from './ports/Commands';
 import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
-import { eventBus } from '@SharedKernel/events/EventBus';
 import { likeCommentFactory } from './use-cases/commands/like-comment/execute';
-import { unlikeCommentFactory } from './use-cases/commands/unlike-comment/execute';
 
-export const queriesRouterServices: QueriesRouterServices = {
+const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
 		queriesRepository,
 		poemsContract: poemsPublicContract,
@@ -29,7 +29,7 @@ export const queriesRouterServices: QueriesRouterServices = {
 	}),
 };
 
-export const commandsRouterServices: CommandsRouterServices = {
+const commandsRouterServices: CommandsRouterServices = {
 	likePoem: likePoemFactory({
 		commandsRepository,
 		queriesRepository,

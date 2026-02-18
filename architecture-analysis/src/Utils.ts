@@ -31,6 +31,8 @@ export function extractDomainFromPath(path: string): string | null {
  * @returns True if the file is a test file, false otherwise
  */
 export function isTestFile(path: string): boolean {
+	const testHelpersPattern = /[/\\]test-helpers[/\\]/;
+	if (testHelpersPattern.test(path)) return true;
 	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
 }
 
