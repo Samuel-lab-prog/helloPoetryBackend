@@ -2,7 +2,11 @@ import type { ClocResult } from '../Types';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyTestsPercent } from '../Classify';
 import { green, red, yellow } from 'kleur/colors';
-import { extractDomainFromPath, isTestFile } from '../Utils';
+import {
+	extractDomainFromPath,
+	extractIntegrationTestDomainFromPath,
+	isTestFile,
+} from '../Utils';
 
 type DomainCodeStats = {
 	domain: string;
@@ -31,7 +35,8 @@ export function calculateDomainCodeStats(cloc: ClocResult): DomainCodeStats[] {
 
 		if (!('code' in info)) continue;
 
-		const domain = extractDomainFromPath(file);
+		const domain =
+			extractDomainFromPath(file) ?? extractIntegrationTestDomainFromPath(file);
 		if (!domain) continue;
 
 		const stats = domainMap.get(domain) ?? {

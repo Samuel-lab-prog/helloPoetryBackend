@@ -25,14 +25,29 @@ export function extractDomainFromPath(path: string): string | null {
 	return match ? match[2]! : null;
 }
 
+export function extractIntegrationTestDomainFromPath(
+	path: string,
+): string | null {
+	const match = path.match(
+		/(?:^|[/\\])src[/\\]tests[/\\](?!test-helpers[/\\])([^/\\]+)[/\\]/i,
+	);
+	if ((match && match[1] === 'endpoints') || (match && match[1] === 'data'))
+		return null;
+	return match ? match[1]! : null;
+}
+
 /**
  * Given a file path, determines if it is a test file based on common test file suffixes.
  * @param path The file path
  * @returns True if the file is a test file, false otherwise
  */
 export function isTestFile(path: string): boolean {
-	const testHelpersPattern = /[/\\]test-helpers[/\\]/;
+	const testHelpersPattern = /[/\\]test-helpers([/\\]|$)/i;
+	const integrationTestsPattern = /[/\\]tests([/\\].*)?/i;
+
 	if (testHelpersPattern.test(path)) return true;
+	if (integrationTestsPattern.test(path)) return true;
+
 	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
 }
 
