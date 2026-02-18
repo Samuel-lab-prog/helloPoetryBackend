@@ -44,6 +44,7 @@ export interface NotificationsCommandsServices {
 	createNotification: (
 		params: CreateNotificationParams,
 	) => Promise<NotificationCreateResult>;
+	markAllAsRead: (params: { userId: number }) => Promise<void>;
 }
 
 export interface CommandsRepository {
@@ -60,4 +61,6 @@ export interface CommandsRepository {
 		notificationId: number,
 		userId: number,
 	): Promise<CommandResult<NotificationDeleteResult>>;
+
+	markAllAsRead(params: { userId: number }): Promise<CommandResult<void>>;
 }

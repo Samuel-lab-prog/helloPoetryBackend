@@ -84,7 +84,7 @@ eventBus.subscribe('POEM_DEDICATED', async (p) => {
 			actorId: p.dedicatorId,
 			entityId: p.poemId,
 			entityType: 'POEM',
-			body: `The poem "${p.poemTitle}" was dedicated to you by ${p.dedicatorNickname}`,
+			body: `The poem ${p.poemTitle} was dedicated to you by ${p.dedicatorNickname}`,
 			data: {
 				poemId: p.poemId,
 				poemTitle: p.poemTitle,
@@ -190,7 +190,7 @@ eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 			actorId: p.replierId,
 			entityId: p.commentId,
 			entityType: 'COMMENT',
-			body: `Your comment on the poem "${p.poemTitle}" received a reply from ${p.replierNickname}`,
+			body: `Your comment on the poem ${p.poemTitle} received a reply from ${p.replierNickname}`,
 			data: {
 				commentId: p.commentId,
 				parentCommentId: p.parentCommentId,

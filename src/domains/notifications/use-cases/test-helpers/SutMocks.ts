@@ -20,6 +20,7 @@ import {
 	getNotificationByIdFactory,
 	getUserNotificationsFactory,
 } from '../queries/Index';
+import { markAllNotificationsAsReadFactory } from '../commands/mark-all/execute';
 
 export function notificationsMockFactory() {
 	return {
@@ -31,6 +32,7 @@ export function notificationsMockFactory() {
 			insertNotification: mock(),
 			markNotificationAsRead: mock(),
 			deleteNotification: mock(),
+			markAllAsRead: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectUserNotifications: mock(),
@@ -48,5 +50,6 @@ export function notificationsFactory(deps: Deps) {
 		markNotificationAsRead: markNotificationAsReadFactory(deps),
 		getUserNotifications: getUserNotificationsFactory(deps),
 		getNotificationById: getNotificationByIdFactory(deps),
+		markAllAsRead: markAllNotificationsAsReadFactory(deps),
 	};
 }

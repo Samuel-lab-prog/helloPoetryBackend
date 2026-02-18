@@ -55,5 +55,25 @@ export function createNotificationsCommandsRouter(
 					tags: ['Notifications'],
 				},
 			},
+		)
+		.patch(
+			'/mark-all-read',
+			({ auth }) => {
+				return services.markAllAsRead({
+					userId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+				},
+				detail: {
+					summary: 'Mark All Notifications as Read',
+					description:
+						'Marks all notifications as read for the authenticated user.',
+					tags: ['Notifications'],
+				},
+			},
 		);
 }

@@ -24,6 +24,7 @@ import {
 	givenNotificationFound,
 	type NotificationOverride,
 	givenUserNotifications,
+	givenAllNotificationsMarkedAsRead,
 } from './Givens';
 
 import {
@@ -68,6 +69,7 @@ export function makeNotificationsScenario() {
 			givenNotificationInsertFailure(mocks.commandsRepository, code, message);
 			return this;
 		},
+
 		withNotificationDeleted(overrides: DeleteNotificationOverride = {}) {
 			givenNotificationDeleted(mocks.commandsRepository, overrides);
 			return this;
@@ -84,6 +86,11 @@ export function makeNotificationsScenario() {
 			return this;
 		},
 
+		withAllNotificationsMarkedAsRead() {
+			givenAllNotificationsMarkedAsRead(mocks.commandsRepository);
+			return this;
+		},
+
 		withMarkNotificationAsReadFailure(code?: AppErrorCode, message?: string) {
 			givenMarkNotificationAsReadFailure(
 				mocks.commandsRepository,
@@ -92,6 +99,7 @@ export function makeNotificationsScenario() {
 			);
 			return this;
 		},
+
 		withNotificationFound(overrides: NotificationOverride = {}) {
 			givenNotificationFound(mocks.queriesRepository, overrides);
 			return this;
@@ -147,6 +155,10 @@ export function makeNotificationsScenario() {
 					params,
 				),
 			);
+		},
+
+		markAllAsRead(params: Partial<{ userId: number }> = {}) {
+			return sut.markAllAsRead(makeParams({ userId: DEFAULT_USER_ID }, params));
 		},
 		getNotificationById(params: Partial<GetNotificationByIdParams> = {}) {
 			return sut.getNotificationById(

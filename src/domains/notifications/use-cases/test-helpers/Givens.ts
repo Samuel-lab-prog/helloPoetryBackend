@@ -193,3 +193,25 @@ export function givenUserNotifications(
 ) {
 	givenResolved(queriesRepository, 'selectUserNotifications', page);
 }
+
+export function givenAllNotificationsMarkedAsRead(
+	commandsRepository: NotificationsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'markAllAsRead', {
+		ok: true,
+		data: undefined,
+	});
+}
+// now failure case
+export function givenMarkAllAsReadFailure(
+	commandsRepository: NotificationsSutMocks['commandsRepository'],
+	code: AppErrorCode = 'UNKNOWN',
+	message = 'Failed to mark all notifications as read',
+) {
+	givenResolved(commandsRepository, 'markAllAsRead', {
+		ok: false,
+		data: null,
+		code,
+		message,
+	});
+}

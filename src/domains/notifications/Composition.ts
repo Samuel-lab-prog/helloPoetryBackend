@@ -14,6 +14,7 @@ import {
 	deleteNotificationFactory,
 } from './use-cases/commands/Index';
 import { createNotificationFactory } from './use-cases/commands/create-notification/execute';
+import { markAllNotificationsAsReadFactory } from './use-cases/commands/mark-all/execute';
 
 const notificationsQueriesServices: NotificationsQueriesServices = {
 	getUserNotifications: getUserNotificationsFactory({
@@ -36,6 +37,10 @@ export const notificationsCommandsServices: NotificationsCommandsServices = {
 		usersContract: usersPublicContract,
 	}),
 	createNotification: createNotificationFactory({
+		commandsRepository,
+		usersContract: usersPublicContract,
+	}),
+	markAllAsRead: markAllNotificationsAsReadFactory({
 		commandsRepository,
 		usersContract: usersPublicContract,
 	}),
