@@ -7,9 +7,9 @@ export type GetPoemCommentsParams = {
 
 export interface QueriesRepository {
 	selectCommentById(params: { commentId: number }): Promise<PoemComment | null>;
-	findCommentsByPoemId(params: { poemId: number }): Promise<PoemComment[]>;
-	findPoemLike(params: { userId: number; poemId: number }): Promise<boolean>;
-	findCommentLike(params: {
+	selectCommentsByPoemId(params: { poemId: number }): Promise<PoemComment[]>;
+	selectPoemLike(params: { userId: number; poemId: number }): Promise<boolean>;
+	selectCommentLike(params: {
 		userId: number;
 		commentId: number;
 	}): Promise<boolean>;

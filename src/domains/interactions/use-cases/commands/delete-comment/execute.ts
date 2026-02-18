@@ -35,7 +35,7 @@ export function deleteCommentFactory({
 
 		let deletedBy: CommentStatus = 'deletedByModerator';
 		if (userInfo.role === 'author') {
-			v.sameOwner(userId, comment.userId);
+			v.sameOwner(userId, comment.author.id);
 			deletedBy = 'deletedByAuthor';
 		}
 

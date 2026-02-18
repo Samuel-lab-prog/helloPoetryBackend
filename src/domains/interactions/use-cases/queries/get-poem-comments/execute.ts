@@ -49,6 +49,6 @@ export function getPoemCommentsFactory({
 		if (poemInfo.visibility === 'friends' && userId !== poemInfo.authorId)
 			v.relation(usersRelationInfo).withFriendship();
 
-		return queriesRepository.findCommentsByPoemId({ poemId });
+		return queriesRepository.selectCommentsByPoemId({ poemId });
 	};
 }

@@ -8,7 +8,9 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 		it('should delete a comment for the owner', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ id: 10 })
-				.withFoundComment({ userId: 10 })
+				.withFoundComment({
+					author: { id: 10, avatarUrl: 'aha', nickname: 'nickname' },
+				})
 				.withDeletedComment();
 
 			const result = await scenario.executeDeleteComment({
@@ -21,7 +23,9 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 		it('should allow admin to delete any comment', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ role: 'admin', id: 1 })
-				.withFoundComment({ userId: 999 })
+				.withFoundComment({
+					author: { id: 999, avatarUrl: 'aha', nickname: 'nickname' },
+				})
 				.withDeletedComment();
 
 			await expect(scenario.executeDeleteComment()).resolves.toBeUndefined();
@@ -36,7 +40,9 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 		it('should allow moderator to delete any comment', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ role: 'moderator', id: 1 })
-				.withFoundComment({ userId: 999 })
+				.withFoundComment({
+					author: { id: 999, avatarUrl: 'aha', nickname: 'nickname' },
+				})
 				.withDeletedComment();
 
 			await expect(scenario.executeDeleteComment()).resolves.toBeUndefined();
@@ -109,7 +115,9 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 		it('should throw ForbiddenError when user is not the owner and not admin/moderator', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1, role: 'author' })
-				.withFoundComment({ userId: 2 });
+				.withFoundComment({
+					author: { id: 2, avatarUrl: 'aha', nickname: 'nickname' },
+				});
 
 			await expectError(scenario.executeDeleteComment(), ForbiddenError);
 		});
@@ -117,7 +125,9 @@ describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 		it('should not call delete when validation fails', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser({ id: 1, role: 'author' })
-				.withFoundComment({ userId: 2 });
+				.withFoundComment({
+					author: { id: 2, avatarUrl: 'aha', nickname: 'nickname' },
+				});
 
 			await expectError(scenario.executeDeleteComment(), ForbiddenError);
 

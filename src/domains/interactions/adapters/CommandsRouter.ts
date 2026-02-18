@@ -67,13 +67,12 @@ export function createInteractionsCommandsRouter(
 		.post(
 			'/poems/:id/comments',
 			async ({ auth, params, body, set }) => {
-				const rs = await services.commentPoem({
+				await services.commentPoem({
 					userId: auth.clientId,
 					poemId: params.id,
 					content: body.content,
 				});
 				set.status = 201;
-				return rs;
 			},
 			{
 				params: t.Object({

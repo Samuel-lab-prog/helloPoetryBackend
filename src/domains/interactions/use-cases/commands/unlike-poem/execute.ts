@@ -36,7 +36,7 @@ export function unlikePoemFactory({
 			.withStatus(['published'])
 			.withVisibility(['public', 'friends', 'unlisted']);
 
-		const existingLike = await queriesRepository.findPoemLike({
+		const existingLike = await queriesRepository.selectPoemLike({
 			userId,
 			poemId,
 		});

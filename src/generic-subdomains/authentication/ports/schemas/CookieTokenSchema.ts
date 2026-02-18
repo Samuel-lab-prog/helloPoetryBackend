@@ -3,9 +3,7 @@ import { t } from 'elysia';
 
 export const CookieTokenSchema = t.Cookie(
 	{
-		token: t.String({
-			examples: ['eyJhbGciOiddkfksdofksdofksfoaksfof'],
-		}),
+		token: t.String(),
 	},
 	{
 		error: () => {

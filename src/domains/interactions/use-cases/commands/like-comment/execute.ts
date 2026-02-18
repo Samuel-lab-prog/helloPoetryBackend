@@ -26,7 +26,7 @@ export function likeCommentFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const alreadyLiked = await queriesRepository.findCommentLike({
+		const alreadyLiked = await queriesRepository.selectCommentLike({
 			userId,
 			commentId,
 		});

@@ -88,7 +88,7 @@ export function replyCommentFactory({
 			parentCommentId,
 			poemId: parentComment.poemId,
 			replierId: userId,
-			originalCommenterId: parentComment.userId,
+			originalCommenterId: parentComment.author.id,
 			replierNickname: userInfo.nickname,
 			poemTitle: poemInfo.poemTitle,
 		});

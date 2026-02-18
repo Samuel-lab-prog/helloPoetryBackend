@@ -63,9 +63,9 @@ export function interactionsMockFactories() {
 
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectCommentById: mock(),
-			findCommentsByPoemId: mock(),
-			findPoemLike: mock(),
-			findCommentLike: mock(),
+			selectCommentsByPoemId: mock(),
+			selectPoemLike: mock(),
+			selectCommentLike: mock(),
 		}),
 
 		eventBus: createInMemoryEventBus(),

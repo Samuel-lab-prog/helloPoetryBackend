@@ -2,68 +2,142 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { PoemComment } from '../../ports/Models';
+import type { CommentSelect } from '@PrismaGenerated/models';
+
+const poemCommentSelect: CommentSelect = {
+	id: true,
+	content: true,
+	authorId: true,
+	poemId: true,
+	createdAt: true,
+	parentId: true,
+	status: true,
+	author: {
+		select: {
+			id: true,
+			nickname: true,
+			avatarUrl: true,
+		},
+	},
+};
 
 export function selectCommentById(params: {
 	commentId: number;
+	currentUserId: number;
 }): Promise<PoemComment | null> {
-	const { commentId } = params;
+	const { commentId, currentUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
 		const comment = await prisma.comment.findUnique({
 			where: { id: commentId },
-			select: {
-				id: true,
-				content: true,
-				authorId: true,
-				poemId: true,
-				createdAt: true,
-				parentId: true,
-				status: true,
+			select: poemCommentSelect,
+		});
+
+		if (!comment) return null;
+
+		const aggregateChildrenCount = await prisma.comment.count({
+			where: { parentId: comment.id },
+		});
+
+		const likesCount = await prisma.commentLike.count({
+			where: { commentId: comment.id },
+		});
+
+		const liked = await prisma.commentLike.findUnique({
+			where: {
+				userId_commentId: { userId: currentUserId, commentId: comment.id },
 			},
 		});
-		if (!comment) return null;
+
 		return {
 			id: comment.id,
 			content: comment.content,
-			userId: comment.authorId,
 			poemId: comment.poemId,
-			createdAt: comment.createdAt,
 			parentId: comment.parentId,
 			status: comment.status,
+			createdAt: comment.createdAt,
+			aggregateChildrenCount,
+			likesCount,
+			likedByCurrentUser: Boolean(liked),
+			author: {
+				id: comment.author.id,
+				nickname: comment.author.nickname,
+				avatarUrl: comment.author.avatarUrl,
+			},
 		};
 	});
 }
 
-export function findCommentsByPoemId(params: {
+export function selectCommentsByPoemId(params: {
 	poemId: number;
+	currentUserId?: number;
 }): Promise<PoemComment[]> {
-	const { poemId } = params;
+	const { poemId, currentUserId } = params;
+
 	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.comment.findMany({
+		const comments = await prisma.comment.findMany({
 			where: { poemId },
 			orderBy: { createdAt: 'desc' },
-			select: {
-				id: true,
-				content: true,
-				authorId: true,
-				poemId: true,
-				createdAt: true,
-				parentId: true,
-				status: true,
-			},
+			select: poemCommentSelect,
 		});
-		return rs.map((comment) => ({
-			id: comment.id,
-			content: comment.content,
-			userId: comment.authorId,
-			poemId: comment.poemId,
-			createdAt: comment.createdAt,
-			parentId: comment.parentId,
-			status: comment.status,
+
+		const commentIds = comments.map((c) => c.id);
+		if (commentIds.length === 0) return [];
+
+		const repliesCounts = await prisma.comment.groupBy({
+			by: ['parentId'],
+			where: {
+				parentId: { in: commentIds },
+			},
+			_count: { id: true },
+		});
+		const repliesMap = new Map(
+			repliesCounts.map((r) => [r.parentId!, r._count.id]),
+		);
+
+		const likesCounts = await prisma.commentLike.groupBy({
+			by: ['commentId'],
+			where: {
+				commentId: { in: commentIds },
+			},
+			_count: { userId: true },
+		});
+		const likesMap = new Map(
+			likesCounts.map((l) => [l.commentId, l._count.userId]),
+		);
+
+		let likedMap = new Map<number, boolean>();
+		if (currentUserId) {
+			const likedComments = await prisma.commentLike.findMany({
+				where: {
+					commentId: { in: commentIds },
+					userId: currentUserId,
+				},
+				select: { commentId: true },
+			});
+			likedMap = new Map(likedComments.map((c) => [c.commentId, true]));
+		}
+
+		return comments.map((c) => ({
+			id: c.id,
+			content: c.content,
+			poemId: c.poemId,
+			parentId: c.parentId,
+			status: c.status,
+			createdAt: c.createdAt,
+			aggregateChildrenCount: repliesMap.get(c.id) ?? 0,
+			likesCount: likesMap.get(c.id) ?? 0,
+			likedByCurrentUser: likedMap.get(c.id) ?? false,
+			author: {
+				id: c.author.id,
+				nickname: c.author.nickname,
+				avatarUrl: c.author.avatarUrl,
+			},
 		}));
 	});
 }
 
-export function findPoemLike(params: {
+export function selectPoemLike(params: {
 	userId: number;
 	poemId: number;
 }): Promise<boolean> {
@@ -81,7 +155,7 @@ export function findPoemLike(params: {
 	});
 }
 
-export function findCommentLike(params: {
+export function selectCommentLike(params: {
 	userId: number;
 	commentId: number;
 }): Promise<boolean> {
@@ -101,7 +175,7 @@ export function findCommentLike(params: {
 
 export const queriesRepository: QueriesRepository = {
 	selectCommentById,
-	findCommentsByPoemId,
-	findPoemLike,
-	findCommentLike,
+	selectCommentsByPoemId,
+	selectPoemLike,
+	selectCommentLike,
 };

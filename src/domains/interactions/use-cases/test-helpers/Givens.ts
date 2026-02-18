@@ -42,7 +42,7 @@ export type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 export type FindCommentsOverride = Partial<
-	Awaited<ReturnType<QueriesRepository['findCommentsByPoemId']>>[number]
+	Awaited<ReturnType<QueriesRepository['selectCommentsByPoemId']>>[number]
 >;
 export type SelectCommentByIdOverride = Partial<
 	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
@@ -103,7 +103,7 @@ export function givenPoemLikeExists(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	exists: boolean,
 ) {
-	givenResolved(queriesRepository, 'findPoemLike', exists);
+	givenResolved(queriesRepository, 'selectPoemLike', exists);
 }
 
 export function givenPoemLikeCreated(
@@ -137,7 +137,7 @@ export function givenCommentLikeExists(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	exists: boolean,
 ) {
-	givenResolved(queriesRepository, 'findCommentLike', exists);
+	givenResolved(queriesRepository, 'selectCommentLike', exists);
 }
 
 export function givenCommentLikeDeleted(
@@ -162,15 +162,22 @@ export function givenExistingComments(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	overrides: FindCommentsOverride = {},
 ) {
-	givenResolved(queriesRepository, 'findCommentsByPoemId', [
+	givenResolved(queriesRepository, 'selectCommentsByPoemId', [
 		{
 			id: DEFAULT_COMMENT_ID,
-			userId: DEFAULT_PERFORMER_USER_ID,
 			poemId: DEFAULT_POEM_ID,
 			status: DEFAULT_COMMENT_STATUS,
 			parentId: DEFAULT_COMMENT_PARENT_ID,
 			content: DEFAULT_COMMENT_CONTENT,
 			createdAt: new Date(),
+			aggregateChildrenCount: 0,
+			likesCount: 0,
+			likedByCurrentUser: false,
+			author: {
+				id: DEFAULT_PERFORMER_USER_ID,
+				nickname: DEFAULT_USER_NICKNAME,
+				avatarUrl: 'http://example.com/avatar.jpg',
+			},
 			...overrides,
 		},
 	]);
@@ -182,12 +189,19 @@ export function givenFoundComment(
 ) {
 	givenResolved(queriesRepository, 'selectCommentById', {
 		id: DEFAULT_COMMENT_ID,
-		userId: DEFAULT_PERFORMER_USER_ID,
 		status: DEFAULT_COMMENT_STATUS,
 		parentId: DEFAULT_COMMENT_PARENT_ID,
 		poemId: DEFAULT_POEM_ID,
 		content: DEFAULT_COMMENT_CONTENT,
 		createdAt: new Date(),
+		aggregateChildrenCount: 0,
+		likesCount: 0,
+		likedByCurrentUser: false,
+		author: {
+			id: DEFAULT_PERFORMER_USER_ID,
+			nickname: DEFAULT_USER_NICKNAME,
+			avatarUrl: 'http://example.com/avatar.jpg',
+		},
 		...overrides,
 	});
 }
