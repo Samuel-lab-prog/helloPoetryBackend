@@ -4,4 +4,5 @@
 
 export * from './create-notification/execute';
 export * from './delete-notification/execute';
+export * from './mark-all/execute';
 export * from './mark-as-read/execute';
