@@ -1,5 +1,5 @@
+import { ForbiddenError } from '@DomainError';
 import type { QueriesRepository, GetUsersParams } from '../../../ports/Queries';
-import { UserBannedError } from '../../Errors';
 import type { UsersPage } from '../../Models';
 
 interface Dependencies {
@@ -14,7 +14,7 @@ export function getUsersFactory({ queriesRepository }: Dependencies) {
 		const { navigationOptions, filterOptions, sortOptions, requesterStatus } =
 			params;
 
-		if (requesterStatus === 'banned') throw new UserBannedError();
+		if (requesterStatus === 'banned') throw new ForbiddenError('Banned users cannot view users list');
 
 		return queriesRepository.selectUsers({
 			navigationOptions: {

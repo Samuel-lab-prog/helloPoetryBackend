@@ -1,7 +1,7 @@
 import { describe, it, expect, mock } from 'bun:test';
 import { updateUserFactory } from './execute';
 import type { CommandsRepository } from '../../../ports/Commands';
-import { UserUpdateConflictError, UserUpdateError } from '../../Errors';
+import { ConflictError, UnknownError } from '@DomainError';
 
 describe('USE-CASE - Users Management', () => {
 	const insertUser = mock();
@@ -34,7 +34,7 @@ describe('USE-CASE - Users Management', () => {
 						nickname: 'existing_nickname',
 					},
 				}),
-			).rejects.toThrow(UserUpdateConflictError);
+			).rejects.toThrow(ConflictError);
 		});
 
 		it('Should propagate other errors from the repository', () => {
@@ -52,7 +52,7 @@ describe('USE-CASE - Users Management', () => {
 						nickname: 'new_nickname',
 					},
 				}),
-			).rejects.toThrow(UserUpdateError);
+			).rejects.toThrow(UnknownError);
 		});
 
 		it('Successfully updates user data', async () => {

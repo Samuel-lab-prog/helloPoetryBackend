@@ -2,7 +2,7 @@ import { describe, it, expect, mock } from 'bun:test';
 import { getPrivateProfileFactory } from './execute';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UserStatus } from '@PrismaGenerated/enums';
-import { ProfileNotFoundError, UserBannedError } from '../../Errors';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Users Management', () => {
 	const selectPrivateProfile = mock();
@@ -29,7 +29,7 @@ describe('USE-CASE - Users Management', () => {
 					requesterId: 1,
 					requesterStatus: 'banned' as UserStatus,
 				}),
-			).rejects.toThrow(UserBannedError);
+			).rejects.toThrow(ForbiddenError);
 		});
 
 		it('Throws error when profile is not found', () => {
@@ -40,7 +40,7 @@ describe('USE-CASE - Users Management', () => {
 					requesterId: 1,
 					requesterStatus: 'active' as UserStatus,
 				}),
-			).rejects.toThrow(ProfileNotFoundError);
+			).rejects.toThrow(NotFoundError);
 		});
 
 		it('Successfully returns private profile', async () => {

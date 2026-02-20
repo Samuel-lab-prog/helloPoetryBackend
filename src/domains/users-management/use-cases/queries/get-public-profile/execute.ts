@@ -1,9 +1,9 @@
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import type {
 	QueriesRepository,
 	GetPublicProfileParams,
 } from '../../../ports/Queries';
 import type { UserPublicProfile } from '../../Models';
-import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -15,13 +15,13 @@ export function getPublicProfileFactory({ queriesRepository }: Dependencies) {
 	): Promise<UserPublicProfile> {
 		const { id, requesterId, requesterStatus } = params;
 
-		if (requesterStatus === 'banned') throw new UserBannedError();
+		if (requesterStatus === 'banned') throw new ForbiddenError('Banned users cannot view public profiles');
 		const profile = await queriesRepository.selectPublicProfile(
 			id,
 			requesterId,
 		);
 
-		if (!profile) throw new ProfileNotFoundError();
+		if (!profile) throw new NotFoundError('User not found');
 
 		return profile;
 	};

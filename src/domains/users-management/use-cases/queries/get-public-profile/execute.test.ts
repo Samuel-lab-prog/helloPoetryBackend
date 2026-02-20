@@ -1,7 +1,7 @@
 import { describe, it, expect, mock } from 'bun:test';
 import { getPublicProfileFactory } from './execute';
 import type { QueriesRepository } from '../../../ports/Queries';
-import { ProfileNotFoundError, UserBannedError } from '../../Errors';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Users Management', () => {
 	const selectPublicProfile = mock();
@@ -30,7 +30,7 @@ describe('USE-CASE - Users Management', () => {
 					requesterRole: 'admin',
 					requesterStatus: 'banned',
 				}),
-			).rejects.toThrow(UserBannedError);
+			).rejects.toThrow(ForbiddenError);
 		});
 
 		it('Throws error when profile is not found', () => {
@@ -43,7 +43,7 @@ describe('USE-CASE - Users Management', () => {
 					requesterRole: 'admin',
 					requesterStatus: 'active',
 				}),
-			).rejects.toThrow(ProfileNotFoundError);
+			).rejects.toThrow(NotFoundError);
 		});
 
 		it('Successfully returns public profile', async () => {

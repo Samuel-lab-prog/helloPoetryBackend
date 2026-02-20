@@ -1,7 +1,7 @@
 import { describe, it, expect, mock } from 'bun:test';
 import { getUsersFactory } from './execute';
 import type { QueriesRepository } from '../../../ports/Queries';
-import { UserBannedError } from '../../Errors';
+import { ForbiddenError } from '@DomainError';
 
 describe('USE-CASE - Users Management', () => {
 	const selectUsers = mock();
@@ -32,9 +32,9 @@ describe('USE-CASE - Users Management', () => {
 						order: 'asc',
 					},
 				}),
-			).toThrow(UserBannedError);
+			).toThrow(ForbiddenError);
 		});
-
+		
 		it('Applies default limit when none is provided', async () => {
 			selectUsers.mockResolvedValueOnce({
 				items: [],

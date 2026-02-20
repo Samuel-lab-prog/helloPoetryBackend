@@ -1,9 +1,9 @@
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import type {
 	QueriesRepository,
 	GetPrivateProfileParams,
 } from '../../../ports/Queries';
 import type { UserPrivateProfile } from '../../Models';
-import { ProfileNotFoundError, UserBannedError } from '../../Errors';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -15,11 +15,11 @@ export function getPrivateProfileFactory({ queriesRepository }: Dependencies) {
 	): Promise<UserPrivateProfile> {
 		const { requesterId, requesterStatus } = params;
 
-		if (requesterStatus === 'banned') throw new UserBannedError();
+		if (requesterStatus === 'banned') throw new ForbiddenError('Banned users cannot view private profiles');
 
 		const profile = await queriesRepository.selectPrivateProfile(requesterId);
 
-		if (!profile) throw new ProfileNotFoundError();
+		if (!profile) throw new NotFoundError('Private profile not found');
 		return profile;
 	};
 }

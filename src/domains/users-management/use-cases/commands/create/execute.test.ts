@@ -2,7 +2,7 @@ import { describe, it, expect, mock } from 'bun:test';
 import { createUserFactory } from './execute';
 import type { CommandsRepository } from '../../../ports/Commands';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import { UserCreationError, UserCreationConflictError } from '../../Errors';
+import { ConflictError, UnknownError } from '@DomainError';
 
 describe('USE-CASE - Users Management', () => {
 	const insertUser = mock();
@@ -63,7 +63,7 @@ describe('USE-CASE - Users Management', () => {
 			});
 
 			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UserCreationConflictError,
+				ConflictError,
 			);
 		});
 
@@ -76,7 +76,7 @@ describe('USE-CASE - Users Management', () => {
 			});
 
 			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UserCreationConflictError,
+				ConflictError,
 			);
 		});
 
@@ -89,7 +89,7 @@ describe('USE-CASE - Users Management', () => {
 			});
 
 			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UserCreationError,
+				UnknownError,
 			);
 		});
 
@@ -102,7 +102,7 @@ describe('USE-CASE - Users Management', () => {
 			});
 
 			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UserCreationError,
+				UnknownError,
 			);
 		});
 
