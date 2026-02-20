@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { cancelFriendRequestFactory } from './execute';
 
-import { RequestNotFoundError, SelfReferenceError } from '../../Errors';
+import { NotFoundError, ConflictError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -27,7 +27,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self request', () => {
 			expect(
 				cancelFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Does not allow canceling if the request does not even exist', () => {
@@ -35,7 +35,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				cancelFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(RequestNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 		});
 
 		it('Should cancel the friend request and return the result when no errors occur', async () => {

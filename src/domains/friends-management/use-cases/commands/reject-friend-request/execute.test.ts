@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { rejectFriendRequestFactory } from './execute';
-import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -25,7 +25,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self reference', () => {
 			expect(
 				rejectFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should abort when friend request does not exist', () => {
@@ -33,7 +33,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(RequestNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 
 			expect(queriesRepository.findFriendRequest).toHaveBeenCalledWith({
 				requesterId: 1,

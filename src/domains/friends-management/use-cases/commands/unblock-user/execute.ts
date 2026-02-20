@@ -4,10 +4,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UnblockUserRecord } from '../../Models';
-import {
-	SelfReferenceError,
-	BlockedRelationshipNotFoundError,
-} from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -23,14 +20,15 @@ export function unblockUserFactory({
 	): Promise<UnblockUserRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) throw new SelfReferenceError();
+		if (requesterId === addresseeId)
+			throw new ConflictError('Users cannot unblock themselves');
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
 
-		if (!blocked) throw new BlockedRelationshipNotFoundError();
+		if (!blocked) throw new NotFoundError('Blocked relationship not found');
 
 		const result = await commandsRepository.unblockUser(
 			requesterId,

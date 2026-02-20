@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { blockUserFactory } from './execute';
 
-import { SelfReferenceError, UserBlockedError } from '../../Errors';
+import { ConflictError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -30,7 +30,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self request', () => {
 			expect(
 				blockUser({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Prevents blocking if one of the users has already blocked the other', () => {
@@ -40,7 +40,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				blockUser({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(UserBlockedError);
+			).rejects.toBeInstanceOf(ConflictError);
 
 			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
 				userId1: 1,

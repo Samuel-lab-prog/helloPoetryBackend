@@ -3,7 +3,7 @@ import type {
 	DeleteFriendParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import { SelfReferenceError, FriendshipNotFoundError } from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 import type { RemovedFriendRecord } from '../../Models';
 
 interface Dependencies {
@@ -20,14 +20,15 @@ export function deleteFriendFactory({
 	): Promise<RemovedFriendRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) throw new SelfReferenceError();
+		if (requesterId === addresseeId)
+			throw new ConflictError('Users cannot delete friends to themselves');
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
 
-		if (!friendship) throw new FriendshipNotFoundError();
+		if (!friendship) throw new NotFoundError('Friendship not found');
 
 		const result = await commandsRepository.deleteFriend(
 			requesterId,

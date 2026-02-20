@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { unblockUserFactory } from './execute';
-import {
-	SelfReferenceError,
-	BlockedRelationshipNotFoundError,
-} from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -29,7 +26,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self reference', () => {
 			expect(
 				unblockUser({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should abort when blocked relationship does not exist', () => {
@@ -37,7 +34,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				unblockUser({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(BlockedRelationshipNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 
 			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
 				userId1: 1,

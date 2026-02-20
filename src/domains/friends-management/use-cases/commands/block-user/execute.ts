@@ -4,7 +4,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { BlockedUserRecord } from '../../Models';
-import { SelfReferenceError, UserBlockedError } from '../../Errors';
+import { ConflictError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -20,14 +20,15 @@ export function blockUserFactory({
 	): Promise<BlockedUserRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) throw new SelfReferenceError();
+		if (requesterId === addresseeId)
+			throw new ConflictError('Users cannot block themselves');
 
 		const alreadyBlocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
 
-		if (alreadyBlocked) throw new UserBlockedError();
+		if (alreadyBlocked) throw new ConflictError('Users are already blocked');
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,

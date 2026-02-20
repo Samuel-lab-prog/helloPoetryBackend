@@ -1,11 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { sendFriendRequestFactory } from './execute';
-import {
-	SelfReferenceError,
-	FriendshipAlreadyExistsError,
-	RequestAlreadySentError,
-	UserBlockedError,
-} from '../../Errors';
+import { ConflictError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -45,7 +40,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self reference', async () => {
 			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should abort when users are blocked', async () => {
@@ -53,7 +48,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(UserBlockedError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should abort when friendship already exists', async () => {
@@ -62,7 +57,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should abort when outgoing request already exists', async () => {
@@ -72,7 +67,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			await expect(
 				sendFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(RequestAlreadySentError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Should accept request when incoming request exists', async () => {

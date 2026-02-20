@@ -5,12 +5,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
-import {
-	SelfReferenceError,
-	FriendshipAlreadyExistsError,
-	RequestAlreadySentError,
-	UserBlockedError,
-} from '../../Errors';
+import { ConflictError } from '@DomainError';
 import { eventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
@@ -30,7 +25,10 @@ export function sendFriendRequestFactory({
 	): Promise<FriendRequestRecord | FriendshipRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) throw new SelfReferenceError();
+		if (requesterId === addresseeId)
+			throw new ConflictError(
+				'Users cannot send friend requests to themselves',
+			);
 
 		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
 
@@ -38,19 +36,21 @@ export function sendFriendRequestFactory({
 			userId1: requesterId,
 			userId2: addresseeId,
 		});
-		if (blocked) throw new UserBlockedError();
+		if (blocked)
+			throw new ConflictError('Cannot send friend request to a blocked user');
 
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
 		});
-		if (friendship) throw new FriendshipAlreadyExistsError();
+		if (friendship) throw new ConflictError('Friendship already exists');
 
 		const existingOutgoingRequest = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
-		if (existingOutgoingRequest) throw new RequestAlreadySentError();
+		if (existingOutgoingRequest)
+			throw new ConflictError('Friend request already sent');
 
 		const existingIncomingRequest = await queriesRepository.findFriendRequest({
 			requesterId: addresseeId,
@@ -66,9 +66,9 @@ export function sendFriendRequestFactory({
 			if (!accepted.ok) {
 				switch (accepted.code) {
 					case 'CONFLICT':
-						throw new FriendshipAlreadyExistsError();
+						throw new ConflictError('Friendship already exists');
 					case 'NOT_FOUND':
-						throw new RequestAlreadySentError();
+						throw new ConflictError('Friend request not found');
 					default:
 						throw new Error(accepted.message);
 				}
@@ -90,7 +90,7 @@ export function sendFriendRequestFactory({
 		if (!result.ok) {
 			switch (result.code) {
 				case 'CONFLICT':
-					throw new RequestAlreadySentError();
+					throw new ConflictError('Friend request already sent');
 				default:
 					throw new Error(result.message);
 			}

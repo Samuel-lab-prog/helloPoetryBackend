@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { acceptFriendRequestFactory } from './execute';
 
-import {
-	SelfReferenceError,
-	RequestNotFoundError,
-	FriendshipAlreadyExistsError,
-	UserBlockedError,
-} from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -39,7 +34,7 @@ describe('USE-CASE - Friends Management', () => {
 		it('Does not allow self request', () => {
 			expect(
 				acceptFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(SelfReferenceError);
+			).rejects.toBeInstanceOf(ConflictError);
 		});
 
 		it('Does not allow accept the request if the friendship already exists', () => {
@@ -49,7 +44,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(FriendshipAlreadyExistsError);
+			).rejects.toBeInstanceOf(ConflictError);
 
 			expect(queriesRepository.findFriendshipBetweenUsers).toHaveBeenCalledWith(
 				{
@@ -65,7 +60,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(RequestNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 
 			expect(queriesRepository.findFriendRequest).toHaveBeenCalledWith({
 				requesterId: 1,
@@ -80,7 +75,7 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(
 				acceptFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(UserBlockedError);
+			).rejects.toBeInstanceOf(ConflictError);
 
 			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
 				userId1: 1,

@@ -4,7 +4,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendRequestRejectionRecord } from '../../Models';
-import { SelfReferenceError, RequestNotFoundError } from '../../Errors';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -20,14 +20,17 @@ export function rejectFriendRequestFactory({
 	): Promise<FriendRequestRejectionRecord> {
 		const { requesterId, addresseeId } = params;
 
-		if (requesterId === addresseeId) throw new SelfReferenceError();
+		if (requesterId === addresseeId)
+			throw new ConflictError(
+				'Users cannot reject friend requests to themselves',
+			);
 
 		const request = await queriesRepository.findFriendRequest({
 			requesterId,
 			addresseeId,
 		});
 
-		if (!request) throw new RequestNotFoundError();
+		if (!request) throw new NotFoundError('Friend request not found');
 
 		const result = await commandsRepository.rejectFriendRequest(
 			requesterId,

@@ -52,7 +52,7 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1.cookie, user2.id);
 
 		const result = await blockUser(user1.cookie, user2.id);
-		expectAppError(result, 403);
+		expectAppError(result, 409);
 	});
 
 	it('Blocking removes existing friendship', async () => {
@@ -71,14 +71,14 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1.cookie, user2.id);
 
 		const result = await sendFriendRequest(user1.cookie, user2.id);
-		expectAppError(result, 403);
+		expectAppError(result, 409);
 	});
 
 	it('Blocked user cannot send a friend request', async () => {
 		await blockUser(user1.cookie, user2.id);
 
 		const result = await sendFriendRequest(user2.cookie, user1.id);
-		expectAppError(result, 403);
+		expectAppError(result, 409);
 	});
 
 	it('Blocked user cannot accept a pending friend request', async () => {
@@ -86,7 +86,7 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1.cookie, user2.id);
 
 		const result = await acceptFriendRequest(user2.cookie, user1.id);
-		expectAppError(result, 403);
+		expectAppError(result, 409);
 	});
 
 	it('Blocked user does not appear in friends list', async () => {
