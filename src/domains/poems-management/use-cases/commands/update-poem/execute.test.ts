@@ -1,107 +1,36 @@
-import { describe, it, expect, mock } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
+import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
-import { updatePoemFactory } from './execute';
+describe.concurrent('USE-CASE - Poems Management - UpdatePoem', () => {
+	describe('Successful execution', () => {
+		it('should update a poem', async () => {
+			const scenario = makePoemsScenario()
+				.withPoem({ author: { id: 1 }, status: 'draft' })
+				.withSlug('updated-title')
+				.withUpdatedPoem(99);
 
-import type { CommandsRepository } from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { SlugService } from '../../../ports/ExternalServices';
-import type { UpdatePoem } from '../../Models';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ConflictError } from '@DomainError';
+			const result = await scenario.executeUpdatePoem({
+				poemId: 1,
+				data: { title: 'Updated title', content: 'Updated content' },
+			});
 
-describe('USE-CASE - Poems', () => {
-	describe('Update Poem', () => {
-		const updatePoemRepo = mock();
-		const selectPoemById = mock();
-		const generateSlug = mock();
-		const selectUserBasicInfo = mock();
-
-		const commandsRepository: CommandsRepository = {
-			updatePoem: updatePoemRepo,
-			insertPoem: mock(),
-		};
-
-		const queriesRepository: QueriesRepository = {
-			selectPoemById,
-			selectAuthorPoems: mock(),
-			selectMyPoems: mock(),
-		};
-
-		const slugService: SlugService = {
-			generateSlug,
-		};
-
-		const usersContract: UsersPublicContract = {
-			selectUserBasicInfo,
-			selectAuthUserByEmail: mock(),
-		} as UsersPublicContract;
-
-		const updatePoem = updatePoemFactory({
-			commandsRepository,
-			queriesRepository,
-			usersContract,
-			slugService,
+			expect(result).toHaveProperty('id', 99);
 		});
 
-		const baseData: UpdatePoem = {
-			title: 'Updated title',
-			content: 'Updated content',
-			toUserIds: [],
-			excerpt: 'Updated excerpt',
-			isCommentable: true,
-			status: 'published',
-			visibility: 'public',
-			tags: ['tag1', 'tag2'],
-		};
+		it('should persist transformed data with generated slug', async () => {
+			const scenario = makePoemsScenario()
+				.withPoem({ author: { id: 1 }, status: 'draft' })
+				.withSlug('updated-title')
+				.withUpdatedPoem();
 
-		const baseMeta = {
-			requesterId: 1,
-			requesterStatus: 'active',
-			requesterRole: 'author',
-		} as const;
-
-		it('Generates a slug from the updated title', async () => {
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'draft',
-				moderationStatus: 'approved',
-				author: { id: 1 },
-			});
-			generateSlug.mockReturnValueOnce('updated-title');
-			updatePoemRepo.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 1 },
-			});
-
-			await updatePoem({
+			await scenario.executeUpdatePoem({
 				poemId: 1,
-				data: baseData,
-				meta: baseMeta,
+				data: { title: 'Updated title', content: 'Updated content' },
 			});
 
-			expect(generateSlug).toHaveBeenCalledWith('Updated title');
-		});
-
-		it('Calls repository with transformed update data', async () => {
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'draft',
-				moderationStatus: 'approved',
-				author: { id: 1 },
-			});
-			generateSlug.mockReturnValueOnce('updated-title');
-			updatePoemRepo.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 1 },
-			});
-
-			await updatePoem({
-				poemId: 1,
-				data: baseData,
-				meta: baseMeta,
-			});
-
-			expect(updatePoemRepo).toHaveBeenCalledWith(
+			expect(scenario.mocks.commandsRepository.updatePoem).toHaveBeenCalledWith(
 				1,
 				expect.objectContaining({
 					title: 'Updated title',
@@ -110,73 +39,94 @@ describe('USE-CASE - Poems', () => {
 				}),
 			);
 		});
+	});
 
-		it('Returns updated poem result on success', async () => {
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'draft',
-				moderationStatus: 'approved',
-				author: { id: 1 },
-			});
-			generateSlug.mockReturnValueOnce('updated-title');
-			updatePoemRepo.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 99 },
-			});
+	describe('User validation', () => {
+		it('should throw ForbiddenError when author is not active', async () => {
+			const scenario = makePoemsScenario().withPoem({ author: { id: 1 } });
 
-			const result = await updatePoem({
-				poemId: 1,
-				data: baseData,
-				meta: baseMeta,
-			});
+			await expectError(
+				scenario.executeUpdatePoem({
+					meta: { requesterStatus: 'banned' },
+				}),
+				ForbiddenError,
+			);
+		});
+	});
 
-			expect(result).toHaveProperty('id', 99);
+	describe('Poem validation', () => {
+		it('should throw NotFoundError when poem does not exist', async () => {
+			const scenario = makePoemsScenario().withPoemNotFound();
+
+			await expectError(scenario.executeUpdatePoem(), NotFoundError);
 		});
 
-		it('Throws ConflictError on repository conflict', async () => {
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'draft',
-				moderationStatus: 'approved',
+		it('should throw ForbiddenError when requester is not the poem author', async () => {
+			const scenario = makePoemsScenario().withPoem({ author: { id: 999 } });
+
+			await expectError(scenario.executeUpdatePoem(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when poem is published', async () => {
+			const scenario = makePoemsScenario().withPoem({
 				author: { id: 1 },
+				status: 'published',
 			});
-			generateSlug.mockReturnValueOnce('updated-title');
-			updatePoemRepo.mockResolvedValueOnce({
+
+			await expectError(scenario.executeUpdatePoem(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when poem is removed', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 1 },
+				status: 'draft',
+				moderationStatus: 'removed',
+			});
+
+			await expectError(scenario.executeUpdatePoem(), ForbiddenError);
+		});
+	});
+
+	describe('Repository response handling', () => {
+		it('should throw ConflictError when repository reports conflict', async () => {
+			const scenario = makePoemsScenario()
+				.withPoem({ author: { id: 1 }, status: 'draft' })
+				.withSlug('updated-title');
+
+			scenario.mocks.commandsRepository.updatePoem.mockResolvedValue({
 				ok: false,
 				code: 'CONFLICT',
+				data: null,
 			});
 
-			const promise = updatePoem({
-				poemId: 1,
-				data: baseData,
-				meta: baseMeta,
+			await expectError(scenario.executeUpdatePoem(), ConflictError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makePoemsScenario()
+				.withPoem({ author: { id: 1 }, status: 'draft' })
+				.withSlug('updated-title');
+
+			scenario.mocks.commandsRepository.updatePoem.mockResolvedValue({
+				ok: false,
+				error: new Error('boom'),
+				data: null,
+				code: 'UNKNOWN',
 			});
 
-			await expect(promise).rejects.toThrow(ConflictError);
+			await expectError(scenario.executeUpdatePoem(), Error);
 		});
 
-		it('Propagates unknown repository errors', async () => {
-			const infraError = new Error('unexpected infra failure');
+		it('should propagate query dependency errors', async () => {
+			const scenario = makePoemsScenario();
 
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'draft',
-				moderationStatus: 'approved',
-				author: { id: 1 },
-			});
-			generateSlug.mockReturnValueOnce('updated-title');
-			updatePoemRepo.mockResolvedValueOnce({
-				ok: false,
-				error: infraError,
-			});
+			scenario.mocks.queriesRepository.selectPoemById.mockRejectedValue(
+				new Error('boom'),
+			);
 
-			const promise = updatePoem({
-				poemId: 1,
-				data: baseData,
-				meta: baseMeta,
-			});
-
-			await expect(promise).rejects.toThrow(infraError);
+			await expectError(scenario.executeUpdatePoem(), Error);
 		});
 	});
 });

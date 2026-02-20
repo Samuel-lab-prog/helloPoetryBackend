@@ -1,83 +1,134 @@
-import { describe, it, expect, mock } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
+import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
-import { getPoemFactory } from './execute';
-
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { AuthorPoem } from '../../Models';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-import { NotFoundError } from '@DomainError';
-
-describe('USE-CASE - Poems Management', () => {
-	describe('Get Poem', () => {
-		const selectPoemById = mock();
-
-		const poemQueriesRepository: QueriesRepository = {
-			selectPoemById,
-			selectMyPoems: mock(),
-			selectAuthorPoems: mock(),
-		};
-
-		const validAuthorPoem: AuthorPoem = {
-			id: 1,
-			content: 'A poem',
-			status: 'published',
-			visibility: 'public',
-			moderationStatus: 'approved',
-			title: 'Poem Title',
-			slug: 'poem-title',
-			isCommentable: true,
-			excerpt: 'A poem excerpt',
-			stats: {
-				likesCount: 10,
-				commentsCount: 5,
-			},
-			tags: [
-				{
-					id: 1,
-					name: 'tag1',
-				},
-			],
-			toUsers: [],
-			author: {
-				id: 1,
-				friendIds: [],
-				avatarUrl: 'http://example.com/avatar.jpg',
-				name: 'Author Name',
-				nickname: 'author_nick',
-			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
-
-		const getPoem = getPoemFactory({ poemQueriesRepository });
-
-		it('Throws PoemNotFoundError when poem does not exist', () => {
-			selectPoemById.mockResolvedValueOnce(null);
-
-			const promise = getPoem({
-				poemId: 1,
-				requesterId: 10,
-				requesterRole: 'user' as UserRole,
-				requesterStatus: 'active' as UserStatus,
+describe.concurrent('USE-CASE - Poems Management - GetPoemById', () => {
+	describe('Successful execution', () => {
+		it('should return a public poem', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				visibility: 'public',
+				status: 'published',
+				moderationStatus: 'approved',
 			});
 
-			expect(promise).rejects.toThrow(NotFoundError);
-		});
-
-		it('Returns the poem when access is allowed', async () => {
-			const poem = { ...validAuthorPoem, visibility: 'public' as const };
-
-			selectPoemById.mockResolvedValueOnce(poem);
-
-			const result = await getPoem({
+			const result = await scenario.executeGetPoemById({
 				poemId: 1,
 				requesterId: 10,
-				requesterRole: 'user' as UserRole,
-				requesterStatus: 'active' as UserStatus,
 			});
 
 			expect(result).toHaveProperty('id', 1);
-			expect(result).toHaveProperty('content', poem.content);
+		});
+
+		it('should allow direct access to unlisted poem', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				visibility: 'unlisted',
+			});
+
+			const result = await scenario.executeGetPoemById({
+				poemId: 1,
+				requesterId: 10,
+			});
+
+			expect(result).toHaveProperty('id', 1);
+		});
+
+		it('should allow author to access their own private poem', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 7 },
+				visibility: 'private',
+			});
+
+			const result = await scenario.executeGetPoemById({
+				poemId: 1,
+				requesterId: 7,
+			});
+
+			expect(result).toHaveProperty('id', 1);
+		});
+
+		it('should allow friend to access friends-only poem', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				visibility: 'friends',
+				author: { id: 7, friendIds: [10] },
+			});
+
+			const result = await scenario.executeGetPoemById({
+				poemId: 1,
+				requesterId: 10,
+			});
+
+			expect(result).toHaveProperty('id', 1);
+		});
+	});
+
+	describe('Poem validation', () => {
+		it('should throw NotFoundError when poem does not exist', async () => {
+			const scenario = makePoemsScenario().withPoemNotFound();
+
+			await expectError(
+				scenario.executeGetPoemById({ poemId: 1 }),
+				NotFoundError,
+			);
+		});
+	});
+
+	describe('Visibility rules', () => {
+		it('should throw ForbiddenError for private poem when requester is not author', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 7 },
+				visibility: 'private',
+			});
+
+			await expectError(
+				scenario.executeGetPoemById({
+					poemId: 1,
+					requesterId: 10,
+				}),
+				ForbiddenError,
+			);
+		});
+
+		it('should throw ForbiddenError for friends-only poem when requester is not a friend', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				visibility: 'friends',
+				author: { id: 7, friendIds: [] },
+			});
+
+			await expectError(
+				scenario.executeGetPoemById({
+					poemId: 1,
+					requesterId: 10,
+				}),
+				ForbiddenError,
+			);
+		});
+
+		it('should throw ForbiddenError for banned requester', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				visibility: 'public',
+			});
+
+			await expectError(
+				scenario.executeGetPoemById({
+					poemId: 1,
+					requesterId: 10,
+					requesterStatus: 'banned',
+				}),
+				ForbiddenError,
+			);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makePoemsScenario();
+
+			scenario.mocks.queriesRepository.selectPoemById.mockRejectedValue(
+				new Error('boom'),
+			);
+
+			await expectError(scenario.executeGetPoemById({ poemId: 1 }), Error);
 		});
 	});
 });

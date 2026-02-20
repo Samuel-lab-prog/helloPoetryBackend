@@ -72,9 +72,8 @@ export async function canCreatePoem(
 		author.id,
 		toUserIds,
 	);
-	if (!areIdsValid) {
+	if (!areIdsValid)
 		throw new UnprocessableEntityError('Invalid dedicated users');
-	}
 }
 
 export async function canUpdatePoem(

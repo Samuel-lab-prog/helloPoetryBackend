@@ -1,0 +1,260 @@
+/* eslint-disable max-lines-per-function */
+import type { CreatePoemParams, UpdatePoemParams } from '../../ports/Commands';
+import type {
+	GetAuthorPoemsParams,
+	GetMyPoemsParams,
+	GetPoemParams,
+} from '../../ports/Queries';
+import { makeParams, makeSut } from '@TestUtils';
+import {
+	type AuthorPoemOverride,
+	type MyPoemOverride,
+	type SelectPoemByIdOverride,
+	type UserBasicInfoOverride,
+	givenAuthorPoems,
+	givenCreatePoemResult,
+	givenMyPoems,
+	givenPoemById,
+	givenPoemNotFound,
+	givenSlug,
+	givenUpdatePoemResult,
+	givenUser,
+	makeAuthorPoem,
+	makeMyPoem,
+} from './Givens';
+import {
+	DEFAULT_AUTHOR_ID,
+	DEFAULT_POEM_CONTENT,
+	DEFAULT_POEM_EXCERPT,
+	DEFAULT_POEM_ID,
+	DEFAULT_POEM_STATUS,
+	DEFAULT_POEM_TAGS,
+	DEFAULT_POEM_TITLE,
+	DEFAULT_POEM_VISIBILITY,
+	DEFAULT_REQUESTER_ID,
+	DEFAULT_USER_ROLE,
+	DEFAULT_USER_STATUS,
+} from './Constants';
+import { canCreatePoem, canUpdatePoem, canViewPoem } from '../Policies';
+import {
+	type PoemsSutMocks,
+	poemsFactory,
+	poemsMockFactories,
+} from './SutMocks';
+
+type CreatePoemScenarioParams = {
+	data?: Partial<CreatePoemParams['data']>;
+	meta?: Partial<CreatePoemParams['meta']>;
+};
+
+type UpdatePoemScenarioParams = {
+	poemId?: number;
+	data?: Partial<UpdatePoemParams['data']>;
+	meta?: Partial<UpdatePoemParams['meta']>;
+};
+
+type CanCreatePoemScenarioParams = {
+	author?: {
+		id?: number;
+		status?: CreatePoemParams['meta']['requesterStatus'];
+		role?: CreatePoemParams['meta']['requesterRole'];
+	};
+	toUserIds?: number[];
+};
+
+type CanUpdatePoemScenarioParams = {
+	poemId?: number;
+	author?: {
+		id?: number;
+		status?: UpdatePoemParams['meta']['requesterStatus'];
+		role?: UpdatePoemParams['meta']['requesterRole'];
+	};
+	toUserIds?: number[];
+};
+
+type CanViewPoemScenarioParams = Parameters<typeof canViewPoem>[0];
+
+export function makePoemsScenario() {
+	const { sut: sutFactory, mocks } = makeSut(
+		poemsFactory,
+		poemsMockFactories(),
+	);
+
+	return {
+		withUser(overrides: UserBasicInfoOverride = {}) {
+			givenUser(mocks.usersContract, overrides);
+			return this;
+		},
+
+		withSlug(slug?: string) {
+			givenSlug(mocks.slugService, slug);
+			return this;
+		},
+
+		withCreatedPoem(poemId: number = DEFAULT_POEM_ID) {
+			givenCreatePoemResult(mocks.commandsRepository, poemId);
+			return this;
+		},
+
+		withUpdatedPoem(poemId: number = DEFAULT_POEM_ID) {
+			givenUpdatePoemResult(mocks.commandsRepository, poemId);
+			return this;
+		},
+
+		withPoem(overrides: SelectPoemByIdOverride = {}) {
+			givenPoemById(mocks.queriesRepository, overrides);
+			return this;
+		},
+
+		withPoemNotFound() {
+			givenPoemNotFound(mocks.queriesRepository);
+			return this;
+		},
+
+		withAuthorPoems(overrides: AuthorPoemOverride[] = [{}]) {
+			givenAuthorPoems(
+				mocks.queriesRepository,
+				overrides.map((item) => makeAuthorPoem(item)),
+			);
+			return this;
+		},
+
+		withMyPoems(overrides: MyPoemOverride[] = [{}]) {
+			givenMyPoems(
+				mocks.queriesRepository,
+				overrides.map((item) => makeMyPoem(item)),
+			);
+			return this;
+		},
+
+		executeCreatePoem(params: CreatePoemScenarioParams = {}) {
+			return sutFactory.createPoem({
+				data: makeParams(
+					{
+						title: DEFAULT_POEM_TITLE,
+						content: DEFAULT_POEM_CONTENT,
+						excerpt: DEFAULT_POEM_EXCERPT,
+						tags: DEFAULT_POEM_TAGS,
+						visibility: DEFAULT_POEM_VISIBILITY,
+						status: DEFAULT_POEM_STATUS,
+						isCommentable: true,
+						toUserIds: [],
+					},
+					params.data,
+				),
+				meta: makeParams(
+					{
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterStatus: DEFAULT_USER_STATUS,
+						requesterRole: DEFAULT_USER_ROLE,
+					},
+					params.meta,
+				),
+			});
+		},
+
+		executeUpdatePoem(params: UpdatePoemScenarioParams = {}) {
+			return sutFactory.updatePoem({
+				poemId: params.poemId ?? DEFAULT_POEM_ID,
+				data: makeParams(
+					{
+						title: DEFAULT_POEM_TITLE,
+						content: DEFAULT_POEM_CONTENT,
+						excerpt: DEFAULT_POEM_EXCERPT,
+						tags: DEFAULT_POEM_TAGS,
+						visibility: DEFAULT_POEM_VISIBILITY,
+						status: DEFAULT_POEM_STATUS,
+						isCommentable: true,
+						toUserIds: [],
+					},
+					params.data,
+				),
+				meta: makeParams(
+					{
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterStatus: DEFAULT_USER_STATUS,
+						requesterRole: DEFAULT_USER_ROLE,
+					},
+					params.meta,
+				),
+			});
+		},
+
+		executeGetAuthorPoems(params: Partial<GetAuthorPoemsParams> = {}) {
+			return sutFactory.getAuthorPoems(
+				makeParams(
+					{
+						authorId: DEFAULT_AUTHOR_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterStatus: DEFAULT_USER_STATUS,
+						requesterRole: DEFAULT_USER_ROLE,
+					},
+					params,
+				),
+			);
+		},
+
+		executeGetMyPoems(params: Partial<GetMyPoemsParams> = {}) {
+			return sutFactory.getMyPoems(
+				makeParams(
+					{
+						requesterId: DEFAULT_REQUESTER_ID,
+					},
+					params,
+				),
+			);
+		},
+
+		executeGetPoemById(params: Partial<GetPoemParams> = {}) {
+			return sutFactory.getPoemById(
+				makeParams(
+					{
+						poemId: DEFAULT_POEM_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterStatus: DEFAULT_USER_STATUS,
+						requesterRole: DEFAULT_USER_ROLE,
+					},
+					params,
+				),
+			);
+		},
+
+		executeCanCreatePoem(params: CanCreatePoemScenarioParams = {}) {
+			return canCreatePoem({
+				ctx: {
+					author: makeParams({
+						id: DEFAULT_REQUESTER_ID,
+						status: DEFAULT_USER_STATUS,
+						role: DEFAULT_USER_ROLE,
+					}),
+				},
+				usersContract: mocks.usersContract,
+				toUserIds: params.toUserIds,
+			});
+		},
+
+		executeCanUpdatePoem(params: CanUpdatePoemScenarioParams = {}) {
+			return canUpdatePoem({
+				poemId: params.poemId ?? DEFAULT_POEM_ID,
+				ctx: {
+					author: makeParams({
+						id: DEFAULT_REQUESTER_ID,
+						status: DEFAULT_USER_STATUS,
+						role: DEFAULT_USER_ROLE,
+					}),
+				},
+				usersContract: mocks.usersContract,
+				queriesRepository: mocks.queriesRepository,
+				toUserIds: params.toUserIds,
+			});
+		},
+
+		executeCanViewPoem(params: CanViewPoemScenarioParams) {
+			return canViewPoem(params);
+		},
+
+		get mocks(): PoemsSutMocks {
+			return mocks;
+		},
+	};
+}

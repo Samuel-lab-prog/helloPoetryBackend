@@ -1,25 +1,46 @@
-import { describe, it, expect, mock } from 'bun:test';
-import { getMyPoemsFactory } from './execute';
-import type { QueriesRepository } from '../../../ports/Queries';
+import { describe, it, expect } from 'bun:test';
+import { expectError } from '@TestUtils';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Poems Management', () => {
-	describe('Get My Poems', () => {
-		const selectMyPoems = mock();
+describe.concurrent('USE-CASE - Poems Management - GetMyPoems', () => {
+	describe('Successful execution', () => {
+		it('should return all poems belonging to requester', async () => {
+			const scenario = makePoemsScenario().withMyPoems([
+				{ visibility: 'private', status: 'draft', moderationStatus: 'removed' },
+				{
+					visibility: 'public',
+					status: 'published',
+					moderationStatus: 'approved',
+				},
+			]);
 
-		const poemQueriesRepository: QueriesRepository = {
-			selectMyPoems,
-			selectAuthorPoems: mock(),
-			selectPoemById: mock(),
-		};
+			const result = await scenario.executeGetMyPoems({ requesterId: 1 });
 
-		const getMyPoems = getMyPoemsFactory({ poemQueriesRepository });
+			expect(result).toHaveLength(2);
+		});
+	});
 
-		it('Calls repository with requester id', async () => {
-			selectMyPoems.mockResolvedValueOnce([]);
+	describe('Query forwarding', () => {
+		it('should forward requester id to repository', async () => {
+			const scenario = makePoemsScenario().withMyPoems([]);
 
-			await getMyPoems({ requesterId: 1 });
+			await scenario.executeGetMyPoems({ requesterId: 10 });
 
-			expect(selectMyPoems).toHaveBeenCalledWith(1);
+			expect(
+				scenario.mocks.queriesRepository.selectMyPoems,
+			).toHaveBeenCalledWith(10);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makePoemsScenario();
+
+			scenario.mocks.queriesRepository.selectMyPoems.mockRejectedValue(
+				new Error('boom'),
+			);
+
+			await expectError(scenario.executeGetMyPoems({ requesterId: 1 }), Error);
 		});
 	});
 });

@@ -1,134 +1,143 @@
-import { describe, it, expect, mock } from 'bun:test';
-
-import {
-	validateDedicatedUsers,
-	canCreatePoem,
-	canUpdatePoem,
-	canViewPoem,
-} from './Policies';
-
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { QueriesRepository } from '../ports/Queries';
+import { describe, it, expect } from 'bun:test';
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
 } from '@DomainError';
+import { expectError } from '@TestUtils';
+import { validateDedicatedUsers } from './Policies';
+import { makePoemsScenario } from './test-helpers/Helper';
 
-describe('POLICY - Poems Management', () => {
+describe.concurrent('POLICY - Poems Management', () => {
 	describe('validateDedicatedUsers', () => {
-		it('Returns true when no user ids are provided', async () => {
-			const usersContract = {} as UsersPublicContract;
+		it('should return true when no user ids are provided', async () => {
+			const scenario = makePoemsScenario().withUser();
 
-			const result = await validateDedicatedUsers(usersContract, 1);
+			const result = await validateDedicatedUsers(
+				scenario.mocks.usersContract,
+				1,
+			);
 
 			expect(result).toBe(true);
 		});
 
-		it('Throws when author tries to dedicate poem to themselves', async () => {
-			const usersContract = {} as UsersPublicContract;
+		it('should throw ForbiddenError when author tries to dedicate poem to themselves', async () => {
+			const scenario = makePoemsScenario().withUser();
 
-			await expect(
-				validateDedicatedUsers(usersContract, 1, [1]),
-			).rejects.toThrow(ForbiddenError);
+			await expectError(
+				validateDedicatedUsers(scenario.mocks.usersContract, 1, [1]),
+				ForbiddenError,
+			);
 		});
 
-		it('Returns false when any dedicated user is inactive or missing', async () => {
-			const usersContract: UsersPublicContract = {
-				selectUserBasicInfo: mock().mockResolvedValueOnce({
-					id: 2,
-					status: 'banned',
-				}),
-			} as any;
+		it('should return false when dedicated user is inactive', async () => {
+			const scenario = makePoemsScenario().withUser({ status: 'banned' });
 
-			const result = await validateDedicatedUsers(usersContract, 1, [2]);
+			const result = await validateDedicatedUsers(
+				scenario.mocks.usersContract,
+				1,
+				[2],
+			);
 
 			expect(result).toBe(false);
 		});
 	});
 
 	describe('canCreatePoem', () => {
-		it('Denies creation when author is not active', () => {
-			expect(
-				canCreatePoem({
-					ctx: {
-						author: { id: 1, status: 'banned', role: 'author' },
-					},
-					usersContract: {} as UsersPublicContract,
-				}),
-			).rejects.toThrow(ForbiddenError);
-		});
+		it('should allow active author with valid dedicated users', async () => {
+			const scenario = makePoemsScenario().withUser();
 
-		it('Denies creation when dedicated users are invalid', () => {
-			const usersContract: UsersPublicContract = {
-				selectUserBasicInfo: mock().mockResolvedValue({
-					exists: true,
-					id: 2,
-					status: 'banned',
-					role: 'author',
-				}),
-			} as any;
-
-			expect(
-				canCreatePoem({
-					ctx: {
-						author: { id: 1, status: 'active', role: 'author' },
-					},
-					usersContract,
+			await expect(
+				scenario.executeCanCreatePoem({
+					author: { id: 1, status: 'active' },
 					toUserIds: [2],
 				}),
-			).rejects.toThrow(UnprocessableEntityError);
+			).resolves.toBeUndefined();
+		});
+
+		it('should throw UnprocessableEntityError when dedicated users are invalid', async () => {
+			const scenario = makePoemsScenario().withUser({ status: 'suspended' });
+
+			await expectError(
+				scenario.executeCanCreatePoem({
+					toUserIds: [2],
+				}),
+				UnprocessableEntityError,
+			);
 		});
 	});
 
 	describe('canUpdatePoem', () => {
-		const selectPoemById = mock();
+		it('should allow update when author is active and poem is editable', async () => {
+			const scenario = makePoemsScenario()
+				.withUser()
+				.withPoem({
+					id: 1,
+					author: { id: 1 },
+					status: 'draft',
+					moderationStatus: 'approved',
+				});
 
-		const queriesRepository: QueriesRepository = {
-			selectPoemById,
-			selectAuthorPoems: mock(),
-			selectMyPoems: mock(),
-		};
-
-		it('Denies update when poem does not exist', async () => {
-			selectPoemById.mockResolvedValueOnce(null);
-
-			await expect(
-				canUpdatePoem({
-					poemId: 1,
-					ctx: {
-						author: { id: 1, status: 'active', role: 'author' },
-					},
-					usersContract: {} as UsersPublicContract,
-					queriesRepository,
-				}),
-			).rejects.toThrow(NotFoundError);
+			await expect(scenario.executeCanUpdatePoem({ poemId: 1 })).resolves.toBe(
+				undefined,
+			);
 		});
 
-		it('Denies update when poem is published', async () => {
-			selectPoemById.mockResolvedValueOnce({
-				id: 1,
-				status: 'published',
-				moderationStatus: 'approved',
-				author: { id: 1 },
+		it('should throw ForbiddenError when author is not active', async () => {
+			const scenario = makePoemsScenario().withPoem();
+
+			await expectError(
+				scenario.executeCanUpdatePoem({
+					author: { status: 'banned' },
+				}),
+				ForbiddenError,
+			);
+		});
+
+		it('should throw NotFoundError when poem does not exist', async () => {
+			const scenario = makePoemsScenario().withPoemNotFound();
+
+			await expectError(
+				scenario.executeCanUpdatePoem({
+					poemId: 1,
+				}),
+				NotFoundError,
+			);
+		});
+
+		it('should throw ForbiddenError when requester is not the poem author', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 999 },
 			});
 
-			await expect(
-				canUpdatePoem({
-					poemId: 1,
-					ctx: {
-						author: { id: 1, status: 'active', role: 'author' },
-					},
-					usersContract: {} as UsersPublicContract,
-					queriesRepository,
-				}),
-			).rejects.toThrow(ForbiddenError);
+			await expectError(scenario.executeCanUpdatePoem(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when poem is published', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 1 },
+				status: 'published',
+			});
+
+			await expectError(scenario.executeCanUpdatePoem(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when poem is removed', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 1 },
+				status: 'draft',
+				moderationStatus: 'removed',
+			});
+
+			await expectError(scenario.executeCanUpdatePoem(), ForbiddenError);
 		});
 	});
 
 	describe('canViewPoem', () => {
-		it('Allows author to always view their poem', () => {
-			const result = canViewPoem({
+		it('should allow author to view their own poem', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
 				viewer: { id: 1 },
 				author: { id: 1 },
 				poem: {
@@ -142,8 +151,10 @@ describe('POLICY - Poems Management', () => {
 			expect(result).toBe(true);
 		});
 
-		it('Denies access to banned viewers', () => {
-			const result = canViewPoem({
+		it('should deny banned viewer', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
 				viewer: { id: 2, status: 'banned' },
 				author: { id: 1 },
 				poem: {
@@ -157,9 +168,115 @@ describe('POLICY - Poems Management', () => {
 			expect(result).toBe(false);
 		});
 
-		it('Allows public poems for anonymous viewers', () => {
-			const result = canViewPoem({
+		it('should allow public approved published poems for anonymous viewer', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
 				viewer: {},
+				author: { id: 1 },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'public',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(result).toBe(true);
+		});
+
+		it('should allow unlisted poem only with direct access', () => {
+			const scenario = makePoemsScenario();
+
+			const denied = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1, directAccess: false },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'unlisted',
+					moderationStatus: 'approved',
+				},
+			});
+
+			const allowed = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1, directAccess: true },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'unlisted',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(denied).toBe(false);
+			expect(allowed).toBe(true);
+		});
+
+		it('should allow friends-only poem only for friends', () => {
+			const scenario = makePoemsScenario();
+
+			const denied = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1, friendIds: [] },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'friends',
+					moderationStatus: 'approved',
+				},
+			});
+
+			const allowed = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1, friendIds: [2] },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'friends',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(denied).toBe(false);
+			expect(allowed).toBe(true);
+		});
+
+		it('should deny non-approved or draft poems for non-authors', () => {
+			const scenario = makePoemsScenario();
+
+			const rejected = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1 },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'public',
+					moderationStatus: 'rejected',
+				},
+			});
+
+			const draft = scenario.executeCanViewPoem({
+				viewer: { id: 2, status: 'active' },
+				author: { id: 1 },
+				poem: {
+					id: 1,
+					status: 'draft',
+					visibility: 'public',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(rejected).toBe(false);
+			expect(draft).toBe(false);
+		});
+
+		it('should allow moderator to view non-private poem', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
+				viewer: { id: 2, role: 'moderator', status: 'active' },
 				author: { id: 1 },
 				poem: {
 					id: 1,

@@ -1,105 +1,101 @@
-import { describe, it, expect, mock } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
+import { expectError } from '@TestUtils';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
-import { getAuthorPoemsFactory } from './execute';
+describe.concurrent('USE-CASE - Poems Management - GetAuthorPoems', () => {
+	describe('Successful execution', () => {
+		it('should list poems visible to requester', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([
+				{},
+				{ visibility: 'private' },
+			]);
 
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { AuthorPoem } from '../../Models';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-
-describe('USE-CASE - Poems', () => {
-	describe('Get Author Poems', () => {
-		const selectAuthorPoems = mock();
-
-		const poemQueriesRepository: QueriesRepository = {
-			selectAuthorPoems,
-			selectMyPoems: mock(),
-			selectPoemById: mock(),
-		};
-
-		const validAuthorPoem: AuthorPoem = {
-			id: 1,
-			content: 'A poem',
-			status: 'published',
-			visibility: 'public',
-			moderationStatus: 'approved',
-			title: 'Poem Title',
-			slug: 'poem-title',
-			isCommentable: true,
-			excerpt: 'A poem excerpt',
-			stats: {
-				likesCount: 10,
-				commentsCount: 5,
-			},
-			tags: [
-				{
-					id: 1,
-					name: 'tag1',
-				},
-			],
-			toUsers: [],
-			author: {
-				id: 1,
-				friendIds: [],
-				avatarUrl: 'http://example.com/avatar.jpg',
-				name: 'Author Name',
-				nickname: 'author_nick',
-			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
-
-		const getAuthorPoems = getAuthorPoemsFactory({ poemQueriesRepository });
-
-		it('Calls repository with author id', async () => {
-			selectAuthorPoems.mockResolvedValueOnce([]);
-
-			await getAuthorPoems({
-				authorId: 1,
-				requesterId: 2,
-				requesterRole: 'user' as UserRole,
-				requesterStatus: 'active' as UserStatus,
-			});
-
-			expect(selectAuthorPoems).toHaveBeenCalledWith(1);
-		});
-
-		it('Filters poems the requester cannot view', async () => {
-			const poems: AuthorPoem[] = [
-				validAuthorPoem,
-				validAuthorPoem,
-				validAuthorPoem,
-			];
-
-			selectAuthorPoems.mockResolvedValueOnce(poems);
-
-			const result = await getAuthorPoems({
-				authorId: 1,
-				requesterId: 99,
-				requesterRole: 'user' as UserRole,
-				requesterStatus: 'active' as UserStatus,
-			});
-
-			// We only assert that filtering occurred, not the policy rules
-			expect(result.length).toBeLessThanOrEqual(poems.length);
-		});
-
-		it('Returns only poems the requester can view', async () => {
-			const poems = [
-				validAuthorPoem,
-				{ ...validAuthorPoem, visibility: 'private' as const },
-			];
-
-			selectAuthorPoems.mockResolvedValueOnce(poems);
-
-			const result = await getAuthorPoems({
-				authorId: 1,
-				requesterId: 2,
-				requesterRole: 'user' as UserRole,
-				requesterStatus: 'active' as UserStatus,
+			const result = await scenario.executeGetAuthorPoems({
+				authorId: 2,
+				requesterId: 10,
+				requesterStatus: 'active',
+				requesterRole: 'author',
 			});
 
 			expect(result).toHaveLength(1);
-			expect(result[0]).toHaveProperty('id');
+		});
+
+		it('should allow author to see all their poems', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([
+				{ author: { id: 7 }, visibility: 'private', status: 'draft' },
+				{ author: { id: 7 }, moderationStatus: 'removed' },
+			]);
+
+			const result = await scenario.executeGetAuthorPoems({
+				authorId: 7,
+				requesterId: 7,
+			});
+
+			expect(result).toHaveLength(2);
+		});
+	});
+
+	describe('Visibility rules', () => {
+		it('should hide unlisted poems when access is not direct', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([
+				{ visibility: 'unlisted' },
+			]);
+
+			const result = await scenario.executeGetAuthorPoems({
+				authorId: 2,
+				requesterId: 10,
+			});
+
+			expect(result).toHaveLength(0);
+		});
+
+		it('should show friends-only poems only to friends', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([
+				{ visibility: 'friends', author: { id: 2, friendIds: [10] } },
+			]);
+
+			const result = await scenario.executeGetAuthorPoems({
+				authorId: 2,
+				requesterId: 10,
+			});
+
+			expect(result).toHaveLength(1);
+		});
+
+		it('should hide all poems for banned viewers', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([{}, {}]);
+
+			const result = await scenario.executeGetAuthorPoems({
+				authorId: 2,
+				requesterId: 10,
+				requesterStatus: 'banned',
+			});
+
+			expect(result).toHaveLength(0);
+		});
+	});
+
+	describe('Query forwarding', () => {
+		it('should forward author id to repository', async () => {
+			const scenario = makePoemsScenario().withAuthorPoems([]);
+
+			await scenario.executeGetAuthorPoems({ authorId: 123 });
+
+			expect(
+				scenario.mocks.queriesRepository.selectAuthorPoems,
+			).toHaveBeenCalledWith(123);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makePoemsScenario();
+
+			scenario.mocks.queriesRepository.selectAuthorPoems.mockRejectedValue(
+				new Error('boom'),
+			);
+
+			await expectError(scenario.executeGetAuthorPoems({ authorId: 1 }), Error);
 		});
 	});
 });

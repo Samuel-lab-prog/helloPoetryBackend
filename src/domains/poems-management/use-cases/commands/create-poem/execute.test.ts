@@ -1,79 +1,38 @@
-import { describe, it, expect, mock } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
+import {
+	ConflictError,
+	ForbiddenError,
+	UnprocessableEntityError,
+} from '@DomainError';
+import { expectError } from '@TestUtils';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
-import { createPoemFactory } from './execute';
+describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
+	describe('Successful execution', () => {
+		it('should create a poem', async () => {
+			const scenario = makePoemsScenario()
+				.withUser()
+				.withSlug('my-poem')
+				.withCreatedPoem(42);
 
-import type { CommandsRepository } from '../../../ports/Commands';
-import type { SlugService } from '../../../ports/ExternalServices';
-import type { CreatePoem } from '../../Models';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ConflictError } from '@DomainError';
+			const result = await scenario.executeCreatePoem({
+				data: { title: 'My Poem', content: 'Some content' },
+			});
 
-describe('USE-CASE - Poems Management', () => {
-	describe('Create Poem', () => {
-		const insertPoem = mock();
-		const generateSlug = mock();
-		const selectUserBasicInfo = mock();
-
-		const commandsRepository: CommandsRepository = {
-			insertPoem,
-			updatePoem: mock(),
-		};
-
-		const slugService: SlugService = {
-			generateSlug,
-		};
-
-		const usersContract: UsersPublicContract = {
-			selectUserBasicInfo,
-			selectAuthUserByEmail: mock(),
-		} as UsersPublicContract;
-
-		const createPoem = createPoemFactory({
-			commandsRepository,
-			slugService,
-			usersContract,
+			expect(result).toHaveProperty('id', 42);
 		});
 
-		const baseData: CreatePoem = {
-			title: 'My Poem',
-			content: 'Some content',
-			toUserIds: [],
-		} as CreatePoem;
+		it('should persist transformed data with generated slug', async () => {
+			const scenario = makePoemsScenario()
+				.withUser()
+				.withSlug('my-poem')
+				.withCreatedPoem();
 
-		const baseMeta = {
-			requesterId: 1,
-			requesterStatus: 'active',
-			requesterRole: 'author',
-		} as const;
-
-		it('Generates a slug from the poem title', async () => {
-			generateSlug.mockReturnValueOnce('my-poem');
-			insertPoem.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 1 },
+			await scenario.executeCreatePoem({
+				data: { title: 'My Poem', content: 'Some content' },
 			});
 
-			await createPoem({
-				data: baseData,
-				meta: baseMeta,
-			});
-
-			expect(generateSlug).toHaveBeenCalledWith('My Poem');
-		});
-
-		it('Calls repository with transformed poem data', async () => {
-			generateSlug.mockReturnValueOnce('my-poem');
-			insertPoem.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 1 },
-			});
-
-			await createPoem({
-				data: baseData,
-				meta: baseMeta,
-			});
-
-			expect(insertPoem).toHaveBeenCalledWith(
+			expect(scenario.mocks.commandsRepository.insertPoem).toHaveBeenCalledWith(
 				expect.objectContaining({
 					title: 'My Poem',
 					content: 'Some content',
@@ -82,52 +41,95 @@ describe('USE-CASE - Poems Management', () => {
 				}),
 			);
 		});
+	});
 
-		it('Returns created poem result on success', async () => {
-			generateSlug.mockReturnValueOnce('my-poem');
-			insertPoem.mockResolvedValueOnce({
-				ok: true,
-				data: { id: 42 },
-			});
+	describe('User validation', () => {
+		it('should throw ForbiddenError when author is not active', async () => {
+			const scenario = makePoemsScenario().withUser({ status: 'banned' });
 
-			const result = await createPoem({
-				data: baseData,
-				meta: baseMeta,
-			});
+			await expectError(
+				scenario.executeCreatePoem({
+					meta: { requesterStatus: 'banned' },
+				}),
+				ForbiddenError,
+			);
+		});
+	});
 
-			expect(result).toHaveProperty('id', 42);
+	describe('Dedication validation', () => {
+		it('should throw ForbiddenError when author dedicates the poem to themselves', async () => {
+			const scenario = makePoemsScenario()
+				.withUser()
+				.withSlug()
+				.withCreatedPoem();
+
+			await expectError(
+				scenario.executeCreatePoem({
+					data: { toUserIds: [1] },
+				}),
+				ForbiddenError,
+			);
 		});
 
-		it('Throws ConflictError on repository conflict', async () => {
-			generateSlug.mockReturnValueOnce('my-poem');
-			insertPoem.mockResolvedValueOnce({
+		it('should throw UnprocessableEntityError when dedicated users are invalid', async () => {
+			const scenario = makePoemsScenario()
+				.withUser()
+				.withSlug()
+				.withCreatedPoem();
+
+			scenario.mocks.usersContract.selectUserBasicInfo.mockResolvedValue({
+				exists: true,
+				id: 99,
+				status: 'banned',
+				role: 'author',
+				nickname: 'invalid-user',
+			});
+
+			await expectError(
+				scenario.executeCreatePoem({
+					data: { toUserIds: [99] },
+				}),
+				UnprocessableEntityError,
+			);
+		});
+	});
+
+	describe('Repository response handling', () => {
+		it('should throw ConflictError when repository reports conflict', async () => {
+			const scenario = makePoemsScenario().withUser().withSlug();
+
+			scenario.mocks.commandsRepository.insertPoem.mockResolvedValue({
 				ok: false,
 				code: 'CONFLICT',
+				data: null,
 			});
 
-			const promise = createPoem({
-				data: baseData,
-				meta: baseMeta,
+			await expectError(scenario.executeCreatePoem(), ConflictError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow dependency errors', async () => {
+			const scenario = makePoemsScenario().withUser().withSlug();
+
+			scenario.mocks.commandsRepository.insertPoem.mockResolvedValue({
+				ok: false,
+				error: new Error('boom'),
+				code: 'UNKNOWN',
+				data: null,
 			});
 
-			await expect(promise).rejects.toThrow(ConflictError);
+			await expectError(scenario.executeCreatePoem(), Error);
 		});
 
-		it('Propagates unknown repository errors', async () => {
-			const infraError = new Error('unexpected infra failure');
+		it('should propagate users contract errors', async () => {
+			const scenario = makePoemsScenario().withSlug().withCreatedPoem();
 
-			generateSlug.mockReturnValueOnce('my-poem');
-			insertPoem.mockResolvedValueOnce({
-				ok: false,
-				error: infraError,
-			});
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
+				new Error('boom'),
+			);
 
-			const promise = createPoem({
-				data: baseData,
-				meta: baseMeta,
-			});
-
-			await expect(promise).rejects.toThrow(infraError);
+			await expectError(scenario.executeCreatePoem(), Error);
 		});
 	});
 });
