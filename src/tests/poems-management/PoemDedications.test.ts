@@ -65,7 +65,7 @@ describe('INTEGRATION - Poems Management', () => {
 			toUserIds: [NON_EXISTENT_ID],
 		});
 
-		expectAppError(result, 404);
+		expectAppError(result, 422);
 	});
 
 	it('User cannot dedicate poem to inactive user', async () => {
@@ -75,7 +75,7 @@ describe('INTEGRATION - Poems Management', () => {
 			toUserIds: [user2.id],
 		});
 
-		expectAppError(result, 404);
+		expectAppError(result, 422);
 	});
 
 	it('User cannot dedicate poem to itself', async () => {

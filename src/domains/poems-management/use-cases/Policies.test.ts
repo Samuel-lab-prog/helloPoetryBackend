@@ -7,15 +7,13 @@ import {
 	canViewPoem,
 } from './Policies';
 
-import {
-	PoemCreationDeniedError,
-	PoemUpdateDeniedError,
-	PoemNotFoundError,
-	InvalidDedicatedUsersError,
-} from './Errors';
-
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { QueriesRepository } from '../ports/Queries';
+import {
+	ForbiddenError,
+	NotFoundError,
+	UnprocessableEntityError,
+} from '@DomainError';
 
 describe('POLICY - Poems Management', () => {
 	describe('validateDedicatedUsers', () => {
@@ -32,7 +30,7 @@ describe('POLICY - Poems Management', () => {
 
 			await expect(
 				validateDedicatedUsers(usersContract, 1, [1]),
-			).rejects.toThrow(PoemUpdateDeniedError);
+			).rejects.toThrow(ForbiddenError);
 		});
 
 		it('Returns false when any dedicated user is inactive or missing', async () => {
@@ -58,7 +56,7 @@ describe('POLICY - Poems Management', () => {
 					},
 					usersContract: {} as UsersPublicContract,
 				}),
-			).rejects.toThrow(PoemCreationDeniedError);
+			).rejects.toThrow(ForbiddenError);
 		});
 
 		it('Denies creation when dedicated users are invalid', () => {
@@ -79,7 +77,7 @@ describe('POLICY - Poems Management', () => {
 					usersContract,
 					toUserIds: [2],
 				}),
-			).rejects.toThrow(InvalidDedicatedUsersError);
+			).rejects.toThrow(UnprocessableEntityError);
 		});
 	});
 
@@ -104,7 +102,7 @@ describe('POLICY - Poems Management', () => {
 					usersContract: {} as UsersPublicContract,
 					queriesRepository,
 				}),
-			).rejects.toThrow(PoemNotFoundError);
+			).rejects.toThrow(NotFoundError);
 		});
 
 		it('Denies update when poem is published', async () => {
@@ -124,7 +122,7 @@ describe('POLICY - Poems Management', () => {
 					usersContract: {} as UsersPublicContract,
 					queriesRepository,
 				}),
-			).rejects.toThrow(PoemUpdateDeniedError);
+			).rejects.toThrow(ForbiddenError);
 		});
 	});
 

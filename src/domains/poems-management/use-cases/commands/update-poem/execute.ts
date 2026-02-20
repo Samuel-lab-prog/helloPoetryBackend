@@ -5,9 +5,9 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UpdatePoemResult } from '../../Models';
-import { PoemAlreadyExistsError } from '../../Errors';
 import { canUpdatePoem } from '../../Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { ConflictError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -48,7 +48,9 @@ export function updatePoemFactory(deps: Dependencies) {
 		if (result.ok === true) return result.data;
 
 		if (result.ok === false && result.code === 'CONFLICT')
-			throw new PoemAlreadyExistsError();
+			throw new ConflictError(
+				'Another poem with the same title already exists',
+			);
 
 		throw result.error;
 	};

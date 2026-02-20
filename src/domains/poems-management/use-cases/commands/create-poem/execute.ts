@@ -3,11 +3,11 @@ import type {
 	CommandsRepository,
 	CreatePoemParams,
 } from '../../../ports/Commands';
-import { PoemAlreadyExistsError } from '../../Errors';
 import type { CreatePoemDB, CreatePoemResult } from '../../Models';
 import { canCreatePoem } from '../../Policies';
 import { eventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { ConflictError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -57,7 +57,9 @@ export function createPoemFactory(deps: Dependencies) {
 		}
 
 		if (result.ok === false && result.code === 'CONFLICT')
-			throw new PoemAlreadyExistsError();
+			throw new ConflictError(
+				'Another poem with the same title already exists',
+			);
 
 		throw result.error;
 	};

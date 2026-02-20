@@ -1,11 +1,11 @@
 import { describe, it, expect, mock } from 'bun:test';
 
 import { getPoemFactory } from './execute';
-import { PoemNotFoundError } from '../../Errors';
 
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { AuthorPoem } from '../../Models';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import { NotFoundError } from '@DomainError';
 
 describe('USE-CASE - Poems Management', () => {
 	describe('Get Poem', () => {
@@ -61,7 +61,7 @@ describe('USE-CASE - Poems Management', () => {
 				requesterStatus: 'active' as UserStatus,
 			});
 
-			expect(promise).rejects.toThrow(PoemNotFoundError);
+			expect(promise).rejects.toThrow(NotFoundError);
 		});
 
 		it('Returns the poem when access is allowed', async () => {

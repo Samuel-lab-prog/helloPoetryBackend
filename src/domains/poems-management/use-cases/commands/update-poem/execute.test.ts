@@ -1,13 +1,13 @@
 import { describe, it, expect, mock } from 'bun:test';
 
 import { updatePoemFactory } from './execute';
-import { PoemAlreadyExistsError } from '../../Errors';
 
 import type { CommandsRepository } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { SlugService } from '../../../ports/ExternalServices';
 import type { UpdatePoem } from '../../Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { ConflictError } from '@DomainError';
 
 describe('USE-CASE - Poems', () => {
 	describe('Update Poem', () => {
@@ -133,7 +133,7 @@ describe('USE-CASE - Poems', () => {
 			expect(result).toHaveProperty('id', 99);
 		});
 
-		it('Throws PoemAlreadyExistsError on repository conflict', async () => {
+		it('Throws ConflictError on repository conflict', async () => {
 			selectPoemById.mockResolvedValueOnce({
 				id: 1,
 				status: 'draft',
@@ -152,7 +152,7 @@ describe('USE-CASE - Poems', () => {
 				meta: baseMeta,
 			});
 
-			await expect(promise).rejects.toThrow(PoemAlreadyExistsError);
+			await expect(promise).rejects.toThrow(ConflictError);
 		});
 
 		it('Propagates unknown repository errors', async () => {

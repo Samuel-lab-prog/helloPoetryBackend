@@ -1,12 +1,12 @@
 import { describe, it, expect, mock } from 'bun:test';
 
 import { createPoemFactory } from './execute';
-import { PoemAlreadyExistsError } from '../../Errors';
 
 import type { CommandsRepository } from '../../../ports/Commands';
 import type { SlugService } from '../../../ports/ExternalServices';
 import type { CreatePoem } from '../../Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { ConflictError } from '@DomainError';
 
 describe('USE-CASE - Poems Management', () => {
 	describe('Create Poem', () => {
@@ -98,7 +98,7 @@ describe('USE-CASE - Poems Management', () => {
 			expect(result).toHaveProperty('id', 42);
 		});
 
-		it('Throws PoemAlreadyExistsError on repository conflict', async () => {
+		it('Throws ConflictError on repository conflict', async () => {
 			generateSlug.mockReturnValueOnce('my-poem');
 			insertPoem.mockResolvedValueOnce({
 				ok: false,
@@ -110,7 +110,7 @@ describe('USE-CASE - Poems Management', () => {
 				meta: baseMeta,
 			});
 
-			await expect(promise).rejects.toThrow(PoemAlreadyExistsError);
+			await expect(promise).rejects.toThrow(ConflictError);
 		});
 
 		it('Propagates unknown repository errors', async () => {

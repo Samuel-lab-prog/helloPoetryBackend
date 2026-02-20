@@ -1,7 +1,7 @@
 import type { QueriesRepository, GetPoemParams } from '../../../ports/Queries';
-import { PoemNotFoundError, PoemAccessDeniedError } from '../../Errors';
 import { canViewPoem } from '../../Policies';
 import type { AuthorPoem } from '../../Models';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
@@ -11,7 +11,7 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 	return async function getPoem(params: GetPoemParams): Promise<AuthorPoem> {
 		const poem = await poemQueriesRepository.selectPoemById(params.poemId);
 
-		if (!poem) throw new PoemNotFoundError();
+		if (!poem) throw new NotFoundError('Poem not found');
 
 		const canAccess = canViewPoem({
 			author: {
@@ -32,7 +32,7 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 			},
 		});
 
-		if (!canAccess) throw new PoemAccessDeniedError();
+		if (!canAccess) throw new ForbiddenError('Access denied to poem');
 
 		return poem;
 	};

@@ -3,18 +3,16 @@ import type { UsersPublicContract } from '@Domains/users-management/public/Index
 
 import type { QueriesRepository } from '../ports/Queries';
 
-import {
-	InvalidDedicatedUsersError,
-	PoemCreationDeniedError,
-	PoemNotFoundError,
-	PoemUpdateDeniedError,
-} from './Errors';
-
 import type {
 	PoemStatus,
 	PoemVisibility,
 	PoemModerationStatus,
 } from './Models';
+import {
+	ForbiddenError,
+	NotFoundError,
+	UnprocessableEntityError,
+} from '@DomainError';
 
 type AuthorContext = {
 	status: UserStatus;
@@ -46,11 +44,8 @@ export async function validateDedicatedUsers(
 
 	if (ids.length === 0) return true;
 
-	if (ids.includes(requesterId)) {
-		throw new PoemUpdateDeniedError(
-			'Author cannot dedicate poem to themselves',
-		);
-	}
+	if (ids.includes(requesterId))
+		throw new ForbiddenError('Author cannot dedicate poem to themselves');
 
 	const users = await Promise.all(
 		ids.map((id) => usersContract.selectUserBasicInfo(id).catch(() => null)),
@@ -70,7 +65,7 @@ export async function canCreatePoem(
 	const { author } = ctx;
 
 	if (author.status !== 'active')
-		throw new PoemCreationDeniedError('Author is not active');
+		throw new ForbiddenError('Author is not active');
 
 	const areIdsValid = await validateDedicatedUsers(
 		usersContract,
@@ -78,7 +73,7 @@ export async function canCreatePoem(
 		toUserIds,
 	);
 	if (!areIdsValid) {
-		throw new InvalidDedicatedUsersError();
+		throw new UnprocessableEntityError('Invalid dedicated users');
 	}
 }
 
@@ -88,22 +83,21 @@ export async function canUpdatePoem(
 	const { ctx, usersContract, toUserIds, poemId } = params;
 	const { author } = ctx;
 
-	if (author.status !== 'active') {
-		throw new PoemUpdateDeniedError('Author is not active');
-	}
+	if (author.status !== 'active')
+		throw new ForbiddenError('Author is not active');
 
 	const existingPoem = await params.queriesRepository.selectPoemById(poemId);
 
-	if (!existingPoem) throw new PoemNotFoundError();
+	if (!existingPoem) throw new NotFoundError('Poem not found');
 
 	if (existingPoem.author.id !== author.id)
-		throw new PoemUpdateDeniedError('User is not the author of the poem');
+		throw new ForbiddenError('User is not the author of the poem');
 
 	if (existingPoem.status === 'published')
-		throw new PoemUpdateDeniedError('Cannot update a published poem');
+		throw new ForbiddenError('Cannot update a published poem');
 
 	if (existingPoem.moderationStatus === 'removed')
-		throw new PoemUpdateDeniedError('Cannot update a removed poem');
+		throw new ForbiddenError('Cannot update a removed poem');
 
 	await validateDedicatedUsers(usersContract, author.id, toUserIds);
 }
@@ -151,22 +145,16 @@ export function canViewPoem(c: PoemPolicyContextForView): boolean {
 		return author.friendIds?.includes(viewer.id) === true;
 	}
 
-	// 1. Author
 	if (isViewerOwnAuthor) return true;
 
-	// 2. Ban
 	if (isViewerBanned) return false;
 
-	// 3. Moderation
 	if (!isPoemApproved) return false;
 
-	// 4. Draft
 	if (isPoemDraft) return false;
 
-	// 5. Moderator
 	if (isViewerModerator && !isPoemPrivate) return true;
 
-	// 6. Visibility
 	switch (poem.visibility) {
 		case 'public':
 			return true;
