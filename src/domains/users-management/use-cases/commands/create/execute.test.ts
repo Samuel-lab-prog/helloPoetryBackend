@@ -1,133 +1,94 @@
-import { describe, it, expect, mock } from 'bun:test';
-import { createUserFactory } from './execute';
-import type { CommandsRepository } from '../../../ports/Commands';
-import type { HashServices } from '@SharedKernel/ports/HashServices';
+import { describe, expect, it } from 'bun:test';
 import { ConflictError, UnknownError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import { DEFAULT_CREATE_USER_DATA } from '../../test-helpers/Constants';
+import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Users Management', () => {
-	const insertUser = mock();
+describe.concurrent('USE-CASE - Users Management - CreateUser', () => {
+	describe('Successful execution', () => {
+		it('should create user successfully', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword()
+				.withUserCreated();
 
-	const commandsRepository: CommandsRepository = {
-		insertUser,
-		updateUser: mock(),
-		softDeleteUser: mock(),
-	};
+			const result = await scenario.executeCreateUser();
 
-	const hash = mock();
-	const compare = mock();
+			expect(result).toHaveProperty('id', 1);
+		});
 
-	const hashServices: HashServices = {
-		hash,
-		compare,
-	};
+		it('should hash password before persisting user', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword('custom_hash')
+				.withUserCreated();
 
-	const validUserData = {
-		name: 'user1',
-		nickname: 'user1',
-		email: 'user1@gmail.com',
-		password: 'password123',
-		avatarUrl: 'http://example.com/avatar.png',
-		bio: 'Hello, I am user1',
-	};
+			await scenario.executeCreateUser();
 
-	const createUser: ReturnType<typeof createUserFactory> = createUserFactory({
-		commandsRepository,
-		hashServices,
+			expect(scenario.mocks.hashServices.hash).toHaveBeenCalledWith(
+				DEFAULT_CREATE_USER_DATA.password,
+			);
+			expect(scenario.mocks.commandsRepository.insertUser).toHaveBeenCalledWith(
+				{
+					...DEFAULT_CREATE_USER_DATA,
+					passwordHash: 'custom_hash',
+				},
+			);
+		});
 	});
 
-	describe('Create User', () => {
-		it('Hashes the password before persisting', async () => {
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: true,
-				data: validUserData,
-			});
+	describe('Conflict handling', () => {
+		it('should throw ConflictError when nickname is already in use', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword()
+				.withCreateConflict('nickname already in use');
 
-			await createUser({
-				data: validUserData,
-			});
-
-			expect(hash).toHaveBeenCalledWith('password123');
-			expect(insertUser).toHaveBeenCalledWith({
-				...validUserData,
-				passwordHash: 'hashed_password',
-			});
+			await expectError(scenario.executeCreateUser(), ConflictError);
 		});
 
-		it('Does not allow nickname conflicts', () => {
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: false,
-				code: 'CONFLICT',
-				message: 'nickname already in use',
-			});
+		it('should throw ConflictError when email is already in use', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword()
+				.withCreateConflict('email already in use');
 
-			expect(createUser({ data: validUserData })).rejects.toThrow(
-				ConflictError,
+			await expectError(scenario.executeCreateUser(), ConflictError);
+		});
+
+		it('should throw UnknownError for unknown conflict messages', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword()
+				.withCreateConflict('another unique key violation');
+
+			await expectError(scenario.executeCreateUser(), UnknownError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should throw UnknownError for non-conflict repository failures', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withHashedPassword()
+				.withCreateFailure();
+
+			await expectError(scenario.executeCreateUser(), UnknownError);
+		});
+
+		it('should not swallow hash service errors', async () => {
+			const scenario = makeUsersManagementScenario();
+			scenario.mocks.hashServices.hash.mockRejectedValue(
+				new Error('hash failed'),
 			);
+
+			await expectError(scenario.executeCreateUser(), Error);
+			expect(
+				scenario.mocks.commandsRepository.insertUser,
+			).not.toHaveBeenCalled();
 		});
 
-		it('Does not allow email conflicts', () => {
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: false,
-				code: 'CONFLICT',
-				message: 'email already in use',
-			});
-
-			expect(createUser({ data: validUserData })).rejects.toThrow(
-				ConflictError,
+		it('should not swallow repository errors', async () => {
+			const scenario = makeUsersManagementScenario().withHashedPassword();
+			scenario.mocks.commandsRepository.insertUser.mockRejectedValue(
+				new Error('DB exploded'),
 			);
-		});
 
-		it('Propagates non-conflict repository errors', () => {
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: false,
-				code: 'UNKNOWN',
-				message: 'database is down',
-			});
-
-			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UnknownError,
-			);
-		});
-
-		it('Throws generic error for unknown conflicts', () => {
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: false,
-				code: 'CONFLICT',
-				message: 'some other unique constraint',
-			});
-
-			expect(createUser({ data: validUserData })).rejects.toThrow(
-				UnknownError,
-			);
-		});
-
-		it('Successfully creates a user', async () => {
-			const createdUser = {
-				id: 1,
-				nickname: 'john',
-				email: 'john@email.com',
-				status: 'active',
-			};
-
-			hash.mockResolvedValueOnce('hashed_password');
-			insertUser.mockResolvedValueOnce({
-				ok: true,
-				data: createdUser,
-			});
-
-			const result = await createUser({
-				data: validUserData,
-			});
-
-			expect(result).not.toBeNull();
-			expect(result).toHaveProperty('id', 1);
-			expect(result).toHaveProperty('nickname', 'john');
-			expect(result).toHaveProperty('email', 'john@email.com');
+			await expectError(scenario.executeCreateUser(), Error);
 		});
 	});
 });

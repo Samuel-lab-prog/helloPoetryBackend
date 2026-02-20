@@ -1,81 +1,114 @@
-import { describe, it, expect, mock } from 'bun:test';
-import { updateUserFactory } from './execute';
-import type { CommandsRepository } from '../../../ports/Commands';
-import { ConflictError, UnknownError } from '@DomainError';
+import { describe, expect, it } from 'bun:test';
+import { ConflictError, ForbiddenError, UnknownError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import {
+	DEFAULT_TARGET_ID,
+	DEFAULT_UPDATE_USER_DATA,
+} from '../../test-helpers/Constants';
+import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Users Management', () => {
-	const insertUser = mock();
-	const updateUserRepo = mock();
-	const softDeleteUser = mock();
+describe.concurrent('USE-CASE - Users Management - UpdateUser', () => {
+	describe('Successful execution', () => {
+		it('should update user data successfully', async () => {
+			const scenario = makeUsersManagementScenario().withUserUpdated({
+				nickname: 'new_nickname',
+			});
 
-	const commandsRepository: CommandsRepository = {
-		insertUser,
-		updateUser: updateUserRepo,
-		softDeleteUser,
-	};
+			const result = await scenario.executeUpdateUser({
+				data: { nickname: 'new_nickname' },
+			});
 
-	const updateUser: ReturnType<typeof updateUserFactory> = updateUserFactory({
-		commandsRepository,
+			expect(result).toHaveProperty('nickname', 'new_nickname');
+		});
+
+		it('should call repository with targetId and merged payload', async () => {
+			const scenario = makeUsersManagementScenario().withUserUpdated();
+
+			await scenario.executeUpdateUser();
+
+			expect(scenario.mocks.commandsRepository.updateUser).toHaveBeenCalledWith(
+				DEFAULT_TARGET_ID,
+				DEFAULT_UPDATE_USER_DATA,
+			);
+		});
 	});
 
-	describe('Update User', () => {
-		it('Does not allow nickname conflicts', () => {
-			updateUserRepo.mockResolvedValueOnce({
-				ok: false,
-				code: 'CONFLICT',
-				message: 'nickname already in use',
-			});
-			expect(
-				updateUser({
-					requesterId: 1,
-					requesterStatus: 'active',
-					targetId: 1,
-					data: {
-						nickname: 'existing_nickname',
-					},
-				}),
-			).rejects.toThrow(ConflictError);
+	describe('Authorization rules', () => {
+		it('should throw ForbiddenError when user is banned', async () => {
+			const scenario = makeUsersManagementScenario();
+
+			await expectError(
+				scenario.executeUpdateUser({ requesterStatus: 'banned' }),
+				ForbiddenError,
+			);
 		});
 
-		it('Should propagate other errors from the repository', () => {
-			updateUserRepo.mockResolvedValueOnce({
-				ok: false,
-				code: 'CONFLICT',
-				message: 'some other conflict',
-			});
-			expect(
-				updateUser({
-					requesterId: 1,
-					requesterStatus: 'active',
-					targetId: 1,
-					data: {
-						nickname: 'new_nickname',
-					},
-				}),
-			).rejects.toThrow(UnknownError);
+		it('should throw ForbiddenError for cross-user updates', async () => {
+			const scenario = makeUsersManagementScenario();
+
+			await expectError(
+				scenario.executeUpdateUser({ targetId: 999 }),
+				ForbiddenError,
+			);
 		});
 
-		it('Successfully updates user data', async () => {
-			const updatedUser = {
-				id: 1,
-				nickname: 'new_nickname',
-				status: 'active',
-			};
-			updateUserRepo.mockResolvedValueOnce({
-				ok: true,
-				data: updatedUser,
-			});
-			const result = await updateUser({
-				requesterId: 1,
-				requesterStatus: 'active',
-				targetId: 1,
-				data: {
-					nickname: 'new_nickname',
-				},
-			});
-			expect(result).not.toBeNull();
-			expect(result).toHaveProperty('id', 1);
-			expect(result).toHaveProperty('nickname', 'new_nickname');
+		it('should not call repository when authorization fails', async () => {
+			const scenario = makeUsersManagementScenario();
+
+			await expectError(
+				scenario.executeUpdateUser({
+					requesterId: 1,
+					targetId: 2,
+				}),
+				ForbiddenError,
+			);
+
+			expect(
+				scenario.mocks.commandsRepository.updateUser,
+			).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Conflict handling', () => {
+		it('should throw ConflictError when nickname is already in use', async () => {
+			const scenario = makeUsersManagementScenario().withUpdateConflict(
+				'nickname already in use',
+			);
+
+			await expectError(scenario.executeUpdateUser(), ConflictError);
+		});
+
+		it('should throw ConflictError when email is already in use', async () => {
+			const scenario = makeUsersManagementScenario().withUpdateConflict(
+				'email already in use',
+			);
+
+			await expectError(scenario.executeUpdateUser(), ConflictError);
+		});
+
+		it('should throw UnknownError for unknown conflict messages', async () => {
+			const scenario = makeUsersManagementScenario().withUpdateConflict(
+				'some other conflict',
+			);
+
+			await expectError(scenario.executeUpdateUser(), UnknownError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should throw UnknownError for non-conflict repository failures', async () => {
+			const scenario = makeUsersManagementScenario().withUpdateFailure();
+
+			await expectError(scenario.executeUpdateUser(), UnknownError);
+		});
+
+		it('should not swallow repository errors', async () => {
+			const scenario = makeUsersManagementScenario();
+			scenario.mocks.commandsRepository.updateUser.mockRejectedValue(
+				new Error('DB exploded'),
+			);
+
+			await expectError(scenario.executeUpdateUser(), Error);
 		});
 	});
 });

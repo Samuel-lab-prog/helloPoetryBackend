@@ -1,70 +1,73 @@
-import { describe, it, expect, mock } from 'bun:test';
-import { getPublicProfileFactory } from './execute';
-import type { QueriesRepository } from '../../../ports/Queries';
+import { describe, expect, it } from 'bun:test';
 import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import {
+	DEFAULT_PUBLIC_PROFILE_ID,
+	DEFAULT_REQUESTER_ID,
+} from '../../test-helpers/Constants';
+import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Users Management', () => {
-	const selectPublicProfile = mock();
+describe.concurrent('USE-CASE - Users Management - GetPublicProfile', () => {
+	describe('Successful execution', () => {
+		it('should return public profile', async () => {
+			const scenario = makeUsersManagementScenario().withPublicProfile();
 
-	const queriesRepository: QueriesRepository = {
-		selectPublicProfile,
-		selectPrivateProfile: mock(),
-		selectUsers: mock(),
-		selectAuthUserByEmail: mock(),
-		selectUserByEmail: mock(),
-		selectUserById: mock(),
-		selectUserByNickname: mock(),
-	};
+			const result = await scenario.executeGetPublicProfile();
 
-	const getPublicProfile: ReturnType<typeof getPublicProfileFactory> =
-		getPublicProfileFactory({
-			queriesRepository,
-		});
-
-	describe('Get Public Profile', () => {
-		it('Does not allow banned users to access public profiles', () => {
-			expect(
-				getPublicProfile({
-					id: 2,
-					requesterId: 1,
-					requesterRole: 'admin',
-					requesterStatus: 'banned',
-				}),
-			).rejects.toThrow(ForbiddenError);
-		});
-
-		it('Throws error when profile is not found', () => {
-			selectPublicProfile.mockResolvedValueOnce(null);
-
-			expect(
-				getPublicProfile({
-					id: 2,
-					requesterId: 1,
-					requesterRole: 'admin',
-					requesterStatus: 'active',
-				}),
-			).rejects.toThrow(NotFoundError);
-		});
-
-		it('Successfully returns public profile', async () => {
-			const profile = {
-				id: 2,
-				nickname: 'john',
-				bio: 'hello world',
-			};
-
-			selectPublicProfile.mockResolvedValueOnce(profile);
-
-			const result = await getPublicProfile({
-				id: 2,
-				requesterId: 1,
-				requesterRole: 'admin',
-				requesterStatus: 'active',
-			});
-
-			expect(result).not.toBeNull();
 			expect(result).toHaveProperty('id', 2);
-			expect(result).toHaveProperty('nickname', 'john');
+		});
+
+		it('should query profile using target user id and requester id', async () => {
+			const scenario = makeUsersManagementScenario().withPublicProfile();
+
+			await scenario.executeGetPublicProfile();
+
+			expect(
+				scenario.mocks.queriesRepository.selectPublicProfile,
+			).toHaveBeenCalledWith(DEFAULT_PUBLIC_PROFILE_ID, DEFAULT_REQUESTER_ID);
+		});
+	});
+
+	describe('User validation', () => {
+		it('should throw ForbiddenError when requester is banned', async () => {
+			const scenario = makeUsersManagementScenario();
+
+			await expectError(
+				scenario.executeGetPublicProfile({ requesterStatus: 'banned' }),
+				ForbiddenError,
+			);
+		});
+
+		it('should not query repository when requester is banned (fail fast)', async () => {
+			const scenario = makeUsersManagementScenario();
+
+			await expectError(
+				scenario.executeGetPublicProfile({ requesterStatus: 'banned' }),
+				ForbiddenError,
+			);
+			expect(
+				scenario.mocks.queriesRepository.selectPublicProfile,
+			).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('Profile validation', () => {
+		it('should throw NotFoundError when profile does not exist', async () => {
+			const scenario =
+				makeUsersManagementScenario().withPublicProfileNotFound();
+
+			await expectError(scenario.executeGetPublicProfile(), NotFoundError);
+		});
+	});
+
+	describe('Error propagation', () => {
+		it('should not swallow repository errors', async () => {
+			const scenario = makeUsersManagementScenario();
+			scenario.mocks.queriesRepository.selectPublicProfile.mockRejectedValue(
+				new Error('DB exploded'),
+			);
+
+			await expectError(scenario.executeGetPublicProfile(), Error);
 		});
 	});
 });

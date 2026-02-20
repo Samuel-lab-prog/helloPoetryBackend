@@ -14,7 +14,8 @@ export function getUsersFactory({ queriesRepository }: Dependencies) {
 		const { navigationOptions, filterOptions, sortOptions, requesterStatus } =
 			params;
 
-		if (requesterStatus === 'banned') throw new ForbiddenError('Banned users cannot view users list');
+		if (requesterStatus === 'banned')
+			throw new ForbiddenError('Banned users cannot view users list');
 
 		return queriesRepository.selectUsers({
 			navigationOptions: {

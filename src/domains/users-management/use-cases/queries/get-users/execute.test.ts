@@ -1,130 +1,122 @@
-import { describe, it, expect, mock } from 'bun:test';
-import { getUsersFactory } from './execute';
-import type { QueriesRepository } from '../../../ports/Queries';
+import { describe, expect, it } from 'bun:test';
 import { ForbiddenError } from '@DomainError';
+import { expectError } from '@TestUtils';
+import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
-describe('USE-CASE - Users Management', () => {
-	const selectUsers = mock();
+describe.concurrent('USE-CASE - Users Management - GetUsers', () => {
+	describe('Successful execution', () => {
+		it('should return users page', async () => {
+			const scenario = makeUsersManagementScenario().withUsersPage();
 
-	const queriesRepository: QueriesRepository = {
-		selectUsers,
-		selectPublicProfile: mock(),
-		selectPrivateProfile: mock(),
-		selectAuthUserByEmail: mock(),
-		selectUserByEmail: mock(),
-		selectUserById: mock(),
-		selectUserByNickname: mock(),
-	};
+			const result = await scenario.executeGetUsers();
 
-	const getUsers: ReturnType<typeof getUsersFactory> = getUsersFactory({
-		queriesRepository,
+			expect(result).toHaveProperty('users');
+			expect(result).toHaveProperty('hasMore');
+		});
+
+		it('should apply default limit when none is provided', async () => {
+			const scenario = makeUsersManagementScenario().withUsersPage();
+
+			await scenario.executeGetUsers();
+
+			expect(scenario.mocks.queriesRepository.selectUsers).toHaveBeenCalledWith(
+				{
+					navigationOptions: {
+						limit: 20,
+						cursor: undefined,
+					},
+					sortOptions: {
+						orderBy: 'id',
+						orderDirection: 'asc',
+					},
+					filterOptions: {
+						searchNickname: undefined,
+					},
+				},
+			);
+		});
+
+		it('should cap limit to max value', async () => {
+			const scenario = makeUsersManagementScenario().withUsersPage();
+
+			await scenario.executeGetUsers({
+				navigationOptions: { limit: 1000 },
+				sortOptions: { by: 'nickname', order: 'desc' },
+			});
+
+			expect(scenario.mocks.queriesRepository.selectUsers).toHaveBeenCalledWith(
+				{
+					navigationOptions: {
+						limit: 100,
+						cursor: undefined,
+					},
+					sortOptions: {
+						orderBy: 'nickname',
+						orderDirection: 'desc',
+					},
+					filterOptions: {
+						searchNickname: undefined,
+					},
+				},
+			);
+		});
+
+		it('should forward cursor, filter and sorting options', async () => {
+			const scenario = makeUsersManagementScenario().withUsersPage();
+
+			await scenario.executeGetUsers({
+				navigationOptions: { limit: 5, cursor: 44 },
+				filterOptions: { searchNickname: 'ma' },
+				sortOptions: { by: 'createdAt', order: 'desc' },
+			});
+
+			expect(scenario.mocks.queriesRepository.selectUsers).toHaveBeenCalledWith(
+				{
+					navigationOptions: {
+						limit: 5,
+						cursor: 44,
+					},
+					sortOptions: {
+						orderBy: 'createdAt',
+						orderDirection: 'desc',
+					},
+					filterOptions: {
+						searchNickname: 'ma',
+					},
+				},
+			);
+		});
 	});
 
-	describe('Get Users', () => {
-		it('Does not allow banned users to list users', () => {
+	describe('User validation', () => {
+		it('should throw ForbiddenError when requester is banned', () => {
+			const scenario = makeUsersManagementScenario();
+
 			expect(() =>
-				getUsers({
-					requesterStatus: 'banned',
-					navigationOptions: {},
-					filterOptions: {},
-					sortOptions: {
-						by: 'id',
-						order: 'asc',
-					},
-				}),
+				scenario.executeGetUsers({ requesterStatus: 'banned' }),
 			).toThrow(ForbiddenError);
 		});
-		
-		it('Applies default limit when none is provided', async () => {
-			selectUsers.mockResolvedValueOnce({
-				items: [],
-				nextCursor: null,
-			});
 
-			await getUsers({
-				requesterStatus: 'active',
-				navigationOptions: {},
-				filterOptions: {},
-				sortOptions: {
-					by: 'id',
-					order: 'asc',
-				},
-			});
+		it('should not query repository when requester is banned (fail fast)', () => {
+			const scenario = makeUsersManagementScenario();
 
-			expect(selectUsers).toHaveBeenCalledWith({
-				navigationOptions: {
-					limit: 20,
-					cursor: undefined,
-				},
-				sortOptions: {
-					orderBy: 'id',
-					orderDirection: 'asc',
-				},
-				filterOptions: {
-					searchNickname: undefined,
-				},
-			});
+			expect(() =>
+				scenario.executeGetUsers({ requesterStatus: 'banned' }),
+			).toThrow(ForbiddenError);
+			expect(
+				scenario.mocks.queriesRepository.selectUsers,
+			).not.toHaveBeenCalled();
 		});
+	});
 
-		it('Caps limit to the maximum allowed value', async () => {
-			selectUsers.mockResolvedValueOnce({
-				items: [],
-				nextCursor: null,
-			});
+	describe('Error propagation', () => {
+		it('should not swallow repository errors', async () => {
+			const scenario = makeUsersManagementScenario();
+			scenario.mocks.queriesRepository.selectUsers.mockRejectedValue(
+				new Error('DB exploded'),
+			);
 
-			await getUsers({
-				requesterStatus: 'active',
-				navigationOptions: {
-					limit: 1000,
-				},
-				filterOptions: {},
-				sortOptions: {
-					by: 'nickname',
-					order: 'desc',
-				},
-			});
-
-			expect(selectUsers).toHaveBeenCalledWith({
-				navigationOptions: {
-					limit: 100,
-					cursor: undefined,
-				},
-				sortOptions: {
-					orderBy: 'nickname',
-					orderDirection: 'desc',
-				},
-				filterOptions: {
-					searchNickname: undefined,
-				},
-			});
-		});
-
-		it('Successfully returns a users page', async () => {
-			const page = {
-				items: [
-					{ id: 1, nickname: 'john' },
-					{ id: 2, nickname: 'mary' },
-				],
-				nextCursor: 2,
-			};
-
-			selectUsers.mockResolvedValueOnce(page);
-
-			const result = await getUsers({
-				requesterStatus: 'active',
-				navigationOptions: {
-					limit: 10,
-				},
-				filterOptions: {
-					searchNickname: 'jo',
-				},
-				sortOptions: {
-					by: 'createdAt',
-					order: 'desc',
-				},
-			});
-
-			expect(result).toHaveProperty('items');
+			await expectError(scenario.executeGetUsers(), Error);
 		});
 	});
 });

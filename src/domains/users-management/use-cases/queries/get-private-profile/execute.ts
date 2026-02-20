@@ -15,7 +15,8 @@ export function getPrivateProfileFactory({ queriesRepository }: Dependencies) {
 	): Promise<UserPrivateProfile> {
 		const { requesterId, requesterStatus } = params;
 
-		if (requesterStatus === 'banned') throw new ForbiddenError('Banned users cannot view private profiles');
+		if (requesterStatus === 'banned')
+			throw new ForbiddenError('Banned users cannot view private profiles');
 
 		const profile = await queriesRepository.selectPrivateProfile(requesterId);
 

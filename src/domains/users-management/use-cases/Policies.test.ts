@@ -1,32 +1,46 @@
-import { expect, describe, it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
+import { ForbiddenError } from '@DomainError';
 import { canUpdateData, type CanUpdatePolicyInput } from './Policies';
 
-const validInput: CanUpdatePolicyInput = {
+const VALID_INPUT: CanUpdatePolicyInput = {
 	requesterId: 1,
 	requesterStatus: 'active',
 	targetId: 1,
 };
 
-describe('POLICY - Users Management', () => {
-	describe('canUpdateData', () => {
-		it('Does not allow banned users to update their data', () => {
-			const data: CanUpdatePolicyInput = {
-				...validInput,
-				requesterStatus: 'banned',
-			};
-			expect(() => canUpdateData(data)).toThrow();
+describe.concurrent('POLICY - Users Management - CanUpdateData', () => {
+	describe('Successful execution', () => {
+		it('should allow users to update their own data', () => {
+			expect(() => canUpdateData(VALID_INPUT)).not.toThrow();
 		});
 
-		it('Does not allow users to update other users data', () => {
-			const data: CanUpdatePolicyInput = {
-				...validInput,
-				targetId: 2,
-			};
-			expect(() => canUpdateData(data)).toThrow();
+		it('should allow suspended users to update their own data', () => {
+			expect(() =>
+				canUpdateData({
+					...VALID_INPUT,
+					requesterStatus: 'suspended',
+				}),
+			).not.toThrow();
+		});
+	});
+
+	describe('Authorization rules', () => {
+		it('should throw ForbiddenError when user is banned', () => {
+			expect(() =>
+				canUpdateData({
+					...VALID_INPUT,
+					requesterStatus: 'banned',
+				}),
+			).toThrow(ForbiddenError);
 		});
 
-		it('Allows users to update their own data if they are not banned', () => {
-			expect(() => canUpdateData(validInput)).not.toThrow();
+		it('should throw ForbiddenError when user attempts cross-user update', () => {
+			expect(() =>
+				canUpdateData({
+					...VALID_INPUT,
+					targetId: 2,
+				}),
+			).toThrow(ForbiddenError);
 		});
 	});
 });
