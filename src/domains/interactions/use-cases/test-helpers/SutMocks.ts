@@ -28,6 +28,7 @@ import {
 	deleteCommentFactory,
 	unlikePoemFactory,
 } from '../commands/Index';
+import { updateCommentFactory } from '../commands/update-comment/execute';
 
 export function interactionsMockFactories() {
 	return {
@@ -58,6 +59,7 @@ export function interactionsMockFactories() {
 			deletePoemLike: mock(),
 			deleteCommentLike: mock(),
 			createCommentLike: mock(),
+			updateComment: mock(),
 		}),
 
 		queriesRepository: createMockedContract<QueriesRepository>({
@@ -82,5 +84,6 @@ export function interactionsFactory(deps: InteractionsDeps) {
 		getPoemComments: getPoemCommentsFactory(deps),
 		likeComment: likeCommentFactory(deps),
 		unlikeComment: unlikeCommentFactory(deps),
+		updateComment: updateCommentFactory(deps),
 	};
 }

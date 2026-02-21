@@ -19,6 +19,7 @@ import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';
 import { createInteractionsCommandsRouter } from './adapters/CommandsRouter';
 import { likeCommentFactory } from './use-cases/commands/like-comment/execute';
+import { updateCommentFactory } from './use-cases/commands/update-comment/execute';
 
 const queriesRouterServices: QueriesRouterServices = {
 	getPoemComments: getPoemCommentsFactory({
@@ -30,6 +31,11 @@ const queriesRouterServices: QueriesRouterServices = {
 };
 
 const commandsRouterServices: CommandsRouterServices = {
+	patchComment: updateCommentFactory({
+		commandsRepository,
+		queriesRepository,
+		usersContract: usersPublicContract,
+	}),
 	likePoem: likePoemFactory({
 		commandsRepository,
 		queriesRepository,

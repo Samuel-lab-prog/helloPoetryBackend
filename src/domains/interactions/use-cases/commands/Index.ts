@@ -8,3 +8,4 @@ export * from './like-comment/execute';
 export * from './like-poem/execute';
 export * from './unlike-comment/execute';
 export * from './unlike-poem/execute';
+export * from './update-comment/execute';

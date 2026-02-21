@@ -47,6 +47,9 @@ export type FindCommentsOverride = Partial<
 export type SelectCommentByIdOverride = Partial<
 	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
 >;
+export type UpdatedCommentOverride = Partial<
+	Parameters<InteractionsSutMocks['commandsRepository']['updateComment']>[0]
+>;
 
 export function givenUser(
 	userContract: InteractionsSutMocks['usersContract'],
@@ -59,6 +62,15 @@ export function givenUser(
 		role: DEFAULT_USER_ROLE,
 		nickname: DEFAULT_USER_NICKNAME,
 		...overrides,
+	});
+}
+
+export function givenCommentUpdated(
+	commandsRepository: InteractionsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'updateComment', {
+		ok: true,
+		data: undefined,
 	});
 }
 

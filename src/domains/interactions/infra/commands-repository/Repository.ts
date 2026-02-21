@@ -4,6 +4,19 @@ import type { CommandsRepository } from '../../ports/Commands';
 import type { CommentStatus } from '../../ports/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
+function updateComment(params: {
+	commentId: number;
+	content: string;
+}): Promise<CommandResult<void>> {
+	const { commentId, content } = params;
+	return withPrismaResult(async () => {
+		await prisma.comment.update({
+			where: { id: commentId, status: 'visible' },
+			data: { content },
+		});
+	});
+}
+
 function createPoemLike(params: {
 	userId: number;
 	poemId: number;
@@ -113,4 +126,5 @@ export const commandsRepository: CommandsRepository = {
 	deletePoemComment,
 	createCommentLike,
 	deleteCommentLike,
+	updateComment,
 };

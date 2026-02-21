@@ -170,5 +170,34 @@ export function createInteractionsCommandsRouter(
 					tags: ['Interactions'],
 				},
 			},
+		)
+		.patch(
+			'/comments/:id',
+			async ({ auth, params, body, set }) => {
+				await services.patchComment({
+					userId: auth.clientId,
+					commentId: params.id,
+					content: body.content,
+				});
+				set.status = 204;
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				body: t.Object({
+					content: CommentContentSchema,
+				}),
+				response: {
+					204: t.Void(),
+					404: appErrorSchema,
+					403: appErrorSchema,
+				},
+				detail: {
+					summary: 'Edit Comment',
+					description: 'Edits a comment made by the authenticated user.',
+					tags: ['Interactions'],
+				},
+			},
 		);
 }

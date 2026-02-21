@@ -28,6 +28,7 @@ import {
 	givenCommentLikeCreated,
 	givenCommentLikeDeleted,
 	givenCommentLikeExists,
+	givenCommentUpdated,
 } from './Givens';
 import {
 	DEFAULT_COMMENT_CONTENT,
@@ -48,6 +49,11 @@ export function makeInteractionsScenario() {
 	);
 
 	return {
+		withCommentUpdated() {
+			givenCommentUpdated(mocks.commandsRepository);
+			return this;
+		},
+
 		withUser(overrides: UserBasicInfoOverride = {}) {
 			givenUser(mocks.usersContract, overrides);
 			return this;
@@ -124,6 +130,17 @@ export function makeInteractionsScenario() {
 		withCommentNotFound() {
 			givenCommentNotFound(mocks.queriesRepository);
 			return this;
+		},
+
+		executeUpdateComment(params: Partial<CommentPoemParams> = {}) {
+			return sutFactory.updateComment(
+				makeParams({
+					userId: DEFAULT_PERFORMER_USER_ID,
+					commentId: DEFAULT_COMMENT_ID,
+					content: DEFAULT_COMMENT_CONTENT,
+					...params,
+				}),
+			);
 		},
 
 		executeCommentPoem(params: Partial<CommentPoemParams> = {}) {

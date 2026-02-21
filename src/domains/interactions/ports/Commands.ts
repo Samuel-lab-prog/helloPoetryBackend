@@ -23,6 +23,12 @@ export type LikePoemParams = {
 	poemId: number;
 };
 
+export type PatchCommentParams = {
+	userId: number;
+	commentId: number;
+	content: string;
+};
+
 export interface CommandsRepository {
 	createPoemLike(params: {
 		userId: number;
@@ -44,6 +50,10 @@ export interface CommandsRepository {
 		commentId: number;
 		deletedBy: CommentStatus;
 	}): Promise<CommandResult<void>>;
+	updateComment(params: {
+		commentId: number;
+		content: string;
+	}): Promise<CommandResult<void>>;
 }
 
 export interface CommandsRouterServices {
@@ -53,4 +63,5 @@ export interface CommandsRouterServices {
 	deleteComment(params: DeleteCommentParams): Promise<void>;
 	likeComment(params: LikeCommentParams): Promise<void>;
 	unlikeComment(params: LikeCommentParams): Promise<void>;
+	patchComment(params: PatchCommentParams): Promise<void>;
 }
