@@ -1,10 +1,14 @@
+/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { appErrorSchema } from '@AppError';
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { idSchema } from '@SharedKernel/Schemas';
 
-import { MyPoemReadSchema, AuthorPoemReadSchema } from '../ports/schemas/Index';
+import {
+	MyPoemReadSchema,
+	AuthorPoemReadSchema,
+	PoemPreviewPageSchema,
+} from '../ports/schemas/Index';
 
 import { type QueriesRouterServices } from '../ports/Queries';
 
@@ -61,8 +65,8 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 				return services.getPoemById({
 					poemId: params.poemId,
 					requesterId: auth.clientId,
-					requesterRole: auth.clientRole as UserRole,
-					requesterStatus: auth.clientStatus as UserStatus,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
 				});
 			},
 			{
@@ -77,6 +81,58 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					summary: 'Get Poem by ID',
 					description:
 						'Returns the poem with the specified ID if the requester has access to it.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.get(
+			'/',
+			({ query, auth }) => {
+				return services.searchPoems({
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+					navigationOptions: {
+						limit: query.limit,
+						cursor: query.cursor,
+					},
+					filterOptions: {
+						searchTitle: query.searchTitle,
+						tags: query.tags,
+					},
+					sortOptions: {
+						orderBy: query.orderBy,
+						orderDirection: query.orderDirection,
+					},
+				});
+			},
+			{
+				response: {
+					200: PoemPreviewPageSchema,
+				},
+				query: t.Object({
+					limit: t.Optional(t.Number()),
+					cursor: t.Optional(t.Number()),
+					searchTitle: t.Optional(t.String()),
+					tags: t.Optional(t.Array(t.String())),
+					orderBy: t.Optional(
+						t.Enum({
+							createdAt: 'createdAt',
+							title: 'title',
+						}),
+					),
+					orderDirection: t.Optional(
+						t.Enum({
+							asc: 'asc',
+							desc: 'desc',
+						}),
+					),
+				}),
+
+				detail: {
+					summary: 'Search Poems',
+					description:
+						'Returns a paginated list of poems matching the provided filter and sort options.',
 					tags: ['Poems Management'],
 				},
 			},

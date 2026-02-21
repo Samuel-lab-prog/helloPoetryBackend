@@ -16,7 +16,7 @@ import type {
 	CreatePoemResult,
 	MyPoem,
 	UpdatePoemResult,
-} from '@Domains/poems-management/use-cases/Models';
+} from '@Domains/poems-management/ports/Models';
 
 import { expectAppError, NON_EXISTENT_ID } from '@TestUtils';
 

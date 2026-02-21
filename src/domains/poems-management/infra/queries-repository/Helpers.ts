@@ -51,3 +51,18 @@ export function mapPoem<
 
 	return result;
 }
+
+export function mapPoemPreview(raw: any) {
+	return {
+		id: raw.id,
+		title: raw.title,
+		slug: raw.slug,
+		author: {
+			id: raw.author.id,
+			name: raw.author.name,
+			nickname: raw.author.nickname,
+			avatarUrl: raw.author.avatarUrl,
+			friendIds: raw.author.friendIds ?? [],
+		},
+	};
+}

@@ -10,4 +10,5 @@ export * from './commands/UpdatePoemBodySchema';
 export * from './commands/UpdatePoemResultSchema';
 export * from './queries/AuthorPoemReadSchema';
 export * from './queries/MyPoemReadSchema';
+export * from './queries/PoemPreviewPage';
 export * from './queries/PoemPreviewReadSchema';

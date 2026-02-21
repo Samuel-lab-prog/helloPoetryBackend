@@ -17,7 +17,7 @@ import {
 import type {
 	CreatePoemResult,
 	AuthorPoem,
-} from '@Domains/poems-management/use-cases/Models';
+} from '@Domains/poems-management/ports/Models';
 
 import { expectAppError } from '@TestUtils';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';

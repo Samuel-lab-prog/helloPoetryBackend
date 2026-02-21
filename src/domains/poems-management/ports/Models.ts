@@ -9,6 +9,7 @@ import {
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
 	PoemPreviewReadSchema,
+	PoemPreviewPageSchema,
 } from '../ports/schemas/Index';
 
 export type CreatePoem = (typeof CreatePoemBodySchema)['static'];
@@ -27,3 +28,5 @@ export type PoemModerationStatus =
 	(typeof PoemModerationStatusEnumSchema)['static'];
 
 export type PoemPreview = (typeof PoemPreviewReadSchema)['static'];
+
+export type PoemPreviewPage = (typeof PoemPreviewPageSchema)['static'];

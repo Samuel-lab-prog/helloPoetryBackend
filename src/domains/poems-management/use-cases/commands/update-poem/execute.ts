@@ -4,7 +4,7 @@ import type {
 	CommandsRepository,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { UpdatePoemResult } from '../../Models';
+import type { UpdatePoemResult } from '../../../ports/Models';
 import { canUpdatePoem } from '../../Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { ConflictError } from '@DomainError';

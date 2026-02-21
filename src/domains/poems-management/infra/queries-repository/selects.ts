@@ -5,6 +5,26 @@ const tagsSelect = {
 	name: true,
 } as const;
 
+export const poemPreviewSelect = {
+	id: true,
+	title: true,
+	slug: true,
+	createdAt: true,
+	author: {
+		select: {
+			id: true,
+			name: true,
+			nickname: true,
+			avatarUrl: true,
+		},
+	},
+	tags: {
+		select: {
+			name: true,
+		},
+	},
+};
+
 const dedicationsSelect = {
 	toUser: {
 		select: {

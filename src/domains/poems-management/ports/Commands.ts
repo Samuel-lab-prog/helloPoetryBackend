@@ -8,7 +8,7 @@ import type {
 	UpdatePoemResult,
 	CreatePoemDB,
 	UpdatePoemDB,
-} from '../use-cases/Models';
+} from '../ports/Models';
 
 export type CreatePoemParams = {
 	data: CreatePoem;

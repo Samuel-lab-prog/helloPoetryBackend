@@ -5,7 +5,7 @@ import type {
 	PoemModerationStatus,
 	PoemStatus,
 	PoemVisibility,
-} from '../use-cases/Models';
+} from '../ports/Models';
 
 export type PoemBasicInfo = {
 	exists: boolean;

@@ -7,7 +7,7 @@ import type {
 	PoemStatus,
 	PoemVisibility,
 	PoemModerationStatus,
-} from './Models';
+} from '../ports/Models';
 import {
 	ForbiddenError,
 	NotFoundError,

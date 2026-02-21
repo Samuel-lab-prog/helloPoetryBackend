@@ -3,4 +3,4 @@
  */
 
 export * from './get-profile/execute';
-export * from './get-users/execute';
+export * from './search-users/execute';

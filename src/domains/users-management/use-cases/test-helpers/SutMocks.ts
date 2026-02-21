@@ -6,7 +6,7 @@ import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { createUserFactory } from '../commands/create/execute';
 import { updateUserFactory } from '../commands/update/execute';
 import { getProfileFactory } from '../queries/get-profile/execute';
-import { getUsersFactory } from '../queries/get-users/execute';
+import { getUsersFactory } from '../queries/search-users/execute';
 
 export type UsersManagementSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;

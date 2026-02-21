@@ -7,6 +7,7 @@ import {
 	getMyPoemsFactory,
 	getAuthorPoemsFactory,
 	getPoemFactory,
+	getPoemsFactory,
 } from './use-cases/queries/Index';
 import { createPoemsQueriesRouter } from './adapters/QueriesRouter';
 
@@ -46,6 +47,9 @@ const queriesRouterServices: QueriesRouterServices = {
 	}),
 	getPoemById: getPoemFactory({
 		poemQueriesRepository: queriesRepository,
+	}),
+	searchPoems: getPoemsFactory({
+		queriesRepository,
 	}),
 };
 

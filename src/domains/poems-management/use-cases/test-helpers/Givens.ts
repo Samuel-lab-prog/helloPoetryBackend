@@ -1,7 +1,7 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { givenResolved } from '@TestUtils';
 
-import type { AuthorPoem, MyPoem } from '../Models';
+import type { AuthorPoem, MyPoem } from '../../ports/Models';
 import type { PoemsSutMocks } from './SutMocks';
 import {
 	DEFAULT_AUTHOR_ID,
@@ -19,6 +19,7 @@ import {
 	DEFAULT_USER_ROLE,
 	DEFAULT_USER_STATUS,
 } from './Constants';
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/Models';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>
@@ -101,6 +102,17 @@ export function givenUser(
 		nickname: DEFAULT_USER_NICKNAME,
 		...overrides,
 	});
+}
+
+export function givenPoemsSelected(
+	queriesRepository: PoemsSutMocks['queriesRepository'],
+	poems: PoemPreviewPage = {
+		poems: [makeAuthorPoem()],
+		hasMore: false,
+		nextCursor: null,
+	},
+) {
+	givenResolved(queriesRepository, 'selectPoems', poems);
 }
 
 export function givenSlug(

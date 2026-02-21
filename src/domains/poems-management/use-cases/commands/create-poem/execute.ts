@@ -3,7 +3,7 @@ import type {
 	CommandsRepository,
 	CreatePoemParams,
 } from '../../../ports/Commands';
-import type { CreatePoemDB, CreatePoemResult } from '../../Models';
+import type { CreatePoemDB, CreatePoemResult } from '../../../ports/Models';
 import { canCreatePoem } from '../../Policies';
 import { eventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

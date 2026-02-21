@@ -8,7 +8,7 @@ import type {
 	MyPoem,
 	AuthorPoem,
 	UpdatePoemResult,
-} from '@Domains/poems-management/use-cases/Models.ts';
+} from '@Domains/poems-management/ports/Models.ts';
 import {
 	jsonRequest,
 	handleResponse,

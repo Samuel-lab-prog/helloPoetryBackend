@@ -1,7 +1,7 @@
 import type {
 	UpdatePoem,
 	CreatePoem,
-} from '@Domains/poems-management/use-cases/Models';
+} from '@Domains/poems-management/ports/Models';
 
 function generatePoemsData(quantity: number): CreatePoem[] {
 	const data: CreatePoem[] = [];

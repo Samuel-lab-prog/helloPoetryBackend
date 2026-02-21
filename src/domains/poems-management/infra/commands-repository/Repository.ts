@@ -8,7 +8,7 @@ import type {
 	CreatePoemResult,
 	UpdatePoemDB,
 	UpdatePoemResult,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 import { insertPoemSelect, updatePoemSelect } from './Selects';
 import {

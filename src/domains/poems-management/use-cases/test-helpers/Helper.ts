@@ -1,9 +1,15 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
-import type { CreatePoemParams, UpdatePoemParams } from '../../ports/Commands';
+import type {
+	CreatePoemParams,
+	DeletePoemParams,
+	UpdatePoemParams,
+} from '../../ports/Commands';
 import type {
 	GetAuthorPoemsParams,
 	GetMyPoemsParams,
 	GetPoemParams,
+	SearchPoemsParams,
 } from '../../ports/Queries';
 import { makeParams, makeSut } from '@TestUtils';
 import {
@@ -17,6 +23,7 @@ import {
 	givenPoemById,
 	givenPoemDeleted,
 	givenPoemNotFound,
+	givenPoemsSelected,
 	givenSlug,
 	givenUpdatePoemResult,
 	givenUser,
@@ -42,6 +49,7 @@ import {
 	poemsFactory,
 	poemsMockFactories,
 } from './SutMocks';
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/Models';
 
 type CreatePoemScenarioParams = {
 	data?: Partial<CreatePoemParams['data']>;
@@ -84,6 +92,17 @@ export function makePoemsScenario() {
 	return {
 		withUser(overrides: UserBasicInfoOverride = {}) {
 			givenUser(mocks.usersContract, overrides);
+			return this;
+		},
+
+		withPoemsPage(
+			poems: PoemPreviewPage = {
+				poems: [makeAuthorPoem()],
+				hasMore: false,
+				nextCursor: null,
+			},
+		) {
+			givenPoemsSelected(mocks.queriesRepository, poems);
 			return this;
 		},
 
@@ -133,6 +152,26 @@ export function makePoemsScenario() {
 			return this;
 		},
 
+		executeSearchPoems(params: Partial<SearchPoemsParams> = {}) {
+			return sutFactory.searchPoems(
+				makeParams({
+					navigationOptions: {
+						limit: 10,
+						cursor: 0,
+					},
+					sortOptions: {
+						orderBy: 'createdAt',
+						orderDirection: 'desc',
+					},
+					filterOptions: {},
+					requesterId: DEFAULT_REQUESTER_ID,
+					requesterStatus: DEFAULT_USER_STATUS,
+					requesterRole: DEFAULT_USER_ROLE,
+					...params,
+				}),
+			);
+		},
+
 		executeCreatePoem(params: CreatePoemScenarioParams = {}) {
 			return sutFactory.createPoem({
 				data: makeParams(
@@ -159,7 +198,7 @@ export function makePoemsScenario() {
 			});
 		},
 
-		executeDeletePoem(params: Partial<UpdatePoemParams> = {}) {
+		executeDeletePoem(params: Partial<DeletePoemParams> = {}) {
 			return sutFactory.deletePoem({
 				poemId: params.poemId ?? DEFAULT_POEM_ID,
 				meta: makeParams({
