@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { type QueriesRouterServices } from '../ports/Queries';
-import { feedPoemSchema } from '../ports/schemas/Index';
+import { FeedPoemSchema } from '../ports/schemas/Index';
 import { appErrorSchema } from '@AppError';
 
 export function createFeedQueriesRouter(services: QueriesRouterServices) {
@@ -15,9 +15,8 @@ export function createFeedQueriesRouter(services: QueriesRouterServices) {
 		},
 		{
 			response: {
-				200: t.Array(feedPoemSchema),
+				200: t.Array(FeedPoemSchema),
 				404: appErrorSchema,
-				409: appErrorSchema,
 			},
 			detail: {
 				summary: 'Get Home Feed',

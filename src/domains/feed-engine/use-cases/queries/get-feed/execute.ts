@@ -1,10 +1,10 @@
-import type { FeedItem } from '../../Models';
+import type { FeedItem } from '../../../ports/Models';
 import type { GetFeedParams } from '../../../ports/Queries';
-import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
+import type { PoemsFeedContract } from '@Domains/feed-engine/ports/ExternalServices';
 
 interface Dependencies {
-	poemsServices: PoemsPublicContract;
+	poemsServices: PoemsFeedContract;
 	friendsServices: FriendsPublicContract;
 }
 
@@ -17,42 +17,34 @@ export function getFeedFactory({
 
 		const FEED_LIMIT = 20;
 
-		const friendsIds = await friendsServices.selectFollowedUserIds(userId);
-		const blockedIds = await friendsServices.selectBlockedUserIds(userId);
+		const [friendsIds, blockedIds] = await Promise.all([
+			friendsServices.selectFollowedUserIds(userId),
+			friendsServices.selectBlockedUserIds(userId),
+		]);
 
-		const feedAuthorIds = friendsIds.filter((id) => !blockedIds.includes(id));
+		const blockedSet = new Set(blockedIds);
 
-		const { poems: friendPoems } = await poemsServices.getPoemsByAuthorIds({
+		const feedAuthorIds = friendsIds.filter((id) => !blockedSet.has(id));
+
+		const friendPoems = await poemsServices.getFeedPoemsByAuthorIds({
 			authorIds: feedAuthorIds,
-			limit: 50,
+			limit: FEED_LIMIT,
 		});
 
-		const sortedFriendPoems = friendPoems.sort(
-			(a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-		);
+		const selected: FeedItem[] = [...friendPoems];
 
-		let selectedPoemIds = sortedFriendPoems
-			.slice(0, FEED_LIMIT)
-			.map((poem) => poem.id);
+		if (selected.length < FEED_LIMIT) {
+			const remaining = FEED_LIMIT - selected.length;
 
-		if (selectedPoemIds.length < FEED_LIMIT) {
-			const remaining = FEED_LIMIT - selectedPoemIds.length;
-
-			const { poems: publicPoems } = await poemsServices.getPublicPoems({
-				limit: remaining * 2,
+			const publicPoems = await poemsServices.getPublicFeedPoems({
+				limit: remaining,
+				excludeAuthorIds: [...blockedSet],
+				excludePoemIds: selected.map((p) => p.id),
 			});
 
-			const publicIds = publicPoems
-				.map((p) => p.id)
-				.filter((id) => !selectedPoemIds.includes(id));
-
-			selectedPoemIds = [...selectedPoemIds, ...publicIds.slice(0, remaining)];
+			selected.push(...publicPoems);
 		}
 
-		const { poems: finalFeedItems } = await poemsServices.getPoemsByIds({
-			ids: selectedPoemIds,
-		});
-
-		return finalFeedItems;
+		return selected;
 	};
 }

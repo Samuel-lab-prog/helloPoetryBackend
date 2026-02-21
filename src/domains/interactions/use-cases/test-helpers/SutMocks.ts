@@ -39,9 +39,6 @@ export function interactionsMockFactories() {
 
 		poemsContract: createMockedContract<PoemsPublicContract>({
 			selectPoemBasicInfo: mock(),
-			getPoemsByAuthorIds: mock(),
-			getPublicPoems: mock(),
-			getPoemsByIds: mock(),
 		}),
 
 		friendsContract: createMockedContract<FriendsPublicContract>({

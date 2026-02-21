@@ -1,4 +1,4 @@
-import type { FeedItem } from '../use-cases/Models';
+import type { FeedItem } from './Models';
 
 export type GetFeedParams = {
 	userId: number;

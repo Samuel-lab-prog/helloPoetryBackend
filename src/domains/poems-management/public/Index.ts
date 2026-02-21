@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-
+import type { PoemsFeedContract } from '@Domains/feed-engine/ports/ExternalServices';
+import type { PoemSelect, PoemWhereInput } from '@PrismaGenerated/models';
 import type {
 	PoemModerationStatus,
 	PoemStatus,
@@ -35,30 +37,6 @@ export type FeedPoem = {
 
 export interface PoemsPublicContract {
 	selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo>;
-
-	getPoemsByAuthorIds(params: {
-		authorIds: number[];
-		limit?: number;
-		offset?: number;
-	}): Promise<{
-		poems: {
-			id: number;
-			authorId: number;
-			createdAt: Date;
-		}[];
-	}>;
-
-	getPublicPoems(params: { limit: number; offset?: number }): Promise<{
-		poems: {
-			id: number;
-			authorId: number;
-			createdAt: Date;
-		}[];
-	}>;
-
-	getPoemsByIds(params: { ids: number[] }): Promise<{
-		poems: FeedPoem[];
-	}>;
 }
 
 function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
@@ -101,116 +79,122 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 		};
 	});
 }
-
-function getPoemsByAuthorIds(params: {
-	authorIds: number[];
-	limit?: number;
-	offset?: number;
-}): Promise<{
-	poems: {
-		id: number;
-		authorId: number;
-		createdAt: Date;
-	}[];
-}> {
-	const { authorIds, limit, offset } = params;
-
-	return withPrismaErrorHandling(async () => {
-		const poems = await prisma.poem.findMany({
-			where: {
-				authorId: { in: authorIds },
-			},
-			skip: offset,
-			take: limit,
-			select: {
-				id: true,
-				authorId: true,
-				createdAt: true,
-			},
-		});
-
-		return { poems };
-	});
-}
-
-function getPublicPoems(params: { limit: number; offset?: number }): Promise<{
-	poems: {
-		id: number;
-		authorId: number;
-		createdAt: Date;
-	}[];
-}> {
-	const { limit, offset } = params;
-
-	return withPrismaErrorHandling(async () => {
-		const poems = await prisma.poem.findMany({
-			skip: offset,
-			take: limit,
-			select: {
-				id: true,
-				authorId: true,
-				createdAt: true,
-			},
-		});
-
-		return { poems };
-	});
-}
-
-function getPoemsByIds(params: {
-	ids: number[];
-}): Promise<{ poems: FeedPoem[] }> {
-	const { ids } = params;
-
-	return withPrismaErrorHandling(async () => {
-		const poems = await prisma.poem.findMany({
-			where: {
-				id: { in: ids },
-			},
-			select: {
-				id: true,
-				content: true,
-				title: true,
-				slug: true,
-				createdAt: true,
-				author: {
-					select: {
-						id: true,
-						name: true,
-						nickname: true,
-						avatarUrl: true,
-					},
-				},
-				tags: {
-					select: {
-						name: true,
-					},
-				},
-			},
-		});
-
-		return {
-			poems: poems.map((poem) => ({
-				id: poem.id,
-				content: poem.content,
-				title: poem.title,
-				slug: poem.slug,
-				tags: poem.tags.map((tag) => tag.name),
-				createdAt: poem.createdAt,
-				author: {
-					id: poem.author.id,
-					name: poem.author.name,
-					nickname: poem.author.nickname,
-					avatarUrl: poem.author.avatarUrl,
-				},
-			})),
-		};
-	});
-}
-
 export const poemsPublicContract: PoemsPublicContract = {
 	selectPoemBasicInfo,
-	getPoemsByAuthorIds,
-	getPublicPoems,
-	getPoemsByIds,
+};
+
+const feedSelect: PoemSelect = {
+	id: true,
+	content: true,
+	title: true,
+	slug: true,
+	createdAt: true,
+	author: {
+		select: {
+			id: true,
+			name: true,
+			nickname: true,
+			avatarUrl: true,
+		},
+	},
+	tags: {
+		select: {
+			name: true,
+		},
+	},
+};
+
+function mapToFeedPoem(poem: any): FeedPoem {
+	return {
+		id: poem.id,
+		content: poem.content,
+		title: poem.title,
+		slug: poem.slug,
+		tags: poem.tags.map((t: any) => t.name),
+		createdAt: poem.createdAt,
+		author: {
+			id: poem.author.id,
+			name: poem.author.name,
+			nickname: poem.author.nickname,
+			avatarUrl: poem.author.avatarUrl,
+		},
+	};
+}
+
+function baseWhere(): PoemWhereInput {
+	return {
+		deletedAt: null,
+		visibility: 'public',
+		moderationStatus: 'approved',
+		status: 'published',
+	};
+}
+
+// eslint-disable-next-line require-await
+async function getFeedPoemsByAuthorIds(params: {
+	authorIds: number[];
+	limit: number;
+	cursor?: Date;
+}): Promise<FeedPoem[]> {
+	const { authorIds, limit, cursor } = params;
+
+	if (authorIds.length === 0) return [];
+
+	return withPrismaErrorHandling(async () => {
+		const poems = await prisma.poem.findMany({
+			where: {
+				...baseWhere(),
+				authorId: { in: authorIds },
+				...(cursor && {
+					createdAt: { lt: cursor },
+				}),
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+			take: limit,
+			select: feedSelect,
+		});
+
+		return poems.map(mapToFeedPoem);
+	});
+}
+
+// eslint-disable-next-line require-await
+async function getPublicFeedPoems(params: {
+	limit: number;
+	cursor?: Date;
+	excludeAuthorIds?: number[];
+	excludePoemIds?: number[];
+}): Promise<FeedPoem[]> {
+	const { limit, cursor, excludeAuthorIds, excludePoemIds } = params;
+
+	return withPrismaErrorHandling(async () => {
+		const poems = await prisma.poem.findMany({
+			where: {
+				...baseWhere(),
+				...(cursor && {
+					createdAt: { lt: cursor },
+				}),
+				...(excludeAuthorIds?.length && {
+					authorId: { notIn: excludeAuthorIds },
+				}),
+				...(excludePoemIds?.length && {
+					id: { notIn: excludePoemIds },
+				}),
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+			take: limit,
+			select: feedSelect,
+		});
+
+		return poems.map(mapToFeedPoem);
+	});
+}
+
+export const poemsFeedContract: PoemsFeedContract = {
+	getFeedPoemsByAuthorIds,
+	getPublicFeedPoems,
 };
