@@ -6,11 +6,19 @@ export type UsersRelationBasicInfo = {
 	areBlocked: boolean;
 };
 
+export type Relation = {
+	friends: boolean;
+	blockedId: number | null;
+	blockedBy: number | null;
+	requestSentByUserId: number | null;
+};
+
 export interface FriendsPublicContract {
 	selectUsersRelation(
 		userId1: number,
 		userId2: number,
 	): Promise<UsersRelationBasicInfo>;
+	selectRelation(userId1: number, userId2: number): Promise<Relation>;
 
 	selectFollowedUserIds(userId: number): Promise<number[]>;
 	selectBlockedUserIds(userId: number): Promise<number[]>;
@@ -64,6 +72,57 @@ function selectFollowedUserIds(userId: number): Promise<number[]> {
 	});
 }
 
+function selectRelation(userAId: number, userBId: number): Promise<Relation> {
+	return withPrismaErrorHandling(async () => {
+		const [friendship, blockAtoB, blockBtoA, request] = await Promise.all([
+			prisma.friendship.findFirst({
+				where: {
+					OR: [
+						{ userAId: userAId, userBId: userBId },
+						{ userAId: userBId, userBId: userAId },
+					],
+				},
+				select: { id: true },
+			}),
+
+			prisma.blockedUser.findFirst({
+				where: {
+					blockerId: userAId,
+					blockedId: userBId,
+				},
+				select: { id: true },
+			}),
+
+			prisma.blockedUser.findFirst({
+				where: {
+					blockerId: userBId,
+					blockedId: userAId,
+				},
+				select: { id: true },
+			}),
+
+			prisma.friendshipRequest.findFirst({
+				where: {
+					OR: [
+						{ requesterId: userAId, addresseeId: userBId },
+						{ requesterId: userBId, addresseeId: userAId },
+					],
+				},
+				select: {
+					requesterId: true,
+				},
+			}),
+		]);
+
+		return {
+			friends: friendship !== null,
+			blockedId: blockAtoB?.id ?? null,
+			blockedBy: blockBtoA?.id ?? null,
+			requestSentByUserId: request?.requesterId ?? null,
+		};
+	});
+}
+
 function selectBlockedUserIds(userId: number): Promise<number[]> {
 	return withPrismaErrorHandling(async () => {
 		const blocked = await prisma.blockedUser.findMany({
@@ -99,5 +158,6 @@ export const friendsPublicContract: FriendsPublicContract = {
 	selectBlockedUserIds,
 	areFriends,
 	areBlocked,
+	selectRelation,
 	selectUsersRelation,
 };

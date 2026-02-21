@@ -47,6 +47,7 @@ export function interactionsMockFactories() {
 			selectFollowedUserIds: mock(),
 			areFriends: mock(),
 			areBlocked: mock(),
+			selectRelation: mock(),
 		}),
 
 		commandsRepository: createMockedContract<CommandsRepository>({
