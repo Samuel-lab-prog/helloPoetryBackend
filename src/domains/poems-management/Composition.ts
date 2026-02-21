@@ -17,6 +17,7 @@ import {
 
 import type { CommandsRouterServices } from './ports/Commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
+import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
 
 const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
@@ -28,6 +29,10 @@ const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		slugService: slugifyService,
+		usersContract: usersPublicContract,
+	}),
+	deletePoem: deletePoemFactory({
+		commandsRepository,
 		usersContract: usersPublicContract,
 	}),
 };

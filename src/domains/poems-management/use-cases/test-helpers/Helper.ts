@@ -15,6 +15,7 @@ import {
 	givenCreatePoemResult,
 	givenMyPoems,
 	givenPoemById,
+	givenPoemDeleted,
 	givenPoemNotFound,
 	givenSlug,
 	givenUpdatePoemResult,
@@ -111,6 +112,11 @@ export function makePoemsScenario() {
 			return this;
 		},
 
+		withPoemDeleted() {
+			givenPoemDeleted(mocks.commandsRepository);
+			return this;
+		},
+
 		withAuthorPoems(overrides: AuthorPoemOverride[] = [{}]) {
 			givenAuthorPoems(
 				mocks.queriesRepository,
@@ -150,6 +156,17 @@ export function makePoemsScenario() {
 					},
 					params.meta,
 				),
+			});
+		},
+
+		executeDeletePoem(params: Partial<UpdatePoemParams> = {}) {
+			return sutFactory.deletePoem({
+				poemId: params.poemId ?? DEFAULT_POEM_ID,
+				meta: makeParams({
+					requesterId: DEFAULT_REQUESTER_ID,
+					requesterStatus: DEFAULT_USER_STATUS,
+					requesterRole: DEFAULT_USER_ROLE,
+				}),
 			});
 		},
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { appErrorSchema } from '@AppError';
@@ -69,6 +70,35 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Update Poem',
 					description:
 						'Updates an existing poem authored by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.delete(
+			'/:id',
+			({ auth, params }) => {
+				return services.deletePoem({
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+					poemId: params.id,
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Delete Poem',
+					description:
+						'Deletes an existing poem authored by the authenticated user.',
 					tags: ['Poems Management'],
 				},
 			},

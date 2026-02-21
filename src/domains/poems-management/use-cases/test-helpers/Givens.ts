@@ -170,6 +170,15 @@ export function givenPoemNotFound(
 	givenResolved(queriesRepository, 'selectPoemById', null);
 }
 
+export function givenPoemDeleted(
+	commandsRepository: PoemsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'deletePoem', {
+		ok: true,
+		data: undefined,
+	});
+}
+
 export function givenAuthorPoems(
 	queriesRepository: PoemsSutMocks['queriesRepository'],
 	poems: AuthorPoem[] = [makeAuthorPoem()],

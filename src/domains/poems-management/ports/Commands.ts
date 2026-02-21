@@ -29,9 +29,19 @@ export type UpdatePoemParams = {
 	};
 };
 
+export type DeletePoemParams = {
+	poemId: number;
+	meta: {
+		requesterId: number;
+		requesterStatus: UserStatus;
+		requesterRole: UserRole;
+	};
+};
+
 export interface CommandsRouterServices {
 	createPoem: (params: CreatePoemParams) => Promise<CreatePoemResult>;
 	updatePoem: (params: UpdatePoemParams) => Promise<UpdatePoemResult>;
+	deletePoem: (params: DeletePoemParams) => Promise<void>;
 }
 
 export interface CommandsRepository {
@@ -40,4 +50,5 @@ export interface CommandsRepository {
 		poemId: number,
 		poem: UpdatePoemDB,
 	): Promise<CommandResult<UpdatePoemResult>>;
+	deletePoem(poemId: number): Promise<CommandResult<void>>;
 }

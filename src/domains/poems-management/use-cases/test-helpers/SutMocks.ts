@@ -10,6 +10,7 @@ import { updatePoemFactory } from '../commands/update-poem/execute';
 import { getAuthorPoemsFactory } from '../queries/get-author-poems/execute';
 import { getMyPoemsFactory } from '../queries/get-my-poems/execute';
 import { getPoemFactory } from '../queries/get-poem-by-id/execute';
+import { deletePoemFactory } from '../commands/delete-poem/execute';
 
 export type PoemsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -23,6 +24,7 @@ export function poemsMockFactories() {
 		commandsRepository: createMockedContract<CommandsRepository>({
 			insertPoem: mock(),
 			updatePoem: mock(),
+			deletePoem: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectMyPoems: mock(),
@@ -62,6 +64,10 @@ export function poemsFactory(deps: PoemsDeps) {
 		}),
 		getPoemById: getPoemFactory({
 			poemQueriesRepository: deps.queriesRepository,
+		}),
+		deletePoem: deletePoemFactory({
+			commandsRepository: deps.commandsRepository,
+			usersContract: deps.usersContract,
 		}),
 	};
 }
