@@ -6,18 +6,20 @@ import type {
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendshipRecord } from '../../Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import type { EventBus } from '@SharedKernel/events/EventBus';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersPublicContract;
+	eventBus: EventBus;
 }
 
 export function acceptFriendRequestFactory({
 	commandsRepository,
 	queriesRepository,
 	usersContract,
+	eventBus,
 }: Dependencies) {
 	return async function acceptFriendRequest(
 		params: AcceptFriendRequestParams,

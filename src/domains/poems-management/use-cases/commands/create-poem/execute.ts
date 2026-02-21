@@ -5,7 +5,7 @@ import type {
 } from '../../../ports/Commands';
 import type { CreatePoemDB, CreatePoemResult } from '../../../ports/Models';
 import { canCreatePoem } from '../../Policies';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import { type EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { ConflictError } from '@DomainError';
 
@@ -13,10 +13,11 @@ interface Dependencies {
 	commandsRepository: CommandsRepository;
 	slugService: SlugService;
 	usersContract: UsersPublicContract;
+	eventBus: EventBus;
 }
 
 export function createPoemFactory(deps: Dependencies) {
-	const { commandsRepository, slugService, usersContract } = deps;
+	const { commandsRepository, slugService, usersContract, eventBus } = deps;
 	return async function createPoem(
 		params: CreatePoemParams,
 	): Promise<CreatePoemResult> {

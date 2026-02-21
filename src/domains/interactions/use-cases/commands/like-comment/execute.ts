@@ -6,18 +6,20 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import { type EventBus } from '@SharedKernel/events/EventBus';
 
 export interface LikeCommentDependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
 	usersContract: UsersPublicContract;
+	eventBus: EventBus;
 }
 
 export function likeCommentFactory({
 	commandsRepository,
 	queriesRepository,
 	usersContract,
+	eventBus,
 }: LikeCommentDependencies) {
 	return async function likeComment(params: LikeCommentParams): Promise<void> {
 		const { userId, commentId } = params;

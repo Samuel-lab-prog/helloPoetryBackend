@@ -8,7 +8,7 @@ import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import type { EventBus } from '@SharedKernel/events/EventBus';
 
 export interface LikePoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -16,6 +16,7 @@ export interface LikePoemDependencies {
 	friendsContract: FriendsPublicContract;
 	usersContract: UsersPublicContract;
 	poemsContract: PoemsPublicContract;
+	eventBus: EventBus;
 }
 
 export function likePoemFactory({
@@ -24,6 +25,7 @@ export function likePoemFactory({
 	friendsContract,
 	usersContract,
 	poemsContract,
+	eventBus,
 }: LikePoemDependencies) {
 	return async function likePoem(params: LikePoemParams): Promise<void> {
 		const { userId, poemId } = params;

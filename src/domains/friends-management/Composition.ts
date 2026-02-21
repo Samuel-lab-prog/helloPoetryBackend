@@ -13,6 +13,7 @@ import {
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 const commandsServices: CommandsRouterServices = {
 	cancelFriendRequest: cancelFriendRequestFactory({
@@ -27,11 +28,13 @@ const commandsServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		usersContract: usersPublicContract,
+		eventBus: eventBus,
 	}),
 	acceptFriendRequest: acceptFriendRequestFactory({
 		commandsRepository,
 		queriesRepository,
 		usersContract: usersPublicContract,
+		eventBus: eventBus,
 	}),
 	blockUser: blockUserFactory({
 		commandsRepository,

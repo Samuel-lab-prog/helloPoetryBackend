@@ -42,6 +42,7 @@ const commandsRouterServices: CommandsRouterServices = {
 		poemsContract: poemsPublicContract,
 		friendsContract: friendsPublicContract,
 		usersContract: usersPublicContract,
+		eventBus: eventBus,
 	}),
 
 	unlikePoem: unlikePoemFactory({
@@ -69,6 +70,7 @@ const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		queriesRepository,
 		usersContract: usersPublicContract,
+		eventBus: eventBus,
 	}),
 	unlikeComment: unlikeCommentFactory({
 		commandsRepository,

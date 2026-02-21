@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { sendFriendRequestFactory } from './execute';
 import { ConflictError } from '@DomainError';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;
@@ -33,6 +34,7 @@ describe('USE-CASE - Friends Management', () => {
 			commandsRepository,
 			queriesRepository,
 			usersContract,
+			eventBus: eventBus,
 		});
 	});
 

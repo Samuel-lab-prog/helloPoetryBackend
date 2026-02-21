@@ -12,6 +12,7 @@ import { getMyPoemsFactory } from '../queries/get-my-poems/execute';
 import { getPoemFactory } from '../queries/get-poem-by-id/execute';
 import { deletePoemFactory } from '../commands/delete-poem/execute';
 import { getPoemsFactory } from '../queries/Index';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 export type PoemsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -51,6 +52,7 @@ export function poemsFactory(deps: PoemsDeps) {
 			commandsRepository: deps.commandsRepository,
 			usersContract: deps.usersContract,
 			slugService: deps.slugService,
+			eventBus: eventBus,
 		}),
 		updatePoem: updatePoemFactory({
 			commandsRepository: deps.commandsRepository,

@@ -19,12 +19,14 @@ import {
 import type { CommandsRouterServices } from './ports/Commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
 		commandsRepository,
 		slugService: slugifyService,
 		usersContract: usersPublicContract,
+		eventBus: eventBus,
 	}),
 	updatePoem: updatePoemFactory({
 		commandsRepository,

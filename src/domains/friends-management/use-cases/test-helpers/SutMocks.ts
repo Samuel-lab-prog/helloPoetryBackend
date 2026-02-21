@@ -12,6 +12,7 @@ import {
 	blockUserFactory,
 	unblockUserFactory,
 } from '../commands/Index';
+import { eventBus } from '@SharedKernel/events/EventBus';
 
 export type FriendsManagementSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -51,11 +52,13 @@ export function friendsManagementFactory(deps: FriendsManagementDeps) {
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
 			usersContract: deps.usersContract,
+			eventBus: eventBus,
 		}),
 		acceptFriendRequest: acceptFriendRequestFactory({
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
 			usersContract: deps.usersContract,
+			eventBus: eventBus,
 		}),
 		rejectFriendRequest: rejectFriendRequestFactory({
 			commandsRepository: deps.commandsRepository,
