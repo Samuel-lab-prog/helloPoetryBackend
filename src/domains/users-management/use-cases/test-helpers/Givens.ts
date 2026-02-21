@@ -9,7 +9,6 @@ import {
 	DEFAULT_FULL_USER,
 	DEFAULT_HASHED_PASSWORD,
 	DEFAULT_PRIVATE_PROFILE,
-	DEFAULT_PUBLIC_PROFILE,
 	DEFAULT_USERS_PAGE,
 } from './Constants';
 import { givenResolved } from '@TestUtils';
@@ -98,36 +97,20 @@ export function givenUpdateUserFailure(
 	});
 }
 
-export function givenPrivateProfile(
+export function givenProfile(
 	queriesRepository: UsersManagementSutMocks['queriesRepository'],
 	overrides: PrivateProfileOverride = {},
 ) {
-	givenResolved(queriesRepository, 'selectPrivateProfile', {
+	givenResolved(queriesRepository, 'selectProfile', {
 		...DEFAULT_PRIVATE_PROFILE,
 		...overrides,
 	});
 }
 
-export function givenPrivateProfileNotFound(
+export function givenProfileNotFound(
 	queriesRepository: UsersManagementSutMocks['queriesRepository'],
 ) {
-	givenResolved(queriesRepository, 'selectPrivateProfile', null);
-}
-
-export function givenPublicProfile(
-	queriesRepository: UsersManagementSutMocks['queriesRepository'],
-	overrides: PublicProfileOverride = {},
-) {
-	givenResolved(queriesRepository, 'selectPublicProfile', {
-		...DEFAULT_PUBLIC_PROFILE,
-		...overrides,
-	});
-}
-
-export function givenPublicProfileNotFound(
-	queriesRepository: UsersManagementSutMocks['queriesRepository'],
-) {
-	givenResolved(queriesRepository, 'selectPublicProfile', null);
+	givenResolved(queriesRepository, 'selectProfile', null);
 }
 
 export function givenUsersPage(

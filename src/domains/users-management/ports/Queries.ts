@@ -3,15 +3,9 @@ import type {
 	UserPublicProfile,
 	UsersPage,
 	FullUser,
-	AuthUser,
 	UserStatus,
 	UserRole,
 } from '../use-cases/Models';
-
-export type GetPrivateProfileParams = {
-	requesterId: number;
-	requesterStatus: UserStatus;
-};
 
 export type GetUsersParams = {
 	requesterStatus: UserStatus;
@@ -28,7 +22,7 @@ export type GetUsersParams = {
 	};
 };
 
-export type GetPublicProfileParams = {
+export type GetProfileParams = {
 	id: number;
 	requesterId: number;
 	requesterRole: UserRole;
@@ -36,25 +30,20 @@ export type GetPublicProfileParams = {
 };
 
 export interface UsersQueriesRouterServices {
-	getPublicProfile: (
-		params: GetPublicProfileParams,
-	) => Promise<UserPublicProfile>;
-	getPrivateProfile: (
-		params: GetPrivateProfileParams,
-	) => Promise<UserPrivateProfile>;
-	getUsers: (params: GetUsersParams) => Promise<UsersPage>;
+	getProfile: (
+		params: GetProfileParams,
+	) => Promise<UserPublicProfile | UserPrivateProfile>;
+	searchUsers: (params: GetUsersParams) => Promise<UsersPage>;
 }
 
 export interface QueriesRepository {
 	selectUserById(id: number): Promise<FullUser | null>;
 	selectUserByNickname(nickname: string): Promise<FullUser | null>;
 	selectUserByEmail(email: string): Promise<FullUser | null>;
-	selectAuthUserByEmail(email: string): Promise<AuthUser | null>;
-	selectPublicProfile(
-		id: number,
-		requesterId?: number,
-	): Promise<UserPublicProfile | null>;
-	selectPrivateProfile(id: number): Promise<UserPrivateProfile | null>;
+	selectProfile(params: {
+		id: number;
+		isPrivate?: boolean;
+	}): Promise<UserPrivateProfile | UserPublicProfile | null>;
 	selectUsers(params: SelectUsersParams): Promise<UsersPage>;
 }
 

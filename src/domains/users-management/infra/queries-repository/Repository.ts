@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@PrismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
@@ -7,13 +8,11 @@ import type { QueriesRepository, SelectUsersParams } from '../../ports/Queries';
 import type {
 	UserPublicProfile,
 	UserPrivateProfile,
-	AuthUser,
 	UsersPage,
 	FullUser,
 } from '../../use-cases/Models';
 
 import {
-	authUserSelect,
 	publicProfileSelect,
 	fromRawToPublicProfile,
 	privateProfileSelect,
@@ -47,39 +46,20 @@ const selectUserByEmail = (email: string) =>
 const selectUserByNickname = (nickname: string) =>
 	selectFullUser({ nickname, deletedAt: null });
 
-function selectAuthUserByEmail(email: string): Promise<AuthUser | null> {
-	return withPrismaErrorHandling(() =>
-		prisma.user.findUnique({
-			where: { email },
-			select: authUserSelect,
-		}),
-	);
-}
-
-function selectPublicProfile(
-	id: number,
-	requesterId: number,
-): Promise<UserPublicProfile | null> {
+function selectProfile(params: {
+	id: number;
+	isPrivate: boolean;
+}): Promise<UserPrivateProfile | UserPublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findFirst({
-			where: { id, deletedAt: null },
-			select: publicProfileSelect,
+			where: { id: params.id, deletedAt: null },
+			select: params.isPrivate ? privateProfileSelect : publicProfileSelect,
 		});
 
 		if (!user) return null;
-		return fromRawToPublicProfile(user, requesterId);
-	});
-}
-
-function selectPrivateProfile(id: number): Promise<UserPrivateProfile | null> {
-	return withPrismaErrorHandling(async () => {
-		const user = await prisma.user.findFirst({
-			where: { id, deletedAt: null },
-			select: privateProfileSelect,
-		});
-
-		if (!user) return null;
-		return fromRawToPrivateProfile(user);
+		return params.isPrivate
+			? fromRawToPrivateProfile(user as any)
+			: fromRawToPublicProfile(user as any, params.id);
 	});
 }
 
@@ -129,8 +109,6 @@ export const queriesRepository: QueriesRepository = {
 	selectUserById,
 	selectUserByEmail,
 	selectUserByNickname,
-	selectAuthUserByEmail,
-	selectPublicProfile,
-	selectPrivateProfile,
+	selectProfile,
 	selectUsers,
 };

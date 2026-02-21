@@ -6,11 +6,7 @@ import {
 	updateUserFactory,
 	createUserFactory,
 } from './use-cases/commands/Index';
-import {
-	getPrivateProfileFactory,
-	getPublicProfileFactory,
-	getUsersFactory,
-} from './use-cases/queries/Index';
+import { getProfileFactory, getUsersFactory } from './use-cases/queries/Index';
 import type { UsersQueriesRouterServices } from './ports/Queries';
 import { queriesRepository } from './infra/queries-repository/Repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
@@ -36,13 +32,10 @@ const commandsServicesWithFakeHash: UsersCommandsServices = {
 };
 
 const queriesServices: UsersQueriesRouterServices = {
-	getPrivateProfile: getPrivateProfileFactory({
+	getProfile: getProfileFactory({
 		queriesRepository: queriesRepository,
-	}),
-	getPublicProfile: getPublicProfileFactory({
-		queriesRepository: queriesRepository,
-	}),
-	getUsers: getUsersFactory({
+	}) as UsersQueriesRouterServices['getProfile'],
+	searchUsers: getUsersFactory({
 		queriesRepository: queriesRepository,
 	}),
 };

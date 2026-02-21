@@ -5,7 +5,7 @@ import {
 	sendFriendRequest,
 	blockUser,
 	unblockUser,
-	getMyPrivateProfile,
+	getUserProfile,
 	acceptFriendRequest,
 	type AuthUser,
 } from '../endpoints/Index';
@@ -44,7 +44,10 @@ describe('INTEGRATION - Friends Management', () => {
 		expect(blocked.blockedById).toBe(user1.id);
 		expect(blocked.blockedUserId).toBe(user2.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 		expect(me.blockedUsersIds).toContain(user2.id);
 	});
 
@@ -61,7 +64,10 @@ describe('INTEGRATION - Friends Management', () => {
 
 		await blockUser(user1.cookie, user2.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 
 		expect(me.stats.friendsIds).not.toContain(user2.id);
 		expect(me.blockedUsersIds).toContain(user2.id);
@@ -92,14 +98,20 @@ describe('INTEGRATION - Friends Management', () => {
 	it('Blocked user does not appear in friends list', async () => {
 		await blockUser(user1.cookie, user2.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 		expect(me.stats.friendsIds).not.toContain(user2.id);
 	});
 
 	it('Blocked user appears in blocked list', async () => {
 		await blockUser(user1.cookie, user2.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 		expect(me.blockedUsersIds).toContain(user2.id);
 	});
 
@@ -107,7 +119,10 @@ describe('INTEGRATION - Friends Management', () => {
 		await blockUser(user1.cookie, user2.id);
 		await unblockUser(user1.cookie, user2.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 		expect(me.blockedUsersIds).not.toContain(user2.id);
 	});
 

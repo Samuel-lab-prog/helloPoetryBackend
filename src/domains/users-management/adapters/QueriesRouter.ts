@@ -14,7 +14,6 @@ import {
 
 import { type UsersQueriesRouterServices } from '../ports/Queries';
 
-// eslint-disable-next-line max-lines-per-function
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
 		.use(AuthPlugin)
@@ -23,7 +22,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			({ query, auth }) => {
 				const { limit, cursor, orderBy, orderDirection, searchNickname } =
 					query;
-				return services.getUsers({
+				return services.searchUsers({
 					requesterStatus: auth.clientStatus,
 					navigationOptions: {
 						limit,
@@ -59,7 +58,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		.get(
 			'/:id/profile',
 			({ params, auth }) => {
-				return services.getPublicProfile({
+				return services.getProfile({
 					id: params.id,
 					requesterId: auth.clientId,
 					requesterRole: auth.clientRole,
@@ -68,7 +67,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			},
 			{
 				response: {
-					200: UserPublicProfileSchema,
+					200: t.Union([UserPublicProfileSchema, UserPrivateProfileSchema]),
 					404: appErrorSchema,
 					422: appErrorSchema,
 				},
@@ -77,28 +76,9 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				}),
 
 				detail: {
-					summary: 'Get User Public Profile',
-					description: 'Returns a user public profile by their ID.',
-					tags: ['Users Management'],
-				},
-			},
-		)
-		.get(
-			'/me',
-			({ auth }) => {
-				return services.getPrivateProfile({
-					requesterId: auth.clientId,
-					requesterStatus: auth.clientStatus,
-				});
-			},
-			{
-				response: {
-					200: UserPrivateProfileSchema,
-					404: appErrorSchema,
-				},
-				detail: {
-					summary: 'Get My Private Profile',
-					description: 'Returns the private profile of the authenticated user.',
+					summary: 'Get User Profile',
+					description:
+						'Returns a user profile (public or private) by their ID.',
 					tags: ['Users Management'],
 				},
 			},

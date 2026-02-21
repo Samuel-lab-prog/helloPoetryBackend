@@ -3,12 +3,12 @@ import { ForbiddenError, NotFoundError } from '@DomainError';
 import { expectError } from '@TestUtils';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
-describe.concurrent('USE-CASE - Users Management - GetPrivateProfile', () => {
+describe.concurrent('USE-CASE - Users Management - GetProfile', () => {
 	describe('Successful execution', () => {
 		it('should return private profile', async () => {
-			const scenario = makeUsersManagementScenario().withPrivateProfile();
+			const scenario = makeUsersManagementScenario().withProfile();
 
-			const result = await scenario.executeGetPrivateProfile();
+			const result = await scenario.executeGetProfile();
 
 			expect(result).toHaveProperty('id', 1);
 			expect(result).toHaveProperty('email');
@@ -20,7 +20,7 @@ describe.concurrent('USE-CASE - Users Management - GetPrivateProfile', () => {
 			const scenario = makeUsersManagementScenario();
 
 			await expectError(
-				scenario.executeGetPrivateProfile({ requesterStatus: 'banned' }),
+				scenario.executeGetProfile({ requesterStatus: 'banned' }),
 				ForbiddenError,
 			);
 		});
@@ -29,32 +29,31 @@ describe.concurrent('USE-CASE - Users Management - GetPrivateProfile', () => {
 			const scenario = makeUsersManagementScenario();
 
 			await expectError(
-				scenario.executeGetPrivateProfile({ requesterStatus: 'banned' }),
+				scenario.executeGetProfile({ requesterStatus: 'banned' }),
 				ForbiddenError,
 			);
 			expect(
-				scenario.mocks.queriesRepository.selectPrivateProfile,
+				scenario.mocks.queriesRepository.selectProfile,
 			).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('Profile validation', () => {
 		it('should throw NotFoundError when profile does not exist', async () => {
-			const scenario =
-				makeUsersManagementScenario().withPrivateProfileNotFound();
+			const scenario = makeUsersManagementScenario().withProfileNotFound();
 
-			await expectError(scenario.executeGetPrivateProfile(), NotFoundError);
+			await expectError(scenario.executeGetProfile(), NotFoundError);
 		});
 	});
 
 	describe('Error propagation', () => {
 		it('should not swallow repository errors', async () => {
 			const scenario = makeUsersManagementScenario();
-			scenario.mocks.queriesRepository.selectPrivateProfile.mockRejectedValue(
+			scenario.mocks.queriesRepository.selectProfile.mockRejectedValue(
 				new Error('DB exploded'),
 			);
 
-			await expectError(scenario.executeGetPrivateProfile(), Error);
+			await expectError(scenario.executeGetProfile(), Error);
 		});
 	});
 });

@@ -1,18 +1,12 @@
 import type { CreateUserParams, UpdateUserParams } from '../../ports/Commands';
-import type {
-	GetPrivateProfileParams,
-	GetPublicProfileParams,
-	GetUsersParams,
-} from '../../ports/Queries';
+import type { GetProfileParams, GetUsersParams } from '../../ports/Queries';
 import { makeParams, makeSut } from '@TestUtils';
 import {
 	givenCreateUserConflict,
 	givenCreateUserFailure,
 	givenHashedPassword,
-	givenPrivateProfile,
-	givenPrivateProfileNotFound,
-	givenPublicProfile,
-	givenPublicProfileNotFound,
+	givenProfile,
+	givenProfileNotFound,
 	givenUpdateUserConflict,
 	givenUpdateUserFailure,
 	givenUserCreated,
@@ -20,7 +14,6 @@ import {
 	givenUsersPage,
 	type FullUserOverride,
 	type PrivateProfileOverride,
-	type PublicProfileOverride,
 	type UsersPageOverride,
 } from './Givens';
 import {
@@ -92,23 +85,13 @@ export function makeUsersManagementScenario() {
 			return this;
 		},
 
-		withPrivateProfile(overrides: PrivateProfileOverride = {}) {
-			givenPrivateProfile(mocks.queriesRepository, overrides);
+		withProfile(overrides: PrivateProfileOverride = {}) {
+			givenProfile(mocks.queriesRepository, overrides);
 			return this;
 		},
 
-		withPrivateProfileNotFound() {
-			givenPrivateProfileNotFound(mocks.queriesRepository);
-			return this;
-		},
-
-		withPublicProfile(overrides: PublicProfileOverride = {}) {
-			givenPublicProfile(mocks.queriesRepository, overrides);
-			return this;
-		},
-
-		withPublicProfileNotFound() {
-			givenPublicProfileNotFound(mocks.queriesRepository);
+		withProfileNotFound() {
+			givenProfileNotFound(mocks.queriesRepository);
 			return this;
 		},
 
@@ -140,26 +123,14 @@ export function makeUsersManagementScenario() {
 			);
 		},
 
-		executeGetPrivateProfile(params: Partial<GetPrivateProfileParams> = {}) {
-			return sutFactory.getPrivateProfile(
+		executeGetProfile(params: Partial<GetProfileParams> = {}) {
+			return sutFactory.getProfile(
 				makeParams(
 					{
 						requesterId: DEFAULT_REQUESTER_ID,
 						requesterStatus: DEFAULT_REQUESTER_STATUS,
-					},
-					params,
-				),
-			);
-		},
-
-		executeGetPublicProfile(params: Partial<GetPublicProfileParams> = {}) {
-			return sutFactory.getPublicProfile(
-				makeParams(
-					{
 						id: DEFAULT_PUBLIC_PROFILE_ID,
-						requesterId: DEFAULT_REQUESTER_ID,
 						requesterRole: 'author',
-						requesterStatus: DEFAULT_REQUESTER_STATUS,
 					},
 					params,
 				),

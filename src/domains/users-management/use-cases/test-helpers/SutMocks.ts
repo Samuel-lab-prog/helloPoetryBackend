@@ -5,8 +5,7 @@ import type { QueriesRepository } from '../../ports/Queries';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { createUserFactory } from '../commands/create/execute';
 import { updateUserFactory } from '../commands/update/execute';
-import { getPrivateProfileFactory } from '../queries/get-private-profile/execute';
-import { getPublicProfileFactory } from '../queries/get-public-profile/execute';
+import { getProfileFactory } from '../queries/get-profile/execute';
 import { getUsersFactory } from '../queries/get-users/execute';
 
 export type UsersManagementSutMocks = {
@@ -27,9 +26,7 @@ export function usersManagementMockFactories() {
 			selectUserById: mock(),
 			selectUserByNickname: mock(),
 			selectUserByEmail: mock(),
-			selectAuthUserByEmail: mock(),
-			selectPublicProfile: mock(),
-			selectPrivateProfile: mock(),
+			selectProfile: mock(),
 			selectUsers: mock(),
 		}),
 
@@ -46,8 +43,7 @@ export function usersManagementFactory(deps: UsersManagementDeps) {
 	return {
 		createUser: createUserFactory(deps),
 		updateUser: updateUserFactory(deps),
-		getPrivateProfile: getPrivateProfileFactory(deps),
-		getPublicProfile: getPublicProfileFactory(deps),
+		getProfile: getProfileFactory(deps),
 		getUsers: getUsersFactory(deps),
 	};
 }

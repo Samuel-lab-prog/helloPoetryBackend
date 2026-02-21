@@ -3,7 +3,6 @@ import type {
 	CreateUserResult,
 	UpdateUserData,
 	UpdateUserResult,
-	UserPrivateProfile,
 	UserPublicProfile,
 	UserRole,
 	UserStatus,
@@ -17,24 +16,12 @@ import {
 import { prisma } from '@Prisma/PrismaClient.ts';
 import type { AppError } from '@AppError';
 
-export async function getMyPrivateProfile(
-	cookie: string,
-): Promise<UserPrivateProfile | AppError> {
-	const res = await API_INSTANCE.handle(
-		jsonRequest(`${API_PREFIX}/users/me`, {
-			method: 'GET',
-			headers: { Cookie: cookie },
-		}),
-	);
-	return handleResponse<UserPrivateProfile>(res);
-}
-
-export async function getUserPublicProfile(
+export async function getUserProfile(
 	cookie: string,
 	targetUserId: number,
 ): Promise<UserPublicProfile | AppError> {
 	const res = await API_INSTANCE.handle(
-		jsonRequest(`${API_PREFIX}/users/${targetUserId}`, {
+		jsonRequest(`${API_PREFIX}/users/${targetUserId}/profile`, {
 			method: 'GET',
 			headers: { Cookie: cookie },
 		}),

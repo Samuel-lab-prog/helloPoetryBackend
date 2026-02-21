@@ -4,7 +4,7 @@ import { clearDatabase } from '@Prisma/ClearDatabase';
 import {
 	sendFriendRequest,
 	rejectFriendRequest,
-	getMyPrivateProfile,
+	getUserProfile,
 	acceptFriendRequest,
 	type AuthUser,
 } from '../endpoints/Index';
@@ -75,7 +75,10 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1.cookie, user2.id);
 		await rejectFriendRequest(user2.cookie, user1.id);
 
-		const me = (await getMyPrivateProfile(user2.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user2.cookie,
+			user2.id,
+		)) as unknown as UserPrivateProfile;
 
 		expect(
 			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
@@ -86,7 +89,10 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1.cookie, user2.id);
 		await rejectFriendRequest(user2.cookie, user1.id);
 
-		const me = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
+		const me = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
 
 		expect(
 			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
@@ -118,8 +124,14 @@ describe('INTEGRATION - Friends Management', () => {
 		await sendFriendRequest(user1.cookie, user2.id);
 		await rejectFriendRequest(user2.cookie, user1.id);
 
-		const me1 = (await getMyPrivateProfile(user1.cookie)) as UserPrivateProfile;
-		const me2 = (await getMyPrivateProfile(user2.cookie)) as UserPrivateProfile;
+		const me1 = (await getUserProfile(
+			user1.cookie,
+			user1.id,
+		)) as unknown as UserPrivateProfile;
+		const me2 = (await getUserProfile(
+			user2.cookie,
+			user2.id,
+		)) as unknown as UserPrivateProfile;
 
 		expect(me1.stats.friendsIds).not.toContain(user2.id);
 		expect(me2.stats.friendsIds).not.toContain(user1.id);
