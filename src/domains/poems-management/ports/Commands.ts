@@ -42,6 +42,12 @@ export interface CommandsRouterServices {
 	createPoem: (params: CreatePoemParams) => Promise<CreatePoemResult>;
 	updatePoem: (params: UpdatePoemParams) => Promise<UpdatePoemResult>;
 	deletePoem: (params: DeletePoemParams) => Promise<void>;
+
+	savePoem: (params: { poemId: number; userId: number }) => Promise<void>;
+	removeSavedPoem: (params: {
+		poemId: number;
+		userId: number;
+	}) => Promise<void>;
 }
 
 export interface CommandsRepository {
@@ -51,4 +57,12 @@ export interface CommandsRepository {
 		poem: UpdatePoemDB,
 	): Promise<CommandResult<UpdatePoemResult>>;
 	deletePoem(poemId: number): Promise<CommandResult<void>>;
+	savePoem(params: {
+		poemId: number;
+		userId: number;
+	}): Promise<CommandResult<void>>;
+	removeSavedPoem(params: {
+		poemId: number;
+		userId: number;
+	}): Promise<CommandResult<void>>;
 }

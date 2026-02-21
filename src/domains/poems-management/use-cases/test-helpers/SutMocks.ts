@@ -27,12 +27,16 @@ export function poemsMockFactories() {
 			insertPoem: mock(),
 			updatePoem: mock(),
 			deletePoem: mock(),
+			savePoem: mock(),
+			removeSavedPoem: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectMyPoems: mock(),
 			selectAuthorPoems: mock(),
 			selectPoemById: mock(),
 			selectPoems: mock(),
+			selectSavedPoems: mock(),
+			selectSavedPoem: mock(),
 		}),
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),

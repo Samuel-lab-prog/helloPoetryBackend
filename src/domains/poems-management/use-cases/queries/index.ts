@@ -5,4 +5,5 @@
 export * from './get-author-poems/execute';
 export * from './get-my-poems/execute';
 export * from './get-poem-by-id/execute';
+export * from './get-saved-poems/execute';
 export * from './search-poems/execute';

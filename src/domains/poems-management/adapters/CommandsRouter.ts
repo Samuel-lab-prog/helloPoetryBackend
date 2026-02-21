@@ -102,5 +102,56 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					tags: ['Poems Management'],
 				},
 			},
+		)
+		.post(
+			'/:id/save',
+			({ auth, params }) => {
+				return services.savePoem({
+					poemId: params.id,
+					userId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+					409: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Save Poem',
+					description:
+						"Saves a poem to the authenticated user's saved poems list.",
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.delete(
+			'/:id/save',
+			({ auth, params }) => {
+				return services.removeSavedPoem({
+					poemId: params.id,
+					userId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Remove Saved Poem',
+					description:
+						"Removes a poem from the authenticated user's saved poems list.",
+					tags: ['Poems Management'],
+				},
+			},
 		);
 }

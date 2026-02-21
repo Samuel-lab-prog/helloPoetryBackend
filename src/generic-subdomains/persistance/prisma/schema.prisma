@@ -7,6 +7,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model SavedPoem {
+  userId Int
+  poemId Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  poem Poem @relation(fields: [poemId], references: [id])
+
+  @@id([userId, poemId])
+  @@index([userId])
+  @@index([poemId])
+}
+
 model User {
   id           Int    @id @default(autoincrement())
   email        String @unique
@@ -47,6 +60,8 @@ model User {
   notifications Notification[]
 
   userNotificationSettings UserNotificationSetting[]
+
+  savedPoems SavedPoem[]
 }
 
 enum UserRole {
@@ -89,6 +104,7 @@ model Poem {
   @@unique([authorId, slug])
   @@index([createdAt])
   @@index([status, visibility])
+  savedPoems SavedPoem[]
 }
 
 model PoemDedication {

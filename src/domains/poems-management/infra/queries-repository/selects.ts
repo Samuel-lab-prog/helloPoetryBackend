@@ -1,9 +1,19 @@
-import type { PoemSelect } from '@PrismaGenerated/models';
-
+import type { PoemSelect, SavedPoemSelect } from '@PrismaGenerated/models';
 const tagsSelect = {
 	id: true,
 	name: true,
 } as const;
+
+export const savedPoemSelect = {
+	poemId: true,
+	createdAt: true,
+	poem: {
+		select: {
+			title: true,
+			slug: true,
+		},
+	},
+} as const satisfies SavedPoemSelect;
 
 export const poemPreviewSelect = {
 	id: true,

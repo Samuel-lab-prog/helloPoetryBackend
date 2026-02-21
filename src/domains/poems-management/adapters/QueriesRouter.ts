@@ -8,6 +8,7 @@ import {
 	MyPoemReadSchema,
 	AuthorPoemReadSchema,
 	PoemPreviewPageSchema,
+	SavedPoemSchema,
 } from '../ports/schemas/Index';
 
 import { type QueriesRouterServices } from '../ports/Queries';
@@ -133,6 +134,25 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					summary: 'Search Poems',
 					description:
 						'Returns a paginated list of poems matching the provided filter and sort options.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.get(
+			'/saved',
+			({ auth }) => {
+				return services.getSavedPoems({
+					requesterId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Array(SavedPoemSchema),
+				},
+				detail: {
+					summary: 'Get Saved Poems',
+					description:
+						'Returns the list of poems saved by the authenticated user.',
 					tags: ['Poems Management'],
 				},
 			},

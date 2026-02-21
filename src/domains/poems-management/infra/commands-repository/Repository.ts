@@ -30,6 +30,36 @@ function insertPoem(
 	});
 }
 
+function savePoem(params: {
+	poemId: number;
+	userId: number;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		await prisma.savedPoem.create({
+			data: {
+				poemId: params.poemId,
+				userId: params.userId,
+			},
+		});
+	});
+}
+
+function deleteSavedPoem(params: {
+	poemId: number;
+	userId: number;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		await prisma.savedPoem.delete({
+			where: {
+				userId_poemId: {
+					poemId: params.poemId,
+					userId: params.userId,
+				},
+			},
+		});
+	});
+}
+
 function updatePoem(
 	poemId: number,
 	poem: UpdatePoemDB,
@@ -58,4 +88,6 @@ export const commandsRepository: CommandsRepository = {
 	insertPoem,
 	updatePoem,
 	deletePoem,
+	savePoem,
+	removeSavedPoem: deleteSavedPoem,
 };

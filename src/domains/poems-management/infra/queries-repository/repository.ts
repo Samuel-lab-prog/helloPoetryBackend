@@ -2,9 +2,19 @@ import { prisma } from '@PrismaClient';
 import { withPrismaErrorHandling } from '@PrismaErrorHandler';
 
 import type { QueriesRepository } from '../../ports/Queries';
-import type { MyPoem, AuthorPoem, PoemPreviewPage } from '../../ports/Models';
+import type {
+	MyPoem,
+	AuthorPoem,
+	PoemPreviewPage,
+	SavedPoem,
+} from '../../ports/Models';
 
-import { authorPoemSelect, myPoemSelect, poemPreviewSelect } from './Selects';
+import {
+	authorPoemSelect,
+	myPoemSelect,
+	poemPreviewSelect,
+	savedPoemSelect,
+} from './Selects';
 import { mapPoem, mapPoemPreview } from './Helpers';
 
 const DEFAULT_LIMIT = 20;
@@ -116,9 +126,52 @@ export function selectPoems(params: {
 	});
 }
 
+function selectSavedPoems(requesterId: number): Promise<SavedPoem[]> {
+	return withPrismaErrorHandling(async () => {
+		const savedPoems = await prisma.savedPoem.findMany({
+			where: { userId: requesterId },
+			select: savedPoemSelect,
+		});
+
+		return savedPoems.map((savedPoem) => ({
+			id: savedPoem.poemId,
+			savedAt: savedPoem.createdAt,
+			poemId: savedPoem.poemId,
+			title: savedPoem.poem.title,
+			slug: savedPoem.poem.slug,
+		}));
+	});
+}
+
+function selectSavedPoem(params: {
+	poemId: number;
+	userId: number;
+}): Promise<SavedPoem | null> {
+	return withPrismaErrorHandling(async () => {
+		const savedPoem = await prisma.savedPoem.findFirst({
+			where: {
+				userId: params.userId,
+				poemId: params.poemId,
+			},
+			select: savedPoemSelect,
+		});
+		if (!savedPoem) return null;
+
+		return {
+			id: savedPoem.poemId,
+			savedAt: savedPoem.createdAt,
+			poemId: savedPoem.poemId,
+			title: savedPoem.poem.title,
+			slug: savedPoem.poem.slug,
+		};
+	});
+}
+
 export const queriesRepository: QueriesRepository = {
 	selectMyPoems,
 	selectAuthorPoems,
 	selectPoemById,
 	selectPoems,
+	selectSavedPoems,
+	selectSavedPoem,
 };

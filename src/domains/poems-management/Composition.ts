@@ -20,6 +20,9 @@ import type { CommandsRouterServices } from './ports/Commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
 import { eventBus } from '@SharedKernel/events/EventBus';
+import { savePoemFactory } from './use-cases/commands/save-poem/executet';
+import { removeSavedPoemFactory } from './use-cases/commands/remove-saved/execute';
+import { getSavedPoemsFactory } from './use-cases/queries/get-saved-poems/execute';
 
 const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
@@ -38,6 +41,16 @@ const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		usersContract: usersPublicContract,
 	}),
+	savePoem: savePoemFactory({
+		commandsRepository,
+		queriesRepository,
+		usersContract: usersPublicContract,
+	}),
+	removeSavedPoem: removeSavedPoemFactory({
+		commandsRepository,
+		usersContract: usersPublicContract,
+		queriesRepository,
+	}),
 };
 
 const queriesRouterServices: QueriesRouterServices = {
@@ -52,6 +65,10 @@ const queriesRouterServices: QueriesRouterServices = {
 	}),
 	searchPoems: getPoemsFactory({
 		queriesRepository,
+	}),
+	getSavedPoems: getSavedPoemsFactory({
+		queriesRepository,
+		usersContract: usersPublicContract,
 	}),
 };
 
