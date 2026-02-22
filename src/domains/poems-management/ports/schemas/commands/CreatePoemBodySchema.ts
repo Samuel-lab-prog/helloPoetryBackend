@@ -7,6 +7,7 @@ import {
 	PoemTagsCreationSchema,
 	PoemIsCommentableSchema,
 	PoemToUserIdsSchema,
+	MentionedUserIdsSchema,
 } from '../PoemFieldsSchemas';
 
 import { PoemStatusEnumSchema, PoemVisibilityEnumSchema } from '../Enums';
@@ -24,4 +25,5 @@ export const CreatePoemBodySchema = t.Object({
 	isCommentable: t.Optional(PoemIsCommentableSchema),
 
 	toUserIds: t.Optional(PoemToUserIdsSchema),
+	mentionedUserIds: t.Optional(MentionedUserIdsSchema),
 });

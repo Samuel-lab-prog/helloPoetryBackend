@@ -28,6 +28,12 @@ export const insertPoemSelect = {
 			toUserId: true,
 		},
 	},
+
+	userMentions: {
+		select: {
+			mentionedUserId: true,
+		},
+	},
 } as const satisfies PoemSelect;
 
 export const updatePoemSelect = {
@@ -50,6 +56,12 @@ export const updatePoemSelect = {
 	dedications: {
 		select: {
 			toUserId: true,
+		},
+	},
+
+	userMentions: {
+		select: {
+			mentionedUserId: true,
 		},
 	},
 } as const satisfies PoemSelect;

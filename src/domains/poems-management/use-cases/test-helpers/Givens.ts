@@ -142,6 +142,7 @@ export function givenCreatePoemResult(
 			tags: [],
 			moderationStatus: 'approved',
 			toUserIds: [],
+			mentionedUserIds: [],
 		},
 	});
 }
@@ -165,6 +166,7 @@ export function givenUpdatePoemResult(
 			visibility: 'public',
 			tags: [],
 			toUserIds: [],
+			mentionedUserIds: [],
 		},
 	});
 }

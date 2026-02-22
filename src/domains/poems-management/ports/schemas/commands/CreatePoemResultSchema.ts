@@ -7,6 +7,7 @@ import {
 	PoemSlugSchema,
 	PoemTagsReadSchema,
 	PoemTitleSchema,
+	MentionedUserIdsSchema,
 } from '../PoemFieldsSchemas';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 
@@ -35,4 +36,5 @@ export const CreatePoemResultSchema = t.Object({
 	isCommentable: PoemIsCommentableSchema,
 
 	toUserIds: PoemToUserIdsSchema,
+	mentionedUserIds: MentionedUserIdsSchema,
 });

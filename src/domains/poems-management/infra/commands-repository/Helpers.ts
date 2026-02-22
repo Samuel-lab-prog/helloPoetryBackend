@@ -1,5 +1,4 @@
 import type { Prisma } from '@PrismaGenerated/browser';
-
 import type {
 	CreatePoemResult,
 	UpdatePoemResult,
@@ -12,17 +11,16 @@ import { insertPoemSelect, updatePoemSelect } from './Selects';
 export function toPrismaCreatePoemInput(
 	poem: CreatePoemDB,
 ): Prisma.PoemCreateInput {
-	const { toUserIds, tags, authorId, ...poemData } = poem;
+	const { toUserIds, mentionedUserIds, tags, authorId, ...poemData } = poem;
 
 	return {
 		...poemData,
-
-		author: {
-			connect: { id: authorId },
-		},
-
+		author: { connect: { id: authorId } },
 		tags: tags ? connectOrCreateTags(tags) : undefined,
 		dedications: toUserIds ? createDedications(toUserIds) : undefined,
+		userMentions: mentionedUserIds
+			? createUserMentions(mentionedUserIds)
+			: undefined,
 	};
 }
 
@@ -33,7 +31,6 @@ export function toPrismaUpdatePoemInput(
 
 	return {
 		...poemData,
-
 		tags: tags ? upsertTags(tags) : undefined,
 		dedications: toUserIds ? upsertDedications(toUserIds) : undefined,
 	};
@@ -41,6 +38,7 @@ export function toPrismaUpdatePoemInput(
 
 type PoemWithDedications = {
 	dedications: { toUserId: number }[];
+	userMentions?: { mentionedUserId: number }[];
 };
 
 function extractToUserIds(dedications: { toUserId: number }[]): number[] {
@@ -51,21 +49,19 @@ function mapPoemResult<T extends PoemWithDedications>(prismaPoem: T) {
 	return {
 		...prismaPoem,
 		toUserIds: extractToUserIds(prismaPoem.dedications),
+		mentionedUserIds:
+			prismaPoem.userMentions?.map((um) => um.mentionedUserId) || [],
 	};
 }
 
 export function toCreatePoemResult(
-	prismaPoem: Prisma.PoemGetPayload<{
-		select: typeof insertPoemSelect;
-	}>,
+	prismaPoem: Prisma.PoemGetPayload<{ select: typeof insertPoemSelect }>,
 ): CreatePoemResult {
 	return mapPoemResult(prismaPoem);
 }
 
 export function toUpdatePoemResult(
-	prismaPoem: Prisma.PoemGetPayload<{
-		select: typeof updatePoemSelect;
-	}>,
+	prismaPoem: Prisma.PoemGetPayload<{ select: typeof updatePoemSelect }>,
 ): UpdatePoemResult {
 	return mapPoemResult(prismaPoem);
 }
@@ -77,20 +73,10 @@ function buildTagsConnectOrCreate(tags: string[]) {
 	}));
 }
 
-function buildDedicationsCreate(toUserIds: number[]) {
-	return toUserIds.map((userId) => ({
-		toUser: {
-			connect: { id: userId },
-		},
-	}));
-}
-
 function connectOrCreateTags(
 	tags: string[],
 ): Prisma.TagCreateNestedManyWithoutPoemsInput {
-	return {
-		connectOrCreate: buildTagsConnectOrCreate(tags),
-	};
+	return { connectOrCreate: buildTagsConnectOrCreate(tags) };
 }
 
 function upsertTags(
@@ -102,21 +88,34 @@ function upsertTags(
 	};
 }
 
+function buildDedicationsCreate(toUserIds: number[]) {
+	return toUserIds.map((userId) => ({
+		toUser: { connect: { id: userId } },
+	}));
+}
+
 function createDedications(
 	toUserIds: number[],
 ): Prisma.PoemDedicationCreateNestedManyWithoutPoemInput {
-	return {
-		create: buildDedicationsCreate(toUserIds),
-	};
+	return { create: buildDedicationsCreate(toUserIds) };
 }
 
 function upsertDedications(
 	toUserIds: number[],
 ): Prisma.PoemDedicationUpdateManyWithoutPoemNestedInput {
 	return {
-		deleteMany: {
-			toUserId: { notIn: toUserIds },
-		},
+		deleteMany: { toUserId: { notIn: toUserIds } },
 		create: buildDedicationsCreate(toUserIds),
+	};
+}
+
+function createUserMentions(
+	mentionedUserIds: number[],
+): Prisma.UserMentionCreateNestedManyWithoutPoemsInput {
+	return {
+		create: mentionedUserIds.map((userId) => ({
+			mentionedUser: { connect: { id: userId } },
+			actorUser: { connect: { id: userId } },
+		})),
 	};
 }

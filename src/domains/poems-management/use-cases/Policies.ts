@@ -1,8 +1,6 @@
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-
 import type { QueriesRepository } from '../ports/Queries';
-
 import type {
 	PoemStatus,
 	PoemVisibility,
@@ -28,6 +26,7 @@ export type PoemCreationPolicyParams = {
 	ctx: PoemPolicyContext;
 	usersContract: UsersPublicContract;
 	toUserIds?: number[];
+	mentionedUserIds?: number[];
 };
 
 export type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
@@ -35,17 +34,23 @@ export type PoemUpdatePolicyParams = PoemCreationPolicyParams & {
 	queriesRepository: QueriesRepository;
 };
 
-export async function validateDedicatedUsers(
+/**
+ * Validates a list of user IDs.
+ * @throws ForbiddenError if the list includes the requester ID
+ * @throws UnprocessableEntityError if any user doesn't exist or is inactive
+ */
+export async function validateUsers(
 	usersContract: UsersPublicContract,
 	requesterId: number,
-	userIds?: number[],
-): Promise<boolean> {
+	userIds?: number[] | undefined,
+	fieldName = 'users',
+): Promise<void> {
 	const ids = Array.isArray(userIds) ? userIds.map(Number) : [];
 
-	if (ids.length === 0) return true;
+	if (!ids.length) return;
 
 	if (ids.includes(requesterId))
-		throw new ForbiddenError('Author cannot dedicate poem to themselves');
+		throw new ForbiddenError('Author cannot assign or mention themselves');
 
 	const users = await Promise.all(
 		ids.map((id) => usersContract.selectUserBasicInfo(id).catch(() => null)),
@@ -53,66 +58,68 @@ export async function validateDedicatedUsers(
 
 	const invalidUser = users.find((u) => !u || u.status !== 'active');
 
-	if (invalidUser) return false;
-
-	return true;
+	if (invalidUser) throw new UnprocessableEntityError(`Invalid ${fieldName}`);
 }
 
 export async function canCreatePoem(
 	params: PoemCreationPolicyParams,
 ): Promise<void> {
-	const { ctx, usersContract, toUserIds } = params;
+	const { ctx, usersContract, toUserIds, mentionedUserIds } = params;
 	const { author } = ctx;
 
 	if (author.status !== 'active')
 		throw new ForbiddenError('Author is not active');
 
-	const areIdsValid = await validateDedicatedUsers(
+	await validateUsers(usersContract, author.id, toUserIds, 'dedicated users');
+	await validateUsers(
 		usersContract,
 		author.id,
-		toUserIds,
+		mentionedUserIds,
+		'mentioned users',
 	);
-	if (!areIdsValid)
-		throw new UnprocessableEntityError('Invalid dedicated users');
 }
 
 export async function canUpdatePoem(
 	params: PoemUpdatePolicyParams,
 ): Promise<void> {
-	const { ctx, usersContract, toUserIds, poemId } = params;
+	const {
+		ctx,
+		usersContract,
+		toUserIds,
+		mentionedUserIds,
+		poemId,
+		queriesRepository,
+	} = params;
 	const { author } = ctx;
 
-	if (author.status !== 'active')
+	if (author.status !== 'active') {
 		throw new ForbiddenError('Author is not active');
+	}
 
-	const existingPoem = await params.queriesRepository.selectPoemById(poemId);
-
+	const existingPoem = await queriesRepository.selectPoemById(poemId);
 	if (!existingPoem) throw new NotFoundError('Poem not found');
-
 	if (existingPoem.author.id !== author.id)
-		throw new ForbiddenError('User is not the author of the poem');
-
+		throw new ForbiddenError('User is not the author');
 	if (existingPoem.status === 'published')
-		throw new ForbiddenError('Cannot update a published poem');
-
+		throw new ForbiddenError('Cannot update published poem');
 	if (existingPoem.moderationStatus === 'removed')
-		throw new ForbiddenError('Cannot update a removed poem');
+		throw new ForbiddenError('Cannot update removed poem');
 
-	await validateDedicatedUsers(usersContract, author.id, toUserIds);
+	await validateUsers(usersContract, author.id, toUserIds, 'dedicated users');
+	await validateUsers(
+		usersContract,
+		author.id,
+		mentionedUserIds,
+		'mentioned users',
+	);
 }
 
-type ViewerContext = {
-	id?: number;
-	role?: UserRole;
-	status?: UserStatus;
-};
-
+type ViewerContext = { id?: number; role?: UserRole; status?: UserStatus };
 type AuthorContextForView = {
 	friendIds?: number[];
 	id: number;
 	directAccess?: boolean;
 };
-
 type PoemContext = {
 	id: number;
 	status: PoemStatus;
@@ -130,43 +137,33 @@ export function canViewPoem(c: PoemPolicyContextForView): boolean {
 	const { viewer, author, poem } = c;
 
 	const isViewerOwnAuthor = viewer.id === author.id;
-	const isViewerBanned = viewer.status === 'banned';
-	const isViewerModerator = viewer.role === 'moderator';
+	if (isViewerOwnAuthor) return true;
 
-	const isPoemApproved = poem.moderationStatus === 'approved';
-	const isPoemDraft = poem.status === 'draft';
+	if (viewer.status === 'banned') return false;
+	if (poem.moderationStatus !== 'approved') return false;
+	if (poem.status === 'draft') return false;
+
+	const isViewerModerator = viewer.role === 'moderator';
 	const isPoemPrivate = poem.visibility === 'private';
+	if (isViewerModerator && !isPoemPrivate) return true;
 
 	const isDirectAccess = author.directAccess === true;
 
 	function isFriend(): boolean {
-		if (viewer.id === undefined) return false;
-		return author.friendIds?.includes(viewer.id) === true;
+		return (
+			viewer.id !== undefined && author.friendIds?.includes(viewer.id) === true
+		);
 	}
-
-	if (isViewerOwnAuthor) return true;
-
-	if (isViewerBanned) return false;
-
-	if (!isPoemApproved) return false;
-
-	if (isPoemDraft) return false;
-
-	if (isViewerModerator && !isPoemPrivate) return true;
 
 	switch (poem.visibility) {
 		case 'public':
 			return true;
-
 		case 'unlisted':
 			return isDirectAccess;
-
 		case 'friends':
 			return isFriend();
-
 		case 'private':
 			return false;
-
 		default:
 			return false;
 	}
