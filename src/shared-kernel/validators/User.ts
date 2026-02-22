@@ -2,7 +2,7 @@ import type { UserBasicInfo } from '@Domains/users-management/public/Index';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import { ForbiddenError, NotFoundError } from '@DomainError';
 
-export function user(user: UserBasicInfo) {
+export function user(user: Omit<UserBasicInfo, 'nickname'>) {
 	if (!user.exists)
 		throw new NotFoundError(`User with id ${user.id} not found`);
 	return {

@@ -9,6 +9,7 @@ import {
 	AuthorPoemReadSchema,
 	PoemPreviewPageSchema,
 	SavedPoemSchema,
+	PoemCollectionSchema,
 } from '../ports/schemas/Index';
 
 import { type QueriesRouterServices } from '../ports/Queries';
@@ -153,6 +154,27 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					summary: 'Get Saved Poems',
 					description:
 						'Returns the list of poems saved by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.get(
+			'/collections',
+			({ auth }) => {
+				return services.getCollections({
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+				});
+			},
+			{
+				response: {
+					200: t.Array(PoemCollectionSchema),
+				},
+				detail: {
+					summary: 'Get Collections',
+					description:
+						'Returns the list of poem collections belonging to the authenticated user.',
 					tags: ['Poems Management'],
 				},
 			},

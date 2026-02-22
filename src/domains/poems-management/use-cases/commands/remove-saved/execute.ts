@@ -1,4 +1,4 @@
-import type { CommandsRepository } from '../../../ports/Commands';
+import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
@@ -12,18 +12,20 @@ interface Dependencies {
 
 export function removeSavedPoemFactory(deps: Dependencies) {
 	const { commandsRepository, usersContract } = deps;
+
 	return async function removeSavedPoem(params: {
 		poemId: number;
-		userId: number;
+		meta: UserMetaData;
 	}): Promise<void> {
-		const { poemId, userId } = params;
+		const { poemId, meta } = params;
+		const userId = meta.requesterId;
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active', 'suspended']);
 
 		const result = await commandsRepository.removeSavedPoem({ poemId, userId });
-		if (result.ok === true) return result.data;
+		if (result.ok === true) return;
 
 		throw new UnknownError('Failed to remove saved poem');
 	};

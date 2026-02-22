@@ -134,7 +134,11 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			({ auth, params }) => {
 				return services.removeSavedPoem({
 					poemId: params.id,
-					userId: auth.clientId,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
 				});
 			},
 			{
@@ -150,6 +154,131 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Remove Saved Poem',
 					description:
 						"Removes a poem from the authenticated user's saved poems list.",
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.post(
+			'/collections',
+			({ auth, body }) => {
+				return services.createCollection({
+					data: body,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+				},
+				body: t.Object({
+					userId: idSchema,
+					name: t.String(),
+					description: t.String(),
+				}),
+				detail: {
+					summary: 'Create Collection',
+					description:
+						'Creates a new poem collection for the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.post(
+			'/collections/:id/items',
+			({ auth, params, body }) => {
+				return services.addItemToCollection({
+					collectionId: params.id,
+					poemId: body.poemId,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				body: t.Object({
+					poemId: idSchema,
+				}),
+				detail: {
+					summary: 'Add Item to Collection',
+					description:
+						'Adds a poem to a poem collection owned by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.delete(
+			'/collections/:id/items',
+			({ auth, params, body }) => {
+				return services.removeItemFromCollection({
+					collectionId: params.id,
+					poemId: body.poemId,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				body: t.Object({
+					poemId: idSchema,
+				}),
+				detail: {
+					summary: 'Remove Item from Collection',
+					description:
+						'Removes a poem from a poem collection owned by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.delete(
+			'/collections/:id',
+			({ auth, params }) => {
+				return services.deleteCollection({
+					collectionId: params.id,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Delete Collection',
+					description:
+						'Deletes a poem collection owned by the authenticated user.',
 					tags: ['Poems Management'],
 				},
 			},

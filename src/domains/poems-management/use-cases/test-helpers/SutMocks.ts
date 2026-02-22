@@ -29,6 +29,10 @@ export function poemsMockFactories() {
 			deletePoem: mock(),
 			savePoem: mock(),
 			removeSavedPoem: mock(),
+			removeItemFromCollection: mock(),
+			addItemToCollection: mock(),
+			createCollection: mock(),
+			deleteCollection: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectMyPoems: mock(),
@@ -37,6 +41,7 @@ export function poemsMockFactories() {
 			selectPoems: mock(),
 			selectSavedPoems: mock(),
 			selectSavedPoem: mock(),
+			selectCollections: mock(),
 		}),
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),

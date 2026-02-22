@@ -1,4 +1,5 @@
 import type { AppErrorCode } from '@AppError';
+import type { UserRole, UserStatus } from './Enums';
 export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/ports/Models';
 
 export type CommandResult<T> =
@@ -13,3 +14,9 @@ export type CommandResult<T> =
 			code: AppErrorCode;
 			message?: string;
 	  };
+
+export type RequesterContext = {
+	requesterId: number;
+	requesterRole: UserRole;
+	requesterStatus: UserStatus;
+};

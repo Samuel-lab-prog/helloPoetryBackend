@@ -7,6 +7,7 @@ import type {
 	AuthorPoem,
 	PoemPreviewPage,
 	SavedPoem,
+	PoemCollection,
 } from '../../ports/Models';
 
 import {
@@ -167,6 +168,41 @@ function selectSavedPoem(params: {
 	});
 }
 
+function selectCollections(requesterId: number): Promise<PoemCollection[]> {
+	return withPrismaErrorHandling(async () => {
+		const collections = await prisma.collection.findMany({
+			where: { userId: requesterId },
+			select: {
+				id: true,
+				createdAt: true,
+				updatedAt: true,
+				name: true,
+				description: true,
+				items: {
+					select: {
+						poem: {
+							select: {
+								id: true,
+								title: true,
+								slug: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		return collections.map((collection) => ({
+			createdAt: collection.createdAt,
+			updatedAt: collection.updatedAt,
+			description: collection.description,
+			id: collection.id,
+			name: collection.name,
+			poemIds: collection.items.map((item) => item.poem.id),
+		}));
+	});
+}
+
 export const queriesRepository: QueriesRepository = {
 	selectMyPoems,
 	selectAuthorPoems,
@@ -174,4 +210,5 @@ export const queriesRepository: QueriesRepository = {
 	selectPoems,
 	selectSavedPoems,
 	selectSavedPoem,
+	selectCollections,
 };

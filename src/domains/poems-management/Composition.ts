@@ -23,6 +23,11 @@ import { eventBus } from '@SharedKernel/events/EventBus';
 import { savePoemFactory } from './use-cases/commands/save-poem/executet';
 import { removeSavedPoemFactory } from './use-cases/commands/remove-saved/execute';
 import { getSavedPoemsFactory } from './use-cases/queries/get-saved-poems/execute';
+import { addCollectionItemFactory } from './use-cases/commands/add-item/execute';
+import { removeCollectionItemFactory } from './use-cases/commands/remove-item/execute';
+import { createCollectionFactory } from './use-cases/commands/create-collection/execute';
+import { deleteCollectionFactory } from './use-cases/commands/delete-collection/execute';
+import { getCollectionsFactory } from './use-cases/queries/get-collections/execute';
 
 const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
@@ -51,6 +56,19 @@ const commandsRouterServices: CommandsRouterServices = {
 		usersContract: usersPublicContract,
 		queriesRepository,
 	}),
+	addItemToCollection: addCollectionItemFactory({
+		commandsRepository,
+	}),
+	removeItemFromCollection: removeCollectionItemFactory({
+		commandsRepository,
+	}),
+	createCollection: createCollectionFactory({
+		commandsRepository,
+		queriesRepository,
+	}),
+	deleteCollection: deleteCollectionFactory({
+		commandsRepository,
+	}),
 };
 
 const queriesRouterServices: QueriesRouterServices = {
@@ -69,6 +87,9 @@ const queriesRouterServices: QueriesRouterServices = {
 	getSavedPoems: getSavedPoemsFactory({
 		queriesRepository,
 		usersContract: usersPublicContract,
+	}),
+	getCollections: getCollectionsFactory({
+		queriesRepository,
 	}),
 };
 

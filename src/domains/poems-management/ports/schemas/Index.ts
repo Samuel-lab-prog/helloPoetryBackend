@@ -4,12 +4,15 @@
 
 export * from './Enums';
 export * from './PoemFieldsSchemas';
+export * from './commands/CreateCollectionBodySchema';
 export * from './commands/CreatePoemBodySchema';
 export * from './commands/CreatePoemResultSchema';
 export * from './commands/UpdatePoemBodySchema';
 export * from './commands/UpdatePoemResultSchema';
 export * from './queries/AuthorPoemReadSchema';
 export * from './queries/MyPoemReadSchema';
+export * from './queries/PoemCollectionItemSchema';
+export * from './queries/PoemCollectionSchema';
 export * from './queries/PoemPreviewPage';
 export * from './queries/PoemPreviewReadSchema';
 export * from './queries/SavedPoemSchema';

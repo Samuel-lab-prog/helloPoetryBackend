@@ -1,4 +1,10 @@
-import type { MyPoem, AuthorPoem, PoemPreviewPage, SavedPoem } from './Models';
+import type {
+	MyPoem,
+	AuthorPoem,
+	PoemPreviewPage,
+	SavedPoem,
+	PoemCollection,
+} from './Models';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 export type RequesterContext = {
@@ -46,6 +52,7 @@ export interface QueriesRouterServices {
 	getPoemById(params: GetPoemParams): Promise<AuthorPoem>;
 	searchPoems(params: SearchPoemsParams): Promise<PoemPreviewPage>;
 	getSavedPoems(params: { requesterId: number }): Promise<SavedPoem[]>;
+	getCollections(params: RequesterContext): Promise<PoemCollection[]>;
 }
 
 export interface QueriesRepository {
@@ -64,4 +71,5 @@ export interface QueriesRepository {
 		poemId: number;
 		userId: number;
 	}): Promise<SavedPoem | null>;
+	selectCollections(requesterId: number): Promise<PoemCollection[]>;
 }

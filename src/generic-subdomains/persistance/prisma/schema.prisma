@@ -7,6 +7,62 @@ datasource db {
   provider = "postgresql"
 }
 
+model Collection {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  name   String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  items CollectionItem[]
+
+  @@index([userId])
+  @@unique([userId, name]) 
+}
+
+model CollectionItem {
+  collectionId Int
+  poemId       Int
+
+  createdAt DateTime @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id])
+  poem       Poem       @relation(fields: [poemId], references: [id])
+
+  @@id([collectionId, poemId])
+  @@index([poemId])
+}
+
+model UserMention {
+  id Int @id @default(autoincrement())
+
+  mentionedUserId Int
+  actorUserId     Int
+
+  poemId    Int?
+  commentId Int?
+
+  createdAt DateTime @default(now())
+
+  mentionedUser User @relation("MentionedUser", fields: [mentionedUserId], references: [id])
+  actorUser     User @relation("MentionActor", fields: [actorUserId], references: [id])
+
+  
+  comment Comment? @relation(fields: [commentId], references: [id])
+
+  @@index([mentionedUserId])
+  @@index([actorUserId])
+  @@index([poemId])
+  @@index([commentId])
+  @@index([mentionedUserId, createdAt])
+  @@unique([mentionedUserId, actorUserId, poemId, commentId])
+  poems Poem[] @relation("PoemMentions")
+}
+
 model SavedPoem {
   userId Int
   poemId Int
@@ -62,6 +118,12 @@ model User {
   userNotificationSettings UserNotificationSetting[]
 
   savedPoems SavedPoem[]
+
+
+  collections Collection[]
+
+  mentionsCreated  UserMention[] @relation("MentionActor")
+mentionsReceived UserMention[] @relation("MentionedUser")
 }
 
 enum UserRole {
@@ -105,6 +167,8 @@ model Poem {
   @@index([createdAt])
   @@index([status, visibility])
   savedPoems SavedPoem[]
+  collectionItems CollectionItem[]
+  userMentions UserMention[] @relation("PoemMentions")
 }
 
 model PoemDedication {
@@ -145,6 +209,7 @@ model Comment {
   @@index([poemId])
   @@index([parentId])
   @@index([authorId])
+  userMentions UserMention[]
 }
 
 enum CommentStatus {

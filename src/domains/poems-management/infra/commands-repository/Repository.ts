@@ -4,6 +4,7 @@ import type { CommandResult } from '@SharedKernel/Types';
 
 import type { CommandsRepository } from '../../ports/Commands';
 import type {
+	CreateCollection,
 	CreatePoemDB,
 	CreatePoemResult,
 	UpdatePoemDB,
@@ -84,10 +85,77 @@ function deletePoem(poemId: number): Promise<CommandResult<void>> {
 	});
 }
 
+function createCollection(params: {
+	data: CreateCollection;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		const { data } = params;
+		await prisma.collection.create({
+			data: {
+				userId: data.userId,
+				name: data.name,
+				description: data.description,
+			},
+		});
+		return;
+	});
+}
+
+function addItemToCollection(params: {
+	collectionId: number;
+	poemId: number;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		const { collectionId, poemId } = params;
+		await prisma.collectionItem.create({
+			data: {
+				collectionId,
+				poemId,
+			},
+		});
+		return;
+	});
+}
+
+function removeItemFromCollection(params: {
+	collectionId: number;
+	poemId: number;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		const { collectionId, poemId } = params;
+		await prisma.collectionItem.delete({
+			where: {
+				collectionId_poemId: {
+					collectionId,
+					poemId,
+				},
+			},
+		});
+		return;
+	});
+}
+
+function deleteCollection(params: {
+	collectionId: number;
+	userId: number;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		const { collectionId, userId } = params;
+		await prisma.collection.delete({
+			where: { id: collectionId, userId },
+		});
+		return;
+	});
+}
+
 export const commandsRepository: CommandsRepository = {
 	insertPoem,
 	updatePoem,
 	deletePoem,
 	savePoem,
 	removeSavedPoem: deleteSavedPoem,
+	createCollection,
+	addItemToCollection,
+	removeItemFromCollection,
+	deleteCollection,
 };
