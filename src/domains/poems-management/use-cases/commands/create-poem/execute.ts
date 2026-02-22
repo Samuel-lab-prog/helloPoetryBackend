@@ -54,6 +54,16 @@ export function createPoemFactory(deps: Dependencies) {
 					poemTitle: data.title,
 				});
 
+			for (const mentionedUserId of data?.mentionedUserIds || []) {
+				eventBus.publish('USER_MENTION_IN_POEM', {
+					poemId: result.data.id,
+					poemTitle: data.title,
+					userId: mentionedUserId,
+					mentionerId: meta.requesterId,
+					mentionerNickname: userInfo.nickname,
+				});
+			}
+
 			return result.data;
 		}
 

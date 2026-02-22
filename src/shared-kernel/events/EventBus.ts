@@ -47,6 +47,13 @@ interface DomainEvents {
 		dedicatorNickname: string;
 		userId: number;
 	};
+	USER_MENTION_IN_POEM: {
+		poemId: number;
+		poemTitle: string;
+		mentionerId: number;
+		mentionerNickname: string;
+		userId: number;
+	};
 }
 
 export type EventName = keyof DomainEvents;

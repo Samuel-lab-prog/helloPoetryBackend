@@ -374,6 +374,7 @@ enum NotificationType {
   POEM_COMMENT_CREATED
   POEM_COMMENT_REPLIED
   POEM_DEDICATED
+  USER_MENTION_IN_POEM
 }
 
 enum Entity {
