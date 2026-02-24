@@ -1,7 +1,7 @@
-import { queriesRepository } from './infra/queries-repository/Repository';
+import { queriesRepository } from './infra/queries-repository/repository';
 import type { QueriesRouterServices } from './ports/Queries';
 import { commandsRepository } from './infra/commands-repository/Repository';
-import { slugifyService } from './infra/slug-service/Execute';
+import { slugifyService } from './infra/slug-service/execute';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import {
 	getMyPoemsFactory,

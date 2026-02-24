@@ -35,8 +35,8 @@
 	],
 	"delete": true,
 	"location": "top",
-	"name": "Index",
+	"name": "index",
 	"singleQuotes": true,
 	"structure": "flat",
-	"exclude": [".*\\.test\\.ts$"]
+	"exclude": [".*\\.test\\.ts$", ".*\\Index\\.ts$"]
 }

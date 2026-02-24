@@ -2,7 +2,7 @@ import { Elysia, type CookieOptions } from 'elysia';
 import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
 import { SetupPlugin } from '../../utils/plugins/setupPlugin';
-import { LoginSchema } from '../ports/schemas/LoginSchema';
+import { LoginSchema } from '../ports/schemas/loginSchema';
 import type { AuthControllerServices } from '../ports/Services';
 
 function setUpCookieTokenOptions(token: CookieOptions) {

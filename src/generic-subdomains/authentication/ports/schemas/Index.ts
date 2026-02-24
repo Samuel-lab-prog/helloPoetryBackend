@@ -4,4 +4,4 @@
 
 export * from './AuthClientSchema';
 export * from './CookieTokenSchema';
-export * from './LoginSchema';
+export * from './loginSchema';

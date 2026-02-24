@@ -1,4 +1,4 @@
-import { commandsRepository } from './infra/commands-repository/Repository';
+import { commandsRepository } from './infra/commands-repository/repository';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
 import type { UsersCommandsServices } from './ports/Commands';
 import { createUsersCommandsRouter } from './adapters/CommandsRouter';
@@ -8,7 +8,7 @@ import {
 } from './use-cases/commands/Index';
 import { getProfileFactory, getUsersFactory } from './use-cases/queries/Index';
 import type { UsersQueriesRouterServices } from './ports/Queries';
-import { queriesRepository } from './infra/queries-repository/Repository';
+import { queriesRepository } from './infra/queries-repository/repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
 
 const commandsServices: UsersCommandsServices = {
