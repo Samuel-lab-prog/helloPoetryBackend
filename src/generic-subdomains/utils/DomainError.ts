@@ -1,4 +1,4 @@
-import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export class DomainError extends Error {
 	type: AppErrorCode;

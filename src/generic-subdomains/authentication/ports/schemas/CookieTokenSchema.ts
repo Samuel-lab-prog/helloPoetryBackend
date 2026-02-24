@@ -1,4 +1,4 @@
-import { AppError } from '@GenericSubdomains/utils/appError';
+import { AppError } from '@GenericSubdomains/utils/AppError';
 import { t } from 'elysia';
 
 export const CookieTokenSchema = t.Cookie(

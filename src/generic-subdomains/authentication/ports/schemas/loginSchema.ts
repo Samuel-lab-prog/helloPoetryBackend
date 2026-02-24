@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from '@GenericSubdomains/utils/appError';
+import { makeValidationError } from '@GenericSubdomains/utils/AppError';
 
 export const EmailSchema = t.String({
 	format: 'email',

@@ -14,7 +14,7 @@ import type {
 	RemovedFriendRecord,
 	BlockedUserRecord,
 } from '@Domains/friends-management/use-cases/Models.ts';
-import type { AppError } from '@GenericSubdomains/utils/appError';
+import type { AppError } from '@GenericSubdomains/utils/AppError';
 
 export async function sendFriendRequest(
 	cookie: string,

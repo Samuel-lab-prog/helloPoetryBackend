@@ -17,7 +17,7 @@
 			"@Domains/*": ["./domains/*"],
 			"@Prisma/*": ["./generic-subdomains/persistance/prisma/*"],
 			"@DomainError": ["./generic-subdomains/utils/domainError.ts"],
-			"@AppError": ["./generic-subdomains/utils/appError.ts"],
+			"@AppError": ["./generic-subdomains/utils/AppError.ts"],
 			"@DatabaseError": ["./generic-subdomains/utils/databaseError.ts"],
 			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],

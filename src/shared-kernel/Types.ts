@@ -1,4 +1,4 @@
-import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 import type { UserRole, UserStatus } from './Enums';
 export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/ports/Models';
 

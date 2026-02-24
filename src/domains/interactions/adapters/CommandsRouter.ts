@@ -5,7 +5,7 @@ import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 
 import { type CommandsRouterServices } from '../ports/Commands';
-import { appErrorSchema } from '@GenericSubdomains/utils/appError';
+import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { CommentContentSchema } from '../ports/schemas/Index';
 
 export function createInteractionsCommandsRouter(

@@ -17,7 +17,7 @@ import {
 } from '@GenericSubdomains/utils/testUtils.ts';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
 import { prisma } from '@Prisma/PrismaClient.ts';
-import type { AppError } from '@GenericSubdomains/utils/appError.ts';
+import type { AppError } from '@GenericSubdomains/utils/AppError.ts';
 import { type AuthUser } from './Auth.ts';
 
 export async function createPoem(

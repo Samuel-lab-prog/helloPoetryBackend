@@ -1,4 +1,4 @@
-import { makeValidationError } from '@GenericSubdomains/utils/appError';
+import { makeValidationError } from '@GenericSubdomains/utils/AppError';
 import { t } from 'elysia';
 
 export const CommentContentSchema = t.String({

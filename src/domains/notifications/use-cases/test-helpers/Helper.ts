@@ -44,7 +44,7 @@ import type {
 } from '../../ports/Queries';
 
 import type { NotificationPage } from '@Domains/notifications/ports/Models';
-import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export function makeNotificationsScenario() {
 	const { sut, mocks } = makeSut(

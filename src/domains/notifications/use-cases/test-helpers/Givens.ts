@@ -14,7 +14,7 @@ import {
 	DEFAULT_PERFORMER_USER_ID,
 } from './Constants';
 import type { Notification, NotificationPage } from '../../ports/Models';
-import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

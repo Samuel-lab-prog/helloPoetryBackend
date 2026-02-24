@@ -14,7 +14,7 @@ import {
 	handleResponse,
 } from '@GenericSubdomains/utils/testUtils';
 import { prisma } from '@Prisma/PrismaClient';
-import type { AppError } from '@GenericSubdomains/utils/appError';
+import type { AppError } from '@GenericSubdomains/utils/AppError';
 
 export async function getUserProfile(
 	cookie: string,

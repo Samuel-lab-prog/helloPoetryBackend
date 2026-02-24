@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AppError } from '@GenericSubdomains/utils/appError';
+import type { AppError } from '@GenericSubdomains/utils/AppError';
 import type { HeadersInit } from 'bun';
 import { expect, mock } from 'bun:test';
 import { testServer } from '../../Index';

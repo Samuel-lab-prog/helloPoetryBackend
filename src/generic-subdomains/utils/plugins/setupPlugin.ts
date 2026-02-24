@@ -1,5 +1,5 @@
 import Elysia from 'elysia';
-import { appErrorSchema } from '../appError';
+import { appErrorSchema } from '../AppError';
 import { log } from '../logger';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 

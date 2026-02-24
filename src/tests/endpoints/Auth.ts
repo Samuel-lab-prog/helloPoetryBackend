@@ -3,7 +3,7 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 } from '@GenericSubdomains/utils/testUtils';
-import type { AppError } from '@GenericSubdomains/utils/appError';
+import type { AppError } from '@GenericSubdomains/utils/AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums.ts';
 
 export type AuthUser = {
