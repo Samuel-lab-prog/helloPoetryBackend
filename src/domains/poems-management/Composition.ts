@@ -8,7 +8,7 @@ import {
 	getAuthorPoemsFactory,
 	getPoemFactory,
 	getPoemsFactory,
-} from './use-cases/queries/Index';
+} from './use-cases/queries/index';
 import { createPoemsQueriesRouter } from './adapters/QueriesRouter';
 
 import {

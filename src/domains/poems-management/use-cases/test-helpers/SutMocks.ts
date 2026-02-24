@@ -14,7 +14,7 @@ import { getAuthorPoemsFactory } from '../queries/get-author-poems/execute';
 import { getMyPoemsFactory } from '../queries/get-my-poems/execute';
 import { getPoemFactory } from '../queries/get-poem-by-id/execute';
 import { deletePoemFactory } from '../commands/delete-poem/execute';
-import { getPoemsFactory } from '../queries/Index';
+import { getPoemsFactory } from '../queries/index';
 import { eventBus } from '@SharedKernel/events/EventBus';
 
 export type PoemsSutMocks = {

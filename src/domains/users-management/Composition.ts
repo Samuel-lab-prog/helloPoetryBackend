@@ -5,10 +5,10 @@ import { createUsersCommandsRouter } from './adapters/CommandsRouter';
 import {
 	updateUserFactory,
 	createUserFactory,
-} from './use-cases/commands/Index';
-import { getProfileFactory, getUsersFactory } from './use-cases/queries/Index';
+} from './use-cases/commands/index';
+import { getProfileFactory, getUsersFactory } from './use-cases/queries/index';
 import type { UsersQueriesRouterServices } from './ports/Queries';
-import { queriesRepository } from './infra/queries-repository/repository';
+import { queriesRepository } from './infra/queries-repository/Repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
 
 const commandsServices: UsersCommandsServices = {
