@@ -2,7 +2,7 @@ import type { CommandsRepository } from '../../../ports/Commands';
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnknownError } from '@DomainError';
+import { UnknownError } from '@GenericSubdomains/utils/domainError';
 
 export interface MarkAllAsReadDependencies {
 	commandsRepository: CommandsRepository;

@@ -1,4 +1,4 @@
-import type { MockedContract } from '@TestUtils';
+import type { MockedContract } from '@GenericSubdomains/utils/testUtils';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import type { TokenService } from '../../ports/Services';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

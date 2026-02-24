@@ -7,8 +7,8 @@ import { seedPoemLikes } from './poem-likes/Execute';
 import { seedCommentLikes } from './comment-likes/Execute';
 
 import { green } from 'kleur/colors';
-import { clearDatabase } from '@Prisma/ClearDatabase';
-import { prisma } from '../PrismaClient';
+import { clearDatabase } from '@Prisma/clearDatabase';
+import { prisma } from '../prismaClient';
 
 async function main() {
 	console.log('Starting database seeding...');

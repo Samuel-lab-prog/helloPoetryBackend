@@ -7,7 +7,7 @@ import type { CreatePoemDB, CreatePoemResult } from '../../../ports/Models';
 import { canCreatePoem } from '../../Policies';
 import { type EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ConflictError } from '@DomainError';
+import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

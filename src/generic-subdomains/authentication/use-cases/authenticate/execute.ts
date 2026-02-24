@@ -1,5 +1,8 @@
 import type { TokenService } from '../../ports/Services';
-import { UnprocessableEntityError, UnauthorizedError } from '@DomainError';
+import {
+	UnprocessableEntityError,
+	UnauthorizedError,
+} from '@GenericSubdomains/utils/domainError';
 import type { AuthClient } from '../../ports/Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 

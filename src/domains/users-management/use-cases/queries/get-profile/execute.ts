@@ -1,4 +1,7 @@
-import { ForbiddenError, NotFoundError } from '@DomainError';
+import {
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 import type {
 	QueriesRepository,
 	GetProfileParams,

@@ -3,10 +3,10 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@DomainError';
+} from '@GenericSubdomains/utils/domainError';
 
 import { makeInteractionsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@TestUtils';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 
 describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 	describe('Successful execution', () => {

@@ -1,5 +1,9 @@
 import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
-import { NotFoundError, ForbiddenError, UnknownError } from '@DomainError';
+import {
+	NotFoundError,
+	ForbiddenError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {

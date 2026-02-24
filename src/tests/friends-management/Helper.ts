@@ -1,4 +1,4 @@
-import { clearDatabase } from '@Prisma/ClearDatabase';
+import { clearDatabase } from '@Prisma/clearDatabase';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 import type { AuthUser } from '../endpoints/Index';
 

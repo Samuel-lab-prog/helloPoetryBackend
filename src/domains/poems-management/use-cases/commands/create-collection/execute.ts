@@ -1,5 +1,8 @@
 import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
-import { ConflictError, UnknownError } from '@DomainError';
+import {
+	ConflictError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
 import type { CreateCollection } from '@Domains/poems-management/ports/Models';
 import type { QueriesRepository } from '@Domains/poems-management/ports/Queries';

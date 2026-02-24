@@ -1,4 +1,4 @@
-import { DomainError } from '@DomainError';
+import { DomainError } from '@GenericSubdomains/utils/domainError';
 
 export class UserNotFoundError extends DomainError {
 	public constructor() {

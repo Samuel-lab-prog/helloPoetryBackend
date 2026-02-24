@@ -11,7 +11,7 @@ import type {
 	GetPoemParams,
 	SearchPoemsParams,
 } from '../../ports/Queries';
-import { makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
 import {
 	type AuthorPoemOverride,
 	type MyPoemOverride,

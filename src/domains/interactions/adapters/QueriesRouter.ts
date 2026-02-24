@@ -5,7 +5,7 @@ import { idSchema } from '@SharedKernel/Schemas';
 import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
 
 import { type QueriesRouterServices } from '../ports/Queries';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 
 export function createInteractionsQueriesRouter(
 	services: QueriesRouterServices,

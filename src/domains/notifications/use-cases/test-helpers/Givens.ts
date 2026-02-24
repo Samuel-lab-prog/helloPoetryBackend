@@ -1,7 +1,7 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { NotificationsSutMocks } from './SutMocks';
-import { givenResolved } from '@TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testUtils';
 
 import {
 	DEFAULT_USER_ID,
@@ -14,7 +14,7 @@ import {
 	DEFAULT_PERFORMER_USER_ID,
 } from './Constants';
 import type { Notification, NotificationPage } from '../../ports/Models';
-import type { AppErrorCode } from '@AppError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

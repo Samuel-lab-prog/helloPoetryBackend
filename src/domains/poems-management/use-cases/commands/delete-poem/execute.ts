@@ -3,7 +3,10 @@ import type {
 	DeletePoemParams,
 } from '../../../ports/Commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ForbiddenError, UnknownError } from '@DomainError';
+import {
+	ForbiddenError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

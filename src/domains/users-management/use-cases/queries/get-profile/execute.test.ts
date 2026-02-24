@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test';
-import { ForbiddenError, NotFoundError } from '@DomainError';
-import { expectError } from '@TestUtils';
+import {
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Users Management - GetProfile', () => {

@@ -3,7 +3,10 @@ import type {
 	DeleteFriendParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import { ConflictError, NotFoundError } from '@DomainError';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 import type { RemovedFriendRecord } from '../../Models';
 
 interface Dependencies {

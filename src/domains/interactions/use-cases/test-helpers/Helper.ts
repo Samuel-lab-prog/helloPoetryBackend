@@ -6,7 +6,7 @@ import type {
 	LikePoemParams,
 } from '../../ports/Commands';
 import type { GetPoemCommentsParams } from '../../ports/Queries';
-import { makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
 import {
 	givenUser,
 	givenPoem,

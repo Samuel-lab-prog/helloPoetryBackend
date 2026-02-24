@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { expectError } from '@TestUtils';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Poems Management - GetAuthorPoems', () => {

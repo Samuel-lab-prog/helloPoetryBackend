@@ -5,7 +5,7 @@ import type {
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { NotFoundError } from '@DomainError';
+import { NotFoundError } from '@GenericSubdomains/utils/domainError';
 
 export interface MarkNotificationAsReadDependencies {
 	commandsRepository: CommandsRepository;

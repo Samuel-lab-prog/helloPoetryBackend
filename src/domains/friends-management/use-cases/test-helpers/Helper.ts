@@ -8,7 +8,7 @@ import type {
 	SendFriendRequestParams,
 	UnblockUserParams,
 } from '../../ports/Commands';
-import { makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
 import {
 	givenAddressee,
 	givenNoFriendship,

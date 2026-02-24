@@ -10,7 +10,7 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
-import { UnknownError } from '@DomainError';
+import { UnknownError } from '@GenericSubdomains/utils/domainError';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;

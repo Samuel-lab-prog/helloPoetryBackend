@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { blockUserFactory } from './execute';
 
-import { ConflictError } from '@DomainError';
+import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;

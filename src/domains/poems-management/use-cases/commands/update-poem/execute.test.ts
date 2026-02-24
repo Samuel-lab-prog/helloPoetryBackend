@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'bun:test';
-import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
-import { expectError } from '@TestUtils';
+import {
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Poems Management - UpdatePoem', () => {

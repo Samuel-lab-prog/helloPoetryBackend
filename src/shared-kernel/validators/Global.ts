@@ -4,7 +4,7 @@ import { relation } from './UsersRelation';
 import { compareIds } from './CompareNumbers';
 import { ensure } from './Esnure';
 import { comment } from './Comment';
-import { ForbiddenError } from '@DomainError';
+import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 
 function sameOwner(id1: number, id2: number) {
 	if (id1 !== id2)

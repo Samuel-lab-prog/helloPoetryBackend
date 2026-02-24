@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { prisma } from '@Prisma/PrismaClient';
-import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
+import { prisma } from '@Prisma/prismaClient';
+import { withPrismaErrorHandling } from '@Prisma/prismaErrorHandler';
 import type { PoemsFeedContract } from '@Domains/feed-engine/ports/ExternalServices';
 import type { PoemSelect, PoemWhereInput } from '@PrismaGenerated/models';
 import type {

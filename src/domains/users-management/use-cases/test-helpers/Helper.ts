@@ -1,6 +1,6 @@
 import type { CreateUserParams, UpdateUserParams } from '../../ports/Commands';
 import type { GetProfileParams, GetUsersParams } from '../../ports/Queries';
-import { makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
 import {
 	givenCreateUserConflict,
 	givenCreateUserFailure,

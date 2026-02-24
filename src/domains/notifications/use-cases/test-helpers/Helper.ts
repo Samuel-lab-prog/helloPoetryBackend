@@ -6,7 +6,7 @@ import type {
 	MarkNotificationAsReadParams,
 } from '../../ports/Commands';
 
-import { makeParams, makeSut } from '@TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
 
 import {
 	givenUser,
@@ -44,7 +44,7 @@ import type {
 } from '../../ports/Queries';
 
 import type { NotificationPage } from '@Domains/notifications/ports/Models';
-import type { AppErrorCode } from '@AppError';
+import type { AppErrorCode } from '@GenericSubdomains/utils/appError';
 
 export function makeNotificationsScenario() {
 	const { sut, mocks } = makeSut(

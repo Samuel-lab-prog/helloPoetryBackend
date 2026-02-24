@@ -1,4 +1,7 @@
-import { ConflictError, UnknownError } from '@DomainError';
+import {
+	ConflictError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 import type {
 	CommandsRepository,
 	UpdateUserParams,

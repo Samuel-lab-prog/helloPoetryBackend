@@ -10,7 +10,7 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@DomainError';
+} from '@GenericSubdomains/utils/domainError';
 
 type AuthorContext = {
 	status: UserStatus;

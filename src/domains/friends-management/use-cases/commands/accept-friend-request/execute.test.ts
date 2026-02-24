@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'bun:test';
-import { ConflictError, NotFoundError } from '@DomainError';
-import { expectError } from '@TestUtils';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe.concurrent(

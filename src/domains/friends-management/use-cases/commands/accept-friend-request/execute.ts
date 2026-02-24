@@ -1,4 +1,7 @@
-import { ConflictError, NotFoundError } from '@DomainError';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 import type {
 	CommandsRepository,
 	AcceptFriendRequestParams,

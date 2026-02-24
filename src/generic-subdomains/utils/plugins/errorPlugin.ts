@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Elysia from 'elysia';
-import { AppError, type AppErrorCode } from '../AppError.ts';
-import { DomainError } from '../DomainError.ts';
-import { DatabaseError } from '@DatabaseError';
-import { log } from '../Logger.ts';
-import { SetupPlugin, type SetupPluginContext } from './SetupPlugin.ts';
+import { AppError, type AppErrorCode } from '../appError.ts';
+import { DomainError } from '../domainError.ts';
+import { DatabaseError } from '@GenericSubdomains/utils/databaseError.ts';
+import { log } from '../logger.ts';
+import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) return error;

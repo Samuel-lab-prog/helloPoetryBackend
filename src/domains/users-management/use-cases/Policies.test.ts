@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { ForbiddenError } from '@DomainError';
+import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 import { canUpdateData, type CanUpdatePolicyInput } from './Policies';
 
 const VALID_INPUT: CanUpdatePolicyInput = {

@@ -1,5 +1,5 @@
 import { eventBus } from '@SharedKernel/events/EventBus';
-import { log } from '@GenericSubdomains/utils/Logger';
+import { log } from '@GenericSubdomains/utils/logger';
 import { notificationsCommandsServices } from './Composition';
 
 eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {

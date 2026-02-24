@@ -6,7 +6,7 @@ import type {
 import type { LoginResponse } from '../../ports/Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import { UnauthorizedError } from '@DomainError';
+import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';
 
 export interface LoginClientDependencies {
 	tokenService: TokenService;

@@ -4,7 +4,11 @@ import type { UsersPublicContract } from '@Domains/users-management/public/Index
 import type { TokenService, LoginClientParams } from '../../ports/Services';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 
-import { createMockedContract, makeParams, makeSut } from '@TestUtils';
+import {
+	createMockedContract,
+	makeParams,
+	makeSut,
+} from '@GenericSubdomains/utils/testUtils';
 
 import {
 	givenAuthUserExists,

@@ -1,6 +1,6 @@
 import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnknownError } from '@DomainError';
+import { UnknownError } from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
 import type { QueriesRepository } from '@Domains/poems-management/ports/Queries';
 

@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from '@AppError';
+import { makeValidationError } from '@GenericSubdomains/utils/appError';
 
 export const idSchema = t.Number({
 	minimum: 1,

@@ -1,5 +1,9 @@
-import { jsonRequest, API_INSTANCE, API_PREFIX } from '@TestUtils';
-import type { AppError } from '@AppError';
+import {
+	jsonRequest,
+	API_INSTANCE,
+	API_PREFIX,
+} from '@GenericSubdomains/utils/testUtils';
+import type { AppError } from '@GenericSubdomains/utils/appError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums.ts';
 
 export type AuthUser = {

@@ -9,7 +9,7 @@ import {
 	DEFAULT_BLOCKED_RELATIONSHIP_ID,
 	DEFAULT_NICKNAME,
 } from './Constants';
-import { givenResolved } from '@TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testUtils';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

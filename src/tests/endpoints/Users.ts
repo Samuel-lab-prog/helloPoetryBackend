@@ -12,9 +12,9 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '@TestUtils';
-import { prisma } from '@Prisma/PrismaClient.ts';
-import type { AppError } from '@AppError';
+} from '@GenericSubdomains/utils/testUtils';
+import { prisma } from '@Prisma/prismaClient';
+import type { AppError } from '@GenericSubdomains/utils/appError';
 
 export async function getUserProfile(
 	cookie: string,

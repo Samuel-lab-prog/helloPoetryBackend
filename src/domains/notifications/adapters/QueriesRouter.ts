@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
 

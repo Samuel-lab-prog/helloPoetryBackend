@@ -1,5 +1,5 @@
 import type { UsersRelationBasicInfo } from '@Domains/friends-management/public/Index';
-import { ForbiddenError } from '@DomainError';
+import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 
 export function relation(relation: UsersRelationBasicInfo) {
 	return {

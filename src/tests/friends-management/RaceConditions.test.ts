@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@Prisma/ClearDatabase';
+import { clearDatabase } from '@Prisma/clearDatabase';
 
 import {
 	sendFriendRequest,
@@ -11,7 +11,7 @@ import {
 } from '../endpoints/Index';
 
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
-import { prisma } from '@Prisma/PrismaClient';
+import { prisma } from '@Prisma/prismaClient';
 
 let user1: AuthUser;
 let user2: AuthUser;

@@ -2,7 +2,7 @@ import type {
 	CommandsRepository,
 	LikePoemParams,
 } from '../../../ports/Commands';
-import { NotFoundError } from '@DomainError';
+import { NotFoundError } from '@GenericSubdomains/utils/domainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';

@@ -5,7 +5,7 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
-import { ConflictError } from '@DomainError';
+import { ConflictError } from '@GenericSubdomains/utils/domainError';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 

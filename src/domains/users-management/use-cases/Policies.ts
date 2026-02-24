@@ -1,4 +1,4 @@
-import { ForbiddenError } from '@DomainError';
+import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 import type { UserStatus } from './Models';
 
 export type CanUpdatePolicyInput = {

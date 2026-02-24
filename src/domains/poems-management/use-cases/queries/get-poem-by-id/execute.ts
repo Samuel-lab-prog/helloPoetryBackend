@@ -1,7 +1,10 @@
 import type { QueriesRepository, GetPoemParams } from '../../../ports/Queries';
 import { canViewPoem } from '../../Policies';
 import type { AuthorPoem } from '../../../ports/Models';
-import { ForbiddenError, NotFoundError } from '@DomainError';
+import {
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;

@@ -4,7 +4,7 @@ import {
 	NotFoundError,
 	ForbiddenError,
 	UnknownError,
-} from '@DomainError';
+} from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {

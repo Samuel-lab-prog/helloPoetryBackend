@@ -14,10 +14,10 @@ import {
 	handleResponse,
 	API_INSTANCE,
 	API_PREFIX,
-} from '@TestUtils';
+} from '@GenericSubdomains/utils/testUtils.ts';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
-import { prisma } from '@PrismaClient';
-import type { AppError } from '@AppError';
+import { prisma } from '@Prisma/prismaClient.ts';
+import type { AppError } from '@GenericSubdomains/utils/appError.ts';
 import { type AuthUser } from './Auth.ts';
 
 export async function createPoem(

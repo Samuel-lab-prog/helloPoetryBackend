@@ -1,10 +1,10 @@
-import { prisma } from '@Prisma/PrismaClient.ts';
+import { prisma } from '@Prisma/prismaClient';
 import {
 	jsonRequest,
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '@TestUtils';
+} from '@GenericSubdomains/utils/testUtils';
 import type {
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,
@@ -14,7 +14,7 @@ import type {
 	RemovedFriendRecord,
 	BlockedUserRecord,
 } from '@Domains/friends-management/use-cases/Models.ts';
-import type { AppError } from '@AppError';
+import type { AppError } from '@GenericSubdomains/utils/appError';
 
 export async function sendFriendRequest(
 	cookie: string,

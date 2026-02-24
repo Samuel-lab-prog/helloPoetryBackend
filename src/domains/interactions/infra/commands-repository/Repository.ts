@@ -1,5 +1,5 @@
-import { prisma } from '@PrismaClient';
-import { withPrismaResult } from '@PrismaErrorHandler';
+import { prisma } from '@Prisma/prismaClient';
+import { withPrismaResult } from '@Prisma/prismaErrorHandler';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { CommentStatus } from '../../ports/Models';
 import type { CommandResult } from '@SharedKernel/Types';

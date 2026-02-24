@@ -3,7 +3,7 @@ import { AuthPlugin } from '@AuthPlugin';
 
 import { type QueriesRouterServices } from '../ports/Queries';
 import { FeedPoemSchema } from '../ports/schemas/Index';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 
 export function createFeedQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/feed' }).use(AuthPlugin).get(

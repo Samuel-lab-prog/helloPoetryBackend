@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { makeValidationError } from '@AppError';
+import { makeValidationError } from '@GenericSubdomains/utils/appError';
 import { idSchema } from '@SharedKernel/Schemas';
 
 export const PoemTitleSchema = t.String({

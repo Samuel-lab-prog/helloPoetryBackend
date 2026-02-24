@@ -7,7 +7,7 @@ import {
 	sanctionReasonSchema,
 } from '../ports/schemas/Index';
 import { type CommandsRouterServices } from '../ports/Commands';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 
 export function createModerationCommandsRouter(
 	services: CommandsRouterServices,

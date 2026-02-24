@@ -3,8 +3,8 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@DomainError';
-import { expectError } from '@TestUtils';
+} from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { validateUsers } from './Policies';
 import { makePoemsScenario } from './test-helpers/Helper';
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { type CommandsRouterServices } from '../ports/Commands';

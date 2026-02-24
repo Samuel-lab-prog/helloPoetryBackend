@@ -12,26 +12,26 @@
 			"@PrismaGenerated/*": [
 				"./generic-subdomains/persistance/prisma/generated/*"
 			],
-			"@TestUtils": ["./generic-subdomains/utils/TestUtils.ts"],
+			"@TestUtils": ["./generic-subdomains/utils/testUtils.ts"],
 			"GlobalValidator": ["./shared-kernel/validators/Global.ts"],
 			"@Domains/*": ["./domains/*"],
 			"@Prisma/*": ["./generic-subdomains/persistance/prisma/*"],
-			"@DomainError": ["./generic-subdomains/utils/DomainError.ts"],
-			"@AppError": ["./generic-subdomains/utils/AppError.ts"],
-			"@DatabaseError": ["./generic-subdomains/utils/DatabaseError.ts"],
+			"@DomainError": ["./generic-subdomains/utils/domainError.ts"],
+			"@AppError": ["./generic-subdomains/utils/appError.ts"],
+			"@DatabaseError": ["./generic-subdomains/utils/databaseError.ts"],
 			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./generic-subdomains/*"],
 			"@SharedKernel/*": ["./shared-kernel/*"],
 			"@AuthPlugin": ["./generic-subdomains/authentication/Composition.ts"],
 			"@ClearDatabase": [
-				"./generic-subdomains/persistance/prisma/ClearDatabase.ts"
+				"./generic-subdomains/persistance/prisma/clearDatabase.ts"
 			],
 
 			"@PrismaErrorHandler": [
-				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"
+				"./generic-subdomains/persistance/prisma/prismaErrorHandler.ts"
 			],
 			"@PrismaClient": [
-				"./generic-subdomains/persistance/prisma/PrismaClient.ts"
+				"./generic-subdomains/persistance/prisma/prismaClient.ts"
 			]
 		},
 

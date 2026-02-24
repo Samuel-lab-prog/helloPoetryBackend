@@ -7,7 +7,7 @@ import type { QueriesRepository } from '../../../ports/Queries';
 import type { UpdatePoemResult } from '../../../ports/Models';
 import { canUpdatePoem } from '../../Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ConflictError } from '@DomainError';
+import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

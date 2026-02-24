@@ -2,7 +2,7 @@ import type { UsersPublicContract } from '@Domains/users-management/public/Index
 import type { TokenService } from '../../ports/Services';
 
 import type { AuthSutMocks } from './SutMocks';
-import { givenResolved } from '@TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testUtils';
 
 import {
 	DEFAULT_CLIENT_EMAIL,

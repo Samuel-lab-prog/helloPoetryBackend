@@ -1,4 +1,4 @@
-import { makeValidationError } from '@AppError';
+import { makeValidationError } from '@GenericSubdomains/utils/appError';
 import { t } from 'elysia';
 
 export const sanctionReasonSchema = t.String({

@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { deleteFriendFactory } from './execute';
-import { ConflictError, NotFoundError } from '@DomainError';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 
 describe('USE-CASE - Friends Management', () => {
 	let commandsRepository: any;

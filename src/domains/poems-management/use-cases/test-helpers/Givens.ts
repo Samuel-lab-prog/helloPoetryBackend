@@ -1,5 +1,5 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { givenResolved } from '@TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testUtils';
 
 import type { AuthorPoem, MyPoem } from '../../ports/Models';
 import type { PoemsSutMocks } from './SutMocks';

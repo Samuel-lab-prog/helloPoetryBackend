@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
-import { appErrorSchema } from '@AppError';
+import { appErrorSchema } from '@GenericSubdomains/utils/appError';
 import { idSchema } from '@SharedKernel/Schemas';
 
 import {

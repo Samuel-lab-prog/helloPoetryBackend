@@ -3,8 +3,8 @@ import {
 	ConflictError,
 	ForbiddenError,
 	UnprocessableEntityError,
-} from '@DomainError';
-import { expectError } from '@TestUtils';
+} from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/testUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {

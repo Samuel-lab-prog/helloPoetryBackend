@@ -1,5 +1,8 @@
 import { mock } from 'bun:test';
-import { type MockedContract, createMockedContract } from '@TestUtils';
+import {
+	type MockedContract,
+	createMockedContract,
+} from '@GenericSubdomains/utils/testUtils';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 import type { CommandsRepository } from '../../ports/Commands';

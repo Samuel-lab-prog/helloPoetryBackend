@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { prisma } from '@PrismaClient';
+import { prisma } from '@Prisma/prismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
-import { withPrismaErrorHandling } from '@PrismaErrorHandler';
+import { withPrismaErrorHandling } from '@Prisma/prismaErrorHandler';
 
 import type { QueriesRepository, SelectUsersParams } from '../../ports/Queries';
 

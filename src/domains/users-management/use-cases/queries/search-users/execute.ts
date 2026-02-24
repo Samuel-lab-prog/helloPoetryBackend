@@ -1,4 +1,4 @@
-import { ForbiddenError } from '@DomainError';
+import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 import type { QueriesRepository, GetUsersParams } from '../../../ports/Queries';
 import type { UsersPage } from '../../Models';
 

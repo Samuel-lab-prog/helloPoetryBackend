@@ -4,7 +4,10 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UnblockUserRecord } from '../../Models';
-import { ConflictError, NotFoundError } from '@DomainError';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

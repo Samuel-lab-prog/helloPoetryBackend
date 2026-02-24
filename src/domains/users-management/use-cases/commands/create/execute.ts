@@ -4,7 +4,10 @@ import type {
 } from '../../../ports/Commands';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import type { FullUser } from '../../Models';
-import { ConflictError, UnknownError } from '@DomainError';
+import {
+	ConflictError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

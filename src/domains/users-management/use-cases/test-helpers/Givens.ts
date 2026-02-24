@@ -11,7 +11,7 @@ import {
 	DEFAULT_PRIVATE_PROFILE,
 	DEFAULT_USERS_PAGE,
 } from './Constants';
-import { givenResolved } from '@TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testUtils';
 
 export type FullUserOverride = Partial<FullUser>;
 export type PrivateProfileOverride = Partial<UserPrivateProfile>;

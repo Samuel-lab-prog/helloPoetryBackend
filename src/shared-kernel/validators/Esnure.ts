@@ -3,7 +3,7 @@ import {
 	NotFoundError,
 	UnprocessableEntityError,
 	ForbiddenError,
-} from '@DomainError';
+} from '@GenericSubdomains/utils/domainError';
 
 type ResourceType =
 	| string
