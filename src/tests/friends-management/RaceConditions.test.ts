@@ -11,7 +11,7 @@ import {
 } from '../endpoints/Index';
 
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
-import { prisma } from '@Prisma/prismaClient';
+import { prisma } from '@Prisma/PrismaClient';
 
 let user1: AuthUser;
 let user2: AuthUser;

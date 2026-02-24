@@ -1,4 +1,4 @@
-import { prisma } from '@Prisma/prismaClient';
+import { prisma } from '@Prisma/PrismaClient';
 import {
 	jsonRequest,
 	API_INSTANCE,

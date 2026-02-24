@@ -13,7 +13,7 @@ import {
 	API_PREFIX,
 	handleResponse,
 } from '@GenericSubdomains/utils/testUtils';
-import { prisma } from '@Prisma/prismaClient';
+import { prisma } from '@Prisma/PrismaClient';
 import type { AppError } from '@GenericSubdomains/utils/appError';
 
 export async function getUserProfile(

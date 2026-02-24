@@ -16,7 +16,7 @@ import {
 	API_PREFIX,
 } from '@GenericSubdomains/utils/testUtils.ts';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
-import { prisma } from '@Prisma/prismaClient.ts';
+import { prisma } from '@Prisma/PrismaClient.ts';
 import type { AppError } from '@GenericSubdomains/utils/appError.ts';
 import { type AuthUser } from './Auth.ts';
 

@@ -1,5 +1,5 @@
-import { prisma } from '@Prisma/prismaClient';
-import { withPrismaErrorHandling } from '@Prisma/prismaErrorHandler';
+import { prisma } from '@Prisma/PrismaClient';
+import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
 import type { CommandsRepository } from '../../ports/Commands';
 import type {

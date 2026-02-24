@@ -1,4 +1,4 @@
-import { prisma } from '@Prisma/prismaClient';
+import { prisma } from '@Prisma/PrismaClient';
 
 export async function clearDatabase() {
 	await prisma.$executeRawUnsafe(`

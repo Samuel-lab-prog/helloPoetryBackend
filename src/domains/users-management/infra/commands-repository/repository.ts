@@ -1,5 +1,5 @@
-import { prisma } from '@Prisma/prismaClient';
-import { withPrismaResult } from '@Prisma/prismaErrorHandler';
+import { prisma } from '@Prisma/PrismaClient';
+import { withPrismaResult } from '@Prisma/PrismaErrorHandler';
 import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
 import type { CommandResult } from '@SharedKernel/Types';
 

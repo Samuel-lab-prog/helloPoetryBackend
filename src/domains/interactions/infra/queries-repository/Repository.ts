@@ -1,5 +1,5 @@
-import { prisma } from '@Prisma/prismaClient';
-import { withPrismaErrorHandling } from '@Prisma/prismaErrorHandler';
+import { prisma } from '@Prisma/PrismaClient';
+import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { PoemComment } from '../../ports/Models';
 import type { CommentSelect } from '@PrismaGenerated/models';

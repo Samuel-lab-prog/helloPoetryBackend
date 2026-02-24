@@ -28,10 +28,10 @@
 			],
 
 			"@PrismaErrorHandler": [
-				"./generic-subdomains/persistance/prisma/prismaErrorHandler.ts"
+				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"
 			],
 			"@PrismaClient": [
-				"./generic-subdomains/persistance/prisma/prismaClient.ts"
+				"./generic-subdomains/persistance/prisma/PrismaClient.ts"
 			]
 		},
 

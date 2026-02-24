@@ -1,4 +1,4 @@
-import { prisma } from '../../prismaClient';
+import { prisma } from '../../PrismaClient';
 import { generateFriendshipSeeds } from './Factory';
 import { green } from 'kleur/colors';
 

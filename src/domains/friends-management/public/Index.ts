@@ -1,5 +1,5 @@
-import { prisma } from '@Prisma/prismaClient';
-import { withPrismaErrorHandling } from '@Prisma/prismaErrorHandler';
+import { prisma } from '@Prisma/PrismaClient';
+import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
 export type UsersRelationBasicInfo = {
 	areFriends: boolean;
