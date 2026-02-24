@@ -1,5 +1,4 @@
 node_modules
-docker-compose.yml
 dist
 src/generic-subdomains/persistance/prisma/generated
 .env
