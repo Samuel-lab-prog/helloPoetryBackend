@@ -5,7 +5,7 @@ src/generic-subdomains/persistance/prisma/generated
 cloc.json
 depcruise.json
 /.vscode
-
+.env
 bun.xml
 ai-contexts
-a.md
+a.
