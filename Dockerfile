@@ -7,7 +7,6 @@ RUN bun install --production
 
 COPY . .
 
-RUN bun run generate
 RUN bun run build
 
 ENV PORT=5000
