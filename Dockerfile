@@ -6,7 +6,6 @@ COPY package.json bun.lock ./
 RUN bun install --production
 
 COPY . .
-COPY .env .env
 
 RUN bun run generate
 RUN bun run build
