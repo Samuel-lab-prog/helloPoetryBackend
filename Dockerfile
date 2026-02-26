@@ -6,7 +6,8 @@ COPY package.json bun.lock ./
 RUN bun install --production
 
 COPY . .
-
+ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+RUN bun generate
 RUN bun run build
 
 ENV PORT=5000
