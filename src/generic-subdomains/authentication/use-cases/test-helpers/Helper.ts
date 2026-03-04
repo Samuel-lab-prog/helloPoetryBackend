@@ -8,7 +8,7 @@ import {
 	createMockedContract,
 	makeParams,
 	makeSut,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 
 import {
 	givenAuthUserExists,

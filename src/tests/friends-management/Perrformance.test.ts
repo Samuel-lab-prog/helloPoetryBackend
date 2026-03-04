@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@Prisma/clearDatabase';
+import { clearDatabase } from '@ClearDatabase';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 import {
 	sendFriendRequest,
@@ -8,7 +8,7 @@ import {
 	blockUser,
 	unblockUser,
 } from '../endpoints/Index';
-import { MAX_QUERY_TIME_LIMIT } from '@GenericSubdomains/utils/testUtils';
+import { MAX_QUERY_TIME_LIMIT } from '@GenericSubdomains/utils/TestUtils';
 
 let user1: any;
 let user2: any;

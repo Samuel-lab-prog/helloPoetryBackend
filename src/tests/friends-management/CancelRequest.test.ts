@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@Prisma/clearDatabase';
+import { clearDatabase } from '@ClearDatabase';
 
 import {
 	sendFriendRequest,
@@ -12,7 +12,7 @@ import type {
 	FriendRequestRecord,
 } from '@Domains/friends-management/use-cases/Models';
 
-import { expectAppError } from '@GenericSubdomains/utils/testUtils';
+import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 
 let user1: AuthUser;

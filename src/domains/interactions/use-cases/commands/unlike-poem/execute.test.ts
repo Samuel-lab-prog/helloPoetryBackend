@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import {
 	NotFoundError,
 	ForbiddenError,

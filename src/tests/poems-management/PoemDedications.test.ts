@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@Prisma/clearDatabase';
+import { clearDatabase } from '@ClearDatabase';
 
 import {
 	createPoem,
@@ -21,7 +21,7 @@ import type {
 import {
 	expectAppError,
 	NON_EXISTENT_ID,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 
 import { setupHttpUsers } from 'tests/TestsSetups.ts';
 

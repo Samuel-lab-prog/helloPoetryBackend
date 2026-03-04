@@ -21,7 +21,7 @@ import {
 	DEFAULT_COMMENT_STATUS,
 	DEFAULT_COMMENT_PARENT_ID,
 } from './Constants';
-import { givenResolved } from '@GenericSubdomains/utils/testUtils';
+import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

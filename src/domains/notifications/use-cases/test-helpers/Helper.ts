@@ -6,7 +6,7 @@ import type {
 	MarkNotificationAsReadParams,
 } from '../../ports/Commands';
 
-import { makeParams, makeSut } from '@GenericSubdomains/utils/testUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 
 import {
 	givenUser,

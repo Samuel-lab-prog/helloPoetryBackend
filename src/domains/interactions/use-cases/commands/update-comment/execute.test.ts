@@ -5,7 +5,7 @@ import {
 	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
 import { makeInteractionsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - UpdateComment', () => {
 	describe('Successful execution', () => {

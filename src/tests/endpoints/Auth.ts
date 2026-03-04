@@ -2,7 +2,7 @@ import {
 	jsonRequest,
 	API_INSTANCE,
 	API_PREFIX,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 import type { AppError } from '@GenericSubdomains/utils/AppError';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums.ts';
 

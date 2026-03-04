@@ -12,7 +12,7 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 import { prisma } from '@Prisma/PrismaClient';
 import type { AppError } from '@GenericSubdomains/utils/AppError';
 

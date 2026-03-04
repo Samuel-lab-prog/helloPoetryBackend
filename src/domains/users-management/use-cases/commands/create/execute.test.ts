@@ -3,7 +3,7 @@ import {
 	ConflictError,
 	UnknownError,
 } from '@GenericSubdomains/utils/domainError';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { DEFAULT_CREATE_USER_DATA } from '../../test-helpers/Constants';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 

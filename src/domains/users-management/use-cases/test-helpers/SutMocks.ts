@@ -1,7 +1,7 @@
 import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';

@@ -14,7 +14,7 @@ import {
 	handleResponse,
 	API_INSTANCE,
 	API_PREFIX,
-} from '@GenericSubdomains/utils/testUtils.ts';
+} from '@GenericSubdomains/utils/TestUtils';
 import { poemsData, poemsForUpdate } from '../data/Index.ts';
 import { prisma } from '@Prisma/PrismaClient.ts';
 import type { AppError } from '@GenericSubdomains/utils/AppError.ts';

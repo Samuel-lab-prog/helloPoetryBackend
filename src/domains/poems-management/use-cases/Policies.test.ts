@@ -4,7 +4,7 @@ import {
 	NotFoundError,
 	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { validateUsers } from './Policies';
 import { makePoemsScenario } from './test-helpers/Helper';
 

@@ -7,7 +7,7 @@ import { seedPoemLikes } from './poem-likes/Execute';
 import { seedCommentLikes } from './comment-likes/Execute';
 
 import { green } from 'kleur/colors';
-import { clearDatabase } from '@Prisma/clearDatabase';
+import { clearDatabase } from '@ClearDatabase';
 import { prisma } from '../PrismaClient';
 
 async function main() {

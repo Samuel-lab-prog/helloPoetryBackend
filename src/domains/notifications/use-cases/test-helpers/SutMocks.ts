@@ -1,7 +1,7 @@
 import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';

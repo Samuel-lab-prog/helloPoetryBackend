@@ -1,7 +1,7 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { NotificationsSutMocks } from './SutMocks';
-import { givenResolved } from '@GenericSubdomains/utils/testUtils';
+import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
 
 import {
 	DEFAULT_USER_ID,

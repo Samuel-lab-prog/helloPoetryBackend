@@ -3,7 +3,7 @@ import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe.concurrent(

@@ -4,7 +4,7 @@ import {
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import { makeInteractionsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - DeleteComment', () => {
 	describe('Successful execution', () => {

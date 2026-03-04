@@ -5,7 +5,7 @@ import {
 } from '@GenericSubdomains/utils/domainError';
 
 import { makeNotificationsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Notifications - GetNotificationById', () => {
 	describe('Successful execution', () => {

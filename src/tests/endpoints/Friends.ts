@@ -4,7 +4,7 @@ import {
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '@GenericSubdomains/utils/testUtils';
+} from '@GenericSubdomains/utils/TestUtils';
 import type {
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,

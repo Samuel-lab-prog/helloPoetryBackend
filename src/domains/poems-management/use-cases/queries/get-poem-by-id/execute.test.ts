@@ -3,7 +3,7 @@ import {
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Poems Management - GetPoemById', () => {

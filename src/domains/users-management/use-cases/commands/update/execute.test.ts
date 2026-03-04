@@ -4,7 +4,7 @@ import {
 	ForbiddenError,
 	UnknownError,
 } from '@GenericSubdomains/utils/domainError';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import {
 	DEFAULT_TARGET_ID,
 	DEFAULT_UPDATE_USER_DATA,

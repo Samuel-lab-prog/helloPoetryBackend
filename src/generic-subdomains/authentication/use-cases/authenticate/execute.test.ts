@@ -4,7 +4,7 @@ import {
 	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
 import { makeAuthScenario } from '../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/testUtils';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Authentication - AuthenticateClient', () => {
 	describe('Successful execution', () => {
