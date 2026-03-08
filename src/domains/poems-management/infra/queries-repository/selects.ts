@@ -30,6 +30,7 @@ export const poemPreviewSelect = {
 	},
 	tags: {
 		select: {
+			id: true,
 			name: true,
 		},
 	},

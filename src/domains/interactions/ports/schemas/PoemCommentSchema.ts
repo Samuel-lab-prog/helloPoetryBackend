@@ -19,6 +19,6 @@ export const PoemCommentSchema = t.Object({
 	author: t.Object({
 		id: idSchema,
 		nickname: t.String(),
-		avatarUrl: t.String(),
+		avatarUrl: t.Nullable(t.String()),
 	}),
 });

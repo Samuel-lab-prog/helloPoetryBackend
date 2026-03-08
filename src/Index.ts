@@ -86,10 +86,11 @@ function makeServer({
 		.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
 		.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
 		.use(enableLogger ? LoggerPlugin : undefined)
-		.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
 		.use(cors())
 		.use(SetupPlugin)
 		.use(ErrorPlugin)
+
+		.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
 		.use(enableRealHash ? authRouter : authRouterWithFakeHash)
 		.use(userQueriesRouter)
 		.use(poemsCommandsRouter)

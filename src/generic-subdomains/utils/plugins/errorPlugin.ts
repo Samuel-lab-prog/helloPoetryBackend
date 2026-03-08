@@ -218,4 +218,4 @@ function sendAppError(err: AppError) {
 
 export const ErrorPlugin = new Elysia()
 	.use(SetupPlugin)
-	.onError({ as: 'scoped' }, (ctx) => handleError(ctx));
+	.onError({ as: 'global' }, (ctx) => handleError(ctx));
