@@ -34,6 +34,8 @@ export interface UsersQueriesRouterServices {
 		params: GetProfileParams,
 	) => Promise<UserPublicProfile | UserPrivateProfile>;
 	searchUsers: (params: GetUsersParams) => Promise<UsersPage>;
+	checkNickanmeAvailability: (nickname: string) => Promise<boolean>;
+	checkEmailAvailability: (email: string) => Promise<boolean>;
 }
 
 export interface QueriesRepository {
@@ -45,6 +47,8 @@ export interface QueriesRepository {
 		isPrivate?: boolean;
 	}): Promise<UserPrivateProfile | UserPublicProfile | null>;
 	selectUsers(params: SelectUsersParams): Promise<UsersPage>;
+	findNickname(nickname: string): Promise<boolean>;
+	findEmail(email: string): Promise<boolean>;
 }
 
 export type SelectUsersParams = {

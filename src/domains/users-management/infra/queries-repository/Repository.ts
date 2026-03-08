@@ -105,10 +105,30 @@ function selectUsers(params: SelectUsersParams): Promise<UsersPage> {
 	});
 }
 
+function findNickname(nickname: string): Promise<boolean> {
+	return withPrismaErrorHandling(async () => {
+		const count = await prisma.user.count({
+			where: { nickname, deletedAt: null },
+		});
+		return count > 0;
+	});
+}
+
+function findEmail(email: string): Promise<boolean> {
+	return withPrismaErrorHandling(async () => {
+		const count = await prisma.user.count({
+			where: { email, deletedAt: null },
+		});
+		return count > 0;
+	});
+}
+
 export const queriesRepository: QueriesRepository = {
 	selectUserById,
 	selectUserByEmail,
 	selectUserByNickname,
 	selectProfile,
 	selectUsers,
+	findNickname,
+	findEmail,
 };

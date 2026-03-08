@@ -31,6 +31,8 @@ export function usersManagementMockFactories() {
 			selectUserByEmail: mock(),
 			selectProfile: mock(),
 			selectUsers: mock(),
+			findNickname: mock(),
+			findEmail: mock(),
 		}),
 
 		hashServices: createMockedContract<HashServices>({

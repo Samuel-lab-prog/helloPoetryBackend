@@ -6,7 +6,12 @@ import {
 	updateUserFactory,
 	createUserFactory,
 } from './use-cases/commands/index';
-import { getProfileFactory, getUsersFactory } from './use-cases/queries/index';
+import {
+	checkEmailAvailabilityFactory,
+	checkNicknameAvailabilityFactory,
+	getProfileFactory,
+	getUsersFactory,
+} from './use-cases/queries/index';
 import type { UsersQueriesRouterServices } from './ports/Queries';
 import { queriesRepository } from './infra/queries-repository/Repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
@@ -36,6 +41,12 @@ const queriesServices: UsersQueriesRouterServices = {
 		queriesRepository: queriesRepository,
 	}) as UsersQueriesRouterServices['getProfile'],
 	searchUsers: getUsersFactory({
+		queriesRepository: queriesRepository,
+	}),
+	checkNickanmeAvailability: checkNicknameAvailabilityFactory({
+		queriesRepository: queriesRepository,
+	}),
+	checkEmailAvailability: checkEmailAvailabilityFactory({
 		queriesRepository: queriesRepository,
 	}),
 };

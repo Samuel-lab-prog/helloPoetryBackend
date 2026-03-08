@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { AuthPlugin } from '@AuthPlugin';
@@ -16,6 +17,45 @@ import { type UsersQueriesRouterServices } from '../ports/Queries';
 
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
+		.get(
+			'/check-nickname',
+			({ query }) => {
+				return services.checkNickanmeAvailability(query.nickname);
+			},
+			{
+				response: {
+					200: t.Boolean(),
+				},
+				query: t.Object({
+					nickname: t.String(),
+				}),
+				detail: {
+					summary: 'Check Nickname Availability',
+					description:
+						'Checks if a given nickname is available for registration.',
+					tags: ['Users Management'],
+				},
+			},
+		)
+		.get(
+			'/check-email',
+			({ query }) => {
+				return services.checkEmailAvailability(query.email);
+			},
+			{
+				response: {
+					200: t.Boolean(),
+				},
+				query: t.Object({
+					email: t.String(),
+				}),
+				detail: {
+					summary: 'Check Email Availability',
+					description: 'Checks if a given email is available for registration.',
+					tags: ['Users Management'],
+				},
+			},
+		)
 		.use(AuthPlugin)
 		.get(
 			'/',
