@@ -6,7 +6,7 @@
 		"module": "Preserve",
 		"moduleDetection": "force",
 		"jsx": "react-jsx",
-		"allowJs": true,
+		"allowJs": false,
 		"baseUrl": "./src",
 		"paths": {
 			"@PrismaGenerated/*": [
@@ -52,5 +52,12 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false
-	}
+	},
+	"include": ["src/**/*.ts", "prisma.config.ts", "eslint.config.ts"],
+	"exclude": [
+		"node_modules",
+		"architecture-analysis",
+		"generator",
+		"src/**/generated/**"
+	]
 }

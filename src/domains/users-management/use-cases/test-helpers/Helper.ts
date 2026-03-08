@@ -137,6 +137,14 @@ export function makeUsersManagementScenario() {
 			);
 		},
 
+		executeCheckEmailAvailability(email: string = 'john@olapoesia.dev') {
+			return sutFactory.checkEmailAvailability(email);
+		},
+
+		executeCheckNicknameAvailability(nickname: string = 'john_doe') {
+			return sutFactory.checkNicknameAvailability(nickname);
+		},
+
 		executeGetUsers(params: GetUsersParamsOverride = {}) {
 			return sutFactory.getUsers({
 				requesterStatus: params.requesterStatus ?? DEFAULT_REQUESTER_STATUS,

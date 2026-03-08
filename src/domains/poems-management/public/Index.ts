@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { PoemsFeedContract } from '@Domains/feed-engine/ports/ExternalServices';
 import type { PoemSelect, PoemWhereInput } from '@PrismaGenerated/models';
 import type {
 	PoemModerationStatus,
@@ -37,6 +36,21 @@ export type FeedPoem = {
 
 export interface PoemsPublicContract {
 	selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo>;
+}
+
+interface PoemsFeedContract {
+	getFeedPoemsByAuthorIds(params: {
+		authorIds: number[];
+		limit: number;
+		cursor?: Date;
+	}): Promise<FeedPoem[]>;
+
+	getPublicFeedPoems(params: {
+		limit: number;
+		excludeAuthorIds?: number[];
+		excludePoemIds?: number[];
+		cursor?: Date;
+	}): Promise<FeedPoem[]>;
 }
 
 function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {

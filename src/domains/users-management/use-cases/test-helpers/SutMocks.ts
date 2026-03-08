@@ -8,6 +8,8 @@ import type { QueriesRepository } from '../../ports/Queries';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { createUserFactory } from '../commands/create/execute';
 import { updateUserFactory } from '../commands/update/execute';
+import { checkEmailAvailabilityFactory } from '../queries/check-email/execute';
+import { checkNicknameAvailabilityFactory } from '../queries/check-nickname/execute';
 import { getProfileFactory } from '../queries/get-profile/execute';
 import { getUsersFactory } from '../queries/search-users/execute';
 
@@ -48,6 +50,8 @@ export function usersManagementFactory(deps: UsersManagementDeps) {
 	return {
 		createUser: createUserFactory(deps),
 		updateUser: updateUserFactory(deps),
+		checkEmailAvailability: checkEmailAvailabilityFactory(deps),
+		checkNicknameAvailability: checkNicknameAvailabilityFactory(deps),
 		getProfile: getProfileFactory(deps),
 		getUsers: getUsersFactory(deps),
 	};
