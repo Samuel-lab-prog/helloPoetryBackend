@@ -113,6 +113,7 @@ export function selectPoems(params: {
 			cursor: navigationOptions.cursor
 				? { id: navigationOptions.cursor }
 				: undefined,
+			skip: navigationOptions.cursor ? 1 : 0,
 			take: limit + 1,
 		});
 

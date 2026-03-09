@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { idSchema, UserPreviewSchema } from '@SharedKernel/Schemas';
+import { DateSchema, idSchema, UserPreviewSchema } from '@SharedKernel/Schemas';
 import {
 	PoemSlugSchema,
 	PoemTagsReadSchema,
@@ -10,6 +10,7 @@ export const PoemPreviewReadSchema = t.Object({
 	id: idSchema,
 	title: PoemTitleSchema,
 	slug: PoemSlugSchema,
+	createdAt: DateSchema,
 	tags: PoemTagsReadSchema,
 	author: UserPreviewSchema,
 });

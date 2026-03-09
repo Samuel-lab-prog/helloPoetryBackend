@@ -69,7 +69,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user1.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(me.stats.friendsIds).not.toContain(user2.id);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user2.id);
 		expect(me.blockedUsersIds).toContain(user2.id);
 	});
 
@@ -102,7 +102,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user1.cookie,
 			user1.id,
 		)) as unknown as UserPrivateProfile;
-		expect(me.stats.friendsIds).not.toContain(user2.id);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user2.id);
 	});
 
 	it('Blocked user appears in blocked list', async () => {

@@ -13,9 +13,7 @@ export const privateProfileSelect = {
 	email: true,
 	emailVerifiedAt: true,
 
-	poems: { select: { id: true } },
-	comments: { select: { id: true } },
-
+	poems: { select: { id: true, title: true } },
 	friendshipsFrom: {
 		select: { userBId: true },
 	},
@@ -24,31 +22,7 @@ export const privateProfileSelect = {
 		select: { userAId: true },
 	},
 
-	friendshipRequests: {
-		select: {
-			addresseeId: true,
-			addressee: {
-				select: {
-					nickname: true,
-					avatarUrl: true,
-				},
-			},
-		},
-	},
-
 	blockedUsers: { select: { blockedId: true } },
-
-	friendshipAddressees: {
-		select: {
-			requesterId: true,
-			requester: {
-				select: {
-					nickname: true,
-					avatarUrl: true,
-				},
-			},
-		},
-	},
 } as const satisfies UserSelect;
 
 type PrivateProfileRaw = Prisma.UserGetPayload<{
@@ -58,27 +32,24 @@ type PrivateProfileRaw = Prisma.UserGetPayload<{
 export function fromRawToPrivateProfile(
 	raw: PrivateProfileRaw,
 ): UserPrivateProfile {
-	const friendIds = [
-		...raw.friendshipsFrom.map((f) => f.userBId),
-		...raw.friendshipsTo.map((f) => f.userAId),
-	];
+	const friendsSet = new Set<number>();
+
+	for (const friendship of raw.friendshipsFrom) {
+		friendsSet.add(friendship.userBId);
+	}
+
+	for (const friendship of raw.friendshipsTo) {
+		friendsSet.add(friendship.userAId);
+	}
+
+	const friends = Array.from(friendsSet.values()).map((id) => ({ id }));
 	const stats = {
-		poemsIds: raw.poems.map((p) => p.id),
-		commentsIds: raw.comments.map((c) => c.id),
-		friendsIds: friendIds,
+		poems: raw.poems.map((poem) => ({
+			id: poem.id,
+			title: poem.title,
+		})),
+		friends,
 	};
-
-	const friendshipRequestsSent = raw.friendshipRequests.map((r) => ({
-		addresseeId: r.addresseeId,
-		addresseeNickname: r.addressee.nickname,
-		addresseeAvatarUrl: r.addressee.avatarUrl,
-	}));
-
-	const friendshipRequestsReceived = raw.friendshipAddressees.map((r) => ({
-		requesterId: r.requesterId,
-		requesterNickname: r.requester.nickname,
-		requesterAvatarUrl: r.requester.avatarUrl,
-	}));
 
 	const blockedUserIds = raw.blockedUsers.map((b) => b.blockedId);
 
@@ -93,8 +64,6 @@ export function fromRawToPrivateProfile(
 		email: raw.email,
 		emailVerifiedAt: raw.emailVerifiedAt,
 		stats,
-		friendshipRequestsSent,
-		friendshipRequestsReceived,
 		blockedUsersIds: blockedUserIds,
 	};
 }

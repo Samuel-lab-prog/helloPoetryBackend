@@ -52,12 +52,16 @@ export const DEFAULT_PRIVATE_PROFILE: UserPrivateProfile = {
 	email: DEFAULT_CREATE_USER_DATA.email,
 	emailVerifiedAt: null,
 	stats: {
-		poemsIds: [11, 12],
-		commentsIds: [21],
-		friendsIds: [31],
+		poems: [
+			{ id: 11, title: 'Poem 11' },
+			{ id: 12, title: 'Poem 12' },
+		],
+		friends: [
+			{
+				id: 31,
+			},
+		],
 	},
-	friendshipRequestsSent: [],
-	friendshipRequestsReceived: [],
 	blockedUsersIds: [],
 };
 

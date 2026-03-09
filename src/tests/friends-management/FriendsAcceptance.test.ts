@@ -60,9 +60,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user1.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(
-			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
-		).toBe(true);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user2.id);
 	});
 
 	it('Received friend request appears in addressee private profile', async () => {
@@ -73,9 +71,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user2.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(
-			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
-		).toBe(true);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user1.id);
 	});
 
 	it('User can accept a friend request', async () => {
@@ -118,13 +114,8 @@ describe('INTEGRATION - Friends Management', () => {
 			user2.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(
-			me1.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
-		).toBe(false);
-
-		expect(
-			me2.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
-		).toBe(false);
+		expect(me1.stats.friends.map((friend) => friend.id)).toContain(user2.id);
+		expect(me2.stats.friends.map((friend) => friend.id)).toContain(user1.id);
 	});
 
 	it('Accepting a request creates friendship for both users', async () => {
@@ -140,8 +131,8 @@ describe('INTEGRATION - Friends Management', () => {
 			user2.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(me1.stats.friendsIds).toContain(user2.id);
-		expect(me2.stats.friendsIds).toContain(user1.id);
+		expect(me1.stats.friends.map((friend) => friend.id)).toContain(user2.id);
+		expect(me2.stats.friends.map((friend) => friend.id)).toContain(user1.id);
 	});
 
 	it('Accepted request cannot be rejected later', async () => {

@@ -21,25 +21,17 @@ export const UserPrivateProfileSchema = t.Object({
 	emailVerifiedAt: t.Nullable(DateSchema),
 
 	stats: t.Object({
-		poemsIds: t.Array(idSchema),
-		commentsIds: t.Array(idSchema),
-		friendsIds: t.Array(idSchema),
+		poems: t.Array(
+			t.Object({
+				id: idSchema,
+				title: t.String(),
+			}),
+		),
+		friends: t.Array(
+			t.Object({
+				id: idSchema,
+			}),
+		),
 	}),
-
-	friendshipRequestsSent: t.Array(
-		t.Object({
-			addresseeId: idSchema,
-			addresseeNickname: NicknameSchema,
-			addresseeAvatarUrl: t.Nullable(AvatarUrlSchema),
-		}),
-	),
-
-	friendshipRequestsReceived: t.Array(
-		t.Object({
-			requesterId: idSchema,
-			requesterNickname: NicknameSchema,
-			requesterAvatarUrl: t.Nullable(AvatarUrlSchema),
-		}),
-	),
 	blockedUsersIds: t.Array(idSchema),
 });

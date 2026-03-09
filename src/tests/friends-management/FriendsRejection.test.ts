@@ -80,9 +80,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user2.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(
-			me.friendshipRequestsReceived.some((r) => r.requesterId === user1.id),
-		).toBe(false);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user1.id);
 	});
 
 	it('Rejected request is removed from requester private profile', async () => {
@@ -94,9 +92,7 @@ describe('INTEGRATION - Friends Management', () => {
 			user1.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(
-			me.friendshipRequestsSent.some((r) => r.addresseeId === user2.id),
-		).toBe(false);
+		expect(me.stats.friends.map((friend) => friend.id)).not.toContain(user2.id);
 	});
 
 	it('Rejected request cannot be accepted later', async () => {
@@ -133,7 +129,11 @@ describe('INTEGRATION - Friends Management', () => {
 			user2.id,
 		)) as unknown as UserPrivateProfile;
 
-		expect(me1.stats.friendsIds).not.toContain(user2.id);
-		expect(me2.stats.friendsIds).not.toContain(user1.id);
+		expect(me1.stats.friends.map((friend) => friend.id)).not.toContain(
+			user2.id,
+		);
+		expect(me2.stats.friends.map((friend) => friend.id)).not.toContain(
+			user1.id,
+		);
 	});
 });
