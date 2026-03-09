@@ -58,6 +58,7 @@ export function mapPoemPreview(raw: any) {
 		title: raw.title,
 		slug: raw.slug,
 		createdAt: raw.createdAt,
+		likesCount: raw._count?.poemLikes,
 		tags: (raw.tags ?? []).map((tag: { id: number; name: string }) => ({
 			id: tag.id,
 			name: tag.name,

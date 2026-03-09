@@ -100,6 +100,7 @@ function selectFriendRequestsByUser(
 					addresseeId: true,
 					addressee: {
 						select: {
+							name: true,
 							nickname: true,
 							avatarUrl: true,
 						},
@@ -113,6 +114,7 @@ function selectFriendRequestsByUser(
 					requesterId: true,
 					requester: {
 						select: {
+							name: true,
 							nickname: true,
 							avatarUrl: true,
 						},
@@ -125,11 +127,13 @@ function selectFriendRequestsByUser(
 		return {
 			sent: sent.map((item) => ({
 				addresseeId: item.addresseeId,
+				addresseeName: item.addressee.name,
 				addresseeNickname: item.addressee.nickname,
 				addresseeAvatarUrl: item.addressee.avatarUrl,
 			})),
 			received: received.map((item) => ({
 				requesterId: item.requesterId,
+				requesterName: item.requester.name,
 				requesterNickname: item.requester.nickname,
 				requesterAvatarUrl: item.requester.avatarUrl,
 			})),

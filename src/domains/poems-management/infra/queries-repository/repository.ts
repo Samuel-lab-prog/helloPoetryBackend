@@ -107,9 +107,14 @@ export function selectPoems(params: {
 		const poems = await prisma.poem.findMany({
 			where,
 			select: poemPreviewSelect,
-			orderBy: {
-				[sortOptions.orderBy]: sortOptions.orderDirection,
-			},
+			orderBy: [
+				{
+					[sortOptions.orderBy]: sortOptions.orderDirection,
+				},
+				{
+					id: sortOptions.orderDirection,
+				},
+			],
 			cursor: navigationOptions.cursor
 				? { id: navigationOptions.cursor }
 				: undefined,

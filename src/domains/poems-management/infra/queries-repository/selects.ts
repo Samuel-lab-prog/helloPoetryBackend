@@ -20,6 +20,11 @@ export const poemPreviewSelect = {
 	title: true,
 	slug: true,
 	createdAt: true,
+	_count: {
+		select: {
+			poemLikes: true,
+		},
+	},
 	author: {
 		select: {
 			id: true,
