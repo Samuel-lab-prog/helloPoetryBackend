@@ -6,6 +6,7 @@ import {
 	UnblockUserSchema,
 	CancelFriendRequestSchema,
 	RemovedFriendSchema,
+	FriendRequestsByUserSchema,
 } from '../ports/schemas/Index';
 
 export type FriendshipRecord = (typeof FriendRecordSchema)['static'];
@@ -18,3 +19,5 @@ export type CancelFriendRequestRecord =
 	(typeof CancelFriendRequestSchema)['static'];
 
 export type RemovedFriendRecord = (typeof RemovedFriendSchema)['static'];
+export type FriendRequestsByUser =
+	(typeof FriendRequestsByUserSchema)['static'];

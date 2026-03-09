@@ -51,11 +51,13 @@ export const DEFAULT_PRIVATE_PROFILE: UserPrivateProfile = {
 	status: 'active',
 	email: DEFAULT_CREATE_USER_DATA.email,
 	emailVerifiedAt: null,
+	unreadNotificationsCount: 0,
 	stats: {
 		poems: [
 			{ id: 11, title: 'Poem 11' },
 			{ id: 12, title: 'Poem 12' },
 		],
+		commentsIds: [21],
 		friends: [
 			{
 				id: 31,

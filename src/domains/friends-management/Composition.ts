@@ -1,5 +1,7 @@
 import { createFriendsCommandsRouter } from './adapters/CommandsRouter';
+import { createFriendsQueriesRouter } from './adapters/QueriesRouter';
 import { type CommandsRouterServices } from './ports/Commands';
+import { type QueriesRouterServices } from './ports/Queries';
 import {
 	cancelFriendRequestFactory,
 	rejectFriendRequestFactory,
@@ -9,6 +11,7 @@ import {
 	deleteFriendFactory,
 	unblockUserFactory,
 } from './use-cases/commands/Index';
+import { getMyFriendRequestsFactory } from './use-cases/queries/Index';
 
 import { commandsRepository } from './infra/commands-repository/Repository';
 import { queriesRepository } from './infra/queries-repository/Repository';
@@ -50,5 +53,12 @@ const commandsServices: CommandsRouterServices = {
 	}),
 };
 
+const queriesServices: QueriesRouterServices = {
+	getMyFriendRequests: getMyFriendRequestsFactory({
+		queriesRepository,
+	}),
+};
+
 export const friendsCommandsRouter =
 	createFriendsCommandsRouter(commandsServices);
+export const friendsQueriesRouter = createFriendsQueriesRouter(queriesServices);

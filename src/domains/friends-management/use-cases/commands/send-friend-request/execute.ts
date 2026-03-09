@@ -32,7 +32,10 @@ export function sendFriendRequestFactory({
 				'Users cannot send friend requests to themselves',
 			);
 
-		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
+		const [requesterInfo, addresseeInfo] = await Promise.all([
+			usersContract.selectUserBasicInfo(requesterId),
+			usersContract.selectUserBasicInfo(addresseeId),
+		]);
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,
@@ -101,7 +104,7 @@ export function sendFriendRequestFactory({
 		eventBus.publish('NEW_FRIEND_REQUEST', {
 			requesterId,
 			recipientId: addresseeId,
-			requesterNickname: addresseeInfo.nickname,
+			requesterNickname: requesterInfo.nickname,
 		});
 		return result.data;
 	};

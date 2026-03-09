@@ -12,8 +12,13 @@ export const privateProfileSelect = {
 	status: true,
 	email: true,
 	emailVerifiedAt: true,
+	notifications: {
+		where: { readAt: null },
+		select: { id: true },
+	},
 
 	poems: { select: { id: true, title: true } },
+	comments: { select: { id: true } },
 	friendshipsFrom: {
 		select: { userBId: true },
 	},
@@ -48,6 +53,7 @@ export function fromRawToPrivateProfile(
 			id: poem.id,
 			title: poem.title,
 		})),
+		commentsIds: raw.comments.map((comment) => comment.id),
 		friends,
 	};
 
@@ -63,6 +69,7 @@ export function fromRawToPrivateProfile(
 		status: raw.status,
 		email: raw.email,
 		emailVerifiedAt: raw.emailVerifiedAt,
+		unreadNotificationsCount: raw.notifications.length,
 		stats,
 		blockedUsersIds: blockedUserIds,
 	};

@@ -19,6 +19,7 @@ export const UserPrivateProfileSchema = t.Object({
 	status: UserStatusEnumSchema,
 	email: EmailSchema,
 	emailVerifiedAt: t.Nullable(DateSchema),
+	unreadNotificationsCount: t.Number(),
 
 	stats: t.Object({
 		poems: t.Array(
@@ -27,6 +28,7 @@ export const UserPrivateProfileSchema = t.Object({
 				title: t.String(),
 			}),
 		),
+		commentsIds: t.Array(idSchema),
 		friends: t.Array(
 			t.Object({
 				id: idSchema,

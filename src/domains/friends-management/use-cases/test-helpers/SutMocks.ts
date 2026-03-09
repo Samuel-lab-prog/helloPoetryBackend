@@ -39,6 +39,7 @@ export function friendsManagementMockFactories(): FriendsManagementSutMocks {
 			findFriendshipBetweenUsers: mock(),
 			findFriendRequest: mock(),
 			findBlockedRelationship: mock(),
+			selectFriendRequestsByUser: mock(),
 		}),
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),

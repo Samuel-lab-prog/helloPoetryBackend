@@ -23,7 +23,10 @@ import {
 	poemsCommandsRouter,
 	poemsQueriesRouter,
 } from '@Domains/poems-management/Composition';
-import { friendsCommandsRouter } from '@Domains/friends-management/Composition';
+import {
+	friendsCommandsRouter,
+	friendsQueriesRouter,
+} from '@Domains/friends-management/Composition';
 import {
 	interactionsCommandsRouter,
 	interactionsQueriesRouter,
@@ -96,6 +99,7 @@ function makeServer({
 		.use(poemsCommandsRouter)
 		.use(poemsQueriesRouter)
 		.use(friendsCommandsRouter)
+		.use(friendsQueriesRouter)
 		.use(interactionsCommandsRouter)
 		.use(interactionsQueriesRouter)
 		.use(moderationCommandsRouter)

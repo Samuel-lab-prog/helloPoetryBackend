@@ -2,7 +2,14 @@ import type {
 	FriendRequestRecord,
 	BlockedUserRecord,
 	FriendshipRecord,
+	FriendRequestsByUser,
 } from '../use-cases/Models';
+
+export interface QueriesRouterServices {
+	getMyFriendRequests(params: {
+		requesterId: number;
+	}): Promise<FriendRequestsByUser>;
+}
 
 export interface QueriesRepository {
 	findFriendshipBetweenUsers(params: {
@@ -17,4 +24,5 @@ export interface QueriesRepository {
 		userId1: number;
 		userId2: number;
 	}): Promise<BlockedUserRecord | null>;
+	selectFriendRequestsByUser(userId: number): Promise<FriendRequestsByUser>;
 }

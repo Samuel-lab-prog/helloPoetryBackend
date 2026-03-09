@@ -5,6 +5,7 @@ import type {
 	FriendshipRecord,
 	FriendRequestRecord,
 	BlockedUserRecord,
+	FriendRequestsByUser,
 } from '../../use-cases/Models';
 
 function normalizePair(a: number, b: number): [number, number] {
@@ -85,4 +86,53 @@ export const queriesRepository: QueriesRepository = {
 	findFriendshipBetweenUsers,
 	findFriendRequest,
 	findBlockedRelationship,
+	selectFriendRequestsByUser,
 };
+
+function selectFriendRequestsByUser(
+	userId: number,
+): Promise<FriendRequestsByUser> {
+	return withPrismaErrorHandling(async () => {
+		const [sent, received] = await Promise.all([
+			prisma.friendshipRequest.findMany({
+				where: { requesterId: userId },
+				select: {
+					addresseeId: true,
+					addressee: {
+						select: {
+							nickname: true,
+							avatarUrl: true,
+						},
+					},
+				},
+				orderBy: { createdAt: 'desc' },
+			}),
+			prisma.friendshipRequest.findMany({
+				where: { addresseeId: userId },
+				select: {
+					requesterId: true,
+					requester: {
+						select: {
+							nickname: true,
+							avatarUrl: true,
+						},
+					},
+				},
+				orderBy: { createdAt: 'desc' },
+			}),
+		]);
+
+		return {
+			sent: sent.map((item) => ({
+				addresseeId: item.addresseeId,
+				addresseeNickname: item.addressee.nickname,
+				addresseeAvatarUrl: item.addressee.avatarUrl,
+			})),
+			received: received.map((item) => ({
+				requesterId: item.requesterId,
+				requesterNickname: item.requester.nickname,
+				requesterAvatarUrl: item.requester.avatarUrl,
+			})),
+		};
+	});
+}

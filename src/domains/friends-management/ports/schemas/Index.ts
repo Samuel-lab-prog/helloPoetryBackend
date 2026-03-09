@@ -7,5 +7,6 @@ export * from './CancelFriendRequestSchema';
 export * from './FriendRecordSchema';
 export * from './FriendRequestRejectionSchema';
 export * from './FriendRequestSchema';
+export * from './FriendRequestsByUserSchema';
 export * from './RemovedFriendSchema';
 export * from './UnblockUserSchema';
