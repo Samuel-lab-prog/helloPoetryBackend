@@ -9,6 +9,7 @@ import {
 	DEFAULT_FULL_USER,
 	DEFAULT_HASHED_PASSWORD,
 	DEFAULT_PRIVATE_PROFILE,
+	DEFAULT_PUBLIC_PROFILE,
 	DEFAULT_USERS_PAGE,
 } from './Constants';
 import { givenResolved } from '@GenericSubdomains/utils/TestUtils';

@@ -6,6 +6,7 @@ import {
 	printDomainCodeStats,
 	printMainSeqDist,
 	printDomainStatistics,
+	printEndpointAndUseCaseTotals,
 	printTopFanIn,
 	printHotspotModules,
 	printTopFanOut,
@@ -29,6 +30,7 @@ function metrics(): void {
 	printChangeAmplification();
 	printMainSeqDist(cloc, depcruise);
 	printDomainCodeStats(cloc);
+	printEndpointAndUseCaseTotals(cloc);
 
 	printNoCrossDomainCalls(depcruise);
 	printNoInvalidRootNamespaces(depcruise);

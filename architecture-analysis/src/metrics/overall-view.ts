@@ -74,8 +74,27 @@ function classifyTestCoverage(testsPercent: number) {
 	return { label, color: red };
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function printDomainCodeStats(cloc: ClocResult): void {
 	const metrics = calculateDomainCodeStats(cloc);
+	const totals = metrics.reduce(
+		(acc, m) => ({
+			totalFiles: acc.totalFiles + m.totalFiles,
+			totalLOC: acc.totalLOC + m.totalLOC,
+			totalComments: acc.totalComments + m.totalComments,
+			totalBlanks: acc.totalBlanks + m.totalBlanks,
+			testLOC: acc.testLOC + m.testLOC,
+		}),
+		{
+			totalFiles: 0,
+			totalLOC: 0,
+			totalComments: 0,
+			totalBlanks: 0,
+			testLOC: 0,
+		},
+	);
+	const totalPercent =
+		totals.totalLOC === 0 ? 0 : (totals.testLOC / totals.totalLOC) * 100;
 
 	const columns: TableColumn<DomainCodeStats>[] = [
 		{
@@ -138,9 +157,17 @@ export function printDomainCodeStats(cloc: ClocResult): void {
 		},
 	];
 	const sortedMetrics = metrics.sort((a, b) => b.testPercent - a.testPercent);
-	printTable(
-		'Domain Code Metrics (by lines of test code)',
-		columns,
-		sortedMetrics,
-	);
+	const totalRow: DomainCodeStats = {
+		domain: 'TOTAL',
+		totalFiles: totals.totalFiles,
+		totalLOC: totals.totalLOC,
+		totalComments: totals.totalComments,
+		totalBlanks: totals.totalBlanks,
+		testLOC: totals.testLOC,
+		testPercent: totalPercent,
+	};
+	printTable('Domain Code Metrics (by lines of test code)', columns, [
+		...sortedMetrics,
+		totalRow,
+	]);
 }

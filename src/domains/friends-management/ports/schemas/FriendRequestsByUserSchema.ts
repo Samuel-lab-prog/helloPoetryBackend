@@ -1,10 +1,10 @@
 import { t } from 'elysia';
-import { idSchema } from '@SharedKernel/Schemas';
 import {
 	AvatarUrlSchema,
+	idSchema,
 	NameSchema,
 	NicknameSchema,
-} from '@Domains/users-management/ports/schemas/UserFieldsSchemas';
+} from '@SharedKernel/Schemas';
 
 export const FriendRequestsByUserSchema = t.Object({
 	sent: t.Array(

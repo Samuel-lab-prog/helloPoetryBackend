@@ -1,0 +1,58 @@
+import { describe, it, expect, beforeEach, mock } from 'bun:test';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+import { requestAvatarUploadUrlFactory } from './execute';
+
+describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
+	let storageService: any;
+	let requestAvatarUploadUrl: any;
+
+	beforeEach(() => {
+		storageService = {
+			validateImageContentType: mock(),
+			generateAvatarUploadUrl: mock(),
+		};
+
+		requestAvatarUploadUrl = requestAvatarUploadUrlFactory({
+			storageService,
+		});
+	});
+
+	it('should require content type', async () => {
+		await expectError(
+			requestAvatarUploadUrl({ requesterId: 1, contentType: '' }),
+			UnprocessableEntityError,
+		);
+	});
+
+	it('should reject invalid content type', async () => {
+		storageService.validateImageContentType.mockReturnValue(false);
+
+		await expectError(
+			requestAvatarUploadUrl({ requesterId: 1, contentType: 'text/plain' }),
+			UnprocessableEntityError,
+		);
+	});
+
+	it('should request an upload url for valid content type', async () => {
+		storageService.validateImageContentType.mockReturnValue(true);
+		storageService.generateAvatarUploadUrl.mockResolvedValue({
+			uploadUrl: 'https://uploads.example.com/avatar',
+			fileUrl: 'https://cdn.example.com/avatar.png',
+		});
+
+		const result = await requestAvatarUploadUrl({
+			requesterId: 7,
+			contentType: 'image/png',
+		});
+
+		expect(result).toEqual({
+			uploadUrl: 'https://uploads.example.com/avatar',
+			fileUrl: 'https://cdn.example.com/avatar.png',
+		});
+		expect(storageService.generateAvatarUploadUrl).toHaveBeenCalledWith(
+			'7',
+			'image/png',
+		);
+	});
+});

@@ -22,7 +22,9 @@ const contentTypeToExtension: Record<string, string> = {
 
 const region = process.env.AWS_REGION ?? 'us-east-1';
 const bucketName = process.env.S3_BUCKET_NAME ?? 'hellopoetry1392781';
-const signedUrlExpiresInSeconds = Number(process.env.S3_SIGNED_URL_EXPIRES_IN ?? 300);
+const signedUrlExpiresInSeconds = Number(
+	process.env.S3_SIGNED_URL_EXPIRES_IN ?? 300,
+);
 const defaultPublicBaseUrl =
 	process.env.S3_PUBLIC_BASE_URL ?? `https://${bucketName}.s3.amazonaws.com`;
 
@@ -47,12 +49,10 @@ export const storageService: StorageService = {
 		return allowedImageTypes.has(contentType.toLowerCase());
 	},
 	async generateAvatarUploadUrl(userId: string, contentType?: string) {
-		if (!bucketName) 
+		if (!bucketName)
 			throw new InternalServerError('S3 bucket name is not configured');
-	
-		if (!region) 
-			throw new InternalServerError('AWS region is not configured');
-		
+
+		if (!region) throw new InternalServerError('AWS region is not configured');
 
 		const id = crypto.randomUUID();
 		const resolvedContentType = contentType?.toLowerCase();

@@ -1,5 +1,9 @@
+/* eslint-disable require-await */
 import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
-import type { StorageService, AvatarUploadUrlResult } from '@SharedKernel/ports/Storage';
+import type {
+	StorageService,
+	AvatarUploadUrlResult,
+} from '@SharedKernel/ports/Storage';
 
 export type RequestAvatarUploadUrlParams = {
 	requesterId: number;
@@ -10,7 +14,9 @@ interface Dependencies {
 	storageService: StorageService;
 }
 
-export function requestAvatarUploadUrlFactory({ storageService }: Dependencies) {
+export function requestAvatarUploadUrlFactory({
+	storageService,
+}: Dependencies) {
 	return async function requestAvatarUploadUrl(
 		params: RequestAvatarUploadUrlParams,
 	): Promise<AvatarUploadUrlResult> {
@@ -24,6 +30,9 @@ export function requestAvatarUploadUrlFactory({ storageService }: Dependencies) 
 			throw new UnprocessableEntityError('Invalid image content type');
 		}
 
-		return storageService.generateAvatarUploadUrl(String(requesterId), contentType);
+		return storageService.generateAvatarUploadUrl(
+			String(requesterId),
+			contentType,
+		);
 	};
 }
