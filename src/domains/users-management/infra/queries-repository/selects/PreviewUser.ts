@@ -3,6 +3,7 @@ import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/internal/prismaNamespaceBrowser';
 export const previewUserSelect = {
 	id: true,
+	name: true,
 	nickname: true,
 	avatarUrl: true,
 	role: true,
@@ -17,6 +18,7 @@ export function fromRawToPreviewUser(
 ): UsersPage['users'][number] {
 	return {
 		id: raw.id,
+		name: raw.name,
 		nickname: raw.nickname,
 		avatarUrl: raw.avatarUrl,
 		role: raw.role,

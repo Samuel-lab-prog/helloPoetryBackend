@@ -23,6 +23,7 @@ export const poemPreviewSelect = {
 	_count: {
 		select: {
 			poemLikes: true,
+			comments: true,
 		},
 	},
 	author: {

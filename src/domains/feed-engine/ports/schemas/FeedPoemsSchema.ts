@@ -1,4 +1,4 @@
-import { idSchema } from '@SharedKernel/Schemas';
+import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
 import { t } from 'elysia';
 
 export const FeedPoemSchema = t.Object({
@@ -8,6 +8,8 @@ export const FeedPoemSchema = t.Object({
 	slug: t.String(),
 	tags: t.Array(t.String()),
 	createdAt: t.Date(),
+	likesCount: NonNegativeIntegerSchema,
+	commentsCount: NonNegativeIntegerSchema,
 	author: t.Object({
 		id: idSchema,
 		name: t.String(),

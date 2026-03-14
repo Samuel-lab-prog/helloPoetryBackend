@@ -26,6 +26,8 @@ export type FeedPoem = {
 	slug: string;
 	tags: string[];
 	createdAt: Date;
+	likesCount: number;
+	commentsCount: number;
 	author: {
 		id: number;
 		name: string;
@@ -103,6 +105,12 @@ const feedSelect: PoemSelect = {
 	title: true,
 	slug: true,
 	createdAt: true,
+	_count: {
+		select: {
+			poemLikes: true,
+			comments: true,
+		},
+	},
 	author: {
 		select: {
 			id: true,
@@ -126,6 +134,8 @@ function mapToFeedPoem(poem: any): FeedPoem {
 		slug: poem.slug,
 		tags: poem.tags.map((t: any) => t.name),
 		createdAt: poem.createdAt,
+		likesCount: poem._count?.poemLikes ?? 0,
+		commentsCount: poem._count?.comments ?? 0,
 		author: {
 			id: poem.author.id,
 			name: poem.author.name,

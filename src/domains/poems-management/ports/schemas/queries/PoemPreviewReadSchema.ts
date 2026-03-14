@@ -17,6 +17,7 @@ export const PoemPreviewReadSchema = t.Object({
 	slug: PoemSlugSchema,
 	createdAt: DateSchema,
 	likesCount: t.Optional(NonNegativeIntegerSchema),
+	commentsCount: t.Optional(NonNegativeIntegerSchema),
 	tags: PoemTagsReadSchema,
 	author: UserPreviewSchema,
 });
