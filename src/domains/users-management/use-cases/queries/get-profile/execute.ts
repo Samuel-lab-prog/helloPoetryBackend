@@ -7,12 +7,17 @@ import type {
 	GetProfileParams,
 } from '../../../ports/Queries';
 import type { UserPrivateProfile, UserPublicProfile } from '../../Models';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
+	friendsContract: FriendsPublicContract;
 }
 
-export function getProfileFactory({ queriesRepository }: Dependencies) {
+export function getProfileFactory({
+	queriesRepository,
+	friendsContract,
+}: Dependencies) {
 	return async function getProfile(
 		params: GetProfileParams,
 	): Promise<UserPrivateProfile | UserPublicProfile> {
@@ -30,6 +35,17 @@ export function getProfileFactory({ queriesRepository }: Dependencies) {
 		});
 
 		if (!profile) throw new NotFoundError('Profile not found');
-		return profile;
+		if (!('isFriend' in profile)) return profile;
+
+		const relation = await friendsContract.selectRelation(requesterId, id);
+
+		return {
+			...profile,
+			isFriend: relation.friends,
+			hasBlockedRequester: relation.blockedBy !== null,
+			isBlockedByRequester: relation.blockedId !== null,
+			isFriendRequester: relation.requestSentByUserId === requesterId,
+			hasIncomingFriendRequest: relation.requestSentByUserId === id,
+		};
 	};
 }

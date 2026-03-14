@@ -25,6 +25,7 @@ import {
 	type NotificationOverride,
 	givenUserNotifications,
 	givenAllNotificationsMarkedAsRead,
+	givenAllNotificationsDeleted,
 } from './Givens';
 
 import {
@@ -86,6 +87,10 @@ export function makeNotificationsScenario() {
 
 		withAllNotificationsMarkedAsRead() {
 			givenAllNotificationsMarkedAsRead(mocks.commandsRepository);
+			return this;
+		},
+		withAllNotificationsDeleted() {
+			givenAllNotificationsDeleted(mocks.commandsRepository);
 			return this;
 		},
 
@@ -155,6 +160,11 @@ export function makeNotificationsScenario() {
 
 		markAllAsRead(params: Partial<{ userId: number }> = {}) {
 			return sut.markAllAsRead(makeParams({ userId: DEFAULT_USER_ID }, params));
+		},
+		deleteAllNotifications(params: Partial<{ userId: number }> = {}) {
+			return sut.deleteAllNotifications(
+				makeParams({ userId: DEFAULT_USER_ID }, params),
+			);
 		},
 		getNotificationById(params: Partial<GetNotificationByIdParams> = {}) {
 			return sut.getNotificationById(

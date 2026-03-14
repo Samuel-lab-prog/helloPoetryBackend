@@ -84,6 +84,7 @@ export const DEFAULT_PUBLIC_PROFILE: UserPublicProfile = {
 	hasBlockedRequester: false,
 	isBlockedByRequester: false,
 	isFriendRequester: false,
+	hasIncomingFriendRequest: false,
 };
 
 export const DEFAULT_USERS_PAGE: UsersPage = {

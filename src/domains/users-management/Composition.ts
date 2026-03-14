@@ -15,6 +15,7 @@ import {
 import type { UsersQueriesRouterServices } from './ports/Queries';
 import { queriesRepository } from './infra/queries-repository/Repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
+import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 
 const commandsServices: UsersCommandsServices = {
 	createUser: createUserFactory({
@@ -39,6 +40,7 @@ const commandsServicesWithFakeHash: UsersCommandsServices = {
 const queriesServices: UsersQueriesRouterServices = {
 	getProfile: getProfileFactory({
 		queriesRepository: queriesRepository,
+		friendsContract: friendsPublicContract,
 	}) as UsersQueriesRouterServices['getProfile'],
 	searchUsers: getUsersFactory({
 		queriesRepository: queriesRepository,

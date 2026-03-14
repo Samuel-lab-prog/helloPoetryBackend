@@ -6,6 +6,7 @@ import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
+import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import { createUserFactory } from '../commands/create/execute';
 import { updateUserFactory } from '../commands/update/execute';
 import { checkEmailAvailabilityFactory } from '../queries/check-email/execute';
@@ -17,6 +18,7 @@ export type UsersManagementSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
 	hashServices: MockedContract<HashServices>;
+	friendsContract: MockedContract<FriendsPublicContract>;
 };
 
 export function usersManagementMockFactories() {
@@ -40,6 +42,14 @@ export function usersManagementMockFactories() {
 		hashServices: createMockedContract<HashServices>({
 			hash: mock(),
 			compare: mock(),
+		}),
+		friendsContract: createMockedContract<FriendsPublicContract>({
+			selectUsersRelation: mock(),
+			selectRelation: mock(),
+			selectFollowedUserIds: mock(),
+			selectBlockedUserIds: mock(),
+			areFriends: mock(),
+			areBlocked: mock(),
 		}),
 	};
 }

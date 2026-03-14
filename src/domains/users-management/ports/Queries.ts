@@ -15,6 +15,8 @@ export type GetUsersParams = {
 	};
 	filterOptions: {
 		searchNickname?: string;
+		role?: UserRole;
+		status?: UserStatus;
 	};
 	sortOptions: {
 		by: OrderBy;
@@ -58,7 +60,11 @@ export type SelectUsersParams = {
 };
 
 type NavigationOptions = { cursor?: number; limit: number };
-type FilterOptions = { searchNickname?: string };
+type FilterOptions = {
+	searchNickname?: string;
+	role?: UserRole;
+	status?: UserStatus;
+};
 type OrderBy = Extract<'createdAt' | 'nickname' | 'id', keyof FullUser>;
 type OrderDirection = 'asc' | 'desc';
 type SortOptions = {

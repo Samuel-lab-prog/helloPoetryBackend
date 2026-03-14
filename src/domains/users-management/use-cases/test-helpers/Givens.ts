@@ -99,10 +99,38 @@ export function givenUpdateUserFailure(
 
 export function givenProfile(
 	queriesRepository: UsersManagementSutMocks['queriesRepository'],
-	overrides: PrivateProfileOverride = {},
+	overrides: PrivateProfileOverride | PublicProfileOverride = {},
 ) {
 	givenResolved(queriesRepository, 'selectProfile', {
 		...DEFAULT_PRIVATE_PROFILE,
+		...overrides,
+	});
+}
+
+export function givenPublicProfile(
+	queriesRepository: UsersManagementSutMocks['queriesRepository'],
+	overrides: PublicProfileOverride = {},
+) {
+	givenResolved(queriesRepository, 'selectProfile', {
+		...DEFAULT_PUBLIC_PROFILE,
+		...overrides,
+	});
+}
+
+export function givenRelation(
+	friendsContract: UsersManagementSutMocks['friendsContract'],
+	overrides: Partial<{
+		friends: boolean;
+		blockedId: number | null;
+		blockedBy: number | null;
+		requestSentByUserId: number | null;
+	}> = {},
+) {
+	givenResolved(friendsContract, 'selectRelation', {
+		friends: false,
+		blockedId: null,
+		blockedBy: null,
+		requestSentByUserId: null,
 		...overrides,
 	});
 }

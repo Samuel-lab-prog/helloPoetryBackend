@@ -10,6 +10,25 @@ export function createNotificationsCommandsRouter(
 ) {
 	return new Elysia({ prefix: '/notifications' })
 		.use(AuthPlugin)
+		.delete(
+			'/all',
+			({ auth }) => {
+				return services.deleteAllNotifications({
+					userId: auth.clientId,
+				});
+			},
+			{
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+				},
+				detail: {
+					summary: 'Delete All Notifications',
+					description: 'Deletes all notifications for the authenticated user.',
+					tags: ['Notifications'],
+				},
+			},
+		)
 		.patch(
 			'/:id/read',
 			({ params, auth }) => {

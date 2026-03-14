@@ -28,4 +28,5 @@ export const UserPublicProfileSchema = t.Object({
 	hasBlockedRequester: t.Boolean(),
 	isBlockedByRequester: t.Boolean(),
 	isFriendRequester: t.Boolean(),
+	hasIncomingFriendRequest: t.Boolean(),
 });

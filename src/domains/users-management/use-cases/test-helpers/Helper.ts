@@ -7,6 +7,8 @@ import {
 	givenHashedPassword,
 	givenProfile,
 	givenProfileNotFound,
+	givenPublicProfile,
+	givenRelation,
 	givenUpdateUserConflict,
 	givenUpdateUserFailure,
 	givenUserCreated,
@@ -14,6 +16,7 @@ import {
 	givenUsersPage,
 	type FullUserOverride,
 	type PrivateProfileOverride,
+	type PublicProfileOverride,
 	type UsersPageOverride,
 } from './Givens';
 import {
@@ -87,6 +90,16 @@ export function makeUsersManagementScenario() {
 
 		withProfile(overrides: PrivateProfileOverride = {}) {
 			givenProfile(mocks.queriesRepository, overrides);
+			return this;
+		},
+
+		withPublicProfile(overrides: PublicProfileOverride = {}) {
+			givenPublicProfile(mocks.queriesRepository, overrides);
+			return this;
+		},
+
+		withRelation(overrides: Parameters<typeof givenRelation>[1] = {}) {
+			givenRelation(mocks.friendsContract, overrides);
 			return this;
 		},
 

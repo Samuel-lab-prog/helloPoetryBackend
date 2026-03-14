@@ -16,6 +16,7 @@ export type NotificationsSutMocks = {
 import {
 	createNotificationFactory,
 	deleteNotificationFactory,
+	deleteAllNotificationsFactory,
 	markNotificationAsReadFactory,
 } from '../commands/Index';
 
@@ -35,6 +36,7 @@ export function notificationsMockFactory() {
 			insertNotification: mock(),
 			markNotificationAsRead: mock(),
 			deleteNotification: mock(),
+			deleteAllNotifications: mock(),
 			markAllAsRead: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
@@ -50,6 +52,7 @@ export function notificationsFactory(deps: Deps) {
 	return {
 		createNotification: createNotificationFactory(deps),
 		deleteNotification: deleteNotificationFactory(deps),
+		deleteAllNotifications: deleteAllNotificationsFactory(deps),
 		markNotificationAsRead: markNotificationAsReadFactory(deps),
 		getUserNotifications: getUserNotificationsFactory(deps),
 		getNotificationById: getNotificationByIdFactory(deps),

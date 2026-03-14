@@ -67,12 +67,14 @@ function selectUsers(params: SelectUsersParams): Promise<UsersPage> {
 	return withPrismaErrorHandling(async () => {
 		const {
 			navigationOptions: { cursor, limit },
-			filterOptions: { searchNickname },
+			filterOptions: { searchNickname, role, status },
 			sortOptions: { orderBy, orderDirection },
 		} = params;
 
 		const where: UserWhereInput = {
 			deletedAt: null,
+			...(role && { role }),
+			...(status && { status }),
 			...(searchNickname && {
 				nickname: {
 					contains: searchNickname,

@@ -28,6 +28,8 @@ export function getUsersFactory({ queriesRepository }: Dependencies) {
 			},
 			filterOptions: {
 				searchNickname: filterOptions.searchNickname,
+				role: filterOptions.role,
+				status: filterOptions.status,
 			},
 		});
 	};

@@ -202,6 +202,14 @@ export function givenAllNotificationsMarkedAsRead(
 		data: undefined,
 	});
 }
+export function givenAllNotificationsDeleted(
+	commandsRepository: NotificationsSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'deleteAllNotifications', {
+		ok: true,
+		data: undefined,
+	});
+}
 // now failure case
 export function givenMarkAllAsReadFailure(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],

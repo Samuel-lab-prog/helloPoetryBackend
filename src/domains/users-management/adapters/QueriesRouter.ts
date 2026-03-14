@@ -38,6 +38,42 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			},
 		)
 		.get(
+			'/public',
+			({ query }) => {
+				const { limit, searchNickname } = query;
+				return services.searchUsers({
+					requesterStatus: 'active',
+					navigationOptions: {
+						limit,
+						cursor: undefined,
+					},
+					sortOptions: {
+						by: 'nickname',
+						order: 'asc',
+					},
+					filterOptions: {
+						searchNickname,
+						role: 'author',
+						status: 'active',
+					},
+				});
+			},
+			{
+				response: {
+					200: UsersPageSchema,
+				},
+				query: t.Object({
+					limit: paginationLimitSchema,
+					searchNickname: t.Optional(t.String()),
+				}),
+				detail: {
+					summary: 'Get Public Authors',
+					description: 'Returns a public list of active authors.',
+					tags: ['Users Management'],
+				},
+			},
+		)
+		.get(
 			'/check-email',
 			({ query }) => {
 				return services.checkEmailAvailability(query.email);

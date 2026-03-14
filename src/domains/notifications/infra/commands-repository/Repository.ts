@@ -103,6 +103,17 @@ async function deleteNotification(
 	});
 }
 
+async function deleteAllNotifications(params: {
+	userId: number;
+}): Promise<CommandResult<void>> {
+	const { userId } = params;
+	return await withPrismaResult(async () => {
+		await prisma.notification.deleteMany({
+			where: { userId },
+		});
+	});
+}
+
 async function markAllAsRead(params: {
 	userId: number;
 }): Promise<CommandResult<void>> {
@@ -119,5 +130,6 @@ export const commandsRepository: CommandsRepository = {
 	insertNotification,
 	markNotificationAsRead,
 	deleteNotification,
+	deleteAllNotifications,
 	markAllAsRead,
 };

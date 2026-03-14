@@ -16,6 +16,17 @@ describe.concurrent('USE-CASE - Users Management - GetProfile', () => {
 			expect(result).toHaveProperty('id', 1);
 			expect(result).toHaveProperty('email');
 		});
+
+		it('should enrich public profile with relation info', async () => {
+			const scenario = makeUsersManagementScenario()
+				.withPublicProfile()
+				.withRelation({ requestSentByUserId: 1, friends: false });
+
+			const result = await scenario.executeGetProfile({ id: 2 });
+
+			expect(result).toHaveProperty('isFriendRequester', true);
+			expect(result).toHaveProperty('hasIncomingFriendRequest', false);
+		});
 	});
 
 	describe('User validation', () => {
