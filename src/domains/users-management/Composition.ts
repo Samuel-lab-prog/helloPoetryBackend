@@ -5,6 +5,7 @@ import { createUsersCommandsRouter } from './adapters/CommandsRouter';
 import {
 	updateUserFactory,
 	createUserFactory,
+	requestAvatarUploadUrlFactory,
 } from './use-cases/commands/index';
 import {
 	checkEmailAvailabilityFactory,
@@ -16,6 +17,7 @@ import type { UsersQueriesRouterServices } from './ports/Queries';
 import { queriesRepository } from './infra/queries-repository/Repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
 import { friendsPublicContract } from '@Domains/friends-management/public/Index';
+import { storageService } from '@SharedKernel/infra/storage/storage.service';
 
 const commandsServices: UsersCommandsServices = {
 	createUser: createUserFactory({
@@ -24,6 +26,9 @@ const commandsServices: UsersCommandsServices = {
 	}),
 	updateUser: updateUserFactory({
 		commandsRepository: commandsRepository,
+	}),
+	requestAvatarUploadUrl: requestAvatarUploadUrlFactory({
+		storageService: storageService,
 	}),
 };
 
@@ -34,6 +39,9 @@ const commandsServicesWithFakeHash: UsersCommandsServices = {
 	}),
 	updateUser: updateUserFactory({
 		commandsRepository: commandsRepository,
+	}),
+	requestAvatarUploadUrl: requestAvatarUploadUrlFactory({
+		storageService: storageService,
 	}),
 };
 

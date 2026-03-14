@@ -7,6 +7,7 @@ import {
 	CreateUserSchema,
 	UpdateUserBodySchema,
 	FullUserSchema,
+	AvatarUploadUrlSchema,
 } from '../ports/schemas/Index';
 
 import { type UsersCommandsServices } from '../ports/Commands';
@@ -34,6 +35,29 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			},
 		)
 		.use(AuthPlugin)
+		.post(
+			'/avatar/upload-url',
+			({ auth, body }) => {
+				return services.requestAvatarUploadUrl({
+					requesterId: auth.clientId,
+					contentType: body.contentType,
+				});
+			},
+			{
+				body: t.Object({
+					contentType: t.String(),
+				}),
+				response: {
+					200: AvatarUploadUrlSchema,
+					422: appErrorSchema,
+				},
+				detail: {
+					summary: 'Request Avatar Upload URL',
+					description: 'Generates a signed URL for avatar uploads.',
+					tags: ['Users Management'],
+				},
+			},
+		)
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {

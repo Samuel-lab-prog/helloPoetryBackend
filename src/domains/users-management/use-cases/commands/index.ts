@@ -3,4 +3,5 @@
  */
 
 export * from './create/execute';
+export * from './request-avatar-upload-url/execute';
 export * from './update/execute';

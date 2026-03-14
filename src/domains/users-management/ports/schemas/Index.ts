@@ -5,6 +5,7 @@
 export * from './Enums';
 export * from './UserFieldsSchemas';
 export * from './commands/CreateUserSchema';
+export * from './commands/AvatarUploadUrlSchema';
 export * from './commands/UpdateUserBodySchema';
 export * from './parameters/OrderBySchema';
 export * from './parameters/OrderDirectionSchema';

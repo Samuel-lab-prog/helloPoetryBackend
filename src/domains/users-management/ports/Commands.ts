@@ -6,6 +6,7 @@ import type {
 	UserStatus,
 } from '../use-cases/Models';
 import type { CommandResult } from '@SharedKernel/Types';
+import type { AvatarUploadUrlResult } from '@SharedKernel/ports/Storage';
 
 export type CreateUserParams = {
 	data: CreateUser;
@@ -18,9 +19,17 @@ export type UpdateUserParams = {
 	data: UpdateUserData;
 };
 
+export type RequestAvatarUploadUrlParams = {
+	requesterId: number;
+	contentType: string;
+};
+
 export interface UsersCommandsServices {
 	createUser: (params: CreateUserParams) => Promise<FullUser>;
 	updateUser: (params: UpdateUserParams) => Promise<FullUser>;
+	requestAvatarUploadUrl: (
+		params: RequestAvatarUploadUrlParams,
+	) => Promise<AvatarUploadUrlResult>;
 }
 
 export interface CommandsRepository {
