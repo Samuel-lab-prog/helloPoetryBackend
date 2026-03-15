@@ -1,6 +1,6 @@
 import { t } from 'elysia';
 import { makeValidationError } from '@GenericSubdomains/utils/AppError';
-import { idSchema } from '@SharedKernel/Schemas';
+import { AudioUrlSchema, idSchema } from '@SharedKernel/Schemas';
 
 export const PoemTitleSchema = t.String({
 	minLength: 3,
@@ -30,6 +30,8 @@ export const PoemExcerptSchema = t.Nullable(
 		...makeValidationError('Excerpt must be at most 255 characters long'),
 	}),
 );
+
+export const PoemAudioUrlSchema = t.Nullable(AudioUrlSchema);
 
 export const PoemSlugSchema = t.String({
 	pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$',

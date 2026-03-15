@@ -100,7 +100,7 @@ export function givenUpdateUserFailure(
 
 export function givenProfile(
 	queriesRepository: UsersManagementSutMocks['queriesRepository'],
-	overrides: PrivateProfileOverride | PublicProfileOverride = {},
+	overrides: PrivateProfileOverride = {},
 ) {
 	givenResolved(queriesRepository, 'selectProfile', {
 		...DEFAULT_PRIVATE_PROFILE,

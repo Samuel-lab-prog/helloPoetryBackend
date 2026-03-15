@@ -13,6 +13,7 @@ export const insertPoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
+	audioUrl: true,
 
 	visibility: true,
 	status: true,
@@ -44,6 +45,7 @@ export const updatePoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
+	audioUrl: true,
 
 	visibility: true,
 	status: true,

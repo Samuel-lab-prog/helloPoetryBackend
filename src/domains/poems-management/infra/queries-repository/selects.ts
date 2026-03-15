@@ -97,6 +97,7 @@ export const myPoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
+	audioUrl: true,
 
 	visibility: true,
 	status: true,
@@ -127,6 +128,7 @@ export const authorPoemSelect = {
 	excerpt: true,
 	tags: { select: tagsSelect },
 	content: true,
+	audioUrl: true,
 
 	status: true,
 	visibility: true,

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
@@ -9,6 +10,8 @@ import {
 	CreatePoemBodySchema,
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
+	PoemAudioUploadUrlSchema,
+	PoemAudioUpdateBodySchema,
 } from '../ports/schemas/Index';
 
 import { type CommandsRouterServices } from '../ports/Commands';
@@ -99,6 +102,70 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Delete Poem',
 					description:
 						'Deletes an existing poem authored by the authenticated user.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.post(
+			'/:id/audio/upload-url',
+			({ auth, params, body }) => {
+				return services.requestPoemAudioUploadUrl({
+					poemId: params.id,
+					contentType: body.contentType,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				body: t.Object({
+					contentType: t.String(),
+				}),
+				response: {
+					200: PoemAudioUploadUrlSchema,
+					403: appErrorSchema,
+					404: appErrorSchema,
+					422: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Request Poem Audio Upload URL',
+					description: 'Generates a signed URL for poem audio uploads.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.patch(
+			'/:id/audio',
+			({ auth, params, body }) => {
+				return services.updatePoemAudio({
+					poemId: params.id,
+					audioUrl: body.audioUrl,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				body: PoemAudioUpdateBodySchema,
+				response: {
+					200: PoemAudioUpdateBodySchema,
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				detail: {
+					summary: 'Update Poem Audio',
+					description:
+						'Updates the poem audio URL for the authenticated author.',
 					tags: ['Poems Management'],
 				},
 			},

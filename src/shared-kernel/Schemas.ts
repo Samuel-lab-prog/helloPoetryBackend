@@ -52,6 +52,12 @@ export const AvatarUrlSchema = t.String({
 	...makeValidationError('Avatar URL must be a valid URL'),
 });
 
+export const AudioUrlSchema = t.String({
+	format: 'uri',
+	example: 'https://cdn.example.com/poems/1/audio/recording.mp3',
+	...makeValidationError('Audio URL must be a valid URL'),
+});
+
 export const UserPreviewSchema = t.Object({
 	id: idSchema,
 	name: t.String(),

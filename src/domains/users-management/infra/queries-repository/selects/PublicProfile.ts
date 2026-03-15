@@ -60,5 +60,6 @@ export function fromRawToPublicProfile(
 		),
 
 		isFriendRequester: raw.id === requesterId,
+		hasIncomingFriendRequest: false,
 	};
 }

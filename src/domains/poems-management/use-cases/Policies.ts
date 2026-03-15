@@ -114,6 +114,26 @@ export async function canUpdatePoem(
 	);
 }
 
+export async function canManagePoemAudio(params: {
+	ctx: PoemPolicyContext;
+	poemId: number;
+	queriesRepository: QueriesRepository;
+}): Promise<void> {
+	const { ctx, poemId, queriesRepository } = params;
+	const { author } = ctx;
+
+	if (author.status !== 'active') {
+		throw new ForbiddenError('Author is not active');
+	}
+
+	const existingPoem = await queriesRepository.selectPoemById(poemId);
+	if (!existingPoem) throw new NotFoundError('Poem not found');
+	if (existingPoem.author.id !== author.id)
+		throw new ForbiddenError('User is not the author');
+	if (existingPoem.moderationStatus === 'removed')
+		throw new ForbiddenError('Cannot update removed poem');
+}
+
 type ViewerContext = { id?: number; role?: UserRole; status?: UserStatus };
 type AuthorContextForView = {
 	friendIds?: number[];

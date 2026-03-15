@@ -144,6 +144,7 @@ model Poem {
   slug          String
   excerpt       String?
   content       String
+  audioUrl      String?
   isCommentable Boolean @default(true)
 
   authorId Int

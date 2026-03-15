@@ -8,6 +8,7 @@ import {
 	PoemToUserIdsSchema,
 	PoemTagsReadSchema,
 	MentionedUserIdsSchema,
+	PoemAudioUrlSchema,
 } from '../PoemFieldsSchemas';
 import { DateSchema, idSchema } from '@SharedKernel/Schemas';
 import { PoemStatusEnumSchema, PoemVisibilityEnumSchema } from '../Enums';
@@ -19,6 +20,7 @@ export const UpdatePoemResultSchema = t.Object({
 	slug: PoemSlugSchema,
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
+	audioUrl: PoemAudioUrlSchema,
 	tags: PoemTagsReadSchema,
 
 	visibility: PoemVisibilityEnumSchema,

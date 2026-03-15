@@ -13,6 +13,7 @@ import {
 	PoemExcerptSchema,
 	PoemSlugSchema,
 	PoemIsCommentableSchema,
+	PoemAudioUrlSchema,
 } from '../PoemFieldsSchemas';
 
 import {
@@ -28,6 +29,7 @@ export const AuthorPoemReadSchema = t.Object({
 	slug: PoemSlugSchema,
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
+	audioUrl: PoemAudioUrlSchema,
 	tags: PoemTagsReadSchema,
 
 	status: PoemStatusEnumSchema,

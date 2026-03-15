@@ -33,10 +33,28 @@ export type DeletePoemParams = {
 	meta: UserMetaData;
 };
 
+export type RequestPoemAudioUploadUrlParams = {
+	poemId: number;
+	contentType: string;
+	meta: UserMetaData;
+};
+
+export type UpdatePoemAudioParams = {
+	poemId: number;
+	audioUrl: string | null;
+	meta: UserMetaData;
+};
+
 export interface CommandsRouterServices {
 	createPoem: (params: CreatePoemParams) => Promise<CreatePoemResult>;
 	updatePoem: (params: UpdatePoemParams) => Promise<UpdatePoemResult>;
 	deletePoem: (params: DeletePoemParams) => Promise<void>;
+	requestPoemAudioUploadUrl: (
+		params: RequestPoemAudioUploadUrlParams,
+	) => Promise<{ uploadUrl: string; fileUrl: string }>;
+	updatePoemAudio: (
+		params: UpdatePoemAudioParams,
+	) => Promise<{ audioUrl: string | null }>;
 
 	savePoem: (params: { poemId: number; userId: number }) => Promise<void>;
 	removeSavedPoem: (params: {
@@ -74,6 +92,10 @@ export interface CommandsRepository {
 		poem: UpdatePoemDB,
 	): Promise<CommandResult<UpdatePoemResult>>;
 	deletePoem(poemId: number): Promise<CommandResult<void>>;
+	updatePoemAudio(params: {
+		poemId: number;
+		audioUrl: string | null;
+	}): Promise<CommandResult<void>>;
 
 	savePoem(params: {
 		poemId: number;

@@ -13,6 +13,8 @@ import { createPoemsQueriesRouter } from './adapters/QueriesRouter';
 
 import {
 	createPoemFactory,
+	requestPoemAudioUploadUrlFactory,
+	updatePoemAudioFactory,
 	updatePoemFactory,
 } from './use-cases/commands/Index';
 
@@ -28,6 +30,7 @@ import { removeCollectionItemFactory } from './use-cases/commands/remove-item/ex
 import { createCollectionFactory } from './use-cases/commands/create-collection/execute';
 import { deleteCollectionFactory } from './use-cases/commands/delete-collection/execute';
 import { getCollectionsFactory } from './use-cases/queries/get-collections/execute';
+import { storageService } from '@SharedKernel/infra/storage/storage.service';
 
 const commandsRouterServices: CommandsRouterServices = {
 	createPoem: createPoemFactory({
@@ -41,6 +44,14 @@ const commandsRouterServices: CommandsRouterServices = {
 		queriesRepository,
 		slugService: slugifyService,
 		usersContract: usersPublicContract,
+	}),
+	requestPoemAudioUploadUrl: requestPoemAudioUploadUrlFactory({
+		storageService,
+		queriesRepository,
+	}),
+	updatePoemAudio: updatePoemAudioFactory({
+		commandsRepository,
+		queriesRepository,
 	}),
 	deletePoem: deletePoemFactory({
 		commandsRepository,

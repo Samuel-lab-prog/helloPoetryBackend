@@ -6,6 +6,7 @@ import {
 	PoemSlugSchema,
 	PoemTagsReadSchema,
 	PoemIsCommentableSchema,
+	PoemAudioUrlSchema,
 } from '../PoemFieldsSchemas';
 import {
 	DateSchema,
@@ -27,6 +28,7 @@ export const MyPoemReadSchema = t.Object({
 	slug: PoemSlugSchema,
 	content: PoemContentSchema,
 	excerpt: PoemExcerptSchema,
+	audioUrl: PoemAudioUrlSchema,
 	tags: PoemTagsReadSchema,
 
 	status: PoemStatusEnumSchema,

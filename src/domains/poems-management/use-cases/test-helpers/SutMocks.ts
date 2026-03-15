@@ -30,6 +30,7 @@ export function poemsMockFactories() {
 			insertPoem: mock(),
 			updatePoem: mock(),
 			deletePoem: mock(),
+			updatePoemAudio: mock(),
 			savePoem: mock(),
 			removeSavedPoem: mock(),
 			removeItemFromCollection: mock(),

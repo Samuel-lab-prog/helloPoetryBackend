@@ -91,6 +91,7 @@ export const DEFAULT_USERS_PAGE: UsersPage = {
 	users: [
 		{
 			id: 1,
+			name: 'john',
 			nickname: 'john',
 			avatarUrl: 'https://cdn.olapoesia.dev/avatar/john.png',
 			role: 'author',

@@ -12,12 +12,36 @@ const allowedImageTypes = new Set([
 	'image/gif',
 ]);
 
+const allowedAudioTypes = new Set([
+	'audio/mpeg',
+	'audio/mp3',
+	'audio/wav',
+	'audio/x-wav',
+	'audio/webm',
+	'audio/ogg',
+	'audio/aac',
+	'audio/mp4',
+	'audio/x-m4a',
+]);
+
 const contentTypeToExtension: Record<string, string> = {
 	'image/jpeg': 'jpg',
 	'image/jpg': 'jpg',
 	'image/png': 'png',
 	'image/webp': 'webp',
 	'image/gif': 'gif',
+};
+
+const audioContentTypeToExtension: Record<string, string> = {
+	'audio/mpeg': 'mp3',
+	'audio/mp3': 'mp3',
+	'audio/wav': 'wav',
+	'audio/x-wav': 'wav',
+	'audio/webm': 'webm',
+	'audio/ogg': 'ogg',
+	'audio/aac': 'aac',
+	'audio/mp4': 'm4a',
+	'audio/x-m4a': 'm4a',
 };
 
 const region = process.env.AWS_REGION ?? 'us-east-1';
@@ -48,6 +72,10 @@ export const storageService: StorageService = {
 	validateImageContentType(contentType: string): boolean {
 		return allowedImageTypes.has(contentType.toLowerCase());
 	},
+	validateAudioContentType(contentType: string): boolean {
+		const normalizedType = contentType.toLowerCase().split(';')[0] ?? '';
+		return allowedAudioTypes.has(normalizedType);
+	},
 	async generateAvatarUploadUrl(userId: string, contentType?: string) {
 		if (!bucketName)
 			throw new InternalServerError('S3 bucket name is not configured');
@@ -55,7 +83,7 @@ export const storageService: StorageService = {
 		if (!region) throw new InternalServerError('AWS region is not configured');
 
 		const id = crypto.randomUUID();
-		const resolvedContentType = contentType?.toLowerCase();
+		const resolvedContentType = contentType?.toLowerCase().split(';')[0];
 		const ext =
 			(resolvedContentType && contentTypeToExtension[resolvedContentType]) ||
 			contentTypeToExtension['image/jpeg'];
@@ -85,6 +113,51 @@ export const storageService: StorageService = {
 				'Failed to generate S3 signed URL',
 			);
 			throw new InternalServerError('Failed to generate avatar upload URL');
+		}
+
+		return {
+			uploadUrl,
+			fileUrl,
+		};
+	},
+	async generatePoemAudioUploadUrl(poemId: string, contentType?: string) {
+		if (!bucketName)
+			throw new InternalServerError('S3 bucket name is not configured');
+
+		if (!region) throw new InternalServerError('AWS region is not configured');
+
+		const id = crypto.randomUUID();
+		const resolvedContentType = contentType?.toLowerCase().split(';')[0];
+		const ext =
+			(resolvedContentType &&
+				audioContentTypeToExtension[resolvedContentType]) ||
+			audioContentTypeToExtension['audio/mpeg'];
+		const objectKey = `poems/${poemId}/audio/${id}.${ext}`;
+		const fileUrl = `${defaultPublicBaseUrl}/${objectKey}`;
+
+		const command = new PutObjectCommand({
+			Bucket: bucketName,
+			Key: objectKey,
+			ContentType: resolvedContentType ?? 'audio/mpeg',
+		});
+
+		let uploadUrl: string;
+		try {
+			uploadUrl = await getSignedUrl(s3Client, command, {
+				expiresIn: signedUrlExpiresInSeconds,
+			});
+		} catch (error) {
+			log.error(
+				{
+					error,
+					bucketName,
+					region,
+					objectKey,
+					hasAccessKey: !!accessKeyId,
+				},
+				'Failed to generate S3 signed URL',
+			);
+			throw new InternalServerError('Failed to generate audio upload URL');
 		}
 
 		return {

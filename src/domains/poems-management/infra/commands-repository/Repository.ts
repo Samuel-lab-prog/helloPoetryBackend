@@ -85,6 +85,19 @@ function deletePoem(poemId: number): Promise<CommandResult<void>> {
 	});
 }
 
+function updatePoemAudio(params: {
+	poemId: number;
+	audioUrl: string | null;
+}): Promise<CommandResult<void>> {
+	return withPrismaResult(async () => {
+		await prisma.poem.update({
+			where: { id: params.poemId, deletedAt: null },
+			data: { audioUrl: params.audioUrl },
+		});
+		return;
+	});
+}
+
 function createCollection(params: {
 	data: CreateCollection;
 }): Promise<CommandResult<void>> {
@@ -152,6 +165,7 @@ export const commandsRepository: CommandsRepository = {
 	insertPoem,
 	updatePoem,
 	deletePoem,
+	updatePoemAudio,
 	savePoem,
 	removeSavedPoem: deleteSavedPoem,
 	createCollection,
