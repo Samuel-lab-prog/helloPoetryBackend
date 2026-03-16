@@ -9,9 +9,11 @@ import type {
 	CreatePoemResult,
 	UpdatePoemDB,
 	UpdatePoemResult,
+	ModeratePoemResult,
+	PoemModerationStatus,
 } from '../../ports/Models';
 
-import { insertPoemSelect, updatePoemSelect } from './Selects';
+import { insertPoemSelect, updatePoemSelect, moderatePoemSelect } from './Selects';
 import {
 	toPrismaCreatePoemInput,
 	toPrismaUpdatePoemInput,
@@ -72,6 +74,23 @@ function updatePoem(
 			select: updatePoemSelect,
 		});
 		return toUpdatePoemResult(updatedPoem);
+	});
+}
+
+function updatePoemModerationStatus(params: {
+	poemId: number;
+	moderationStatus: PoemModerationStatus;
+}): Promise<CommandResult<ModeratePoemResult>> {
+	return withPrismaResult(async () => {
+		const updatedPoem = await prisma.poem.update({
+			where: { id: params.poemId, deletedAt: null },
+			data: { moderationStatus: params.moderationStatus },
+			select: moderatePoemSelect,
+		});
+		return {
+			id: updatedPoem.id,
+			moderationStatus: updatedPoem.moderationStatus,
+		};
 	});
 }
 
@@ -164,6 +183,7 @@ function deleteCollection(params: {
 export const commandsRepository: CommandsRepository = {
 	insertPoem,
 	updatePoem,
+	updatePoemModerationStatus,
 	deletePoem,
 	updatePoemAudio,
 	savePoem,

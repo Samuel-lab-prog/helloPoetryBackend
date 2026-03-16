@@ -8,6 +8,7 @@ import {
 	getAuthorPoemsFactory,
 	getPoemFactory,
 	getPoemsFactory,
+	getPendingPoemsFactory,
 } from './use-cases/queries/index';
 import { createPoemsQueriesRouter } from './adapters/QueriesRouter';
 
@@ -16,6 +17,7 @@ import {
 	requestPoemAudioUploadUrlFactory,
 	updatePoemAudioFactory,
 	updatePoemFactory,
+	moderatePoemFactory,
 } from './use-cases/commands/Index';
 
 import type { CommandsRouterServices } from './ports/Commands';
@@ -80,6 +82,10 @@ const commandsRouterServices: CommandsRouterServices = {
 	deleteCollection: deleteCollectionFactory({
 		commandsRepository,
 	}),
+	moderatePoem: moderatePoemFactory({
+		commandsRepository,
+		queriesRepository,
+	}),
 };
 
 const queriesRouterServices: QueriesRouterServices = {
@@ -90,6 +96,9 @@ const queriesRouterServices: QueriesRouterServices = {
 		poemQueriesRepository: queriesRepository,
 	}),
 	getPoemById: getPoemFactory({
+		poemQueriesRepository: queriesRepository,
+	}),
+	getPendingPoems: getPendingPoemsFactory({
 		poemQueriesRepository: queriesRepository,
 	}),
 	searchPoems: getPoemsFactory({

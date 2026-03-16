@@ -66,6 +66,35 @@ export function selectPoemById(poemId: number): Promise<AuthorPoem | null> {
 	});
 }
 
+export function selectPendingPoems(params: {
+	navigationOptions: {
+		limit?: number;
+		cursor?: number;
+	};
+}): Promise<AuthorPoem[]> {
+	const { navigationOptions } = params;
+
+	return withPrismaErrorHandling(async () => {
+		const limit = navigationOptions.limit ?? DEFAULT_LIMIT;
+
+		const poems = await prisma.poem.findMany({
+			where: {
+				deletedAt: null,
+				moderationStatus: 'pending',
+			},
+			select: authorPoemSelect,
+			orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+			cursor: navigationOptions.cursor
+				? { id: navigationOptions.cursor }
+				: undefined,
+			skip: navigationOptions.cursor ? 1 : 0,
+			take: limit,
+		});
+
+		return poems.map((poem) => mapPoem(poem, poem.author));
+	});
+}
+
 export function selectPoems(params: {
 	navigationOptions: {
 		limit?: number;
@@ -213,6 +242,7 @@ export const queriesRepository: QueriesRepository = {
 	selectMyPoems,
 	selectAuthorPoems,
 	selectPoemById,
+	selectPendingPoems,
 	selectPoems,
 	selectSavedPoems,
 	selectSavedPoem,

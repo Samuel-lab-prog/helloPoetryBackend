@@ -6,6 +6,8 @@ import {
 	PoemModerationStatusEnumSchema,
 	CreatePoemResultSchema,
 	CreatePoemBodySchema,
+	ModeratePoemBodySchema,
+	ModeratePoemResultSchema,
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
 	PoemPreviewReadSchema,
@@ -19,6 +21,9 @@ import {
 export type CreatePoem = (typeof CreatePoemBodySchema)['static'];
 export type CreatePoemDB = CreatePoem & { slug: string; authorId: number };
 export type CreatePoemResult = (typeof CreatePoemResultSchema)['static'];
+
+export type ModeratePoemBody = (typeof ModeratePoemBodySchema)['static'];
+export type ModeratePoemResult = (typeof ModeratePoemResultSchema)['static'];
 
 export type UpdatePoem = (typeof UpdatePoemBodySchema)['static'];
 export type UpdatePoemDB = UpdatePoem & { slug: string };

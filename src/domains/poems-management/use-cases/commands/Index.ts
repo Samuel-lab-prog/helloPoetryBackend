@@ -7,6 +7,7 @@ export * from './create-collection/execute';
 export * from './create-poem/execute';
 export * from './delete-collection/execute';
 export * from './delete-poem/execute';
+export * from './moderate-poem/execute';
 export * from './remove-item/execute';
 export * from './remove-saved/execute';
 export * from './request-poem-audio-upload-url/execute';

@@ -37,6 +37,36 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 			},
 		)
 		.get(
+			'/moderation/pending',
+			({ auth, query }) => {
+				return services.getPendingPoems({
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+					navigationOptions: {
+						limit: query.limit,
+						cursor: query.cursor,
+					},
+				});
+			},
+			{
+				response: {
+					200: t.Array(AuthorPoemReadSchema),
+					403: appErrorSchema,
+				},
+				query: t.Object({
+					limit: t.Optional(t.Number()),
+					cursor: t.Optional(t.Number()),
+				}),
+				detail: {
+					summary: 'Get Pending Poems',
+					description:
+						'Returns poems pending moderation for moderators and admins.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
+		.get(
 			'authors/:authorId',
 			({ params, auth }) => {
 				return services.getAuthorPoems({

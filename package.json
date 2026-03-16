@@ -24,7 +24,7 @@
 	},
 	"scripts": {
 		"build": "bun build src/Server.ts --target bun --outdir dist",
-		"start": "bun src/Server.ts",
+		"start": "bun dist/Server.js",
 		"dev": "bun --watch src/Server.ts",
 		"docker:up": "docker build -t api . && docker run --env-file .env -p 5000:5000 api",
 		"compose": "docker-compose up --build",
