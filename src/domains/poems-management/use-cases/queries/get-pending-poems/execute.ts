@@ -15,18 +15,17 @@ const MAX_LIMIT = 100;
 export function getPendingPoemsFactory({
 	poemQueriesRepository,
 }: Dependencies) {
+	// eslint-disable-next-line require-await
 	return async function getPendingPoems(
 		params: GetPendingPoemsParams,
 	): Promise<AuthorPoem[]> {
 		const { requesterRole, requesterStatus, navigationOptions } = params;
 
-		if (requesterRole !== 'moderator' && requesterRole !== 'admin') {
+		if (requesterRole !== 'moderator' && requesterRole !== 'admin')
 			throw new ForbiddenError('Insufficient permissions');
-		}
 
-		if (requesterStatus !== 'active') {
+		if (requesterStatus !== 'active')
 			throw new ForbiddenError('User is not active');
-		}
 
 		return poemQueriesRepository.selectPendingPoems({
 			navigationOptions: {

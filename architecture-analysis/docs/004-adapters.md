@@ -223,18 +223,10 @@ Use-case errors should be:
 
 ## Testing Strategy
 
-Adapters are tested with:
-
-- mocked use-cases,
-- stubbed port implementations.
-
-Focus of adapter tests:
-
-- correct routing,
-- correct dependency wiring,
-- correct error mapping.
-
-Adapters should not be tested for business correctness.
+We are not testing adapters directly. Instead, we test the use-cases they call.
+This keeps tests focused on business logic and avoids coupling tests to external
+interfaces. We do not need to test other's people code. That is the
+responsibility of the framework or library authors.
 
 ---
 

@@ -14,7 +14,12 @@ interface Dependencies {
 	queriesRepository: QueriesRepository;
 }
 
-const ALLOWED_STATUSES = new Set(['approved', 'rejected', 'pending', 'removed'] as const);
+const ALLOWED_STATUSES = new Set([
+	'approved',
+	'rejected',
+	'pending',
+	'removed',
+] as const);
 
 export function moderatePoemFactory({
 	commandsRepository,
