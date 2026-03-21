@@ -28,9 +28,8 @@ export function calculateDomainIsolation(
 		const fromDomain = extractDomainFromPath(module.source);
 		if (!fromDomain || IGNORED_DOMAINS.includes(fromDomain)) return;
 
-		if (!acc.has(fromDomain)) 
-			acc.set(fromDomain, { internal: 0, external: 0 });
-		
+		if (!acc.has(fromDomain)) acc.set(fromDomain, { internal: 0, external: 0 });
+
 		module.dependencies.forEach((dep) => {
 			const toDomain = extractDomainFromPath(dep.resolved);
 

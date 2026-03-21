@@ -1,137 +1,197 @@
-# Social Media Application — Backend
+# OlaPoesia Backend
 
-This repository contains the **backend application** of a poetry related social
-media project.  
-It is responsible for handling data storage, user authentication, API endpoints,
-and business logic.
+Backend for the **OlaPoesia** poetry social network. This repository implements
+the API and business rules using **DDD**, **CQRS**, and a **domain-oriented
+architecture**, focused on isolation, testability, and long-term evolution.
 
-This project is built using a Domain Driven Design (DDD) approach, ensuring a
-clear separation of concerns and scalability. The backend is developed with
-**TypeScript**, **Bun** as the runtime, and **Elysia** as the web framework.
+Main technologies:
 
-The choosen architecture is a **modular monolith**, allowing for easy
-maintenance and future growth to microservices if needed.
-
----
-
-## Tech Stack
-
-- **TypeScript** — main programming language, ensuring type safety and better DX
-- **Bun** — JavaScript runtime for building scalable backend applications
-- **Elysia** — web framework for building API endpoints
+- **TypeScript**
+- **Bun** (runtime and test runner)
+- **Elysia** (HTTP framework)
+- **Prisma** (ORM)
 
 ---
 
-## Main Dependencies
+## Architecture in 1 Minute
 
-- **Prisma** — efficient and scalable database ORM
-- **JWT** — stateless user authentication
-- **bcrypt** — secure password hashing
-- **pino** — high-performance logging
+- **Modular monolith by domains**: each domain is cohesive and mostly
+  independent.
+- **Dependency direction**: `adapters -> use-cases -> domains`.
+- **Ports & Adapters**: contracts (ports) live in the core; implementations stay
+  at the edge.
+- **CQRS**: explicit separation between commands (write) and queries (read).
+- **Dependency injection**: performed in adapters/composition roots.
+- **Architectural rules are mandatory**: CI measures and blocks violations.
+
+For the full rationale, see the docs and ADRs below.
 
 ---
 
-## Project Structure (Overview)
+## Architecture Documentation
 
-The project follows a **domain driven architecture**, aiming for better
-scalability and separation of concerns. It's so simple, that you can just open
-folders and you will understand what is going on.
+Practical guides (how to work within the decisions):
 
-```plaintext
+- [Architecture overview](architecture-analysis/docs/001-architecture.md)
+- [Use-cases](architecture-analysis/docs/002-use-cases.md)
+- [Ports](architecture-analysis/docs/003-ports.md)
+- [Adapters](architecture-analysis/docs/004-adapters.md)
+- [Infra](architecture-analysis/docs/005-infra.md)
+- [Dependency injection](architecture-analysis/docs/006-injection.md)
+- [Tests](architecture-analysis/docs/007-tests.md)
+
+ADRs (decisions, rules, and enforcement):
+
+- [ADR index](architecture-analysis/adrs/READEME.md)
+
+---
+
+## Project Structure (summary)
+
+```text
 src/
-  ├── domains/
-  │   ├── users/
-  │   ├── posts/
-  │   └── auth/
-  ├── prisma/
-  │   ├── generated/
-  │   ├── migrations/
-  │   └── seeds/
-  │   └── client.ts
-  ├── utils/
-  │   ├── plugins/
-  │   └── ...other funcitons and classes
-  └── server.ts
+  domains/                 # Core domains (poems, users, interactions...)
+  generic-subdomains/      # Generic subdomains (auth, persistence, utils)
+  shared-kernel/           # Shared types, ports, and utilities
+  tests/                   # Integration/E2E and helpers
+  Server.ts                # Server entry point
 ```
 
-## How to Run Locally
+Each domain follows the same internal organization:
 
-### 1.Clone the repository
+- `use-cases/` (commands and queries)
+- `ports/` (input/output interfaces)
+- `adapters/` (HTTP and composition)
+- `infra/` (repositories and integrations)
 
-```
-git clone https://github.com/yourusername/helloPoetryBackend.git
-cd helloPoetryBackend
-```
+---
 
-### 2.Install dependencies
+## Running Locally
 
-```
+### Prerequisites
+
+- **Bun** installed
+- **Node.js** (for Prisma CLI)
+- **PostgreSQL** local or via Docker
+
+### Step by step
+
+1. Install dependencies:
+
+```bash
 bun install
 ```
 
-### 3.Run the local development server
+2. Configure the environment:
 
+Adjust `.env` to match your setup (database, JWT, etc.).
+
+3. Generate Prisma client:
+
+```bash
+bun run generate
 ```
+
+4. Run migrations (dev):
+
+```bash
+bun run migratedev
+```
+
+5. Start the server:
+
+```bash
 bun run dev
 ```
 
-## Code Quality & Best Practices
+---
 
-This project adopts several conventions and patterns to keep the codebase
-**clean, maintainable, and easy to scale**.
+## Tests
 
-### General Practices
+- Full test suite:
 
-- Strong typing with TypeScript
-- Reusable and composable components
-- Feature-based folder organization
-- Clear separation between UI, logic, and data layers
-- Controlled side effects using React Query and custom hooks
-- Predictable state management and data flow
-- Consistent naming conventions across the codebase
+```bash
+bun run test:all
+```
+
+- Use-case tests (unit):
+
+```bash
+bun run test:unit
+```
+
+- Integration tests:
+
+```bash
+bun run test:integration
+```
 
 ---
 
-## Commit Message Guidelines
+## Quality & Metrics
 
-This repository follows a **conventional commit pattern** to maintain a clean,
-readable, and meaningful commit history.
+Useful commands:
 
-### Commit Prefixes
+```bash
+bun run lint
+bun run format
+bun run typecheck
+bun run metrics
+bun run depcruise
+```
 
-Use a prefix for every commit:
+All-in-one (local CI gate):
 
-- `feat:` — new features
-- `fix:` — bug fixes
-- `refactor:` — code restructuring without changing behavior
-- `docs:` — documentation updates
-- `style:` — formatting or stylistic changes (no logic impact)
-- `test:` — adding or updating tests
-- `chore:` — tooling, configuration, or maintenance tasks
-
-### Commit Rules
-
-1. **One purpose per commit**  
-   Each commit should solve a single, well-defined problem.
-
-2. **Keep commits small and focused**  
-   Avoid large commits that mix unrelated changes.  
-   Prefer multiple small commits over one large commit.
-
-3. **Write meaningful commit messages**
-
-   **❌ Bad** fix stuff **✅ Good** fix: resolve issue with user login on Safari
+```bash
+bun run check
+```
 
 ---
 
-## Notes
+## Docker
 
-- This repository contains **only the backend** of the application.
-- The entire project is managed by myself as a solo developer.
-- The frontend is maintained in a **separate repository**. The link below will
-  redirect you to it:
-- [helloPoetry Frontend Repository](https://github.com/Samuel-lab-prog/helloPoetryFrontend)
-- Contributions, suggestions, and improvements are welcome! Feel free to open
-  issues or pull requests.
+Simple build and run:
+
+```bash
+bun run docker:up
+```
+
+Or via compose:
+
+```bash
+bun run compose
+```
 
 ---
+
+## Commit Conventions
+
+We follow **Conventional Commits**:
+
+- `feat:` new feature
+- `fix:` bug fix
+- `refactor:` refactor without behavior change
+- `docs:` documentation
+- `style:` formatting
+- `test:` tests
+- `chore:` maintenance tasks
+
+Example:
+
+```
+fix: handle expired token login
+```
+
+---
+
+## Related Links
+
+- Frontend:
+  [helloPoetry Frontend Repository](https://github.com/Samuel-lab-prog/helloPoetryFrontend)
+
+---
+
+## Contributing
+
+Suggestions and PRs are welcome. Before opening a PR, run `bun run check` to
+ensure architectural compliance.

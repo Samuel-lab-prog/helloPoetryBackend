@@ -210,3 +210,27 @@ export function givenMyPoems(
 ) {
 	givenResolved(queriesRepository, 'selectMyPoems', poems);
 }
+
+export function givenPendingPoems(
+	queriesRepository: PoemsSutMocks['queriesRepository'],
+	poems: AuthorPoem[] = [makeAuthorPoem()],
+) {
+	givenResolved(queriesRepository, 'selectPendingPoems', poems);
+}
+
+export function givenModeratePoemResult(
+	commandsRepository: PoemsSutMocks['commandsRepository'],
+	params: {
+		id?: number;
+		moderationStatus?: AuthorPoem['moderationStatus'];
+	} = {},
+) {
+	givenResolved(commandsRepository, 'updatePoemModerationStatus', {
+		ok: true,
+		data: {
+			id: params.id ?? DEFAULT_POEM_ID,
+			moderationStatus:
+				params.moderationStatus ?? DEFAULT_POEM_MODERATION_STATUS,
+		},
+	});
+}

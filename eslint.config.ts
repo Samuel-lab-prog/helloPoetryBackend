@@ -3,6 +3,13 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 
+const MAX_LINES_PER_FUNCTION = 80;
+const MAX_LINES = 300;
+const MAX_NESTED_CALLBACKS = 3;
+const MAX_PARAMS = 5;
+const MAX_DEPTH = 4;
+const MAX_CLASSES_PER_FILE = 10;
+
 export default defineConfig([
 	{
 		files: ['**/*.ts'],
@@ -27,17 +34,17 @@ export default defineConfig([
 				'error',
 				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
 			],
-
 			'default-case': 'error',
 			eqeqeq: ['error', 'always'],
-
-			'max-classes-per-file': ['error', 10],
-			'max-depth': ['error', 4],
-			'max-lines': ['warn', 300],
-			'max-lines-per-function': ['error', { max: 80, skipComments: true }],
-			'max-nested-callbacks': ['error', 3],
-			'max-params': ['error', 5],
-
+			'max-classes-per-file': ['error', MAX_CLASSES_PER_FILE],
+			'max-depth': ['error', MAX_DEPTH],
+			'max-lines': ['warn', MAX_LINES],
+			'max-lines-per-function': [
+				'error',
+				{ max: MAX_LINES_PER_FUNCTION, skipComments: true },
+			],
+			'max-nested-callbacks': ['error', MAX_NESTED_CALLBACKS],
+			'max-params': ['error', MAX_PARAMS],
 			'require-await': 'warn',
 		},
 	},
@@ -49,14 +56,6 @@ export default defineConfig([
 			'max-nested-callbacks': 'off',
 			'max-params': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
-		},
-	},
-	{
-		files: ['**/*asserts.ts'],
-		rules: {
-			'max-lines': 'off',
-			'max-lines-per-function': 'off',
-			'@typescript-eslint/no-unused-vars': 'off',
 		},
 	},
 ]);
