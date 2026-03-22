@@ -46,9 +46,9 @@ export const LoggerPlugin = new Elysia()
 						contentType: set.headers['content-type'] ?? 'unknown',
 					},
 					auth: {
-						isAuthenticated: !!auth.clientId,
-						userId: auth.clientId ?? 'guest',
-						role: auth.clientRole ?? 'guest',
+						isAuthenticated: auth.clientId > 0,
+						userId: auth.clientId > 0 ? auth.clientId : 'guest',
+						role: auth.clientId > 0 ? auth.clientRole : 'guest',
 					},
 					timings: {
 						totalMs,

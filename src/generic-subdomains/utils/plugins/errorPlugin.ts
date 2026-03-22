@@ -175,9 +175,9 @@ function buildErrorContext(request: Request, ctx: SetupPluginContext) {
 			targetId,
 		},
 		auth: {
-			isAuthenticated: !!ctx.auth.clientId,
-			userId: ctx.auth.clientId,
-			role: ctx.auth.clientRole,
+			isAuthenticated: ctx.auth.clientId > 0,
+			userId: ctx.auth.clientId > 0 ? ctx.auth.clientId : 'guest',
+			role: ctx.auth.clientId > 0 ? ctx.auth.clientRole : 'guest',
 		},
 		timings: {
 			totalMs: performance.now() - ctx.store.reqInitiatedAt,

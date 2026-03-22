@@ -14,6 +14,7 @@ import { type UsersCommandsServices } from '../ports/Commands';
 
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	return new Elysia({ prefix: '/users' })
+		.use(AuthPlugin)
 		.post(
 			'/',
 			async ({ body, set }) => {
@@ -57,7 +58,6 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {

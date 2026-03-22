@@ -11,7 +11,7 @@ type AuthType = {
 export const SetupPlugin = new Elysia()
 	.as('global')
 	.decorate('auth', {
-		clientId: -1,
+		clientId: 0,
 		clientRole: 'author',
 		clientStatus: 'banned',
 	} as AuthType satisfies AuthType)
