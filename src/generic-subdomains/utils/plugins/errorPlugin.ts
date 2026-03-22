@@ -131,6 +131,7 @@ function logError(
 	status: number,
 	message: string,
 	code: AppErrorCode,
+	originalError?: Error,
 ) {
 	log.error(
 		{
@@ -140,6 +141,13 @@ function logError(
 				message,
 				code,
 			},
+			originalError: originalError
+				? {
+						name: originalError.name,
+						message: originalError.message,
+						stack: originalError.stack,
+					}
+				: undefined,
 		},
 		'An error occurred while processing the request',
 	);
@@ -203,7 +211,19 @@ function handleError(ctx: HandleErrorContext) {
 
 	set.status = appError.statusCode;
 
-	logError(context, appError.statusCode, appError.message, appError.code);
+	const original =
+		error instanceof Error
+			? error
+			: appError.originalError instanceof Error
+				? appError.originalError
+				: undefined;
+	logError(
+		context,
+		appError.statusCode,
+		appError.message,
+		appError.code,
+		original,
+	);
 
 	return sendAppError(appError);
 }
