@@ -9,6 +9,7 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@SetupPlugin';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 import '@Domains/notifications/EventListeners.ts';
+import { log } from '@GenericSubdomains/utils/logger';
 
 import {
 	userQueriesRouter,
@@ -72,6 +73,29 @@ const RATE_LIMIT_SETTINGS = {
 	skip: () => process.env.NODE_ENV === 'test',
 };
 
+const rawCorsOrigins =
+	process.env.CORS_ORIGIN ?? process.env.FRONTEND_URL ?? '';
+const corsOrigins = rawCorsOrigins
+	.split(',')
+	.map((origin) => origin.trim())
+	.filter(Boolean);
+
+if (process.env.NODE_ENV === 'production' && corsOrigins.length === 0) {
+	log.warn(
+		'Missing CORS_ORIGIN/FRONTEND_URL in production. Cross-site cookies will be blocked.',
+	);
+}
+
+const corsConfig = {
+	credentials: true,
+	origin: ({ request }: { request: Request }) => {
+		const origin = request.headers.get('origin') ?? '';
+		if (!origin) return false;
+		if (corsOrigins.length === 0) return process.env.NODE_ENV !== 'production';
+		return corsOrigins.includes(origin);
+	},
+} as const;
+
 type MakeServerOptions = {
 	enableRealHash: boolean;
 	enableDocs: boolean;
@@ -89,7 +113,7 @@ function makeServer({
 		.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
 		.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
 		.use(enableLogger ? LoggerPlugin : undefined)
-		.use(cors())
+		.use(cors(corsConfig))
 		.use(SetupPlugin)
 		.use(ErrorPlugin)
 
