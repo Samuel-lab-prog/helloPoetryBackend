@@ -88,7 +88,7 @@ if (process.env.NODE_ENV === 'production' && corsOrigins.length === 0) {
 
 const corsConfig = {
 	credentials: true,
-	origin: ({ request }: { request: Request }) => {
+	origin: (request: Request) => {
 		const origin = request.headers.get('origin') ?? '';
 		if (!origin) return false;
 		if (corsOrigins.length === 0) return process.env.NODE_ENV !== 'production';
