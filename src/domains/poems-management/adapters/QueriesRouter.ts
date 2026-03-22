@@ -16,6 +16,55 @@ import { type QueriesRouterServices } from '../ports/Queries';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
+			.get(
+			'/',
+			({ query }) => {
+				return services.searchPoems({
+					navigationOptions: {
+						limit: query.limit,
+						cursor: query.cursor,
+					},
+					filterOptions: {
+						searchTitle: query.searchTitle,
+						tags: query.tags,
+					},
+					sortOptions: {
+						orderBy: query.orderBy,
+						orderDirection: query.orderDirection,
+					},
+				});
+			},
+			{
+				response: {
+					200: PoemPreviewPageSchema,
+				},
+				query: t.Object({
+					limit: t.Optional(t.Number()),
+					cursor: t.Optional(t.Number()),
+					searchTitle: t.Optional(t.String()),
+					tags: t.Optional(t.Array(t.String())),
+					orderBy: t.Optional(
+						t.Enum({
+							createdAt: 'createdAt',
+							title: 'title',
+						}),
+					),
+					orderDirection: t.Optional(
+						t.Enum({
+							asc: 'asc',
+							desc: 'desc',
+						}),
+					),
+				}),
+
+				detail: {
+					summary: 'Search Poems',
+					description:
+						'Returns a paginated list of poems matching the provided filter and sort options.',
+					tags: ['Poems Management'],
+				},
+			},
+		)
 		.use(AuthPlugin)
 		.get(
 			'/me',
@@ -113,58 +162,6 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					summary: 'Get Poem by ID',
 					description:
 						'Returns the poem with the specified ID if the requester has access to it.',
-					tags: ['Poems Management'],
-				},
-			},
-		)
-		.get(
-			'/',
-			({ query, auth }) => {
-				return services.searchPoems({
-					requesterId: auth.clientId,
-					requesterRole: auth.clientRole,
-					requesterStatus: auth.clientStatus,
-					navigationOptions: {
-						limit: query.limit,
-						cursor: query.cursor,
-					},
-					filterOptions: {
-						searchTitle: query.searchTitle,
-						tags: query.tags,
-					},
-					sortOptions: {
-						orderBy: query.orderBy,
-						orderDirection: query.orderDirection,
-					},
-				});
-			},
-			{
-				response: {
-					200: PoemPreviewPageSchema,
-				},
-				query: t.Object({
-					limit: t.Optional(t.Number()),
-					cursor: t.Optional(t.Number()),
-					searchTitle: t.Optional(t.String()),
-					tags: t.Optional(t.Array(t.String())),
-					orderBy: t.Optional(
-						t.Enum({
-							createdAt: 'createdAt',
-							title: 'title',
-						}),
-					),
-					orderDirection: t.Optional(
-						t.Enum({
-							asc: 'asc',
-							desc: 'desc',
-						}),
-					),
-				}),
-
-				detail: {
-					summary: 'Search Poems',
-					description:
-						'Returns a paginated list of poems matching the provided filter and sort options.',
 					tags: ['Poems Management'],
 				},
 			},
