@@ -6,6 +6,9 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
 COPY . .
+# Default URL only for build-time prisma generate (no real connection is made).
+ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres?schema=public
+ENV DATABASE_URL=$DATABASE_URL
 ARG PRISMA_SCHEMA=src/generic-subdomains/persistance/prisma/schema.prisma
 RUN bunx prisma generate --schema $PRISMA_SCHEMA
 RUN bun run build
