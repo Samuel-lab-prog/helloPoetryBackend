@@ -34,7 +34,6 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
 		.post(
 			'/avatar/upload-url',
 			({ auth, body }) => {
@@ -58,6 +57,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				},
 			},
 		)
+		.use(AuthPlugin)
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {
