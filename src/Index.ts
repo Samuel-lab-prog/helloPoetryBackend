@@ -35,11 +35,8 @@ import {
 	notificationsCommandsRouter,
 	notificationsQueriesRouter,
 } from '@Domains/notifications/Composition';
-import {
-	corsConfig,
-	ELYSIA_SETTINGS,
-	OPEN_API_SETTINGS,
-} from 'server-config/config';
+import { ELYSIA_SETTINGS, OPEN_API_SETTINGS } from 'server-config/config';
+import { corsConfig } from 'server-config/corsConfig';
 import {
 	AUTH_RATE_LIMIT_SETTINGS,
 	RATE_LIMIT_SETTINGS,

@@ -1,10 +1,10 @@
-import { log } from '@GenericSubdomains/utils/logger';
 import { fromTypes } from '@elysiajs/openapi';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { type CookieOptions } from 'elysia';
 
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 import '@Domains/notifications/EventListeners.ts';
+import { hasCrossSiteCors } from './corsConfig';
 
 export const PREFIX = '/api/v1';
 export const MAIN_INSTANCE_NAME = 'mainServerInstance';
@@ -36,32 +36,10 @@ export const ELYSIA_SETTINGS = {
 };
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const FRONTEND_URL = process.env.FRONTEND_URL || '';
-const RAW_CORS_ORIGINS = process.env.CORS_ORIGIN ?? FRONTEND_URL ?? '';
 const CROSS_SITE_COOKIES = /^(1|true|yes|on)$/i.test(
 	process.env.CROSS_SITE_COOKIES ?? '',
 );
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
-
-const corsOrigins = RAW_CORS_ORIGINS.split(',')
-	.map((origin) => origin.trim())
-	.filter(Boolean);
-
-if (NODE_ENV === 'production' && corsOrigins.length === 0) {
-	log.warn(
-		'Missing CORS_ORIGIN/FRONTEND_URL in production. Cross-site cookies will be blocked.',
-	);
-}
-
-export const corsConfig = {
-	credentials: true,
-	origin: (request: Request) => {
-		const origin = request.headers.get('origin') ?? '';
-		if (!origin) return true;
-		if (corsOrigins.length === 0) return NODE_ENV !== 'production';
-		return corsOrigins.includes(origin);
-	},
-} as const;
 
 type LogLevel = 'silent' | 'debug' | 'info';
 
@@ -75,8 +53,7 @@ export function getLogLevel(): LogLevel {
 
 export function setUpCookieTokenOptions(token: CookieOptions) {
 	const isProd = NODE_ENV === 'production';
-	const isCrossSite =
-		CROSS_SITE_COOKIES || !!FRONTEND_URL || corsOrigins.length > 0;
+	const isCrossSite = CROSS_SITE_COOKIES || hasCrossSiteCors();
 
 	token.httpOnly = true;
 	token.path = '/';

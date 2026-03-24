@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import type { HashServices } from '../ports/HashServices';
 
-const SALT_ROUNDS = 2;
+const SALT_ROUNDS = 12;
 
 function hash(password: string): Promise<string> {
 	return bcrypt.hash(password, SALT_ROUNDS);
