@@ -7,6 +7,7 @@ import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@SetupPlugin';
 import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
+import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
 import '@Domains/notifications/EventListeners.ts';
 
 import {
@@ -65,6 +66,7 @@ function makeServer({
 			.use(enableLogger ? LoggerPlugin : undefined)
 			.use(cors(corsConfig))
 			.use(SetupPlugin)
+			.use(SecurityHeadersPlugin)
 			.use(CsrfPlugin)
 			.use(ErrorPlugin)
 

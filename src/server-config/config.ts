@@ -40,6 +40,8 @@ const CROSS_SITE_COOKIES = /^(1|true|yes|on)$/i.test(
 	process.env.CROSS_SITE_COOKIES ?? '',
 );
 const CSRF_ENABLED = /^(1|true|yes|on)$/i.test(process.env.CSRF_ENABLED ?? '');
+const SECURITY_HEADERS_ENABLED =
+	process.env.SECURITY_HEADERS_ENABLED !== 'false';
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
 
 export const CSRF_COOKIE_NAME = 'csrf_token';
@@ -47,6 +49,10 @@ export const CSRF_HEADER_NAME = 'x-csrf-token';
 
 export function isCsrfEnabled(): boolean {
 	return CSRF_ENABLED || CROSS_SITE_COOKIES || hasCrossSiteCors();
+}
+
+export function shouldApplySecurityHeaders(): boolean {
+	return SECURITY_HEADERS_ENABLED;
 }
 
 type LogLevel = 'silent' | 'debug' | 'info';

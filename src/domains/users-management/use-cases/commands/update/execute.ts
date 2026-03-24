@@ -8,6 +8,7 @@ import type {
 } from '../../../ports/Commands';
 import type { FullUser } from '../../Models';
 import { canUpdateData } from '../../Policies';
+import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -23,6 +24,10 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 			requesterStatus,
 			targetId,
 		});
+
+		if (data.avatarUrl) {
+			ensureAllowedCdnUrl(data.avatarUrl, 'avatarUrl');
+		}
 
 		const result = await commandsRepository.updateUser(targetId, data);
 

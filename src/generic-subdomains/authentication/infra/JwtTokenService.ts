@@ -3,11 +3,18 @@ import type { TokenService, TokenPayload } from '../ports/Services';
 import { getJwtSecretKey } from 'server-config/config';
 
 const secretKey = getJwtSecretKey();
+const issuer = process.env.JWT_ISSUER;
+const audience = process.env.JWT_AUDIENCE;
+const requireJwtClaims = process.env.JWT_REQUIRE_CLAIMS === 'true';
 
 function generateToken(payload: TokenPayload, expiresIn: number): string {
+	const jwtId = crypto.randomUUID();
 	const options: SignOptions = {
 		algorithm: 'HS256',
 		expiresIn,
+		issuer,
+		audience,
+		jwtid: jwtId,
 	};
 	return jwt.sign(payload, secretKey, options);
 }
@@ -27,7 +34,21 @@ function isValidTokenPayload(payload: unknown): payload is TokenPayload {
 
 function verifyToken(token: string): TokenPayload | null {
 	try {
-		const decoded = jwt.verify(token, secretKey);
+		const decoded = jwt.verify(token, secretKey, {
+			issuer,
+			audience,
+			ignoreExpiration: false,
+		});
+		const shouldRequireClaims =
+			requireJwtClaims || Boolean(issuer) || Boolean(audience);
+		if (
+			shouldRequireClaims &&
+			typeof decoded === 'object' &&
+			decoded !== null
+		) {
+			const claims = decoded as jwt.JwtPayload;
+			if (!claims.iss || !claims.aud || !claims.jti) return null;
+		}
 		return isValidTokenPayload(decoded) ? decoded : null;
 	} catch {
 		return null;

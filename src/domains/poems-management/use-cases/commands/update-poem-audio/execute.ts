@@ -1,6 +1,7 @@
 import { canManagePoemAudio } from '../../Policies';
 import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
+import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';
 
 export type UpdatePoemAudioParams = {
 	poemId: number;
@@ -31,6 +32,10 @@ export function updatePoemAudioFactory({
 			poemId,
 			queriesRepository,
 		});
+
+		if (audioUrl) {
+			ensureAllowedCdnUrl(audioUrl, 'audioUrl');
+		}
 
 		await commandsRepository.updatePoemAudio({
 			poemId,
