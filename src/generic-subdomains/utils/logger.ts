@@ -1,19 +1,8 @@
+import { getLogLevel } from 'config';
 import pino from 'pino';
 
-const env = process.env.NODE_ENV;
-
-let level = 'info';
-
-if (env === 'test') {
-	level = 'silent';
-}
-
-if (env === 'dev') {
-	level = 'debug';
-}
-
 export const log = pino({
-	level,
+	level: getLogLevel(),
 	transport: {
 		target: 'pino-pretty',
 		options: {

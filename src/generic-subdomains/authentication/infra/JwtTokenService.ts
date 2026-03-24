@@ -1,7 +1,8 @@
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import type { TokenService, TokenPayload } from '../ports/Services';
+import { getJwtSecretKey } from 'config';
 
-const secretKey = String(process.env.JWT_SECRET_KEY);
+const secretKey = getJwtSecretKey();
 
 function generateToken(payload: TokenPayload, expiresIn: number): string {
 	const options: SignOptions = {

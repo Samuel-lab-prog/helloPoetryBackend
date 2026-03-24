@@ -16,7 +16,7 @@ import { type QueriesRouterServices } from '../ports/Queries';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/poems' })
-			.get(
+		.get(
 			'/',
 			({ query }) => {
 				return services.searchPoems({
