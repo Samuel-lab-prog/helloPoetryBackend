@@ -8,6 +8,7 @@ import type {
 export type RequestAvatarUploadUrlParams = {
 	requesterId: number;
 	contentType: string;
+	contentLength?: number;
 };
 
 interface Dependencies {
@@ -20,10 +21,22 @@ export function requestAvatarUploadUrlFactory({
 	return async function requestAvatarUploadUrl(
 		params: RequestAvatarUploadUrlParams,
 	): Promise<AvatarUploadUrlResult> {
-		const { requesterId, contentType } = params;
+		const { requesterId, contentType, contentLength } = params;
+
+		const maxBytes = Number(process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000);
 
 		if (!contentType) {
 			throw new UnprocessableEntityError('Content type is required');
+		}
+
+		if (contentLength !== undefined && contentLength <= 0) {
+			throw new UnprocessableEntityError('Content length is invalid');
+		}
+
+		if (contentLength !== undefined && contentLength > maxBytes) {
+			throw new UnprocessableEntityError(
+				`Avatar exceeds maximum size of ${maxBytes} bytes`,
+			);
 		}
 
 		if (!storageService.validateImageContentType(contentType)) {
@@ -33,6 +46,7 @@ export function requestAvatarUploadUrlFactory({
 		return storageService.generateAvatarUploadUrl(
 			String(requesterId),
 			contentType,
+			contentLength,
 		);
 	};
 }

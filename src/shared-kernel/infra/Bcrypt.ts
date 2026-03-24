@@ -1,7 +1,11 @@
 import bcrypt from 'bcryptjs';
 import type { HashServices } from '../ports/HashServices';
 
-const SALT_ROUNDS = 12;
+const DEFAULT_SALT_ROUNDS = 12;
+const SALT_ROUNDS = Math.max(
+	8,
+	Number(process.env.BCRYPT_SALT_ROUNDS) || DEFAULT_SALT_ROUNDS,
+);
 
 function hash(password: string): Promise<string> {
 	return bcrypt.hash(password, SALT_ROUNDS);

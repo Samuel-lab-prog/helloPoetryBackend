@@ -60,6 +60,22 @@ describe('USE-CASE - Poems Management - RequestPoemAudioUploadUrl', () => {
 		);
 	});
 
+	it('should reject invalid content length', async () => {
+		await expectError(
+			requestPoemAudioUploadUrl({
+				poemId: 1,
+				contentType: 'audio/mpeg',
+				contentLength: 0,
+				meta: {
+					requesterId: 1,
+					requesterStatus: 'active',
+					requesterRole: 'author',
+				},
+			}),
+			UnprocessableEntityError,
+		);
+	});
+
 	it('should forbid when author is not active', async () => {
 		storageService.validateAudioContentType.mockReturnValue(true);
 		queriesRepository.selectPoemById.mockResolvedValue(
@@ -125,6 +141,7 @@ describe('USE-CASE - Poems Management - RequestPoemAudioUploadUrl', () => {
 		);
 		storageService.generatePoemAudioUploadUrl.mockResolvedValue({
 			uploadUrl: 'https://uploads.example.com/poem-audio',
+			fields: { key: 'poems/1/audio/abc.mp3' },
 			fileUrl: 'https://cdn.example.com/poems/1/audio.mp3',
 		});
 
@@ -140,11 +157,13 @@ describe('USE-CASE - Poems Management - RequestPoemAudioUploadUrl', () => {
 
 		expect(result).toEqual({
 			uploadUrl: 'https://uploads.example.com/poem-audio',
+			fields: { key: 'poems/1/audio/abc.mp3' },
 			fileUrl: 'https://cdn.example.com/poems/1/audio.mp3',
 		});
 		expect(storageService.generatePoemAudioUploadUrl).toHaveBeenCalledWith(
 			'1',
 			'audio/mpeg',
+			undefined,
 		);
 	});
 });

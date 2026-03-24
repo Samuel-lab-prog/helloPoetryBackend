@@ -1,5 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import {
+	appErrorSchema,
+	makeValidationError,
+} from '@GenericSubdomains/utils/AppError';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 
@@ -12,7 +15,11 @@ import {
 
 import { type UsersCommandsServices } from '../ports/Commands';
 
+// eslint-disable-next-line max-lines-per-function
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
+	const maxAvatarUploadBytes = Number(
+		process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000,
+	);
 	return new Elysia({ prefix: '/users' })
 		.use(AuthPlugin)
 		.post(
@@ -41,11 +48,21 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				return services.requestAvatarUploadUrl({
 					requesterId: auth.clientId,
 					contentType: body.contentType,
+					contentLength: body.contentLength,
 				});
 			},
 			{
 				body: t.Object({
 					contentType: t.String(),
+					contentLength: t.Optional(
+						t.Number({
+							minimum: 1,
+							maximum: maxAvatarUploadBytes,
+							...makeValidationError(
+								`Content length must be between 1 and ${maxAvatarUploadBytes} bytes`,
+							),
+						}),
+					),
 				}),
 				response: {
 					200: AvatarUploadUrlSchema,

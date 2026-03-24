@@ -1,8 +1,11 @@
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { idSchema } from '@SharedKernel/Schemas';
+import {
+	appErrorSchema,
+	makeValidationError,
+} from '@GenericSubdomains/utils/AppError';
+import { idSchema, paginationLimitSchema } from '@SharedKernel/Schemas';
 
 import {
 	MyPoemReadSchema,
@@ -11,10 +14,19 @@ import {
 	SavedPoemSchema,
 	PoemCollectionSchema,
 } from '../ports/schemas/Index';
+import { TagNameSchema } from '../ports/schemas/PoemFieldsSchemas';
 
 import { type QueriesRouterServices } from '../ports/Queries';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
+	const PoemTitleSearchSchema = t.String({
+		maxLength: 120,
+		pattern: '^(?!\\s*$)[\\s\\S]*$',
+		...makeValidationError(
+			'Search title must be at most 120 characters and not only whitespace',
+		),
+	});
+
 	return new Elysia({ prefix: '/poems' })
 		.get(
 			'/',
@@ -39,10 +51,15 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					200: PoemPreviewPageSchema,
 				},
 				query: t.Object({
-					limit: t.Optional(t.Number()),
-					cursor: t.Optional(t.Number()),
-					searchTitle: t.Optional(t.String()),
-					tags: t.Optional(t.Array(t.String())),
+					limit: t.Optional(paginationLimitSchema),
+					cursor: t.Optional(idSchema),
+					searchTitle: t.Optional(PoemTitleSearchSchema),
+					tags: t.Optional(
+						t.Array(TagNameSchema, {
+							maxItems: 5,
+							uniqueItems: true,
+						}),
+					),
 					orderBy: t.Optional(
 						t.Enum({
 							createdAt: 'createdAt',
@@ -104,8 +121,8 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 					403: appErrorSchema,
 				},
 				query: t.Object({
-					limit: t.Optional(t.Number()),
-					cursor: t.Optional(t.Number()),
+					limit: t.Optional(paginationLimitSchema),
+					cursor: t.Optional(idSchema),
 				}),
 				detail: {
 					summary: 'Get Pending Poems',

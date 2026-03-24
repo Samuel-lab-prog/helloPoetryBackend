@@ -1,6 +1,6 @@
 import type { StorageService } from '@SharedKernel/ports/Storage';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3Client } from '@aws-sdk/client-s3';
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { InternalServerError } from '@GenericSubdomains/utils/domainError';
 import { log } from '@GenericSubdomains/utils/logger';
 
@@ -49,6 +49,12 @@ const bucketName = process.env.S3_BUCKET_NAME ?? 'hellopoetry1392781';
 const signedUrlExpiresInSeconds = Number(
 	process.env.S3_SIGNED_URL_EXPIRES_IN ?? 300,
 );
+const maxAvatarUploadBytes = Number(
+	process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000,
+);
+const maxPoemAudioUploadBytes = Number(
+	process.env.MAX_POEM_AUDIO_UPLOAD_BYTES ?? 20_000_000,
+);
 const defaultPublicBaseUrl =
 	process.env.S3_PUBLIC_BASE_URL ?? `https://${bucketName}.s3.amazonaws.com`;
 
@@ -76,7 +82,11 @@ export const storageService: StorageService = {
 		const normalizedType = contentType.toLowerCase().split(';')[0] ?? '';
 		return allowedAudioTypes.has(normalizedType);
 	},
-	async generateAvatarUploadUrl(userId: string, contentType?: string) {
+	async generateAvatarUploadUrl(
+		userId: string,
+		contentType?: string,
+		_contentLength?: number,
+	) {
 		if (!bucketName)
 			throw new InternalServerError('S3 bucket name is not configured');
 
@@ -90,17 +100,23 @@ export const storageService: StorageService = {
 		const objectKey = `avatars/${userId}/${id}.${ext}`;
 		const fileUrl = `${defaultPublicBaseUrl}/${objectKey}`;
 
-		const command = new PutObjectCommand({
-			Bucket: bucketName,
-			Key: objectKey,
-			ContentType: resolvedContentType ?? 'image/jpeg',
-		});
-
 		let uploadUrl: string;
+		let fields: Record<string, string>;
 		try {
-			uploadUrl = await getSignedUrl(s3Client, command, {
-				expiresIn: signedUrlExpiresInSeconds,
+			const presignedPost = await createPresignedPost(s3Client, {
+				Bucket: bucketName,
+				Key: objectKey,
+				Expires: signedUrlExpiresInSeconds,
+				Fields: {
+					'Content-Type': resolvedContentType ?? 'image/jpeg',
+				},
+				Conditions: [
+					['content-length-range', 1, maxAvatarUploadBytes],
+					['eq', '$Content-Type', resolvedContentType ?? 'image/jpeg'],
+				],
 			});
+			uploadUrl = presignedPost.url;
+			fields = presignedPost.fields;
 		} catch (error) {
 			log.error(
 				{
@@ -110,17 +126,22 @@ export const storageService: StorageService = {
 					objectKey,
 					hasAccessKey: !!accessKeyId,
 				},
-				'Failed to generate S3 signed URL',
+				'Failed to generate S3 presigned POST',
 			);
 			throw new InternalServerError('Failed to generate avatar upload URL');
 		}
 
 		return {
 			uploadUrl,
+			fields,
 			fileUrl,
 		};
 	},
-	async generatePoemAudioUploadUrl(poemId: string, contentType?: string) {
+	async generatePoemAudioUploadUrl(
+		poemId: string,
+		contentType?: string,
+		_contentLength?: number,
+	) {
 		if (!bucketName)
 			throw new InternalServerError('S3 bucket name is not configured');
 
@@ -135,17 +156,23 @@ export const storageService: StorageService = {
 		const objectKey = `poems/${poemId}/audio/${id}.${ext}`;
 		const fileUrl = `${defaultPublicBaseUrl}/${objectKey}`;
 
-		const command = new PutObjectCommand({
-			Bucket: bucketName,
-			Key: objectKey,
-			ContentType: resolvedContentType ?? 'audio/mpeg',
-		});
-
 		let uploadUrl: string;
+		let fields: Record<string, string>;
 		try {
-			uploadUrl = await getSignedUrl(s3Client, command, {
-				expiresIn: signedUrlExpiresInSeconds,
+			const presignedPost = await createPresignedPost(s3Client, {
+				Bucket: bucketName,
+				Key: objectKey,
+				Expires: signedUrlExpiresInSeconds,
+				Fields: {
+					'Content-Type': resolvedContentType ?? 'audio/mpeg',
+				},
+				Conditions: [
+					['content-length-range', 1, maxPoemAudioUploadBytes],
+					['eq', '$Content-Type', resolvedContentType ?? 'audio/mpeg'],
+				],
 			});
+			uploadUrl = presignedPost.url;
+			fields = presignedPost.fields;
 		} catch (error) {
 			log.error(
 				{
@@ -155,13 +182,14 @@ export const storageService: StorageService = {
 					objectKey,
 					hasAccessKey: !!accessKeyId,
 				},
-				'Failed to generate S3 signed URL',
+				'Failed to generate S3 presigned POST',
 			);
 			throw new InternalServerError('Failed to generate audio upload URL');
 		}
 
 		return {
 			uploadUrl,
+			fields,
 			fileUrl,
 		};
 	},

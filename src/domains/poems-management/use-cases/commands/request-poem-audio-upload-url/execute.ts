@@ -10,6 +10,7 @@ import type { UserMetaData } from '../../../ports/Commands';
 export type RequestPoemAudioUploadUrlParams = {
 	poemId: number;
 	contentType: string;
+	contentLength?: number;
 	meta: UserMetaData;
 };
 
@@ -25,15 +26,26 @@ export function requestPoemAudioUploadUrlFactory({
 	return async function requestPoemAudioUploadUrl(
 		params: RequestPoemAudioUploadUrlParams,
 	): Promise<AudioUploadUrlResult> {
-		const { poemId, contentType, meta } = params;
+		const { poemId, contentType, contentLength, meta } = params;
 
-		if (!contentType) {
+		const maxBytes = Number(
+			process.env.MAX_POEM_AUDIO_UPLOAD_BYTES ?? 20_000_000,
+		);
+
+		if (!contentType)
 			throw new UnprocessableEntityError('Content type is required');
+
+		if (contentLength !== undefined && contentLength <= 0)
+			throw new UnprocessableEntityError('Content length is invalid');
+
+		if (contentLength !== undefined && contentLength > maxBytes) {
+			throw new UnprocessableEntityError(
+				`Audio exceeds maximum size of ${maxBytes} bytes`,
+			);
 		}
 
-		if (!storageService.validateAudioContentType(contentType)) {
+		if (!storageService.validateAudioContentType(contentType))
 			throw new UnprocessableEntityError('Invalid audio content type');
-		}
 
 		await canManagePoemAudio({
 			ctx: {
@@ -50,6 +62,7 @@ export function requestPoemAudioUploadUrlFactory({
 		return storageService.generatePoemAudioUploadUrl(
 			String(poemId),
 			contentType,
+			contentLength,
 		);
 	};
 }

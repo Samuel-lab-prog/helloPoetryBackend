@@ -1,6 +1,10 @@
 import { t } from 'elysia';
 import { makeValidationError } from '@GenericSubdomains/utils/AppError';
 
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const URL_SCHEME_PATTERN =
+	NODE_ENV === 'production' ? '^https://' : '^https?://';
+
 export const idSchema = t.Number({
 	minimum: 1,
 	example: 1,
@@ -48,14 +52,16 @@ export const NameSchema = t.String({
 
 export const AvatarUrlSchema = t.String({
 	format: 'uri',
+	pattern: URL_SCHEME_PATTERN,
 	example: 'https://cdn.example.com/avatar.png',
-	...makeValidationError('Avatar URL must be a valid URL'),
+	...makeValidationError('Avatar URL must be a valid http(s) URL'),
 });
 
 export const AudioUrlSchema = t.String({
 	format: 'uri',
+	pattern: URL_SCHEME_PATTERN,
 	example: 'https://cdn.example.com/poems/1/audio/recording.mp3',
-	...makeValidationError('Audio URL must be a valid URL'),
+	...makeValidationError('Audio URL must be a valid http(s) URL'),
 });
 
 export const UserPreviewSchema = t.Object({

@@ -1,8 +1,15 @@
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import {
+	appErrorSchema,
+	makeValidationError,
+} from '@GenericSubdomains/utils/AppError';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
+import {
+	EmailSchema,
+	NicknameSchema,
+} from '../ports/schemas/UserFieldsSchemas';
 
 import {
 	UserPublicProfileSchema,
@@ -16,6 +23,14 @@ import {
 import { type UsersQueriesRouterServices } from '../ports/Queries';
 
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
+	const NicknameSearchSchema = t.String({
+		maxLength: 32,
+		pattern: '^[a-zA-Z0-9_]*$',
+		...makeValidationError(
+			'Nickname search must be at most 32 characters and contain only letters, numbers, and underscores',
+		),
+	});
+
 	return new Elysia({ prefix: '/users' })
 		.get(
 			'/check-nickname',
@@ -27,7 +42,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 					200: t.Boolean(),
 				},
 				query: t.Object({
-					nickname: t.String(),
+					nickname: NicknameSchema,
 				}),
 				detail: {
 					summary: 'Check Nickname Availability',
@@ -64,7 +79,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 				query: t.Object({
 					limit: paginationLimitSchema,
-					searchNickname: t.Optional(t.String()),
+					searchNickname: t.Optional(NicknameSearchSchema),
 				}),
 				detail: {
 					summary: 'Get Public Authors',
@@ -83,7 +98,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 					200: t.Boolean(),
 				},
 				query: t.Object({
-					email: t.String(),
+					email: EmailSchema,
 				}),
 				detail: {
 					summary: 'Check Email Availability',
@@ -122,7 +137,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 					cursor: t.Optional(idSchema),
 					orderBy: orderUsersBySchema,
 					orderDirection: orderDirectionSchema,
-					searchNickname: t.Optional(t.String()),
+					searchNickname: t.Optional(NicknameSearchSchema),
 				}),
 				detail: {
 					summary: 'Get Users',

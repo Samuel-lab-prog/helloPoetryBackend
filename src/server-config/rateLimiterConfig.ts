@@ -9,6 +9,7 @@ const TRUSTED_PROXY_IPS = (process.env.TRUSTED_PROXY_IPS ?? '')
 	.split(',')
 	.map((ip) => ip.trim())
 	.filter(Boolean);
+const HAS_TRUSTED_PROXY_IPS = TRUSTED_PROXY_IPS.length > 0;
 const RATE_LIMIT_HEADERS = process.env.RATE_LIMIT_HEADERS !== 'false';
 const RATE_LIMIT_CONTEXT_SIZE =
 	Number(process.env.RATE_LIMIT_CONTEXT_SIZE) || 10000;
@@ -28,10 +29,9 @@ function getRateLimitKey(
 	server: Server<null> | null,
 ): string {
 	// If behind a trusted proxy, prefer the forwarded client IP (first hop).
-	if (TRUST_PROXY) {
+	if (TRUST_PROXY && HAS_TRUSTED_PROXY_IPS) {
 		const directIp = server?.requestIP(request)?.address ?? '';
-		const isTrustedProxy =
-			TRUSTED_PROXY_IPS.length === 0 || TRUSTED_PROXY_IPS.includes(directIp);
+		const isTrustedProxy = TRUSTED_PROXY_IPS.includes(directIp);
 		if (isTrustedProxy) {
 			const forwardedFor = request.headers.get('x-forwarded-for');
 			const cfConnectingIp = request.headers.get('cf-connecting-ip');

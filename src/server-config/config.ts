@@ -3,7 +3,6 @@ import { BunAdapter } from 'elysia/adapter/bun';
 import { type CookieOptions } from 'elysia';
 
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
-import '@Domains/notifications/EventListeners.ts';
 import { hasCrossSiteCors } from './corsConfig';
 
 export const PREFIX = '/api/v1';
@@ -53,13 +52,14 @@ export function getLogLevel(): LogLevel {
 
 export function setUpCookieTokenOptions(token: CookieOptions) {
 	const isProd = NODE_ENV === 'production';
-	const isCrossSite = CROSS_SITE_COOKIES || hasCrossSiteCors();
+	const isCrossSite = CROSS_SITE_COOKIES;
+	const isCrossSiteConfig = hasCrossSiteCors();
 
 	token.httpOnly = true;
 	token.path = '/';
 	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
-	token.secure = isProd || isCrossSite;
-	token.sameSite = isProd || isCrossSite ? 'none' : 'lax';
+	token.secure = isProd || isCrossSite || isCrossSiteConfig;
+	token.sameSite = isCrossSite ? 'none' : 'lax';
 
 	if (COOKIE_DOMAIN) token.domain = COOKIE_DOMAIN;
 }
@@ -78,7 +78,10 @@ export function getDatabaseUrl(): string {
 
 export function getJwtSecretKey(): string {
 	const key = process.env.JWT_SECRET_KEY;
-	if (!key) throw new Error('JWT_SECRET_KEY is not set in .env');
+	if (!key) {
+		if (NODE_ENV === 'test') return 'test-secret';
+		throw new Error('JWT_SECRET_KEY is not set in .env');
+	}
 	return key;
 }
 

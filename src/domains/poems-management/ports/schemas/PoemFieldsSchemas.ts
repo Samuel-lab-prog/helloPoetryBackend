@@ -42,7 +42,7 @@ export const PoemSlugSchema = t.String({
 	),
 });
 
-const TagNameSchema = t.String({
+export const TagNameSchema = t.String({
 	minLength: 2,
 	maxLength: 24,
 	example: 'melancolia',

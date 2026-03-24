@@ -2,7 +2,10 @@
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import {
+	appErrorSchema,
+	makeValidationError,
+} from '@GenericSubdomains/utils/AppError';
 import { idSchema } from '@SharedKernel/Schemas';
 
 import {
@@ -19,6 +22,9 @@ import {
 import { type CommandsRouterServices } from '../ports/Commands';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
+	const maxPoemAudioUploadBytes = Number(
+		process.env.MAX_POEM_AUDIO_UPLOAD_BYTES ?? 20_000_000,
+	);
 	return new Elysia({ prefix: '/poems' })
 		.use(AuthPlugin)
 		.post(
@@ -145,6 +151,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 				return services.requestPoemAudioUploadUrl({
 					poemId: params.id,
 					contentType: body.contentType,
+					contentLength: body.contentLength,
 					meta: {
 						requesterId: auth.clientId,
 						requesterStatus: auth.clientStatus,
@@ -155,6 +162,15 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 			{
 				body: t.Object({
 					contentType: t.String(),
+					contentLength: t.Optional(
+						t.Number({
+							minimum: 1,
+							maximum: maxPoemAudioUploadBytes,
+							...makeValidationError(
+								`Content length must be between 1 and ${maxPoemAudioUploadBytes} bytes`,
+							),
+						}),
+					),
 				}),
 				response: {
 					200: PoemAudioUploadUrlSchema,

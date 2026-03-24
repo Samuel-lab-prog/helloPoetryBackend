@@ -1,5 +1,3 @@
-import { log } from '@GenericSubdomains/utils/logger';
-
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 const RAW_CORS_ORIGINS = process.env.CORS_ORIGIN ?? FRONTEND_URL ?? '';
@@ -9,7 +7,8 @@ const corsOrigins = RAW_CORS_ORIGINS.split(',')
 	.filter(Boolean);
 
 if (NODE_ENV === 'production' && corsOrigins.length === 0) {
-	log.warn(
+	// Avoid logger import here to prevent circular deps with server-config.
+	console.warn(
 		'Missing CORS_ORIGIN/FRONTEND_URL in production. Cross-site cookies will be blocked.',
 	);
 }

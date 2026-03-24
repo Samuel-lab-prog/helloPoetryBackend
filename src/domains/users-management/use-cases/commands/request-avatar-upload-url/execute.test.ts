@@ -20,7 +20,10 @@ describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
 
 	it('should require content type', async () => {
 		await expectError(
-			requestAvatarUploadUrl({ requesterId: 1, contentType: '' }),
+			requestAvatarUploadUrl({
+				requesterId: 1,
+				contentType: '',
+			}),
 			UnprocessableEntityError,
 		);
 	});
@@ -29,7 +32,21 @@ describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
 		storageService.validateImageContentType.mockReturnValue(false);
 
 		await expectError(
-			requestAvatarUploadUrl({ requesterId: 1, contentType: 'text/plain' }),
+			requestAvatarUploadUrl({
+				requesterId: 1,
+				contentType: 'text/plain',
+			}),
+			UnprocessableEntityError,
+		);
+	});
+
+	it('should reject invalid content length', async () => {
+		await expectError(
+			requestAvatarUploadUrl({
+				requesterId: 1,
+				contentType: 'image/png',
+				contentLength: 0,
+			}),
 			UnprocessableEntityError,
 		);
 	});
@@ -38,6 +55,7 @@ describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
 		storageService.validateImageContentType.mockReturnValue(true);
 		storageService.generateAvatarUploadUrl.mockResolvedValue({
 			uploadUrl: 'https://uploads.example.com/avatar',
+			fields: { key: 'avatars/7/abc.png' },
 			fileUrl: 'https://cdn.example.com/avatar.png',
 		});
 
@@ -48,11 +66,13 @@ describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
 
 		expect(result).toEqual({
 			uploadUrl: 'https://uploads.example.com/avatar',
+			fields: { key: 'avatars/7/abc.png' },
 			fileUrl: 'https://cdn.example.com/avatar.png',
 		});
 		expect(storageService.generateAvatarUploadUrl).toHaveBeenCalledWith(
 			'7',
 			'image/png',
+			undefined,
 		);
 	});
 });

@@ -22,6 +22,7 @@ export type UpdateUserParams = {
 export type RequestAvatarUploadUrlParams = {
 	requesterId: number;
 	contentType: string;
+	contentLength?: number;
 };
 
 export interface UsersCommandsServices {

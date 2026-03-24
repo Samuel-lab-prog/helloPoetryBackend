@@ -44,6 +44,7 @@ export type DeletePoemParams = {
 export type RequestPoemAudioUploadUrlParams = {
 	poemId: number;
 	contentType: string;
+	contentLength?: number;
 	meta: UserMetaData;
 };
 
@@ -60,7 +61,11 @@ export interface CommandsRouterServices {
 	deletePoem: (params: DeletePoemParams) => Promise<void>;
 	requestPoemAudioUploadUrl: (
 		params: RequestPoemAudioUploadUrlParams,
-	) => Promise<{ uploadUrl: string; fileUrl: string }>;
+	) => Promise<{
+		uploadUrl: string;
+		fields: Record<string, string>;
+		fileUrl: string;
+	}>;
 	updatePoemAudio: (
 		params: UpdatePoemAudioParams,
 	) => Promise<{ audioUrl: string | null }>;
