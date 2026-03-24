@@ -6,6 +6,7 @@ import { rateLimit } from 'elysia-rate-limit';
 import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@SetupPlugin';
+import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
 import '@Domains/notifications/EventListeners.ts';
 
 import {
@@ -64,6 +65,7 @@ function makeServer({
 			.use(enableLogger ? LoggerPlugin : undefined)
 			.use(cors(corsConfig))
 			.use(SetupPlugin)
+			.use(CsrfPlugin)
 			.use(ErrorPlugin)
 
 			.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)

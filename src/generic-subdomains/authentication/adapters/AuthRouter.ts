@@ -4,7 +4,11 @@ import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
 import { SetupPlugin } from '../../utils/plugins/setupPlugin';
 import { LoginSchema } from '../ports/schemas/loginSchema';
 import type { AuthControllerServices } from '../ports/Services';
-import { setUpCookieTokenOptions } from 'server-config/config';
+import {
+	CSRF_COOKIE_NAME,
+	setUpCookieTokenOptions,
+	setUpCsrfCookieOptions,
+} from 'server-config/config';
 
 export function createAuthRouter(services: AuthControllerServices) {
 	const { login } = services;
@@ -19,6 +23,10 @@ export function createAuthRouter(services: AuthControllerServices) {
 
 			cookie.token!.value = result.token;
 			setUpCookieTokenOptions(cookie.token!);
+
+			const csrfToken = crypto.randomUUID();
+			cookie[CSRF_COOKIE_NAME]!.value = csrfToken;
+			setUpCsrfCookieOptions(cookie[CSRF_COOKIE_NAME]!);
 
 			auth.clientId = result.client.id;
 			auth.clientRole = result.client.role;

@@ -28,6 +28,7 @@ export const ELYSIA_SETTINGS = {
 	prefix: PREFIX,
 	sanitize: (value: string) =>
 		typeof value === 'string' ? sanitize(value) : value,
+	bodyLimit: Number(process.env.BODY_LIMIT_BYTES) || 1_000_000,
 	serve: {
 		hostname: HOST_NAME,
 		port: PORT,
@@ -38,7 +39,15 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const CROSS_SITE_COOKIES = /^(1|true|yes|on)$/i.test(
 	process.env.CROSS_SITE_COOKIES ?? '',
 );
+const CSRF_ENABLED = /^(1|true|yes|on)$/i.test(process.env.CSRF_ENABLED ?? '');
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
+
+export const CSRF_COOKIE_NAME = 'csrf_token';
+export const CSRF_HEADER_NAME = 'x-csrf-token';
+
+export function isCsrfEnabled(): boolean {
+	return CSRF_ENABLED || CROSS_SITE_COOKIES || hasCrossSiteCors();
+}
 
 type LogLevel = 'silent' | 'debug' | 'info';
 
@@ -56,6 +65,20 @@ export function setUpCookieTokenOptions(token: CookieOptions) {
 	const isCrossSiteConfig = hasCrossSiteCors();
 
 	token.httpOnly = true;
+	token.path = '/';
+	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
+	token.secure = isProd || isCrossSite || isCrossSiteConfig;
+	token.sameSite = isCrossSite ? 'none' : 'lax';
+
+	if (COOKIE_DOMAIN) token.domain = COOKIE_DOMAIN;
+}
+
+export function setUpCsrfCookieOptions(token: CookieOptions) {
+	const isProd = NODE_ENV === 'production';
+	const isCrossSite = CROSS_SITE_COOKIES;
+	const isCrossSiteConfig = hasCrossSiteCors();
+
+	token.httpOnly = false;
 	token.path = '/';
 	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
 	token.secure = isProd || isCrossSite || isCrossSiteConfig;
