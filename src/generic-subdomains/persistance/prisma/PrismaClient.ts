@@ -2,7 +2,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from './generated/client';
 import 'dotenv/config';
 import { log } from '@GenericSubdomains/utils/logger';
-import { getDatabaseUrl } from 'config';
+import { getDatabaseUrl } from 'server-config/config';
 
 const connectionString = getDatabaseUrl();
 

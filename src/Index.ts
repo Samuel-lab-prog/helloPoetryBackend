@@ -39,8 +39,11 @@ import {
 	corsConfig,
 	ELYSIA_SETTINGS,
 	OPEN_API_SETTINGS,
+} from 'server-config/config';
+import {
+	AUTH_RATE_LIMIT_SETTINGS,
 	RATE_LIMIT_SETTINGS,
-} from 'config';
+} from 'server-config/rateLimiterConfig';
 
 type MakeServerOptions = {
 	enableRealHash: boolean;
@@ -55,27 +58,31 @@ function makeServer({
 	enableRateLimit,
 	enableLogger,
 }: MakeServerOptions) {
-	return new Elysia(ELYSIA_SETTINGS)
-		.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
-		.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
-		.use(enableLogger ? LoggerPlugin : undefined)
-		.use(cors(corsConfig))
-		.use(SetupPlugin)
-		.use(ErrorPlugin)
+	return (
+		new Elysia(ELYSIA_SETTINGS)
+			.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
+			// Global and auth-specific limits are applied separately.
+			.use(enableRateLimit ? rateLimit(AUTH_RATE_LIMIT_SETTINGS) : undefined)
+			.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
+			.use(enableLogger ? LoggerPlugin : undefined)
+			.use(cors(corsConfig))
+			.use(SetupPlugin)
+			.use(ErrorPlugin)
 
-		.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
-		.use(enableRealHash ? authRouter : authRouterWithFakeHash)
-		.use(userQueriesRouter)
-		.use(poemsCommandsRouter)
-		.use(poemsQueriesRouter)
-		.use(friendsCommandsRouter)
-		.use(friendsQueriesRouter)
-		.use(interactionsCommandsRouter)
-		.use(interactionsQueriesRouter)
-		.use(moderationCommandsRouter)
-		.use(feedQueriesRouter)
-		.use(notificationsCommandsRouter)
-		.use(notificationsQueriesRouter);
+			.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
+			.use(enableRealHash ? authRouter : authRouterWithFakeHash)
+			.use(userQueriesRouter)
+			.use(poemsCommandsRouter)
+			.use(poemsQueriesRouter)
+			.use(friendsCommandsRouter)
+			.use(friendsQueriesRouter)
+			.use(interactionsCommandsRouter)
+			.use(interactionsQueriesRouter)
+			.use(moderationCommandsRouter)
+			.use(feedQueriesRouter)
+			.use(notificationsCommandsRouter)
+			.use(notificationsQueriesRouter)
+	);
 }
 
 export const server = makeServer({

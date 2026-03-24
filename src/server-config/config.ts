@@ -43,12 +43,6 @@ const CROSS_SITE_COOKIES = /^(1|true|yes|on)$/i.test(
 );
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
 
-export const RATE_LIMIT_SETTINGS = {
-	max: 1000,
-	duration: 15 * 60 * 1000,
-	skip: () => NODE_ENV === 'test',
-};
-
 const corsOrigins = RAW_CORS_ORIGINS.split(',')
 	.map((origin) => origin.trim())
 	.filter(Boolean);

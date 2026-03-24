@@ -7,7 +7,7 @@ import type { LoginResponse } from '../../ports/Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';
-import { TOKEN_EXPIRATION_TIME } from 'config';
+import { TOKEN_EXPIRATION_TIME } from 'server-config/config';
 
 export interface LoginClientDependencies {
 	tokenService: TokenService;

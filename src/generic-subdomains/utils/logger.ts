@@ -1,4 +1,4 @@
-import { getLogLevel } from 'config';
+import { getLogLevel } from 'server-config/config';
 import pino from 'pino';
 
 export const log = pino({

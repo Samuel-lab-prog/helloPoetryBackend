@@ -4,7 +4,7 @@ import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
 import { SetupPlugin } from '../../utils/plugins/setupPlugin';
 import { LoginSchema } from '../ports/schemas/loginSchema';
 import type { AuthControllerServices } from '../ports/Services';
-import { setUpCookieTokenOptions } from 'config';
+import { setUpCookieTokenOptions } from 'server-config/config';
 
 export function createAuthRouter(services: AuthControllerServices) {
 	const { login } = services;

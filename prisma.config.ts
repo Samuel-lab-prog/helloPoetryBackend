@@ -1,6 +1,6 @@
 import { defineConfig } from 'prisma/config';
 import { config } from 'dotenv';
-import { getDatabaseUrl } from 'config';
+import { getDatabaseUrl } from 'server-config/config';
 
 config();
 
