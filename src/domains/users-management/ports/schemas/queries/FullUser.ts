@@ -15,7 +15,7 @@ export const FullUserSchema = t.Object({
 	name: NameSchema,
 	email: EmailSchema,
 	bio: BioSchema,
-	avatarUrl: AvatarUrlSchema,
+	avatarUrl: t.Nullable(AvatarUrlSchema),
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
 	createdAt: DateSchema,

@@ -68,12 +68,11 @@ export function getLogLevel(): LogLevel {
 export function setUpCookieTokenOptions(token: CookieOptions) {
 	const isProd = NODE_ENV === 'production';
 	const isCrossSite = CROSS_SITE_COOKIES;
-	const isCrossSiteConfig = hasCrossSiteCors();
 
 	token.httpOnly = true;
 	token.path = '/';
 	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
-	token.secure = isProd || isCrossSite || isCrossSiteConfig;
+	token.secure = isProd || isCrossSite;
 	token.sameSite = isCrossSite ? 'none' : 'lax';
 
 	if (COOKIE_DOMAIN) token.domain = COOKIE_DOMAIN;
@@ -82,12 +81,11 @@ export function setUpCookieTokenOptions(token: CookieOptions) {
 export function setUpCsrfCookieOptions(token: CookieOptions) {
 	const isProd = NODE_ENV === 'production';
 	const isCrossSite = CROSS_SITE_COOKIES;
-	const isCrossSiteConfig = hasCrossSiteCors();
 
 	token.httpOnly = false;
 	token.path = '/';
 	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
-	token.secure = isProd || isCrossSite || isCrossSiteConfig;
+	token.secure = isProd || isCrossSite;
 	token.sameSite = isCrossSite ? 'none' : 'lax';
 
 	if (COOKIE_DOMAIN) token.domain = COOKIE_DOMAIN;

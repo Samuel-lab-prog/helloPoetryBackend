@@ -30,11 +30,13 @@ export function createUserFactory({
 
 		if (result.ok) return result.data;
 		if (result.code !== 'CONFLICT')
-			throw new UnknownError('Failed to create user');
+			throw new UnknownError(result.message ?? 'Failed to create user');
 		if (result.message?.includes('nickname'))
 			throw new ConflictError('Nickname already in use');
 		if (result.message?.includes('email'))
 			throw new ConflictError('Email already in use');
-		throw new UnknownError('Failed to create user due to unknown conflict');
+		throw new ConflictError(
+			result.message ?? 'Failed to create user due to conflict',
+		);
 	};
 }

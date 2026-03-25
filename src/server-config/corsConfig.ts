@@ -15,6 +15,12 @@ if (NODE_ENV === 'production' && corsOrigins.length === 0) {
 
 export const corsConfig = {
 	credentials: true,
+	allowedHeaders: [
+		'content-type',
+		'authorization',
+		'x-csrf-token',
+		'x-requested-with',
+	],
 	origin: (request: Request) => {
 		const origin = request.headers.get('origin') ?? '';
 		if (!origin) return true;

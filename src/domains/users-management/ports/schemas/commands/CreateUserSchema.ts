@@ -5,7 +5,7 @@ import {
 	PasswordSchema,
 	NameSchema,
 	BioSchema,
-	AvatarUrlSchema,
+	NullableAvatarUrlSchema,
 } from '../UserFieldsSchemas';
 
 export const CreateUserSchema = t.Object({
@@ -14,5 +14,5 @@ export const CreateUserSchema = t.Object({
 	email: EmailSchema,
 	password: PasswordSchema,
 	bio: BioSchema,
-	avatarUrl: AvatarUrlSchema,
+	avatarUrl: t.Optional(NullableAvatarUrlSchema),
 });

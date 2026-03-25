@@ -83,7 +83,7 @@ model User {
   name         String
   nickname     String @unique
   bio          String
-  avatarUrl    String
+  avatarUrl    String?
 
   role   UserRole   @default(author)
   status UserStatus @default(active)

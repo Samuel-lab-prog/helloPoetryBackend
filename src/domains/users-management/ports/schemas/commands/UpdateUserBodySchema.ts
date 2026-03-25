@@ -3,7 +3,7 @@ import {
 	NicknameSchema,
 	NameSchema,
 	BioSchema,
-	AvatarUrlSchema,
+	NullableAvatarUrlSchema,
 } from '../UserFieldsSchemas';
 
 export const UpdateUserBodySchema = t.Partial(
@@ -11,6 +11,6 @@ export const UpdateUserBodySchema = t.Partial(
 		name: NameSchema,
 		nickname: NicknameSchema,
 		bio: BioSchema,
-		avatarUrl: AvatarUrlSchema,
+		avatarUrl: NullableAvatarUrlSchema,
 	}),
 );

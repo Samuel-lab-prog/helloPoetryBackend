@@ -3,8 +3,12 @@ import type { TokenService, TokenPayload } from '../ports/Services';
 import { getJwtSecretKey } from 'server-config/config';
 
 const secretKey = getJwtSecretKey();
-const issuer = process.env.JWT_ISSUER;
-const audience = process.env.JWT_AUDIENCE;
+const issuer =
+	typeof process.env.JWT_ISSUER === 'string' ? process.env.JWT_ISSUER : undefined;
+const audience =
+	typeof process.env.JWT_AUDIENCE === 'string'
+		? process.env.JWT_AUDIENCE
+		: undefined;
 const requireJwtClaims = process.env.JWT_REQUIRE_CLAIMS === 'true';
 
 function generateToken(payload: TokenPayload, expiresIn: number): string {
@@ -12,10 +16,10 @@ function generateToken(payload: TokenPayload, expiresIn: number): string {
 	const options: SignOptions = {
 		algorithm: 'HS256',
 		expiresIn,
-		issuer,
-		audience,
 		jwtid: jwtId,
 	};
+	if (issuer) options.issuer = issuer;
+	if (audience) options.audience = audience;
 	return jwt.sign(payload, secretKey, options);
 }
 
@@ -34,11 +38,12 @@ function isValidTokenPayload(payload: unknown): payload is TokenPayload {
 
 function verifyToken(token: string): TokenPayload | null {
 	try {
-		const decoded = jwt.verify(token, secretKey, {
-			issuer,
-			audience,
+		const verifyOptions: jwt.VerifyOptions = {
 			ignoreExpiration: false,
-		});
+		};
+		if (issuer) verifyOptions.issuer = issuer;
+		if (audience) verifyOptions.audience = audience;
+		const decoded = jwt.verify(token, secretKey, verifyOptions);
 		const shouldRequireClaims =
 			requireJwtClaims || Boolean(issuer) || Boolean(audience);
 		if (

@@ -8,7 +8,7 @@ import {
 import { idSchema } from '@SharedKernel/Schemas';
 
 export const UserPreviewSchema = t.Object({
-	avatarUrl: AvatarUrlSchema,
+	avatarUrl: t.Nullable(AvatarUrlSchema),
 	id: idSchema,
 	name: NameSchema,
 	nickname: NicknameSchema,

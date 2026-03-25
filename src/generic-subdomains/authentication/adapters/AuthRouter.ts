@@ -15,7 +15,7 @@ export function createAuthRouter(services: AuthControllerServices) {
 
 	return new Elysia({ prefix: '/auth' }).use(SetupPlugin).post(
 		'/login',
-		async ({ body, cookie, auth }) => {
+		async ({ body, cookie, auth, set }) => {
 			const result = await login({
 				email: body.email,
 				password: body.password,
@@ -31,6 +31,9 @@ export function createAuthRouter(services: AuthControllerServices) {
 			auth.clientId = result.client.id;
 			auth.clientRole = result.client.role;
 			auth.clientStatus = result.client.status;
+			// Ensure a JSON response for the frontend to parse.
+			set.status = 200;
+			set.headers['content-type'] = 'application/json';
 			return result.client;
 		},
 		{

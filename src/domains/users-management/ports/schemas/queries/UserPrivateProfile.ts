@@ -14,7 +14,7 @@ export const UserPrivateProfileSchema = t.Object({
 	nickname: NicknameSchema,
 	name: NameSchema,
 	bio: BioSchema,
-	avatarUrl: AvatarUrlSchema,
+	avatarUrl: t.Nullable(AvatarUrlSchema),
 	role: UserRoleEnumSchema,
 	status: UserStatusEnumSchema,
 	email: EmailSchema,

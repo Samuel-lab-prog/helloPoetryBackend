@@ -18,7 +18,7 @@ function toPrismaCreateInput(user: CreateUserDB): UserCreateInput {
 		passwordHash: user.passwordHash,
 		name: user.name,
 		bio: user.bio,
-		avatarUrl: user.avatarUrl,
+		...(user.avatarUrl !== undefined && { avatarUrl: user.avatarUrl }),
 	};
 }
 
