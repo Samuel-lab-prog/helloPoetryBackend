@@ -34,16 +34,16 @@ export function likeCommentFactory({
 		});
 		if (alreadyLiked) throw new ConflictError('Comment already liked');
 
+		await commandsRepository.createCommentLike({
+			commentId,
+			userId,
+		});
+
 		eventBus.publish('COMMENT_LIKED', {
 			userId,
 			likerId: userId,
 			likerNickname: userInfo.nickname,
 			commentId,
-		});
-
-		await commandsRepository.createCommentLike({
-			commentId,
-			userId,
 		});
 	};
 }

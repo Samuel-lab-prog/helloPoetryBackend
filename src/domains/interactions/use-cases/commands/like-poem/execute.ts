@@ -57,16 +57,16 @@ export function likePoemFactory({
 		});
 		if (alreadyLiked) throw new ConflictError('Poem already liked');
 
+		await commandsRepository.createPoemLike({
+			userId,
+			poemId,
+		});
+
 		eventBus.publish('POEM_LIKED', {
 			poemId,
 			userId,
 			likerId: userId,
 			likerNickname: userInfo.nickname,
-		});
-
-		await commandsRepository.createPoemLike({
-			userId,
-			poemId,
 		});
 	};
 }

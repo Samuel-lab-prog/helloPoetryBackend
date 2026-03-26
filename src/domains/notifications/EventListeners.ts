@@ -4,6 +4,7 @@ import { notificationsCommandsServices } from './Composition';
 
 eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 	try {
+		if (p.authorId === p.commenterId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.authorId,
 			type: 'POEM_COMMENT_CREATED',
@@ -42,6 +43,7 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 
 eventBus.subscribe('POEM_LIKED', async (p) => {
 	try {
+		if (p.userId === p.likerId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'POEM_LIKED',
@@ -77,6 +79,7 @@ eventBus.subscribe('POEM_LIKED', async (p) => {
 
 eventBus.subscribe('POEM_DEDICATED', async (p) => {
 	try {
+		if (p.userId === p.dedicatorId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'POEM_DEDICATED',
@@ -114,6 +117,7 @@ eventBus.subscribe('POEM_DEDICATED', async (p) => {
 
 eventBus.subscribe('NEW_FRIEND_REQUEST', async (p) => {
 	try {
+		if (p.recipientId === p.requesterId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.recipientId,
 			type: 'NEW_FRIEND_REQUEST',
@@ -150,6 +154,7 @@ eventBus.subscribe('NEW_FRIEND_REQUEST', async (p) => {
 
 eventBus.subscribe('NEW_FRIEND', async (p) => {
 	try {
+		if (p.userId === p.newFriendId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.userId,
 			type: 'NEW_FRIEND',
@@ -185,6 +190,7 @@ eventBus.subscribe('NEW_FRIEND', async (p) => {
 
 eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 	try {
+		if (p.originalCommenterId === p.replierId) return;
 		await notificationsCommandsServices.createNotification({
 			userId: p.originalCommenterId,
 			type: 'POEM_COMMENT_REPLIED',
@@ -222,20 +228,22 @@ eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 	}
 });
 
-eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
+eventBus.subscribe('USER_MENTION_IN_POEM', async (p) => {
 	try {
+		if (p.userId === p.mentionerId) return;
 		await notificationsCommandsServices.createNotification({
-			userId: p.authorId,
-			type: 'POEM_COMMENT_CREATED',
-			actorId: p.commenterId,
+			userId: p.userId,
+			type: 'USER_MENTION_IN_POEM',
+			actorId: p.mentionerId,
 			entityId: p.poemId,
 			entityType: 'POEM',
 			data: {
-				commentId: p.commentId,
-				title: 'New comment on your poem',
-				commenterNickname: p.commenterNickname,
-				body: `Your poem received a comment from ${p.commenterNickname}`,
+				title: 'You were mentioned in a poem',
+				body: `${p.mentionerNickname} mentioned you in the poem ${p.poemTitle}`,
 				poemTitle: p.poemTitle,
+				poemId: p.poemId,
+				mentionerId: p.mentionerId,
+				mentionerNickname: p.mentionerNickname,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -243,19 +251,17 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 			{
 				entityType: 'POEM',
 				poemId: p.poemId,
-				commentId: p.commentId,
 			},
-			'New notification created for poem comment',
+			'New notification created for poem mention',
 		);
 	} catch (err) {
 		log.error(
 			{
 				entityType: 'POEM',
 				poemId: p.poemId,
-				commentId: p.commentId,
 				error: err instanceof Error ? err.message : String(err),
 			},
-			'Failed to create notification for poem comment',
+			'Failed to create notification for poem mention',
 		);
 	}
 });
