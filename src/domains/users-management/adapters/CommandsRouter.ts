@@ -22,6 +22,26 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	);
 	return new Elysia({ prefix: '/users' })
 		.post(
+			'/',
+			async ({ body, set }) => {
+				const result = await services.createUser({ data: body });
+				set.status = 201;
+				return result;
+			},
+			{
+				body: CreateUserSchema,
+				response: {
+					201: FullUserSchema,
+					409: appErrorSchema,
+				},
+				detail: {
+					summary: 'Create User',
+					description: 'Creates a new user.',
+					tags: ['Users Management'],
+				},
+			},
+		)
+		.post(
 			'/avatar/upload-url',
 			({ body }) => {
 				return services.requestAvatarUploadUrl({
@@ -55,26 +75,6 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 			},
 		)
 		.use(AuthPlugin)
-		.post(
-			'/',
-			async ({ body, set }) => {
-				const result = await services.createUser({ data: body });
-				set.status = 201;
-				return result;
-			},
-			{
-				body: CreateUserSchema,
-				response: {
-					201: FullUserSchema,
-					409: appErrorSchema,
-				},
-				detail: {
-					summary: 'Create User',
-					description: 'Creates a new user.',
-					tags: ['Users Management'],
-				},
-			},
-		)
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {
