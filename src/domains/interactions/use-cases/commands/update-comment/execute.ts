@@ -36,7 +36,7 @@ export function updateCommentFactory({
 
 		v.ensure(content)
 			.minLength(1, 'Content must be at least 1 character long')
-			.maxLength(300, 'Content must be at most 300 characters long');
+			.maxLength(3000, 'Content must be at most 3000 characters long');
 
 		await commandsRepository.updateComment({
 			commentId,

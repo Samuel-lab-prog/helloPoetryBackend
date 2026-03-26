@@ -143,7 +143,7 @@ describe.concurrent('USE-CASE - Interactions - UpdateComment', () => {
 		it('should throw UnprocessableEntityError when content exceeds max length', async () => {
 			const scenario = makeInteractionsScenario().withUser().withFoundComment();
 
-			const longContent = 'a'.repeat(301);
+			const longContent = 'a'.repeat(3001);
 
 			await expectError(
 				scenario.executeUpdateComment({ content: longContent }),

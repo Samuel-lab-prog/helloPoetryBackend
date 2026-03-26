@@ -20,14 +20,14 @@ export const corsConfig = {
 		'authorization',
 		'x-csrf-token',
 		'x-requested-with',
-	],
+	] as string[],
 	origin: (request: Request) => {
 		const origin = request.headers.get('origin') ?? '';
 		if (!origin) return true;
 		if (corsOrigins.length === 0) return NODE_ENV !== 'production';
 		return corsOrigins.includes(origin);
 	},
-} as const;
+};
 
 export function hasCrossSiteCors(): boolean {
 	return !!FRONTEND_URL || corsOrigins.length > 0;

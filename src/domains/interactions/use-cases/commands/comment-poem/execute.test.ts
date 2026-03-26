@@ -19,14 +19,14 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 			const result = await scenario.executeCommentPoem();
 			expect(result).toHaveProperty('commentId');
 		});
-		it('should allow exactly 300 characters', async () => {
+		it('should allow exactly 3000 characters', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser()
 				.withPoem()
 				.withUsersRelation({ areFriends: true, areBlocked: false })
 				.withCreatedComment();
 			const result = await scenario.executeCommentPoem({
-				content: 'a'.repeat(300),
+				content: 'a'.repeat(3000),
 			});
 
 			expect(result).toHaveProperty('commentId');
@@ -110,10 +110,10 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				UnprocessableEntityError,
 			);
 		});
-		it('should throw UnprocessableEntityError when content exceeds 300 characters', async () => {
+		it('should throw UnprocessableEntityError when content exceeds 3000 characters', async () => {
 			const scenario = makeInteractionsScenario().withUser().withPoem();
 			await expectError(
-				scenario.executeCommentPoem({ content: 'a'.repeat(301) }),
+				scenario.executeCommentPoem({ content: 'a'.repeat(3001) }),
 				UnprocessableEntityError,
 			);
 		});

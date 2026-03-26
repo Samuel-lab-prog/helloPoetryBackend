@@ -38,7 +38,7 @@ export function commentPoemFactory({
 
 		v.ensure(trimmedContent)
 			.minLength(1)
-			.maxLength(300)
+			.maxLength(3000)
 			.bannedWords(['badword1', 'badword2']);
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);

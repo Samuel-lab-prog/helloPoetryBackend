@@ -4,7 +4,9 @@ import { getJwtSecretKey } from 'server-config/config';
 
 const secretKey = getJwtSecretKey();
 const issuer =
-	typeof process.env.JWT_ISSUER === 'string' ? process.env.JWT_ISSUER : undefined;
+	typeof process.env.JWT_ISSUER === 'string'
+		? process.env.JWT_ISSUER
+		: undefined;
 const audience =
 	typeof process.env.JWT_AUDIENCE === 'string'
 		? process.env.JWT_AUDIENCE
