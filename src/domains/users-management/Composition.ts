@@ -2,10 +2,12 @@ import { commandsRepository } from './infra/commands-repository/repository';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
 import type { UsersCommandsServices } from './ports/Commands';
 import { createUsersCommandsRouter } from './adapters/CommandsRouter';
+import { createUsersInternalRouter } from './adapters/InternalRouter';
 import {
 	updateUserFactory,
 	createUserFactory,
 	requestAvatarUploadUrlFactory,
+	bootstrapAdminFactory,
 } from './use-cases/commands/index';
 import {
 	checkEmailAvailabilityFactory,
@@ -32,6 +34,12 @@ const commandsServices: UsersCommandsServices = {
 	}),
 };
 
+const internalServices = {
+	bootstrapAdmin: bootstrapAdminFactory({
+		hashServices: BcryptHashService,
+	}),
+};
+
 const commandsServicesWithFakeHash: UsersCommandsServices = {
 	createUser: createUserFactory({
 		commandsRepository: commandsRepository,
@@ -42,6 +50,12 @@ const commandsServicesWithFakeHash: UsersCommandsServices = {
 	}),
 	requestAvatarUploadUrl: requestAvatarUploadUrlFactory({
 		storageService: storageService,
+	}),
+};
+
+const internalServicesWithFakeHash = {
+	bootstrapAdmin: bootstrapAdminFactory({
+		hashServices: FakeHashService,
 	}),
 };
 
@@ -65,4 +79,7 @@ export const userCommandsRouter = createUsersCommandsRouter(commandsServices);
 export const userCommandsRouterWithFakeHash = createUsersCommandsRouter(
 	commandsServicesWithFakeHash,
 );
+export const userInternalRouter = createUsersInternalRouter(internalServices);
+export const userInternalRouterWithFakeHash =
+	createUsersInternalRouter(internalServicesWithFakeHash);
 export const userQueriesRouter = createUsersReadRouter(queriesServices);

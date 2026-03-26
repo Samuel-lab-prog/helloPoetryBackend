@@ -14,6 +14,8 @@ import {
 	userQueriesRouter,
 	userCommandsRouter,
 	userCommandsRouterWithFakeHash,
+	userInternalRouter,
+	userInternalRouterWithFakeHash,
 } from '@Domains/users-management/Composition';
 import {
 	authRouter,
@@ -73,6 +75,7 @@ function makeServer({
 			.use(CsrfPlugin)
 			.use(ErrorPlugin)
 
+			.use(enableRealHash ? userInternalRouter : userInternalRouterWithFakeHash)
 			.use(enableRealHash ? userCommandsRouter : userCommandsRouterWithFakeHash)
 			.use(enableRealHash ? authRouter : authRouterWithFakeHash)
 			.use(userQueriesRouter)

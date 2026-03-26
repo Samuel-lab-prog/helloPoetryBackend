@@ -42,6 +42,7 @@
 		"test:unit": "bun test -t USE-CASE && bun test -t POLICY --concurrent",
 		"test:integration": "bun test -t INTEGRATION",
 		"add-test-data": "bun scripts/add-test-data.ts",
+		"create-admin": "bun scripts/create-admin.ts",
 		"metrics:cloc": "cloc src --by-file --exclude-dir=node_modules,dist,build,coverage,prisma --json --out cloc.json",
 		"metrics:depcruise": "depcruise src --exclude \"node_modules|dist|coverage\" --output-type json --output-to depcruise.json",
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",

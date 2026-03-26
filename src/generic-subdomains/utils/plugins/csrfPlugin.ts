@@ -20,6 +20,28 @@ const CSRF_ORIGIN_ALLOWLIST = (process.env.CSRF_ORIGIN_ALLOWLIST ?? '')
 	.map((origin) => origin.trim())
 	.filter(Boolean);
 
+const BOOTSTRAP_PATH = `${PREFIX}/internal/bootstrap-admin`;
+const BOOTSTRAP_HEADER = 'x-bootstrap-secret';
+const BOOTSTRAP_SECRET = process.env.BOOTSTRAP_SECRET ?? '';
+const BOOTSTRAP_ALLOWED_IPS = (process.env.BOOTSTRAP_ALLOWED_IPS ?? '')
+	.split(',')
+	.map((ip) => ip.trim())
+	.filter(Boolean);
+
+function getClientIp(request: Request): string {
+	const forwarded = request.headers.get('x-forwarded-for') ?? '';
+	if (forwarded) {
+		const first = forwarded.split(',')[0]?.trim();
+		if (first) return first;
+	}
+	return (
+		request.headers.get('cf-connecting-ip') ??
+		request.headers.get('x-real-ip') ??
+		request.headers.get('x-client-ip') ??
+		''
+	);
+}
+
 function isOriginAllowed(origin: string): boolean {
 	if (!origin) return false;
 	if (CSRF_ORIGIN_ALLOWLIST.length === 0) return true;
@@ -37,6 +59,20 @@ export const CsrfPlugin = new Elysia().onBeforeHandle(({ request, cookie }) => {
 	if (SAFE_METHODS.has(request.method)) return;
 
 	const pathname = new URL(request.url).pathname;
+	if (
+		pathname.startsWith(BOOTSTRAP_PATH) &&
+		BOOTSTRAP_SECRET &&
+		request.headers.get(BOOTSTRAP_HEADER) === BOOTSTRAP_SECRET
+	) {
+		const clientIp = getClientIp(request);
+		if (
+			clientIp &&
+			BOOTSTRAP_ALLOWED_IPS.length > 0 &&
+			BOOTSTRAP_ALLOWED_IPS.includes(clientIp)
+		) {
+			return;
+		}
+	}
 	if (shouldSkip(pathname)) return;
 
 	const origin =
