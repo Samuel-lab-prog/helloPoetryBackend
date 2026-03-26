@@ -8,7 +8,7 @@ import {
 	CSRF_COOKIE_NAME,
 	setUpCookieTokenOptions,
 	setUpCsrfCookieOptions,
-} from 'server-config/config';
+} from '@GenericSubdomains/server-config/config';
 
 export function createAuthRouter(services: AuthControllerServices) {
 	const { login } = services;

@@ -37,12 +37,15 @@ import {
 	notificationsCommandsRouter,
 	notificationsQueriesRouter,
 } from '@Domains/notifications/Composition';
-import { ELYSIA_SETTINGS, OPEN_API_SETTINGS } from 'server-config/config';
-import { corsConfig } from 'server-config/corsConfig';
+import {
+	ELYSIA_SETTINGS,
+	OPEN_API_SETTINGS,
+} from '@GenericSubdomains/server-config/config';
+import { corsConfig } from '@GenericSubdomains/server-config/corsConfig';
 import {
 	AUTH_RATE_LIMIT_SETTINGS,
 	RATE_LIMIT_SETTINGS,
-} from 'server-config/rateLimiterConfig';
+} from '@GenericSubdomains/server-config/rateLimiterConfig';
 
 type MakeServerOptions = {
 	enableRealHash: boolean;
