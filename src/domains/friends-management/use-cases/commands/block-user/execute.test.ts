@@ -1,68 +1,47 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { blockUserFactory } from './execute';
-
+import { describe, it, expect } from 'bun:test';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let blockUser: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			blockUser: mock(),
-			deleteFriendRequestIfExists: mock(),
-		};
-
-		queriesRepository = {
-			findFriendshipBetweenUsers: mock(),
-			findFriendRequest: mock(),
-			findBlockedRelationship: mock(),
-		};
-
-		blockUser = blockUserFactory({
-			commandsRepository,
-			queriesRepository,
-		});
-	});
-
 	describe('Block User', () => {
-		it('Does not allow self request', () => {
-			expect(
-				blockUser({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(ConflictError);
+		it('Does not allow self request', async () => {
+			const scenario = makeFriendsManagementScenario();
+
+			await expectError(
+				scenario.executeBlockUser({ requesterId: 1, addresseeId: 1 }),
+				ConflictError,
+			);
 		});
 
-		it('Prevents blocking if one of the users has already blocked the other', () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-			queriesRepository.findFriendRequest.mockResolvedValue({ id: 20 });
-			queriesRepository.findBlockedRelationship.mockResolvedValue(true);
+		it('Prevents blocking if one of the users has already blocked the other', async () => {
+			const scenario = makeFriendsManagementScenario()
+				.withBlockedRelationship()
+				.withNoFriendship()
+				.withNoFriendRequest();
+
+			await expectError(scenario.executeBlockUser(), ConflictError);
 
 			expect(
-				blockUser({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(ConflictError);
-
-			expect(queriesRepository.findBlockedRelationship).toHaveBeenCalledWith({
+				scenario.mocks.queriesRepository.findBlockedRelationship,
+			).toHaveBeenCalledWith({
 				userId1: 1,
 				userId2: 2,
 			});
 		});
 
 		it('Should block the user and return the result when no errors occur', async () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-			queriesRepository.findFriendRequest.mockResolvedValue(null);
-			queriesRepository.findBlockedRelationship.mockResolvedValue(false);
+			const scenario = makeFriendsManagementScenario()
+				.withNoBlockedRelationship()
+				.withNoFriendship()
+				.withNoFriendRequest()
+				.withDeletedFriendRequestIfExists()
+				.withBlockedUser();
 
-			commandsRepository.deleteFriendRequestIfExists.mockResolvedValue({
-				ok: true,
-			});
-			commandsRepository.blockUser.mockResolvedValue({
-				ok: true,
-				data: { blockerId: 1, blockedId: 2 },
-			});
+			const result = await scenario.executeBlockUser();
 
-			const result = await blockUser({ requesterId: 1, addresseeId: 2 });
-			expect(result).toEqual({ blockerId: 1, blockedId: 2 });
+			expect(result).toHaveProperty('blockedById', 1);
+			expect(result).toHaveProperty('blockedUserId', 2);
 		});
 	});
 });

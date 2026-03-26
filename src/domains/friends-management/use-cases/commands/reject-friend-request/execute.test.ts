@@ -1,63 +1,37 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { rejectFriendRequestFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let rejectFriendRequest: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			rejectFriendRequest: mock(),
-		};
-
-		queriesRepository = {
-			findFriendRequest: mock(),
-		};
-
-		rejectFriendRequest = rejectFriendRequestFactory({
-			commandsRepository,
-			queriesRepository,
-		});
-	});
 	describe('Reject Friend Request', () => {
-		it('Does not allow self reference', () => {
-			expect(
-				rejectFriendRequest({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(ConflictError);
+		it('Does not allow self request', async () => {
+			const scenario = makeFriendsManagementScenario();
+
+			await expectError(
+				scenario.executeRejectFriendRequest({ requesterId: 1, addresseeId: 1 }),
+				ConflictError,
+			);
 		});
 
-		it('Should abort when friend request does not exist', () => {
-			queriesRepository.findFriendRequest.mockResolvedValue(null);
+		it('Does not allow rejecting if the request does not exist', async () => {
+			const scenario = makeFriendsManagementScenario().withNoFriendRequest();
 
-			expect(
-				rejectFriendRequest({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(NotFoundError);
-
-			expect(queriesRepository.findFriendRequest).toHaveBeenCalledWith({
-				requesterId: 1,
-				addresseeId: 2,
-			});
+			await expectError(scenario.executeRejectFriendRequest(), NotFoundError);
 		});
 
-		it('Should reject friend request when no errors occur', async () => {
-			queriesRepository.findFriendRequest.mockResolvedValue({ id: 10 });
+		it('Should reject the friend request and return the result when no errors occur', async () => {
+			const scenario = makeFriendsManagementScenario()
+				.withFriendRequest()
+				.withRejectedFriendRequest();
 
-			commandsRepository.rejectFriendRequest.mockResolvedValue({
-				ok: true,
-				data: { rejectedId: 2, rejecterId: 1 },
-			});
+			const result = await scenario.executeRejectFriendRequest();
 
-			const result = await rejectFriendRequest({
-				requesterId: 1,
-				addresseeId: 2,
-			});
-
-			expect(result).toEqual({ rejectedId: 2, rejecterId: 1 });
+			expect(result).toHaveProperty('rejecterId', 1);
+			expect(result).toHaveProperty('rejectedId', 2);
 		});
 	});
 });

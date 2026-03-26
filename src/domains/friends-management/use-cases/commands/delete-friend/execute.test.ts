@@ -1,66 +1,37 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { deleteFriendFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Friends Management', () => {
-	let commandsRepository: any;
-	let queriesRepository: any;
-	let deleteFriend: any;
-
-	beforeEach(() => {
-		commandsRepository = {
-			deleteFriend: mock(),
-		};
-
-		queriesRepository = {
-			findFriendshipBetweenUsers: mock(),
-		};
-
-		deleteFriend = deleteFriendFactory({
-			commandsRepository,
-			queriesRepository,
-		});
-	});
-
 	describe('Delete Friend', () => {
-		it('Does not allow self reference', () => {
-			expect(
-				deleteFriend({ requesterId: 1, addresseeId: 1 }),
-			).rejects.toBeInstanceOf(ConflictError);
-		});
+		it('Does not allow self request', async () => {
+			const scenario = makeFriendsManagementScenario();
 
-		it('Should abort when friendship does not exist', () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue(null);
-
-			expect(
-				deleteFriend({ requesterId: 1, addresseeId: 2 }),
-			).rejects.toBeInstanceOf(NotFoundError);
-
-			expect(queriesRepository.findFriendshipBetweenUsers).toHaveBeenCalledWith(
-				{
-					user1Id: 1,
-					user2Id: 2,
-				},
+			await expectError(
+				scenario.executeDeleteFriend({ requesterId: 1, addresseeId: 1 }),
+				ConflictError,
 			);
 		});
 
-		it('Should delete friend when friendship exists', async () => {
-			queriesRepository.findFriendshipBetweenUsers.mockResolvedValue({
-				id: 10,
-			});
+		it('Does not allow deleting when friendship does not exist', async () => {
+			const scenario = makeFriendsManagementScenario().withNoFriendship();
 
-			commandsRepository.deleteFriend.mockResolvedValue({
-				ok: true,
-				data: { removedById: 1, removedId: 2 },
-			});
+			await expectError(scenario.executeDeleteFriend(), NotFoundError);
+		});
 
-			const result = await deleteFriend({ requesterId: 1, addresseeId: 2 });
+		it('Should delete the friend and return the result when no errors occur', async () => {
+			const scenario = makeFriendsManagementScenario()
+				.withFriendship()
+				.withDeletedFriend();
 
-			expect(result).toEqual({ removedById: 1, removedId: 2 });
-			expect(commandsRepository.deleteFriend).toHaveBeenCalledWith(1, 2);
+			const result = await scenario.executeDeleteFriend();
+
+			expect(result).toHaveProperty('removedById', 1);
+			expect(result).toHaveProperty('removedId', 2);
 		});
 	});
 });

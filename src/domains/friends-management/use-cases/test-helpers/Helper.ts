@@ -26,10 +26,12 @@ import {
 	givenBlockedUser,
 	givenUnblockedUser,
 	givenDeletedFriendRequestIfExists,
+	givenFriendRequestsByUser,
 	type UserBasicInfoOverride,
 	type FriendRequestOverride,
 	type FriendshipOverride,
 	type BlockedRelationshipOverride,
+	type FriendRequestsByUserOverride,
 } from './Givens';
 import {
 	type FriendsManagementSutMocks,
@@ -85,6 +87,11 @@ export function makeFriendsManagementScenario() {
 			incoming: FriendRequestOverride | null;
 		}) {
 			givenFriendRequestLookup(mocks.queriesRepository, options);
+			return this;
+		},
+
+		withFriendRequestsByUser(overrides: FriendRequestsByUserOverride = {}) {
+			givenFriendRequestsByUser(mocks.queriesRepository, overrides);
 			return this;
 		},
 
@@ -212,6 +219,17 @@ export function makeFriendsManagementScenario() {
 					{
 						requesterId: DEFAULT_REQUESTER_ID,
 						addresseeId: DEFAULT_ADDRESSEE_ID,
+					},
+					params,
+				),
+			);
+		},
+
+		executeGetMyFriendRequests(params: Partial<{ requesterId: number }> = {}) {
+			return sutFactory.getMyFriendRequests(
+				makeParams(
+					{
+						requesterId: DEFAULT_REQUESTER_ID,
 					},
 					params,
 				),

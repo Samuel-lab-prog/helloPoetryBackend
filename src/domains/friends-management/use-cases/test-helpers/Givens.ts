@@ -1,6 +1,7 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { FriendsManagementSutMocks } from './SutMocks';
+import type { FriendRequestsByUser } from '../Models';
 import {
 	DEFAULT_REQUESTER_ID,
 	DEFAULT_ADDRESSEE_ID,
@@ -28,6 +29,8 @@ export type FriendshipOverride = Partial<
 export type BlockedRelationshipOverride = Partial<
 	NonNullable<Awaited<ReturnType<QueriesRepository['findBlockedRelationship']>>>
 >;
+
+export type FriendRequestsByUserOverride = Partial<FriendRequestsByUser>;
 
 export function givenAddressee(
 	usersContract: FriendsManagementSutMocks['usersContract'],
@@ -141,6 +144,17 @@ export function givenFriendRequestLookup(
 		}
 
 		return null;
+	});
+}
+
+export function givenFriendRequestsByUser(
+	queriesRepository: FriendsManagementSutMocks['queriesRepository'],
+	overrides: FriendRequestsByUserOverride = {},
+) {
+	givenResolved(queriesRepository, 'selectFriendRequestsByUser', {
+		sent: [],
+		received: [],
+		...overrides,
 	});
 }
 

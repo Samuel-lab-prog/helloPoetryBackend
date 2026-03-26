@@ -1,19 +1,8 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { getMyFriendRequestsFactory } from './execute';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Friends Management - GetMyFriendRequests', () => {
-	let queriesRepository: any;
-	let getMyFriendRequests: any;
-
-	beforeEach(() => {
-		queriesRepository = {
-			selectFriendRequestsByUser: mock(),
-		};
-
-		getMyFriendRequests = getMyFriendRequestsFactory({ queriesRepository });
-	});
-
 	it('should return friend requests from repository', async () => {
 		const expected = {
 			sent: [
@@ -34,31 +23,36 @@ describe('USE-CASE - Friends Management - GetMyFriendRequests', () => {
 			],
 		};
 
-		queriesRepository.selectFriendRequestsByUser.mockResolvedValue(expected);
+		const scenario =
+			makeFriendsManagementScenario().withFriendRequestsByUser(expected);
 
-		await expect(getMyFriendRequests({ requesterId: 1 })).resolves.toEqual(
+		await expect(scenario.executeGetMyFriendRequests()).resolves.toEqual(
 			expected,
 		);
 	});
 
 	it('should forward requester id to repository', async () => {
-		queriesRepository.selectFriendRequestsByUser.mockResolvedValue({
+		const scenario = makeFriendsManagementScenario().withFriendRequestsByUser({
 			sent: [],
 			received: [],
 		});
 
-		await getMyFriendRequests({ requesterId: 10 });
+		await scenario.executeGetMyFriendRequests({ requesterId: 10 });
 
-		expect(queriesRepository.selectFriendRequestsByUser).toHaveBeenCalledWith(
-			10,
-		);
+		expect(
+			scenario.mocks.queriesRepository.selectFriendRequestsByUser,
+		).toHaveBeenCalledWith(10);
 	});
 
 	it('should not swallow dependency errors', async () => {
-		queriesRepository.selectFriendRequestsByUser.mockRejectedValue(
+		const scenario = makeFriendsManagementScenario();
+		scenario.mocks.queriesRepository.selectFriendRequestsByUser.mockRejectedValue(
 			new Error('boom'),
 		);
 
-		await expectError(getMyFriendRequests({ requesterId: 1 }), Error);
+		await expectError(
+			scenario.executeGetMyFriendRequests({ requesterId: 1 }),
+			Error,
+		);
 	});
 });

@@ -6,6 +6,7 @@ import {
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { CommandsRepository } from '../../ports/Commands';
 import type { QueriesRepository } from '../../ports/Queries';
+import type { EventBus } from '@SharedKernel/events/EventBus';
 import {
 	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
@@ -15,15 +16,22 @@ import {
 	blockUserFactory,
 	unblockUserFactory,
 } from '../commands/Index';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import { getMyFriendRequestsFactory } from '../queries/Index';
 
 export type FriendsManagementSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
 	usersContract: MockedContract<UsersPublicContract>;
+	eventBus: MockedContract<EventBus>;
 };
 
 export function friendsManagementMockFactories(): FriendsManagementSutMocks {
+	const eventBus = createMockedContract<EventBus>({
+		publish: mock(),
+		subscribe: mock().mockReturnValue(() => {}),
+		once: mock().mockReturnValue(() => {}),
+	});
+
 	return {
 		commandsRepository: createMockedContract<CommandsRepository>({
 			createFriendRequest: mock(),
@@ -45,6 +53,7 @@ export function friendsManagementMockFactories(): FriendsManagementSutMocks {
 			selectUserBasicInfo: mock(),
 			selectAuthUserByEmail: mock(),
 		}),
+		eventBus,
 	};
 }
 
@@ -56,13 +65,13 @@ export function friendsManagementFactory(deps: FriendsManagementDeps) {
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
 			usersContract: deps.usersContract,
-			eventBus: eventBus,
+			eventBus: deps.eventBus,
 		}),
 		acceptFriendRequest: acceptFriendRequestFactory({
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
 			usersContract: deps.usersContract,
-			eventBus: eventBus,
+			eventBus: deps.eventBus,
 		}),
 		rejectFriendRequest: rejectFriendRequestFactory({
 			commandsRepository: deps.commandsRepository,
@@ -82,6 +91,9 @@ export function friendsManagementFactory(deps: FriendsManagementDeps) {
 		}),
 		unblockUser: unblockUserFactory({
 			commandsRepository: deps.commandsRepository,
+			queriesRepository: deps.queriesRepository,
+		}),
+		getMyFriendRequests: getMyFriendRequestsFactory({
 			queriesRepository: deps.queriesRepository,
 		}),
 	};
