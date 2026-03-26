@@ -6,7 +6,7 @@ import type {
 } from '@SharedKernel/ports/Storage';
 
 export type RequestAvatarUploadUrlParams = {
-	requesterId: number;
+	requesterId?: number | string;
 	contentType: string;
 	contentLength?: number;
 };
@@ -22,6 +22,7 @@ export function requestAvatarUploadUrlFactory({
 		params: RequestAvatarUploadUrlParams,
 	): Promise<AvatarUploadUrlResult> {
 		const { requesterId, contentType, contentLength } = params;
+		const resolvedRequesterId = requesterId ?? 'guest';
 
 		const maxBytes = Number(process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000);
 
@@ -44,7 +45,7 @@ export function requestAvatarUploadUrlFactory({
 		}
 
 		return storageService.generateAvatarUploadUrl(
-			String(requesterId),
+			String(resolvedRequesterId),
 			contentType,
 			contentLength,
 		);

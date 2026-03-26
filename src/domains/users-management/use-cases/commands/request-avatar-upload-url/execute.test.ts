@@ -75,4 +75,23 @@ describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {
 			undefined,
 		);
 	});
+
+	it('should default requester id to guest when missing', async () => {
+		storageService.validateImageContentType.mockReturnValue(true);
+		storageService.generateAvatarUploadUrl.mockResolvedValue({
+			uploadUrl: 'https://uploads.example.com/avatar',
+			fields: { key: 'avatars/guest/abc.png' },
+			fileUrl: 'https://cdn.example.com/avatar.png',
+		});
+
+		await requestAvatarUploadUrl({
+			contentType: 'image/png',
+		});
+
+		expect(storageService.generateAvatarUploadUrl).toHaveBeenCalledWith(
+			'guest',
+			'image/png',
+			undefined,
+		);
+	});
 });

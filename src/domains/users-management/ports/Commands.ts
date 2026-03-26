@@ -20,7 +20,7 @@ export type UpdateUserParams = {
 };
 
 export type RequestAvatarUploadUrlParams = {
-	requesterId: number;
+	requesterId?: number | string;
 	contentType: string;
 	contentLength?: number;
 };

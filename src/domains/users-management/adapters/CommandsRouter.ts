@@ -21,32 +21,11 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 		process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000,
 	);
 	return new Elysia({ prefix: '/users' })
-		.use(AuthPlugin)
-		.post(
-			'/',
-			async ({ body, set }) => {
-				const result = await services.createUser({ data: body });
-				set.status = 201;
-				return result;
-			},
-			{
-				body: CreateUserSchema,
-				response: {
-					201: FullUserSchema,
-					409: appErrorSchema,
-				},
-				detail: {
-					summary: 'Create User',
-					description: 'Creates a new user.',
-					tags: ['Users Management'],
-				},
-			},
-		)
 		.post(
 			'/avatar/upload-url',
-			({ auth, body }) => {
+			({ body }) => {
 				return services.requestAvatarUploadUrl({
-					requesterId: auth.clientId,
+					requesterId: 'guest',
 					contentType: body.contentType,
 					contentLength: body.contentLength,
 				});
@@ -71,6 +50,27 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				detail: {
 					summary: 'Request Avatar Upload URL',
 					description: 'Generates a signed URL for avatar uploads.',
+					tags: ['Users Management'],
+				},
+			},
+		)
+		.use(AuthPlugin)
+		.post(
+			'/',
+			async ({ body, set }) => {
+				const result = await services.createUser({ data: body });
+				set.status = 201;
+				return result;
+			},
+			{
+				body: CreateUserSchema,
+				response: {
+					201: FullUserSchema,
+					409: appErrorSchema,
+				},
+				detail: {
+					summary: 'Create User',
+					description: 'Creates a new user.',
 					tags: ['Users Management'],
 				},
 			},
