@@ -7,6 +7,7 @@ function makeFeedItem(id: number) {
 		title: `Poem ${id}`,
 		content: `Content ${id}`,
 		slug: `poem-${id}`,
+		excerpt: `Excerpt ${id}`,
 		tags: ['tag'],
 		createdAt: new Date(),
 		author: {

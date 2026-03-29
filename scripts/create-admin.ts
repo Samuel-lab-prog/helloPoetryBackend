@@ -40,9 +40,7 @@ async function main() {
 			},
 		});
 
-		console.log(
-			`Admin user updated for email ${email}. Role set to admin.`,
-		);
+		console.log(`Admin user updated for email ${email}. Role set to admin.`);
 		return;
 	}
 

@@ -80,6 +80,7 @@ export const userCommandsRouterWithFakeHash = createUsersCommandsRouter(
 	commandsServicesWithFakeHash,
 );
 export const userInternalRouter = createUsersInternalRouter(internalServices);
-export const userInternalRouterWithFakeHash =
-	createUsersInternalRouter(internalServicesWithFakeHash);
+export const userInternalRouterWithFakeHash = createUsersInternalRouter(
+	internalServicesWithFakeHash,
+);
 export const userQueriesRouter = createUsersReadRouter(queriesServices);

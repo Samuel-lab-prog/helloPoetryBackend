@@ -6,6 +6,7 @@ export const FeedPoemSchema = t.Object({
 	content: t.String(),
 	title: t.String(),
 	slug: t.String(),
+	excerpt: t.Nullable(t.String()),
 	tags: t.Array(t.String()),
 	createdAt: t.Date(),
 	likesCount: NonNegativeIntegerSchema,

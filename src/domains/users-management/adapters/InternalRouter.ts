@@ -49,7 +49,7 @@ function assertBootstrapIpAllowed(request: Request): void {
 	}
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 export function createUsersInternalRouter(services: UsersInternalServices) {
 	return new Elysia({ prefix: '/internal' }).post(
 		'/bootstrap-admin',
