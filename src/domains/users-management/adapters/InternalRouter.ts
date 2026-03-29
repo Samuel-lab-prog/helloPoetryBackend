@@ -49,7 +49,6 @@ function assertBootstrapIpAllowed(request: Request): void {
 	}
 }
 
- 
 export function createUsersInternalRouter(services: UsersInternalServices) {
 	return new Elysia({ prefix: '/internal' }).post(
 		'/bootstrap-admin',

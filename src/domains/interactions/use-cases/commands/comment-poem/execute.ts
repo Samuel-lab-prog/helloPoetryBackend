@@ -80,6 +80,7 @@ export function commentPoemFactory({
 			authorId: poemInfo.authorId,
 			commenterId: userId,
 			commenterNickname: userInfo.nickname,
+			actorAvatarUrl: userInfo.avatarUrl ?? null,
 			poemTitle: poemInfo.poemTitle,
 		});
 		return comment;

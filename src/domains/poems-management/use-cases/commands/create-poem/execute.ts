@@ -51,6 +51,7 @@ export function createPoemFactory(deps: Dependencies) {
 					userId: toUserId,
 					dedicatorId: meta.requesterId,
 					dedicatorNickname: userInfo.nickname,
+					actorAvatarUrl: userInfo.avatarUrl ?? null,
 					poemTitle: data.title,
 				});
 
@@ -61,6 +62,7 @@ export function createPoemFactory(deps: Dependencies) {
 					userId: mentionedUserId,
 					mentionerId: meta.requesterId,
 					mentionerNickname: userInfo.nickname,
+					actorAvatarUrl: userInfo.avatarUrl ?? null,
 				});
 			}
 

@@ -68,7 +68,6 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 					},
 					filterOptions: {
 						searchNickname,
-						role: 'author',
 						status: 'active',
 					},
 				});

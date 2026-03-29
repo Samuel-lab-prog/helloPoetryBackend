@@ -43,6 +43,7 @@ export function likeCommentFactory({
 			userId,
 			likerId: userId,
 			likerNickname: userInfo.nickname,
+			actorAvatarUrl: userInfo.avatarUrl ?? null,
 			commentId,
 		});
 	};

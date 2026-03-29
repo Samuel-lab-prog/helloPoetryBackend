@@ -81,6 +81,7 @@ export function sendFriendRequestFactory({
 			eventBus.publish('NEW_FRIEND', {
 				newFriendId: addresseeId,
 				newFriendNickname: addresseeInfo.nickname,
+				actorAvatarUrl: addresseeInfo.avatarUrl ?? null,
 				userId: requesterId,
 			});
 
@@ -105,6 +106,7 @@ export function sendFriendRequestFactory({
 			requesterId,
 			recipientId: addresseeId,
 			requesterNickname: requesterInfo.nickname,
+			actorAvatarUrl: requesterInfo.avatarUrl ?? null,
 		});
 		return result.data;
 	};

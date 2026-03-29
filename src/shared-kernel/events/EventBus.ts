@@ -4,11 +4,13 @@ interface DomainEvents {
 	NEW_FRIEND: {
 		newFriendId: number;
 		newFriendNickname: string;
+		actorAvatarUrl?: string | null;
 		userId: number;
 	};
 	NEW_FRIEND_REQUEST: {
 		requesterNickname: string;
 		requesterId: number;
+		actorAvatarUrl?: string | null;
 		recipientId: number;
 	};
 	POEM_LIKED: {
@@ -16,12 +18,14 @@ interface DomainEvents {
 		poemId: number;
 		likerId: number;
 		likerNickname: string;
+		actorAvatarUrl?: string | null;
 	};
 	COMMENT_LIKED: {
 		userId: number;
 		commentId: number;
 		likerId: number;
 		likerNickname: string;
+		actorAvatarUrl?: string | null;
 	};
 	POEM_COMMENT_CREATED: {
 		commentId: number;
@@ -30,6 +34,7 @@ interface DomainEvents {
 		authorId: number;
 		commenterId: number;
 		commenterNickname: string;
+		actorAvatarUrl?: string | null;
 	};
 	POEM_COMMENT_REPLIED: {
 		commentId: number;
@@ -39,12 +44,14 @@ interface DomainEvents {
 		originalCommenterId: number;
 		replierNickname: string;
 		poemTitle: string;
+		actorAvatarUrl?: string | null;
 	};
 	POEM_DEDICATED: {
 		poemId: number;
 		poemTitle: string;
 		dedicatorId: number;
 		dedicatorNickname: string;
+		actorAvatarUrl?: string | null;
 		userId: number;
 	};
 	USER_MENTION_IN_POEM: {
@@ -52,6 +59,7 @@ interface DomainEvents {
 		poemTitle: string;
 		mentionerId: number;
 		mentionerNickname: string;
+		actorAvatarUrl?: string | null;
 		userId: number;
 	};
 }

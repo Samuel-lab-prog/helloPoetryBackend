@@ -14,6 +14,7 @@ eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
 			data: {
 				commentId: p.commentId,
 				commenterNickname: p.commenterNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 				poemTitle: p.poemTitle,
 				body: `Your poem received a comment from ${p.commenterNickname}`,
 				title: 'New comment on your poem',
@@ -55,6 +56,7 @@ eventBus.subscribe('POEM_LIKED', async (p) => {
 				body: `Your poem received a like from ${p.likerNickname}`,
 				poemId: p.poemId,
 				likerNickname: p.likerNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -93,6 +95,7 @@ eventBus.subscribe('POEM_DEDICATED', async (p) => {
 				poemId: p.poemId,
 				poemTitle: p.poemTitle,
 				dedicatorNickname: p.dedicatorNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -130,6 +133,7 @@ eventBus.subscribe('NEW_FRIEND_REQUEST', async (p) => {
 
 				requesterId: p.requesterId,
 				requesterNickname: p.requesterNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -166,6 +170,7 @@ eventBus.subscribe('NEW_FRIEND', async (p) => {
 				title: 'You have a new friend',
 				body: `You are now friends with ${p.newFriendNickname}`,
 				newFriendNickname: p.newFriendNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -206,6 +211,7 @@ eventBus.subscribe('POEM_COMMENT_REPLIED', async (p) => {
 				body: `Your comment on the poem ${p.poemTitle} received a reply from ${p.replierNickname}`,
 				replierNickname: p.replierNickname,
 				poemTitle: p.poemTitle,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});
@@ -244,6 +250,7 @@ eventBus.subscribe('USER_MENTION_IN_POEM', async (p) => {
 				poemId: p.poemId,
 				mentionerId: p.mentionerId,
 				mentionerNickname: p.mentionerNickname,
+				actorAvatarUrl: p.actorAvatarUrl ?? null,
 			},
 			aggregateWindowMinutes: 60,
 		});

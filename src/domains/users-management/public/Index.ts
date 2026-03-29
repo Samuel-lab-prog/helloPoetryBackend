@@ -8,6 +8,7 @@ export type UserBasicInfo = {
 	status: UserStatus;
 	role: UserRole;
 	nickname: string;
+	avatarUrl?: string | null;
 };
 
 export type ClientAuthCredentials = {
@@ -32,6 +33,7 @@ async function selectUserBasicInfo(userId: number) {
 				status: true,
 				role: true,
 				nickname: true,
+				avatarUrl: true,
 			},
 		});
 
@@ -42,6 +44,7 @@ async function selectUserBasicInfo(userId: number) {
 				status: 'banned' as const,
 				role: 'author' as const,
 				nickname: '',
+				avatarUrl: null,
 			};
 		}
 
@@ -51,6 +54,7 @@ async function selectUserBasicInfo(userId: number) {
 			status: user.status,
 			role: user.role,
 			nickname: user.nickname,
+			avatarUrl: user.avatarUrl,
 		};
 	});
 }

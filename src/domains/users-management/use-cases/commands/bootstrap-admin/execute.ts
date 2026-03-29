@@ -1,4 +1,3 @@
- 
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { prisma } from '@Prisma/PrismaClient';
 import { fullUserSelect } from '../../../infra/queries-repository/selects/FullUser';

@@ -33,7 +33,7 @@ export function acceptFriendRequestFactory({
 			throw new ConflictError(
 				'Users cannot accept friend requests from themselves',
 			);
-		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
+		const requesterInfo = await usersContract.selectUserBasicInfo(requesterId);
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,
@@ -74,7 +74,8 @@ export function acceptFriendRequestFactory({
 		}
 		eventBus.publish('NEW_FRIEND', {
 			newFriendId: requesterId,
-			newFriendNickname: addresseeInfo.nickname,
+			newFriendNickname: requesterInfo.nickname,
+			actorAvatarUrl: requesterInfo.avatarUrl ?? null,
 			userId: addresseeId,
 		});
 		return result.data;
