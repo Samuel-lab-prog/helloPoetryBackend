@@ -108,6 +108,41 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		)
 		.use(AuthPlugin)
 		.get(
+			'/preview',
+			({ query, auth }) => {
+				const { limit, searchNickname } = query;
+				return services.searchUsers({
+					requesterStatus: auth.clientStatus,
+					navigationOptions: {
+						limit,
+						cursor: undefined,
+					},
+					sortOptions: {
+						by: 'nickname',
+						order: 'asc',
+					},
+					filterOptions: {
+						searchNickname,
+						status: 'active',
+					},
+				});
+			},
+			{
+				response: {
+					200: UsersPageSchema,
+				},
+				query: t.Object({
+					limit: paginationLimitSchema,
+					searchNickname: t.Optional(NicknameSearchSchema),
+				}),
+				detail: {
+					summary: 'Get Users Preview',
+					description: 'Returns a lightweight preview list of active users.',
+					tags: ['Users Management'],
+				},
+			},
+		)
+		.get(
 			'/',
 			({ query, auth }) => {
 				const { limit, cursor, orderBy, orderDirection, searchNickname } =
