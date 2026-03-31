@@ -48,7 +48,8 @@
 		"metrics:analysis": "bun architecture-analysis/src/main.ts",
 		"metrics": "bun run metrics:cloc && bun run metrics:depcruise && bun run metrics:analysis",
 		"depcruise": "bunx depcruise src",
-		"check": "bun barrels && bun lint:fix && bun format:fix && bun metrics && bun depcruise && bun typecheck && bun test:all && echo 'All checks passed!'",
+		"check:env": "bun -e \"import { validateServerEnv } from './src/server-config/validateEnv'; validateServerEnv();\"",
+		"check": "bun run check:env && bun barrels && bun lint:fix && bun format:fix && bun metrics && bun depcruise && bun typecheck && bun test:unit && echo 'All checks passed!'",
 		"barrels": "bunx barrelsby -c barrels.config.json",
 		"typecheck": "tsc --noEmit"
 	},

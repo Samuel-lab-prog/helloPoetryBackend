@@ -11,6 +11,7 @@ type Violation = {
 const ALLOWED_ROOT_NAMESPACES = new Set([
 	'domains',
 	'generic-subdomains',
+	'server-config',
 	'shared-kernel',
 	'tests',
 ]);

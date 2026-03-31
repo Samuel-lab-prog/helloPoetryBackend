@@ -5,7 +5,7 @@ import {
 	CSRF_HEADER_NAME,
 	PREFIX,
 	isCsrfEnabled,
-} from '@GenericSubdomains/server-config/config';
+} from 'server-config/config';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const DEFAULT_SKIP_PATHS = [`${PREFIX}/auth/login`];

@@ -124,6 +124,7 @@ const domainStatusMap: Record<AppErrorCode, number> = {
 	GONE: 410,
 	INTERNAL_SERVER_ERROR: 500,
 	UNKNOWN: 500,
+	RATE_LIMIT_EXCEEDED: 500,
 };
 
 function logError(

@@ -1,15 +1,18 @@
 import { Elysia } from 'elysia';
+// Plugins
 import cors from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
 import { rateLimit } from 'elysia-rate-limit';
-
 import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@SetupPlugin';
 import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
 import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
+
+// Necessary to register notification event listeners.
 import '@Domains/notifications/EventListeners.ts';
 
+// Routers
 import {
 	userQueriesRouter,
 	userCommandsRouter,
@@ -39,15 +42,12 @@ import {
 	notificationsCommandsRouter,
 	notificationsQueriesRouter,
 } from '@Domains/notifications/Composition';
-import {
-	ELYSIA_SETTINGS,
-	OPEN_API_SETTINGS,
-} from '@GenericSubdomains/server-config/config';
-import { corsConfig } from '@GenericSubdomains/server-config/corsConfig';
+import { ELYSIA_SETTINGS, OPEN_API_SETTINGS } from 'server-config/config';
+import { corsConfig } from 'server-config/cors/config';
 import {
 	AUTH_RATE_LIMIT_SETTINGS,
 	RATE_LIMIT_SETTINGS,
-} from '@GenericSubdomains/server-config/rateLimiterConfig';
+} from 'server-config/rate-limiter/config';
 
 type MakeServerOptions = {
 	enableRealHash: boolean;

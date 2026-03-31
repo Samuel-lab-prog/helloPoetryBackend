@@ -1,5 +1,5 @@
 import Elysia from 'elysia';
-import { shouldApplySecurityHeaders } from '@GenericSubdomains/server-config/config';
+import { shouldApplySecurityHeaders } from 'server-config/config';
 
 export const SecurityHeadersPlugin = new Elysia().onAfterResponse(({ set }) => {
 	if (!shouldApplySecurityHeaders()) return;

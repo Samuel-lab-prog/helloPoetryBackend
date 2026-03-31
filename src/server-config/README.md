@@ -15,14 +15,14 @@ security controls are in place.
 
 - `DATABASE_URL`
 - `JWT_SECRET_KEY`
-- `CORS_ORIGIN` or `FRONTEND_URL`
+- `CORS_ORIGIN` or `FRONTEND_URL` (required when `CROSS_SITE_COOKIES=true`)
 - `S3_BUCKET_NAME`
 - `AWS_REGION`
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `S3_PUBLIC_BASE_URL` (if not using the default AWS bucket URL)
 - `TRUST_PROXY` (if behind a proxy)
-- `TRUSTED_PROXY_IPS` (if `TRUST_PROXY=true`)
+- `TRUSTED_PROXY_IPS` (required when `TRUST_PROXY=true`)
 - `CSRF_ENABLED` (if using cross-site cookies)
 
 ### Optional / Defaults Available
@@ -47,12 +47,83 @@ security controls are in place.
 - `MAX_POEM_AUDIO_UPLOAD_BYTES`
 - `NODE_ENV`
 - `PORT`
+- `RATE_LIMIT_DURATION_MS`
+- `RATE_LIMIT_MAX`
 - `RATE_LIMIT_CONTEXT_SIZE`
 - `RATE_LIMIT_ERROR_JSON`
 - `RATE_LIMIT_HEADERS`
 - `RATE_LIMIT_SKIP_PATHS`
 - `S3_SIGNED_URL_EXPIRES_IN`
 - `SECURITY_HEADERS_ENABLED`
+
+## Defaults and Missing Env Behavior
+
+These are the defaults used by the server-config files in this folder and what
+happens when environment variables are missing or invalid.
+
+### Env Parsers (`envParsers.ts`)
+
+- `parseBoolean({ value, fallback })`: returns the fallback if `value` is
+  undefined, otherwise treats `1|true|yes|on` (case-insensitive) as `true`.
+- `parseNumber({ name, value, fallback, min })`: returns the fallback if `value`
+  is undefined/empty; logs a warning and falls back when `value` is not a finite
+  number or is lower than `min`.
+- `parseCsv({ value })`: returns a trimmed, non-empty list split by commas;
+  returns an empty list when `value` is undefined.
+
+### Core Server Settings (`config.ts`)
+
+- `PORT`: defaults to `5000`.
+- `BODY_LIMIT_BYTES`: defaults to `1_000_000` bytes.
+- `SECURITY_HEADERS_ENABLED`: defaults to `true` (set to `false` to disable).
+- `DATABASE_URL`: required in production; defaults to a local test DB URL in
+  non-production.
+
+### Auth/Token Settings (`auth/config.ts`)
+
+- `COOKIE_DOMAIN`: optional; omitted when empty.
+- `CROSS_SITE_COOKIES`: defaults to `false`.
+- `CSRF_ENABLED`: defaults to `false`; CSRF is also enabled automatically if
+  cross-site cookies or cross-site CORS are configured.
+- `JWT_SECRET_KEY`: required outside tests; defaults to `test-secret` in tests.
+- `TOKEN_EXPIRATION_TIME`: defaults to `3600` seconds.
+
+### Env Validation (`validateEnv.ts`)
+
+- `validateServerEnv()` checks required envs at startup and throws
+  `MissingEnvVarError` when a required value is missing.
+- Production requirements:
+  - `DATABASE_URL`
+  - `JWT_SECRET_KEY`
+  - `CORS_ORIGIN` or `FRONTEND_URL` when `CROSS_SITE_COOKIES=true`
+  - `TRUSTED_PROXY_IPS` when `TRUST_PROXY=true`
+- Non-test environments require `JWT_SECRET_KEY`.
+
+### CORS Settings (`cors/config.ts`)
+
+- `CORS_ORIGIN`: comma-separated allowlist of origins.
+- `FRONTEND_URL`: fallback single origin when `CORS_ORIGIN` is empty.
+- In production, if `CROSS_SITE_COOKIES=true` and no CORS origin is configured,
+  the server throws a configuration error on boot.
+- In production, if CORS origins are missing (and cross-site cookies are not
+  enabled), the server logs a warning and will block cross-site requests.
+
+### Rate Limiter Settings (`rateLimiterConfig.ts`)
+
+- `RATE_LIMIT_MAX`: defaults to `1000`.
+- `RATE_LIMIT_DURATION_MS`: defaults to `900000` (15 minutes).
+- `AUTH_RATE_LIMIT_MAX`: defaults to `20`.
+- `AUTH_RATE_LIMIT_DURATION_MS`: defaults to `900000` (15 minutes).
+- `RATE_LIMIT_CONTEXT_SIZE`: defaults to `10000`.
+- `RATE_LIMIT_HEADERS`: defaults to `true`.
+- `RATE_LIMIT_ERROR_JSON`: defaults to `true`.
+- `RATE_LIMIT_SKIP_PATHS`: defaults to `/health,/metrics` (comma-separated
+  list).
+- `TRUST_PROXY`: defaults to `false`.
+- `TRUSTED_PROXY_IPS`: defaults to empty.
+- Invalid boolean/number values fall back to defaults and log a warning.
+- In production, if `TRUST_PROXY=true` but `TRUSTED_PROXY_IPS` is empty, the
+  server throws a configuration error on boot.
 
 ## What The Server Is Protected Against
 
