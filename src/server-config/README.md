@@ -86,7 +86,7 @@ happens when environment variables are missing or invalid.
 - `CSRF_ENABLED`: defaults to `false`; CSRF is also enabled automatically if
   cross-site cookies or cross-site CORS are configured.
 - `JWT_SECRET_KEY`: required outside tests; defaults to `test-secret` in tests.
-- `TOKEN_EXPIRATION_TIME`: defaults to `3600` seconds.
+- `TOKEN_EXPIRATION_TIME`: defaults to `3600` seconds (constant, not an env).
 
 ### Env Validation (`validateEnv.ts`)
 
@@ -99,7 +99,7 @@ happens when environment variables are missing or invalid.
   - `TRUSTED_PROXY_IPS` when `TRUST_PROXY=true`
 - Non-test environments require `JWT_SECRET_KEY`.
 
-### CORS Settings (`cors/config.ts`)
+### CORS Settings (`cors/config.ts`, `cors/variables.ts`)
 
 - `CORS_ORIGIN`: comma-separated allowlist of origins.
 - `FRONTEND_URL`: fallback single origin when `CORS_ORIGIN` is empty.
@@ -108,7 +108,7 @@ happens when environment variables are missing or invalid.
 - In production, if CORS origins are missing (and cross-site cookies are not
   enabled), the server logs a warning and will block cross-site requests.
 
-### Rate Limiter Settings (`rateLimiterConfig.ts`)
+### Rate Limiter Settings (`rate-limiter/config.ts`, `rate-limiter/variables.ts`)
 
 - `RATE_LIMIT_MAX`: defaults to `1000`.
 - `RATE_LIMIT_DURATION_MS`: defaults to `900000` (15 minutes).
