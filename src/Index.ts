@@ -42,7 +42,10 @@ import {
 	notificationsCommandsRouter,
 	notificationsQueriesRouter,
 } from '@Domains/notifications/Composition';
-import { ELYSIA_SETTINGS, OPEN_API_SETTINGS } from 'server-config/config';
+import {
+	ELYSIA_SERVER_SETTINGS,
+	OPEN_API_SETTINGS,
+} from 'server-config/config';
 import { corsConfig } from 'server-config/cors/config';
 import {
 	AUTH_RATE_LIMIT_SETTINGS,
@@ -63,7 +66,7 @@ function makeServer({
 	enableLogger,
 }: MakeServerOptions) {
 	return (
-		new Elysia(ELYSIA_SETTINGS)
+		new Elysia(ELYSIA_SERVER_SETTINGS)
 			.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
 			// Global and auth-specific limits are applied separately.
 			.use(enableRateLimit ? rateLimit(AUTH_RATE_LIMIT_SETTINGS) : undefined)

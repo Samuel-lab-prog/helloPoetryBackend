@@ -5,19 +5,20 @@ import { MissingEnvVarError } from '@AppError';
 import { parseNumber } from './utils/envParsers';
 
 /** API prefix for all routes. */
-export const PREFIX = '/api/v1';
+export const API_URL_PREFIX = '/api/v1';
 /** Elysia instance name. */
-export const MAIN_INSTANCE_NAME = 'mainServerInstance';
+export const SERVER_MAIN_INSTANCE_NAME = 'mainServerInstance';
 /** Host to bind. */
-export const HOST_NAME = '0.0.0.0';
+export const SERVER_HOST_NAME = '0.0.0.0';
 /** Port to listen on. */
-export const PORT = parseNumber({
+export const SERVER_PORT = parseNumber({
 	name: 'PORT',
 	value: process.env.PORT,
 	fallback: 5000,
 	min: 1,
 });
 
+/** OpenAPI documentation settings. */
 export const OPEN_API_SETTINGS = {
 	path: '/docs',
 	documentation: {
@@ -30,10 +31,11 @@ export const OPEN_API_SETTINGS = {
 	references: fromTypes(),
 };
 
-export const ELYSIA_SETTINGS = {
+/** Elysia server configuration settings. */
+export const ELYSIA_SERVER_SETTINGS = {
 	adapter: BunAdapter,
-	name: MAIN_INSTANCE_NAME,
-	prefix: PREFIX,
+	name: SERVER_MAIN_INSTANCE_NAME,
+	prefix: API_URL_PREFIX,
 	sanitize: (value: string) =>
 		typeof value === 'string' ? sanitize(value) : value,
 	bodyLimit: parseNumber({
@@ -43,8 +45,8 @@ export const ELYSIA_SETTINGS = {
 		min: 1,
 	}),
 	serve: {
-		hostname: HOST_NAME,
-		port: PORT,
+		hostname: SERVER_HOST_NAME,
+		port: SERVER_PORT,
 	},
 };
 
@@ -83,14 +85,6 @@ export function getDatabaseUrl(): string {
 	return url;
 }
 
-/**
- * Retrieves the JWT secret key from environment variables.
- * @returns The JWT secret key.
- * @throws An AppError if the JWT_SECRET_KEY environment variable is not set in non-test environments.
- * This function ensures that a secret key is always available for signing JWTs, which is crucial
- * for authentication and security. In test environments, it provides a default value to facilitate
- * testing without requiring additional configuration.
- */
 export {
 	CSRF_COOKIE_NAME,
 	CSRF_HEADER_NAME,

@@ -1,6 +1,7 @@
 import kleur from 'kleur';
 import { MissingEnvVarError } from '@AppError';
 import { parseBoolean } from './envParsers';
+import { printTable } from '../../../architecture-analysis/src/PrintTable';
 
 type EnvName = Parameters<typeof MissingEnvVarError>[0];
 
@@ -84,36 +85,61 @@ export function validateServerEnv(options: ValidateEnvOptions = {}): void {
 	const requiredVars = buildRequiredVars();
 	const requiredSet = new Set(requiredVars);
 	const missingRequired: EnvName[] = [];
-	const setVars: EnvName[] = [];
-	const optionalVars: EnvName[] = [];
-	const missingVars: EnvName[] = [];
+
+	type EnvRow = {
+		name: EnvName;
+		required: boolean;
+		status: 'SET' | 'EMPTY';
+	};
 
 	try {
-		for (const name of ALL_ENV_VARS) {
+		const rows: EnvRow[] = ALL_ENV_VARS.map((name) => {
 			const value = process.env[name];
 			const isSet = !isBlank(value);
 			const isRequired = requiredSet.has(name);
 
-			if (isSet) {
-				setVars.push(name);
-				continue;
-			}
+			if (isRequired && !isSet) missingRequired.push(name);
 
-			if (isRequired) {
-				missingRequired.push(name);
-				missingVars.push(name);
-				continue;
-			}
-
-			optionalVars.push(name);
-		}
+			return {
+				name,
+				required: isRequired,
+				status: isSet ? 'SET' : 'EMPTY',
+			};
+		});
 
 		if (!silent) {
-			for (const name of setVars) console.log(kleur.green(`SET -> ${name}`));
-			for (const name of optionalVars)
-				console.log(kleur.yellow(`OPTIONAL -> ${name}`));
-			for (const name of missingVars)
-				console.log(kleur.red(`MISSING -> ${name}`));
+			printTable(
+				'Env Vars',
+				[
+					{
+						header: 'ENV VAR',
+						width: 36,
+						render: (row) => ({ text: row.name }),
+					},
+					{
+						header: 'REQUIRED',
+						width: 9,
+						render: (row) => ({
+							text: row.required ? 'yes' : 'no',
+							color: row.required ? kleur.cyan : kleur.gray,
+						}),
+					},
+					{
+						header: 'STATUS',
+						width: 10,
+						render: (row) => ({
+							text: row.status,
+							color:
+								row.status === 'SET'
+									? kleur.green
+									: row.required
+										? kleur.red
+										: kleur.yellow,
+						}),
+					},
+				],
+				rows,
+			);
 		}
 
 		if (missingRequired.length > 0)

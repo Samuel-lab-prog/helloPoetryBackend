@@ -3,12 +3,12 @@ import { AppError } from '../AppError';
 import {
 	CSRF_COOKIE_NAME,
 	CSRF_HEADER_NAME,
-	PREFIX,
+	API_URL_PREFIX,
 	isCsrfEnabled,
 } from 'server-config/config';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
-const DEFAULT_SKIP_PATHS = [`${PREFIX}/auth/login`];
+const DEFAULT_SKIP_PATHS = [`${API_URL_PREFIX}/auth/login`];
 
 const CSRF_SKIP_PATHS = (process.env.CSRF_SKIP_PATHS ?? '')
 	.split(',')
@@ -20,7 +20,7 @@ const CSRF_ORIGIN_ALLOWLIST = (process.env.CSRF_ORIGIN_ALLOWLIST ?? '')
 	.map((origin) => origin.trim())
 	.filter(Boolean);
 
-const BOOTSTRAP_PATH = `${PREFIX}/internal/bootstrap-admin`;
+const BOOTSTRAP_PATH = `${API_URL_PREFIX}/internal/bootstrap-admin`;
 const BOOTSTRAP_HEADER = 'x-bootstrap-secret';
 const BOOTSTRAP_SECRET = process.env.BOOTSTRAP_SECRET ?? '';
 const BOOTSTRAP_ALLOWED_IPS = (process.env.BOOTSTRAP_ALLOWED_IPS ?? '')
