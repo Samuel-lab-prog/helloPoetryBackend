@@ -2,7 +2,7 @@ import { fromTypes } from '@elysiajs/openapi';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 import { MissingEnvVarError } from '@AppError';
-import { parseNumber } from './envParsers';
+import { parseNumber } from './utils/envParsers';
 
 /** API prefix for all routes. */
 export const PREFIX = '/api/v1';

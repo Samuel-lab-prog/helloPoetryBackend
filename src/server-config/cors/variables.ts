@@ -1,5 +1,5 @@
 import { MissingEnvVarError } from '@AppError';
-import { parseBoolean, parseCsv } from '../envParsers';
+import { parseBoolean, parseCsv } from '../utils/envParsers';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
