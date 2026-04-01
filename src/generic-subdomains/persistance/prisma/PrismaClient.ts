@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from './generated/client';
-import 'dotenv/config';
+import 'server-config/utils/loadEnv';
 import { log } from '@GenericSubdomains/utils/logger';
 import { getDatabaseUrl } from 'server-config/config';
 

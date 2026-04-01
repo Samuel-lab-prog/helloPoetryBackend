@@ -1,4 +1,4 @@
-import 'dotenv/config'; // Load environment variables from .env file.
+import 'server-config/utils/loadEnv'; // Load environment variables from env files.
 
 import { server } from 'Index';
 import { SERVER_HOST_NAME, SERVER_PORT } from 'server-config/config';
