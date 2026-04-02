@@ -28,7 +28,7 @@ Infra is a **leaf layer**.
 
 Dependency direction:
 
-adapters → infra → external systems use-cases → ports infra → ports
+Adapters → Use-cases → Ports ← Infra → External Systems
 
 Infrastructure:
 
@@ -45,11 +45,16 @@ See:
 
 ## Directory Structure
 
-Typical structure:
+Infra lives inside each domain at `src/domains/<domain>/infra/`.
 
-infra/ ├─ queries-repository/ │ ├─ Repository.ts │ ├─ Repository.test.ts │ ├─
-Selects.ts │ └─ Helpers.ts └─ commands-repository/ ├─ Repository.ts ├─
-Repository.test.ts └─ Helpers.ts
+Typical structure (per domain):
+
+`infra/queries-repository/Repository.ts`
+`infra/queries-repository/Repository.test.ts`
+`infra/queries-repository/Selects.ts` `infra/queries-repository/Helpers.ts`
+`infra/commands-repository/Repository.ts`
+`infra/commands-repository/Repository.test.ts`
+`infra/commands-repository/Helpers.ts`
 
 Each repository:
 

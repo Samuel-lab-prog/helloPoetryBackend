@@ -1,4 +1,4 @@
-# ADR-011: Valid Root Namespace Enforcement
+# ADR-012: No Source Code at Root
 
 ## Status
 
@@ -6,25 +6,25 @@ Accepted at 2026-02-08
 
 ## Context
 
-Root namespaces define the top-level architectural structure of the codebase.
-Allowing arbitrary or inconsistent root namespaces makes dependency analysis,
-tooling, and architectural reasoning unreliable.
+Source code living at the project root makes architectural boundaries harder to
+enforce and weakens tooling assumptions about where production code belongs. It
+also increases ambiguity around ownership and layering.
 
-To enable automation and enforce architectural rules, root namespaces must be
-strictly controlled and validated.
+To keep the architecture explicit and machine-verifiable, source code must live
+under `src/` (or other explicitly approved root namespaces).
 
 ## Decision
 
-- Only explicitly approved root namespaces are allowed.
-- Any source file using an invalid root namespace is considered a violation.
-- The CI pipeline **must fail** when invalid root namespaces are detected.
+- No production source code is allowed at the repository root.
+- All application code must live under `src/` (or other approved root
+  namespaces).
+- The CI pipeline **must fail** when source files are detected at the root.
 
-This rule is enforced through static analysis of imports and file paths.
+This rule is enforced via filesystem and import-path analysis.
 
 ## Consequences
 
-- Architectural structure becomes machine-verifiable.
-- Prevents namespace sprawl and ad-hoc layering.
-- Improves reliability of architectural metrics and tooling.
-- Some initial effort is required to refactor existing code to conform to valid
-  namespaces.
+- Architectural boundaries remain explicit and enforceable.
+- Tooling can reliably classify and analyze source code.
+- Reduces ambiguity about code ownership and layering.
+- Some initial refactoring may be required to relocate existing files.

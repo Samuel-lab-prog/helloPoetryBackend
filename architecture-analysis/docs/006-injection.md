@@ -23,6 +23,9 @@ It is the **only place** where abstractions meet implementations.
 
 Injection sits at the **edge of the system**, typically inside adapters.
 
+In practice, composition usually happens in `adapters/CommandsRouter.ts` and
+`adapters/QueriesRouter.ts` within each domain.
+
 Rules:
 
 - use-cases never import infra,

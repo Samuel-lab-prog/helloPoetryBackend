@@ -42,17 +42,21 @@ At a high level, the system is composed of:
 
 - **Use-cases**  
   Orchestrate application behavior by coordinating domain logic and external
-  interactions through ports.
+  interactions through ports. Use cases are the heart of the application and
+  represent the main sequence of operations.
 
 - **Ports**  
-  Define interfaces for communication between domains and with external systems.
+  Define interfaces for communication between domains, internal layers, and
+  external systems. Here, models, DTOs, and other data structures are defined to
+  ensure clear contracts and decoupling.
 
 - **Adapters**  
-  Handle interaction with external systems (HTTP, persistence, CLI, messaging,
-  etc.).
+  Handle interaction with external systems (HTTP, CLI, messaging, etc.).
 
 - **Infrastructure**  
-  Contains shared technical concerns (e.g. logging, configuration, utilities).
+  Contains all implementation for port interfaces. This includes database
+  access, services like hashing, email sending, and any other external
+  dependencies.
 
 Each of these has a clearly defined responsibility and a restricted dependency
 direction.
@@ -63,13 +67,13 @@ direction.
 
 Dependencies must follow a strict direction:
 
-Adapters → Use-cases → Domains
+Adapters → Use-cases → Ports ← Infrastructure
 
-- Domains must not depend on use-cases or adapters.
-- Use-cases may depend on domains, but not on adapters.
-- Adapters depend on use-cases and translate external input/output.
-
-Violations of dependency direction are detected and enforced automatically.
+Domains must not depend on use-cases or adapters. Domain here can be understood
+as an abstract concept representing the core business logic, which should be
+independent of any specific application flow or external interaction. Use-cases
+depend on ports (interfaces). Infrastructure implements those ports but does not
+depend on use-cases.
 
 See:
 
@@ -84,7 +88,8 @@ Domains are treated as **architectural units**, not just folders.
 
 Key principles:
 
-- No direct calls between domains.
+- No direct calls between domains unless explicitly allowed (i.e., only through
+  a domain `public` contract).
 - Cross-domain interaction must be explicit and intentional.
 - Domains may duplicate code rather than introduce coupling.
 
@@ -130,7 +135,8 @@ The system follows a Command Query Responsibility Segregation (CQRS) pattern.
   use-cases.
 
 This separation promotes clear intent, better testability, and more flexible
-evolution of read and write paths.
+evolution of read and write paths. It's not a strict requirement for all
+operations, but is the default approach for new functionality.
 
 ---
 

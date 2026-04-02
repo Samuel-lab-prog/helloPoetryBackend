@@ -20,7 +20,7 @@ Ports:
 - are owned by the application layer,
 - describe required behavior, not implementations,
 - are consumed by use-cases,
-- are implemented by adapters or infrastructure modules.
+- are implemented by infrastructure modules.
 
 Ports never contain logic. They only define contracts.
 
@@ -28,9 +28,10 @@ Ports never contain logic. They only define contracts.
 
 ## Port Ownership and Location
 
-All ports live in the dedicated `ports/` directory.
+Ports live inside each domain at `src/domains/<domain>/ports/`, with shared
+contracts in `src/shared-kernel/ports/`.
 
-Example: ports/ ├─ QueriesRepository.ts └─ CommandsRepository.ts
+Example: `ports/` → `Queries.ts`, `Commands.ts`, `Models.ts`
 
 Rules:
 
@@ -75,7 +76,7 @@ This separation:
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../use-cases/Models';
+} from '../ports/Models';
 
 export interface QueriesRepository {
 	selectActiveBanByUserId(params: {
@@ -97,7 +98,7 @@ Key properties:
 
 ## Who Uses Ports
 
-Use-cases Use-cases depend on ports to:
+Use-cases depend on ports to:
 
 query current state, perform state transitions.
 
@@ -113,10 +114,7 @@ use-cases/commands use-cases/queries
 
 ## Implementations
 
-Ports are implemented by:
-
-- adapters (adapters/commands, adapters/queries),
-- infrastructure modules (infra/\*-repository)
+Ports are implemented by infrastructure modules (infra/\*-repository).
 
 - must fully satisfy the port interface,
 - may depend on frameworks, ORMs, or external services,
@@ -139,8 +137,7 @@ Adapters must not:
 
 Example adapter locations:
 
-adapters/ ├─ queries/ │ ├─ Services.ts │ └─ QueriesRouter.ts └─ commands/ ├─
-Services.ts └─ CommandsRouter.ts
+`adapters/CommandsRouter.ts` `adapters/QueriesRouter.ts`
 
 ## Testing Strategy
 

@@ -28,18 +28,18 @@ dependency boundaries.
 
 ## Adapter Ownership
 
-Adapters are part of the delivery layer and live in the `adapters/` directory.
+Adapters are part of the delivery layer and live inside each domain under
+`src/domains/<domain>/adapters/`.
 
 Structure:
 
-adapters/ ├─ queries/ │ ├─ Services.ts │ └─ QueriesRouter.ts └─ commands/ ├─
-Services.ts └─ CommandsRouter.ts
+`adapters/CommandsRouter.ts` `adapters/QueriesRouter.ts`
 
 Rules:
 
 - Adapters may depend on ports, schemas, and use-cases.
 - Adapters must not be depended on by any other layer.
-- Adapters must not depend on infrastructure implementations directly.
+- Adapters may import infrastructure implementations only for wiring.
 
 See:
 
@@ -103,34 +103,23 @@ Routers:
 
 - define routes or entry points,
 - extract raw input,
-- delegate to services.
+- delegate to use-cases (or optional service helpers).
 
 Routers must remain thin and free of logic.
 
 ---
 
-## Services
+## Services (Optional)
 
-Service files act as **application-facing façades** for adapters.
-
-Examples:
-
-- `adapters/queries/Services.ts`
-- `adapters/commands/Services.ts`
-
-Services:
+This codebase typically keeps adapters thin and uses routers directly. If a
+domain introduces a `Services.ts` file, it should only:
 
 - validate inputs using schemas,
 - instantiate use-cases,
 - inject concrete port implementations,
 - return normalized responses.
 
-Services may contain:
-
-- orchestration logic,
-- dependency composition.
-
-Services must not:
+It must not:
 
 - embed business rules,
 - bypass use-cases to call repositories directly.
@@ -173,8 +162,8 @@ Adapters must never:
 
 See:
 
-- `ports/QueriesRepository.ts`
-- `ports/CommandsRepository.ts`
+- `ports/Queries.ts`
+- `ports/Commands.ts`
 
 ---
 

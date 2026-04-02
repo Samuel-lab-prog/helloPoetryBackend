@@ -1,4 +1,4 @@
-# Architecture Decision Records (ADR)
+﻿# Architecture Decision Records (ADR)
 
 This directory contains Architecture Decision Records (ADRs) that document key
 architectural decisions, their rationale, and their enforcement strategy.

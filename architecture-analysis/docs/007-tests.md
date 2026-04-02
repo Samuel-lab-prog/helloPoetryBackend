@@ -66,8 +66,10 @@ When unit tests exist, they must live **next to the module they test**.
 
 Examples:
 
-- `use-cases/commands/CreateUser.ts` → `use-cases/commands/CreateUser.test.ts`
-- `infra/user-repository.ts` → `infra/user-repository.test.ts`
+- `use-cases/commands/create-user/execute.ts` →
+  `use-cases/commands/create-user/execute.test.ts`
+- `infra/queries-repository/Repository.ts` →
+  `infra/queries-repository/Repository.test.ts`
 
 Rules:
 
@@ -78,7 +80,7 @@ Rules:
 
 ### Integration and End-to-End Tests
 
-Integration and E2E tests live in a **dedicated root folder**:
+Integration and E2E tests live in a **dedicated root folder**: `src/tests/`.
 
 These tests may:
 

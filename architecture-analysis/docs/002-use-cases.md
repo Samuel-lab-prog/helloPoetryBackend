@@ -57,8 +57,8 @@ A use-case is **not** responsible for:
 
 Use-cases depend only on:
 
-- **domains** (models, domain errors),
-- **ports** (interfaces for external interaction).
+- **domains** (policies, invariants),
+- **ports** (interfaces for external interaction, models, DTOs).
 
 They must not depend on:
 
@@ -68,7 +68,7 @@ They must not depend on:
 
 Dependency direction:
 
-Adapters → Use-cases → Domains
+Adapters → Use-cases → Ports ← Infrastructure
 
 See:
 
@@ -91,8 +91,8 @@ This enables:
 
 ```ts
 import { SomePort, AnotherPort } from '../ports/*';
-import type { SomeDomainModel } from '../Models';
-import { SomeDomainError } from '../Errors';
+import type { SomeDomainModel } from '../ports/Models';
+import { BadRequestError } from '@GenericSubdomains/utils/domainError';
 import { SomePolicy } from '../Policies';
 
 interface Dependencies {
@@ -103,19 +103,19 @@ interface Dependencies {
 export type SomeUseCaseParams = {
 	// input parameters for the use-case
 	// Is very important to export this type to help with typing in adapters and tests,
-	// but we gonna talk abou this later.
+	// but we gonna talk about this later.
 };
 
 export function someUseCaseFactory({ dependencyA, dependencyB }: Dependencies) {
 	return async function someUseCase(
 		params: SomeUseCaseParams,
 	): Promise<Result> {
-		if (somethingIsWrong(params)) throw new SomeDomainError('Invalid input');
+		if (somethingIsWrong(params)) throw new BadRequestError('Invalid input');
 
 		const someData = await dependencyA.fetchSomething(params);
 
 		if (!SomePolicy.isSatisfied(someData))
-			throw new SomeDomainError('Business rule violation');
+			throw new BadRequestError('Business rule violation');
 
 		const result = await dependencyB.executeCommand(someData);
 		return result;
@@ -139,7 +139,9 @@ This example demonstrates:
 
 ## Error Handling
 
-Use-cases signal failure by throwing domain or application errors.
+Use-cases signal failure by throwing domain or application errors. In this
+codebase, error types are centralized in `@GenericSubdomains/utils` (see
+`domainError.ts` and `AppError.ts`).
 
 Rules:
 
@@ -210,10 +212,10 @@ Violations are detected and enforced through CI.
 - Use cases have a CQRS segregation:
   - commands (state-changing) in `commands/`
   - queries (read-only) in `queries/`
-- Every use-cases folder has a Errors.ts file for domain-specific errors.
-- Every use-cases folder has a Models.ts file for domain-specific types.
+- Errors are centralized in `@GenericSubdomains/utils` (notably `domainError.ts`
+  and `AppError.ts`) and reused across use-cases.
+- Models and DTOs are defined in `ports/` and imported from there.
 - Use-cases should not have subfolders unless necessary for complexity.
-- You can apply CQRS in Models or Errors if needed, but it's not mandatory.
 - All models are derived from schemas defined in the ports.
 - Use-cases should not import models from other domains directly; they should go
   through ports.
