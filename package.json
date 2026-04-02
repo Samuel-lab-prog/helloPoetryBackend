@@ -30,8 +30,6 @@
 		"test:all": "cross-env NODE_ENV=test bun test --only-failures --reporter=junit --reporter-outfile=./bun.xml",
 		"test:unit": "cross-env NODE_ENV=test bun test --only-failures -t USE-CASE && bun test --only-failures -t POLICY --concurrent",
 		"test:integration": "cross-env NODE_ENV=test bun test --only-failures -t INTEGRATION",
-		"worker": "cross-env NODE_ENV=production bun src/worker.ts",
-		"worker:dev": "cross-env NODE_ENV=development bun --watch src/worker.ts",
 		"lint": "eslint . --cache",
 		"lint:fix": "eslint . --fix --cache",
 		"format": "prettier --check . --cache --log-level silent",

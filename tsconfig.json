@@ -54,10 +54,5 @@
 		"noPropertyAccessFromIndexSignature": false
 	},
 	"include": ["src/**/*.ts", "prisma.config.ts", "eslint.config.ts"],
-	"exclude": [
-		"node_modules",
-		"architecture-analysis",
-		"generator",
-		"src/**/generated/**"
-	]
+	"exclude": ["node_modules", "src/**/generated/**"]
 }
