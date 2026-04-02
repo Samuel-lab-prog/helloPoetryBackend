@@ -1,6 +1,17 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '../src/generic-subdomains/persistance/prisma/PrismaClient';
 
+const NODE_ENV = process.env.NODE_ENV ?? 'development';
+const ALLOW_PROD_SEED = process.env.ALLOW_PROD_SEED === 'true';
+
+function assertSafeEnvironment() {
+	if (NODE_ENV === 'production' && !ALLOW_PROD_SEED) {
+		throw new Error(
+			'Refusing to seed test data in production. Set ALLOW_PROD_SEED=true to override.',
+		);
+	}
+}
+
 type UserSeed = {
 	email: string;
 	passwordHash: string;
@@ -200,6 +211,7 @@ async function createFriendRequests(allUserIds: number[]) {
 }
 
 async function main() {
+	assertSafeEnvironment();
 	const usersBefore = await prisma.user.count();
 	const poemsBefore = await prisma.poem.count();
 	const requestsBefore = await prisma.friendshipRequest.count();

@@ -25,6 +25,7 @@
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development bun --watch src/Server.ts",
 		"start": "cross-env NODE_ENV=production bun dist/Server.js",
+		"start:dev": "cross-env NODE_ENV=development bun dist/Server.js",
 		"build": "bun build src/Server.ts --target bun --outdir dist",
 		"test": "bun run test:all",
 		"test:all": "cross-env NODE_ENV=test bun test --only-failures --reporter=junit --reporter-outfile=./bun.xml",
