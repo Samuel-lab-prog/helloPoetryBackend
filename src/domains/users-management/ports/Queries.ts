@@ -47,6 +47,9 @@ export interface QueriesRepository {
 	selectProfile(params: {
 		id: number;
 		isPrivate?: boolean;
+		requesterId: number;
+		requesterRole: UserRole;
+		requesterStatus: UserStatus;
 	}): Promise<UserPrivateProfile | UserPublicProfile | null>;
 	selectUsers(params: SelectUsersParams): Promise<UsersPage>;
 	findNickname(nickname: string): Promise<boolean>;

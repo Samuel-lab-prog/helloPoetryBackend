@@ -32,6 +32,9 @@ export function getProfileFactory({
 		const profile = await queriesRepository.selectProfile({
 			id,
 			isPrivate: isPrivateProfile,
+			requesterId,
+			requesterRole: params.requesterRole,
+			requesterStatus,
 		});
 
 		if (!profile) throw new NotFoundError('Profile not found');

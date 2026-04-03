@@ -52,6 +52,23 @@ export const DEFAULT_PRIVATE_PROFILE: UserPrivateProfile = {
 	email: DEFAULT_CREATE_USER_DATA.email,
 	emailVerifiedAt: null,
 	unreadNotificationsCount: 0,
+	poems: [
+		{
+			id: 11,
+			title: 'Poem 11',
+			slug: 'poem-11',
+			createdAt: new Date('2025-01-10T00:00:00.000Z'),
+			likesCount: 4,
+			commentsCount: 2,
+			tags: [{ id: 1, name: 'life' }],
+			author: {
+				id: DEFAULT_TARGET_ID,
+				name: DEFAULT_CREATE_USER_DATA.name,
+				nickname: DEFAULT_CREATE_USER_DATA.nickname,
+				avatarUrl: DEFAULT_CREATE_USER_DATA.avatarUrl ?? null,
+			},
+		},
+	],
 	stats: {
 		poems: [
 			{ id: 11, title: 'Poem 11' },
@@ -75,8 +92,28 @@ export const DEFAULT_PUBLIC_PROFILE: UserPublicProfile = {
 	avatarUrl: 'https://cdn.olapoesia.dev/avatar/mary.png',
 	role: 'author',
 	status: 'active',
+	poems: [
+		{
+			id: 101,
+			title: 'Dawn',
+			slug: 'dawn',
+			createdAt: new Date('2025-02-01T00:00:00.000Z'),
+			likesCount: 12,
+			commentsCount: 3,
+			tags: [
+				{ id: 1, name: 'sunrise' },
+				{ id: 2, name: 'hope' },
+			],
+			author: {
+				id: DEFAULT_PUBLIC_PROFILE_ID,
+				name: 'Mary Doe',
+				nickname: 'mary',
+				avatarUrl: 'https://cdn.olapoesia.dev/avatar/mary.png',
+			},
+		},
+	],
 	stats: {
-		poemsCount: 3,
+		poemsCount: 1,
 		commentsCount: 9,
 		friendsCount: 4,
 	},

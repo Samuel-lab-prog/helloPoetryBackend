@@ -49,6 +49,9 @@ const selectUserByNickname = (nickname: string) =>
 function selectProfile(params: {
 	id: number;
 	isPrivate: boolean;
+	requesterId: number;
+	requesterRole: UserPublicProfile['role'];
+	requesterStatus: UserPublicProfile['status'];
 }): Promise<UserPrivateProfile | UserPublicProfile | null> {
 	return withPrismaErrorHandling(async () => {
 		const user = await prisma.user.findFirst({
@@ -58,8 +61,16 @@ function selectProfile(params: {
 
 		if (!user) return null;
 		return params.isPrivate
-			? fromRawToPrivateProfile(user as any)
-			: fromRawToPublicProfile(user as any, params.id);
+			? fromRawToPrivateProfile(user as any, {
+					id: params.requesterId,
+					role: params.requesterRole,
+					status: params.requesterStatus,
+				})
+			: fromRawToPublicProfile(user as any, {
+					id: params.requesterId,
+					role: params.requesterRole,
+					status: params.requesterStatus,
+				});
 	});
 }
 

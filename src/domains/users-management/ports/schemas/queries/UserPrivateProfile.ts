@@ -20,6 +20,28 @@ export const UserPrivateProfileSchema = t.Object({
 	email: EmailSchema,
 	emailVerifiedAt: t.Nullable(DateSchema),
 	unreadNotificationsCount: t.Number(),
+	poems: t.Array(
+		t.Object({
+			id: idSchema,
+			title: t.String(),
+			slug: t.String(),
+			createdAt: DateSchema,
+			likesCount: t.Number(),
+			commentsCount: t.Number(),
+			tags: t.Array(
+				t.Object({
+					id: idSchema,
+					name: t.String(),
+				}),
+			),
+			author: t.Object({
+				id: idSchema,
+				name: NameSchema,
+				nickname: NicknameSchema,
+				avatarUrl: t.Nullable(AvatarUrlSchema),
+			}),
+		}),
+	),
 
 	stats: t.Object({
 		poems: t.Array(
