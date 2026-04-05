@@ -25,8 +25,25 @@ describe.concurrent('USE-CASE - Poems Management - GetSavedPoems', () => {
 	it('should return saved poems for requester', async () => {
 		const { sut, usersContract, queriesRepository } = makeSut();
 		const saved = [
-			{ id: 1, title: 'Poem', slug: 'poem', savedAt: new Date() },
-			{ id: 2, title: 'Poem 2', slug: 'poem-2', savedAt: new Date() },
+			{
+				id: 1,
+				title: 'Poem',
+				slug: 'poem',
+				savedAt: new Date(),
+				author: { id: 10, name: 'Author', nickname: 'author', avatarUrl: null },
+			},
+			{
+				id: 2,
+				title: 'Poem 2',
+				slug: 'poem-2',
+				savedAt: new Date(),
+				author: {
+					id: 11,
+					name: 'Author 2',
+					nickname: 'author2',
+					avatarUrl: null,
+				},
+			},
 		];
 
 		usersContract.selectUserBasicInfo.mockResolvedValue({

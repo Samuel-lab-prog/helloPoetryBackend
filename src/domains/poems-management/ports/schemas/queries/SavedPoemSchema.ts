@@ -7,4 +7,10 @@ export const SavedPoemSchema = t.Object({
 	title: PoemTitleSchema,
 	slug: PoemSlugSchema,
 	savedAt: DateSchema,
+	author: t.Object({
+		id: idSchema,
+		name: t.String(),
+		nickname: t.String(),
+		avatarUrl: t.Nullable(t.String()),
+	}),
 });

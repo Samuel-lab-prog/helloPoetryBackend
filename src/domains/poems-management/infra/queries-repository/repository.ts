@@ -175,6 +175,7 @@ function selectSavedPoems(requesterId: number): Promise<SavedPoem[]> {
 			poemId: savedPoem.poemId,
 			title: savedPoem.poem.title,
 			slug: savedPoem.poem.slug,
+			author: savedPoem.poem.author,
 		}));
 	});
 }
@@ -199,6 +200,7 @@ function selectSavedPoem(params: {
 			poemId: savedPoem.poemId,
 			title: savedPoem.poem.title,
 			slug: savedPoem.poem.slug,
+			author: savedPoem.poem.author,
 		};
 	});
 }

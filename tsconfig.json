@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		// Environment setup & latest features
+		"ignoreDeprecations": "6.0",
 		"lib": ["ESNext"],
 		"target": "ESNext",
 		"module": "Preserve",

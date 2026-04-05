@@ -11,6 +11,14 @@ export const savedPoemSelect = {
 		select: {
 			title: true,
 			slug: true,
+			author: {
+				select: {
+					id: true,
+					name: true,
+					nickname: true,
+					avatarUrl: true,
+				},
+			},
 		},
 	},
 } as const satisfies SavedPoemSelect;
