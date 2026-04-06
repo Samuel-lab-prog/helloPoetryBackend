@@ -7,32 +7,32 @@
 		"moduleDetection": "force",
 		"jsx": "react-jsx",
 		"allowJs": false,
-		"baseUrl": "./src",
 		"paths": {
 			"@PrismaGenerated/*": [
-				"./generic-subdomains/persistance/prisma/generated/*"
+				"./src/generic-subdomains/persistance/prisma/generated/*"
 			],
-			"@TestUtils": ["./generic-subdomains/utils/testUtils.ts"],
-			"GlobalValidator": ["./shared-kernel/validators/Global.ts"],
-			"@Domains/*": ["./domains/*"],
-			"@Prisma/*": ["./generic-subdomains/persistance/prisma/*"],
-			"@DomainError": ["./generic-subdomains/utils/domainError.ts"],
-			"@AppError": ["./generic-subdomains/utils/AppError.ts"],
-			"@DatabaseError": ["./generic-subdomains/utils/databaseError.ts"],
-			"@SetupPlugin": ["./generic-subdomains/utils/plugins/setupPlugin.ts"],
-			"@GenericSubdomains/*": ["./generic-subdomains/*"],
-			"@SharedKernel/*": ["./shared-kernel/*"],
-			"@AuthPlugin": ["./generic-subdomains/authentication/Composition.ts"],
+			"@TestUtils": ["./src/generic-subdomains/utils/testUtils.ts"],
+			"GlobalValidator": ["./src/shared-kernel/validators/Global.ts"],
+			"@Domains/*": ["./src/domains/*"],
+			"@Prisma/*": ["./src/generic-subdomains/persistance/prisma/*"],
+			"@DomainError": ["./src/generic-subdomains/utils/domainError.ts"],
+			"@AppError": ["./src/generic-subdomains/utils/AppError.ts"],
+			"@DatabaseError": ["./src/generic-subdomains/utils/databaseError.ts"],
+			"@SetupPlugin": ["./src/generic-subdomains/utils/plugins/setupPlugin.ts"],
+			"@GenericSubdomains/*": ["./src/generic-subdomains/*"],
+			"@SharedKernel/*": ["./src/shared-kernel/*"],
+			"@AuthPlugin": ["./src/generic-subdomains/authentication/Composition.ts"],
 			"@ClearDatabase": [
-				"./generic-subdomains/persistance/prisma/ClearDatabase.ts"
+				"./src/generic-subdomains/persistance/prisma/ClearDatabase.ts"
 			],
 
 			"@PrismaErrorHandler": [
-				"./generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"
+				"./src/generic-subdomains/persistance/prisma/PrismaErrorHandler.ts"
 			],
 			"@PrismaClient": [
-				"./generic-subdomains/persistance/prisma/PrismaClient.ts"
-			]
+				"./src/generic-subdomains/persistance/prisma/PrismaClient.ts"
+			],
+			"*": ["./src/*"]
 		},
 
 		// Bundler mode
