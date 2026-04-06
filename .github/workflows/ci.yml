@@ -10,7 +10,49 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     env:
+      NODE_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hello_poetry_test
+      JWT_SECRET_KEY: ci-secret
+      JWT_ISSUER: http://localhost:5000
+      JWT_AUDIENCE: http://localhost:5173
+      JWT_REQUIRE_CLAIMS: 'false'
+      CORS_ORIGIN: http://localhost:5173,http://localhost:4173
+      FRONTEND_URL: http://localhost:5173
+      CROSS_SITE_COOKIES: 'false'
+      CSRF_ENABLED: 'true'
+      CSRF_ORIGIN_ALLOWLIST: http://localhost:5173
+      AUTH_LOCKOUT_THRESHOLD: '5'
+      AUTH_LOCKOUT_WINDOW_MS: '900000'
+      AUTH_LOCKOUT_DURATION_MS: '900000'
+      AUTH_RATE_LIMIT_MAX: '20'
+      AUTH_RATE_LIMIT_DURATION_MS: '900000'
+      RATE_LIMIT_CONTEXT_SIZE: '10000'
+      RATE_LIMIT_ERROR_JSON: 'true'
+      RATE_LIMIT_HEADERS: 'true'
+      RATE_LIMIT_SKIP_PATHS: /health,/metrics
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ci-access-key
+      AWS_SECRET_ACCESS_KEY: ci-secret-key
+      S3_BUCKET_NAME: hello-poetry-test
+      S3_PUBLIC_BASE_URL: http://localhost:9000/hello-poetry-test
+      S3_SIGNED_URL_EXPIRES_IN: '300'
+      MAX_AVATAR_UPLOAD_BYTES: '5000000'
+      MAX_POEM_AUDIO_UPLOAD_BYTES: '20000000'
+      SECURITY_HEADERS_ENABLED: 'true'
+      BODY_LIMIT_BYTES: '1000000'
+      BOOTSTRAP_SECRET: ci-bootstrap-secret
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hello_poetry_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres" --health-interval=10s
+          --health-timeout=5s --health-retries=5
 
     steps:
       - uses: actions/checkout@v4
@@ -19,14 +61,5 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Generate models
-        run: bun generate
-
-      - name: Lint
-        run: bun lint
-
-      - name: Format
-        run: bun format
-
-      - name: Metrics
-        run: bun metrics
+      - name: Run full check (matches bun check)
+        run: bun check
