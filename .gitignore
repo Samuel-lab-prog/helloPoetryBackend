@@ -13,3 +13,6 @@ ai-contexts
 a.
 .eslintcache
 features.md
+.e2e-storage.json
+playwright-report
+test-results

@@ -5,6 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
+		"@playwright/test": "^1.55.0",
 		"@types/bun": "^1.3.9",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^25.2.3",
@@ -31,6 +32,8 @@
 		"test:all": "cross-env NODE_ENV=test bun test --only-failures --reporter=junit --reporter-outfile=./bun.xml",
 		"test:unit": "cross-env NODE_ENV=test bun test --only-failures -t USE-CASE && bun test --only-failures -t POLICY --concurrent",
 		"test:integration": "cross-env NODE_ENV=test bun test --only-failures -t INTEGRATION",
+		"test:e2e": "playwright test",
+		"check:e2e": "bun run check:env:test && bun run test:e2e",
 		"lint": "eslint . --cache",
 		"lint:fix": "eslint . --fix --cache",
 		"format": "prettier --check . --cache --log-level silent",
