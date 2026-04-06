@@ -13,14 +13,17 @@ import type {
 } from '../../use-cases/Models';
 
 import {
-	publicProfileSelect,
-	fromRawToPublicProfile,
-	privateProfileSelect,
-	fromRawToPrivateProfile,
 	fullUserSelect,
 	previewUserSelect,
 	fromRawToPreviewUser,
 } from './selects/Index';
+
+import {
+	publicProfileSelect,
+	fromRawToPublicProfile,
+	privateProfileSelect,
+	fromRawToPrivateProfile,
+} from '@Domains/poems-management/public/Index';
 
 type UserUniqueWhere =
 	| { id: number }

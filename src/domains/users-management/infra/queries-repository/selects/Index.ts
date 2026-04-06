@@ -5,5 +5,3 @@
 export * from './AuthUser';
 export * from './FullUser';
 export * from './PreviewUser';
-export * from './PrivateProfile';
-export * from './PublicProfile';

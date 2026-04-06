@@ -225,3 +225,5 @@ export const poemsFeedContract: PoemsFeedContract = {
 	getFeedPoemsByAuthorIds,
 	getPublicFeedPoems,
 };
+
+export * from './UserProfiles';
