@@ -177,8 +177,19 @@ function deleteCollection(params: {
 }): Promise<CommandResult<void>> {
 	return withPrismaResult(async () => {
 		const { collectionId, userId } = params;
-		await prisma.collection.delete({
-			where: { id: collectionId, userId },
+		await prisma.$transaction(async (tx) => {
+			await tx.collection.findFirstOrThrow({
+				where: { id: collectionId, userId },
+				select: { id: true },
+			});
+
+			await tx.collectionItem.deleteMany({
+				where: { collectionId },
+			});
+
+			await tx.collection.delete({
+				where: { id: collectionId },
+			});
 		});
 		return;
 	});
