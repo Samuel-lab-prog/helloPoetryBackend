@@ -7,7 +7,10 @@ export type GetPoemCommentsParams = {
 };
 
 export interface QueriesRepository {
-	selectCommentById(params: { commentId: number }): Promise<PoemComment | null>;
+	selectCommentById(params: {
+		commentId: number;
+		currentUserId?: number;
+	}): Promise<PoemComment | null>;
 	selectCommentsByPoemId(params: {
 		poemId: number;
 		parentId?: number;

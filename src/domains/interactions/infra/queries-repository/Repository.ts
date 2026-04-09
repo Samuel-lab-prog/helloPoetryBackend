@@ -23,7 +23,7 @@ const poemCommentSelect: CommentSelect = {
 
 export function selectCommentById(params: {
 	commentId: number;
-	currentUserId: number;
+	currentUserId?: number;
 }): Promise<PoemComment | null> {
 	const { commentId, currentUserId } = params;
 
@@ -43,11 +43,13 @@ export function selectCommentById(params: {
 			where: { commentId: comment.id },
 		});
 
-		const liked = await prisma.commentLike.findUnique({
-			where: {
-				userId_commentId: { userId: currentUserId, commentId: comment.id },
-			},
-		});
+		const liked = currentUserId
+			? await prisma.commentLike.findUnique({
+					where: {
+						userId_commentId: { userId: currentUserId, commentId: comment.id },
+					},
+				})
+			: null;
 
 		return {
 			id: comment.id,
@@ -80,7 +82,8 @@ export function selectCommentsByPoemId(params: {
 		const comments = await prisma.comment.findMany({
 			where: {
 				poemId,
-				parentId: parentId ?? null, // garante que comentários principais sejam buscados corretamente
+				parentId: parentId ?? null,
+				status: 'visible',
 			},
 			orderBy: { createdAt: 'desc' },
 			select: poemCommentSelect,
@@ -89,7 +92,6 @@ export function selectCommentsByPoemId(params: {
 		const commentIds = comments.map((c) => c.id);
 		if (commentIds.length === 0) return [];
 
-		// 2️⃣ Contagem de replies
 		const repliesCounts = await prisma.comment.groupBy({
 			by: ['parentId'],
 			where: { parentId: { in: commentIds } },
@@ -99,7 +101,6 @@ export function selectCommentsByPoemId(params: {
 			repliesCounts.map((r) => [r.parentId!, r._count.id]),
 		);
 
-		// 3️⃣ Contagem de likes
 		const likesCounts = await prisma.commentLike.groupBy({
 			by: ['commentId'],
 			where: { commentId: { in: commentIds } },
@@ -109,7 +110,6 @@ export function selectCommentsByPoemId(params: {
 			likesCounts.map((l) => [l.commentId, l._count.userId]),
 		);
 
-		// 4️⃣ Likes do usuário atual
 		let likedMap = new Map<number, boolean>();
 		if (currentUserId) {
 			const likedComments = await prisma.commentLike.findMany({
@@ -119,11 +119,9 @@ export function selectCommentsByPoemId(params: {
 				},
 				select: { commentId: true },
 			});
-			// ⚡ Corrige BigInt/number mismatch
 			likedMap = new Map(likedComments.map((c) => [Number(c.commentId), true]));
 		}
 
-		// 5️⃣ Mapear para PoemComment
 		return comments.map((c) => ({
 			id: c.id,
 			content: c.content,

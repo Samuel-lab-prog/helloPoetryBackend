@@ -27,7 +27,10 @@ export function deleteCommentFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
-		const rawComment = await queriesRepository.selectCommentById({ commentId });
+		const rawComment = await queriesRepository.selectCommentById({
+			commentId,
+			currentUserId: userId,
+		});
 
 		const comment = v
 			.comment(rawComment)
