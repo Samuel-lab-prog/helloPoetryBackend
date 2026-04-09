@@ -37,6 +37,9 @@ export type FeedPoem = {
 	};
 };
 
+const DEFAULT_AVATAR_URL =
+	process.env.DEFAULT_AVATAR_URL ?? 'https://cdn.example.com/avatar.png';
+
 export interface PoemsPublicContract {
 	selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo>;
 }
@@ -143,7 +146,7 @@ function mapToFeedPoem(poem: any): FeedPoem {
 			id: poem.author.id,
 			name: poem.author.name,
 			nickname: poem.author.nickname,
-			avatarUrl: poem.author.avatarUrl,
+			avatarUrl: poem.author.avatarUrl ?? DEFAULT_AVATAR_URL,
 		},
 	};
 }

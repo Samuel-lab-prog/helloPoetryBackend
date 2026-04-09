@@ -206,6 +206,7 @@ type HandleErrorContext = {
 
 function handleError(ctx: HandleErrorContext) {
 	const { set, error, code, request, store, auth } = ctx;
+	console.log('Handling error:', { error, code });
 
 	const appError = normalizeError(code, error);
 	const context = buildErrorContext(request, { store, auth });

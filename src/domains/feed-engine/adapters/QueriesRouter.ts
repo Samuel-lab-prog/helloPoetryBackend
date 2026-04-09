@@ -9,6 +9,7 @@ export function createFeedQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/feed' }).use(AuthPlugin).get(
 		'/',
 		({ auth }) => {
+			console.log('Received request for feed with auth:', auth);
 			return services.getFeed({
 				userId: auth.clientId,
 			});
