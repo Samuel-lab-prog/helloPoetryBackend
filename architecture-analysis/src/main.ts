@@ -16,6 +16,8 @@ import {
 	printNoRootSourceCode,
 	printNoInvalidDirectionalDependencies,
 	printNoMissingDirectories,
+	printNoInvalidInfraDirectory,
+	printNoInvalidRepositoryFiles,
 } from './metrics/Index';
 
 function metrics(): void {
@@ -38,6 +40,8 @@ function metrics(): void {
 	printNoInvalidDirectionalDependencies(depcruise);
 	printNoUntestedUsecase(cloc);
 	printNoMissingDirectories(cloc);
+	printNoInvalidInfraDirectory(cloc);
+	printNoInvalidRepositoryFiles(cloc);
 }
 
 metrics();

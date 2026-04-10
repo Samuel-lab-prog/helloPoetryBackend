@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { mapPoem } from './Helpers';
+import { mapPoem } from './helpers';
 
 describe('mapPoem', () => {
 	it('maps dedications to users with friendIds and stats', () => {

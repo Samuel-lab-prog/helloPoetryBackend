@@ -2,7 +2,10 @@ import { createAuthRouter } from './adapters/AuthRouter';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
 import { authenticateClientFactory } from './use-cases/authenticate/execute';
 import { loginClientFactory } from './use-cases/login/execute';
-import { JwtTokenService, FakeJwtTokenService } from './infra/JwtTokenService';
+import {
+	JwtTokenService,
+	FakeJwtTokenService,
+} from './infra/jwt-token-service/JwtTokenService';
 import { createAuthPlugin } from './adapters/AuthPlugin';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 

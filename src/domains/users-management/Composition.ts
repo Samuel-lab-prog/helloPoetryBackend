@@ -16,7 +16,7 @@ import {
 	getUsersFactory,
 } from './use-cases/queries/index';
 import type { UsersQueriesRouterServices } from './ports/Queries';
-import { queriesRepository } from './infra/queries-repository/Repository';
+import { queriesRepository } from './infra/queries-repository/repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
 import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 import { storageService } from '@SharedKernel/infra/storage/storage.service';

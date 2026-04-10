@@ -1,5 +1,5 @@
 import jwt, { type SignOptions } from 'jsonwebtoken';
-import type { TokenService, TokenPayload } from '../ports/Services';
+import type { TokenService, TokenPayload } from '../../ports/Services';
 import { getJwtSecretKey } from 'server-config/config';
 
 const secretKey = getJwtSecretKey();

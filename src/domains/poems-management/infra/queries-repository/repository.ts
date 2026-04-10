@@ -16,7 +16,7 @@ import {
 	poemPreviewSelect,
 	savedPoemSelect,
 } from './selects';
-import { mapPoem, mapPoemPreview } from './Helpers';
+import { mapPoem, mapPoemPreview } from './helpers';
 
 const DEFAULT_LIMIT = 20;
 

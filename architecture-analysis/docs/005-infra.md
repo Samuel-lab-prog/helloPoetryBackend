@@ -49,12 +49,20 @@ Infra lives inside each domain at `src/domains/<domain>/infra/`.
 
 Typical structure (per domain):
 
-`infra/queries-repository/Repository.ts`
-`infra/queries-repository/Repository.test.ts`
-`infra/queries-repository/Selects.ts` `infra/queries-repository/Helpers.ts`
-`infra/commands-repository/Repository.ts`
-`infra/commands-repository/Repository.test.ts`
-`infra/commands-repository/Helpers.ts`
+`infra/queries-repository/repository.ts` `infra/queries-repository/selects.ts`
+`infra/queries-repository/helpers.ts` `infra/queries-repository/helpers.test.ts`
+`infra/commands-repository/repository.ts` `infra/commands-repository/selects.ts`
+`infra/commands-repository/helpers.ts`
+`infra/commands-repository/helpers.test.ts` `infra/<something>-service/...`
+
+Rules:
+
+- infra may only contain `commands-repository`, `queries-repository`, or
+  `<something>-service` folders,
+- infra must not contain files directly at its root.
+- inside `commands-repository` or `queries-repository`, only the following files
+  are allowed: `repository.ts`, `selects.ts`, `helpers.ts`, `helpers.test.ts`,
+- `repository.ts` is mandatory; the other files are optional.
 
 Each repository:
 
@@ -143,8 +151,8 @@ Infrastructure **maps persistence models to application models**.
 
 Common patterns:
 
-- `Selects.ts` defines database projections,
-- `Helpers.ts` maps raw results into models,
+- `selects.ts` defines database projections,
+- `helpers.ts` maps raw results into models,
 - mapping functions are pure and reusable.
 
 Rules:

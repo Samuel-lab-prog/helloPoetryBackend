@@ -1,6 +1,6 @@
 import { queriesRepository } from './infra/queries-repository/repository';
 import type { QueriesRouterServices } from './ports/Queries';
-import { commandsRepository } from './infra/commands-repository/Repository';
+import { commandsRepository } from './infra/commands-repository/repository';
 import { slugifyService } from './infra/slug-service/execute';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import {

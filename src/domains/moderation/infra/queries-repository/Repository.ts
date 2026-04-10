@@ -9,11 +9,9 @@ import type {
 import {
 	fromRawToSuspendedUser,
 	suspensionSelect,
-} from '../commands-repository/selects/CreateSuspension';
-import {
 	banSelect,
 	fromRawToBannedUser,
-} from '../commands-repository/selects/CreateBan';
+} from '../commands-repository/selects';
 
 export function selectActiveBanByUserId(params: {
 	userId: number;

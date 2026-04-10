@@ -9,7 +9,7 @@ import type {
 	CreateUserDB,
 	FullUser,
 } from '../../use-cases/Models';
-import { fullUserSelect } from '../queries-repository/selects/Index';
+import { fullUserSelect } from '../queries-repository/selects';
 
 function toPrismaCreateInput(user: CreateUserDB): UserCreateInput {
 	return {

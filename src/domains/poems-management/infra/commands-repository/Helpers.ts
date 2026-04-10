@@ -6,7 +6,7 @@ import type {
 	UpdatePoemDB,
 } from '../../ports/Models';
 
-import { insertPoemSelect, updatePoemSelect } from './Selects';
+import { insertPoemSelect, updatePoemSelect } from './selects';
 
 export function toPrismaCreatePoemInput(
 	poem: CreatePoemDB,

@@ -12,8 +12,8 @@ import {
 } from './use-cases/commands/Index';
 import { unlikeCommentFactory } from './use-cases/commands/unlike-comment/execute';
 
-import { commandsRepository } from './infra/commands-repository/Repository';
-import { queriesRepository } from './infra/queries-repository/Repository';
+import { commandsRepository } from './infra/commands-repository/repository';
+import { queriesRepository } from './infra/queries-repository/repository';
 import type { CommandsRouterServices } from './ports/Commands';
 import type { QueriesRouterServices } from './ports/Queries';
 import { createInteractionsQueriesRouter } from './adapters/QueriesRouter';

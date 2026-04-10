@@ -1,7 +1,7 @@
 import { createNotificationsCommandsRouter } from './adapters/CommandsRouter';
 import { createNotificationsQueriesRouter } from './adapters/QueriesRouter';
-import { queriesRepository } from './infra/queries-repository/Repository';
-import { commandsRepository } from './infra/commands-repository/Repository';
+import { queriesRepository } from './infra/queries-repository/repository';
+import { commandsRepository } from './infra/commands-repository/repository';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
 import type { NotificationsQueriesServices } from './ports/Queries';
 import type { NotificationsCommandsServices } from './ports/Commands';

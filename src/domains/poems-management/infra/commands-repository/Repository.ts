@@ -17,13 +17,13 @@ import {
 	insertPoemSelect,
 	updatePoemSelect,
 	moderatePoemSelect,
-} from './Selects';
+} from './selects';
 import {
 	toPrismaCreatePoemInput,
 	toPrismaUpdatePoemInput,
 	toCreatePoemResult,
 	toUpdatePoemResult,
-} from './Helpers';
+} from './helpers';
 
 function insertPoem(
 	poem: CreatePoemDB,

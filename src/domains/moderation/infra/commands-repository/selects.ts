@@ -1,5 +1,31 @@
 import type { Prisma } from '@PrismaGenerated/browser';
-import type { SuspendedUserResponse } from '../../../use-cases/Models';
+import type {
+	BannedUserResponse,
+	SuspendedUserResponse,
+} from '../../use-cases/Models';
+
+export const banSelect = {
+	id: true,
+	userId: true,
+	moderatorId: true,
+	reason: true,
+	startAt: true,
+	endAt: true,
+} as const satisfies Prisma.UserSanctionSelect;
+
+export type BanRaw = Prisma.UserSanctionGetPayload<{
+	select: typeof banSelect;
+}>;
+
+export function fromRawToBannedUser(raw: BanRaw): BannedUserResponse {
+	return {
+		id: raw.id,
+		reason: raw.reason,
+		moderatorId: raw.moderatorId,
+		bannedUserId: raw.userId,
+		bannedAt: raw.startAt,
+	};
+}
 
 export const suspensionSelect = {
 	id: true,

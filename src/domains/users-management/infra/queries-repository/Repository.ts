@@ -16,7 +16,7 @@ import {
 	fullUserSelect,
 	previewUserSelect,
 	fromRawToPreviewUser,
-} from './selects/Index';
+} from './selects';
 
 import {
 	publicProfileSelect,

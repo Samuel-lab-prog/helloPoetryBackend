@@ -1,6 +1,6 @@
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { prisma } from '@Prisma/PrismaClient';
-import { fullUserSelect } from '../../../infra/queries-repository/selects/FullUser';
+import { fullUserSelect } from '../../../infra/queries-repository/selects';
 import type { FullUser } from '../../Models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 

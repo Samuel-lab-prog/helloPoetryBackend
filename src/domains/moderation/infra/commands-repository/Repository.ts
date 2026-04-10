@@ -12,7 +12,7 @@ import {
 	fromRawToBannedUser,
 	fromRawToSuspendedUser,
 	suspensionSelect,
-} from './selects/Index';
+} from './selects';
 
 export function createBan(params: {
 	userId: number;
