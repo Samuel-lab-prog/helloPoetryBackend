@@ -53,8 +53,8 @@ src/
   domains/                 # Core domains (poems, users, interactions...)
   generic-subdomains/      # Generic subdomains (auth, persistence, utils)
   shared-kernel/           # Shared types, ports, and utilities
-  tests/                   # Integration/E2E and helpers
   Server.ts                # Server entry point
+tests/                     # Integration/E2E and helpers
 ```
 
 Each domain follows the same internal organization:

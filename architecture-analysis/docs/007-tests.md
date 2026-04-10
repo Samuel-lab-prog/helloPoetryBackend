@@ -80,7 +80,7 @@ Rules:
 
 ### Integration and End-to-End Tests
 
-Integration and E2E tests live in a **dedicated root folder**: `src/tests/`.
+Integration and E2E tests live in a **dedicated root folder**: `tests/`.
 
 These tests may:
 

@@ -29,7 +29,7 @@ export function extractIntegrationTestDomainFromPath(
 	path: string,
 ): string | null {
 	const match = path.match(
-		/(?:^|[/\\])src[/\\]tests[/\\](?!test-helpers[/\\])([^/\\]+)[/\\]/i,
+		/(?:^|[/\\])tests[/\\](?!test-helpers[/\\])([^/\\]+)[/\\]/i,
 	);
 	if ((match && match[1] === 'endpoints') || (match && match[1] === 'data'))
 		return null;

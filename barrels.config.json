@@ -28,8 +28,8 @@
 		"./src/domains/notifications/use-cases/queries",
 
 		"./architecture-analysis/src/metrics",
-		"./src/tests/endpoints",
-		"./src/tests/data",
+		"./tests/endpoints",
+		"./tests/data",
 
 		"./src/generic-subdomains/authentication/ports/schemas"
 	],
