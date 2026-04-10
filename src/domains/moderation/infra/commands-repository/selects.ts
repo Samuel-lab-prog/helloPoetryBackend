@@ -2,7 +2,7 @@ import type { Prisma } from '@PrismaGenerated/browser';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 export const banSelect = {
 	id: true,

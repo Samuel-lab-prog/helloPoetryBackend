@@ -1,5 +1,5 @@
 import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
-import type { UserStatus } from './Models';
+import type { UserStatus } from '../../ports/Models';
 
 export type CanUpdatePolicyInput = {
 	requesterId: number;

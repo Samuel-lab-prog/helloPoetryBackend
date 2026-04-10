@@ -1,12 +1,11 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { suspendUserFactory } from './execute';
 import {
-	UserNotFoundError,
-	UserAlreadySuspendedError,
-	InsufficientPermissionsError,
-	CannotSuspendSelfError,
-} from '../../Errors';
-import type { SuspendedUserResponse } from '../../Models';
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domain-error/domainError';
+import type { SuspendedUserResponse } from '../../../ports/Models';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Suspend User', () => {
@@ -81,7 +80,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(CannotSuspendSelfError);
+			).rejects.toBeInstanceOf(ForbiddenError);
 
 			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
@@ -101,7 +100,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'author',
 				}),
-			).rejects.toBeInstanceOf(InsufficientPermissionsError);
+			).rejects.toBeInstanceOf(ForbiddenError);
 
 			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
@@ -123,7 +122,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(UserNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
 		});
@@ -149,7 +148,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(UserAlreadySuspendedError);
+			).rejects.toBeInstanceOf(ConflictError);
 
 			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
 		});

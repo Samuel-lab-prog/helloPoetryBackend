@@ -4,7 +4,7 @@ import type {
 	UpdateUserData,
 	CreateUser,
 	UserStatus,
-} from '../use-cases/Models';
+} from './Models';
 import type { CommandResult } from '@SharedKernel/Types';
 import type { AvatarUploadUrlResult } from '@SharedKernel/ports/Storage';
 

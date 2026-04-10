@@ -5,7 +5,7 @@ import type { CommandsRepository } from '../../ports/Commands';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 import {
 	banSelect,

@@ -3,7 +3,7 @@ import type {
 	CancelFriendRequestParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { CancelFriendRequestRecord } from '../../Models';
+import type { CancelFriendRequestRecord } from '../../../ports/Models';
 import {
 	ConflictError,
 	NotFoundError,

@@ -7,7 +7,7 @@ import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
-import type { RemovedFriendRecord } from '../../Models';
+import type { RemovedFriendRecord } from '../../../ports/Models';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

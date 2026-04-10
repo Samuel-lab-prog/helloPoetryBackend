@@ -8,7 +8,7 @@ import type {
 	UpdateUserData,
 	CreateUserDB,
 	FullUser,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 import { fullUserSelect } from '../queries-repository/selects';
 
 function toPrismaCreateInput(user: CreateUserDB): UserCreateInput {

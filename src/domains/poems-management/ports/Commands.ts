@@ -11,7 +11,7 @@ import type {
 	CreateCollection,
 	ModeratePoemResult,
 	PoemModerationStatus,
-} from '../ports/Models';
+} from './Models';
 
 export type UserMetaData = {
 	requesterId: number;

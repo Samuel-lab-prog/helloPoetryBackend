@@ -1,7 +1,7 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { QueriesRepository } from '../../ports/Queries';
 import type { FriendsManagementSutMocks } from './SutMocks';
-import type { FriendRequestsByUser } from '../Models';
+import type { FriendRequestsByUser } from '../../ports/Models';
 import {
 	DEFAULT_REQUESTER_ID,
 	DEFAULT_ADDRESSEE_ID,

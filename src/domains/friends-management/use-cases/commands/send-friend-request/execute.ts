@@ -4,7 +4,10 @@ import type {
 	SendFriendRequestParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendRequestRecord, FriendshipRecord } from '../../Models';
+import type {
+	FriendRequestRecord,
+	FriendshipRecord,
+} from '../../../ports/Models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

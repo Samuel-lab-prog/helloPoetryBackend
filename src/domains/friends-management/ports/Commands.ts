@@ -6,7 +6,7 @@ import type {
 	UnblockUserRecord,
 	BlockedUserRecord,
 	RemovedFriendRecord,
-} from '../use-cases/Models';
+} from './Models';
 
 import type { CommandResult } from '@SharedKernel/Types';
 

@@ -3,7 +3,7 @@ import type {
 	UnblockUserParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { UnblockUserRecord } from '../../Models';
+import type { UnblockUserRecord } from '../../../ports/Models';
 import {
 	ConflictError,
 	NotFoundError,

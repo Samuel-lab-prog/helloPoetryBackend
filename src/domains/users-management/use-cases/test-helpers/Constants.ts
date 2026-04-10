@@ -6,7 +6,7 @@ import type {
 	UserPublicProfile,
 	UserStatus,
 	UsersPage,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 export const DEFAULT_REQUESTER_ID = 1;
 export const DEFAULT_TARGET_ID = 1;

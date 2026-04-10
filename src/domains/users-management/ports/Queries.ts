@@ -5,7 +5,7 @@ import type {
 	FullUser,
 	UserStatus,
 	UserRole,
-} from '../use-cases/Models';
+} from './Models';
 
 export type GetUsersParams = {
 	requesterStatus: UserStatus;

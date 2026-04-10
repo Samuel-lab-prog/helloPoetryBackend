@@ -48,7 +48,11 @@ import {
 	DEFAULT_USER_ROLE,
 	DEFAULT_USER_STATUS,
 } from './Constants';
-import { canCreatePoem, canUpdatePoem, canViewPoem } from '../Policies';
+import {
+	canCreatePoem,
+	canUpdatePoem,
+	canViewPoem,
+} from '../policies/Policies';
 import {
 	type PoemsSutMocks,
 	poemsFactory,

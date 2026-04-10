@@ -1,6 +1,6 @@
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { UserStatus, UserRole } from '../use-cases/Models';
+import type { UserStatus, UserRole } from '../ports/Models';
 import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
 
 export type UserBasicInfo = {

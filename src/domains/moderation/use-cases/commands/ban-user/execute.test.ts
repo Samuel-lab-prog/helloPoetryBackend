@@ -1,12 +1,11 @@
 import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { banUserFactory } from './execute';
 import {
-	UserNotFoundError,
-	UserAlreadyBannedError,
-	InsufficientPermissionsError,
-	CannotBanSelfError,
-} from '../../Errors';
-import type { BannedUserResponse } from '../../Models';
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domain-error/domainError';
+import type { BannedUserResponse } from '../../../ports/Models';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Ban User', () => {
@@ -80,7 +79,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(CannotBanSelfError);
+			).rejects.toBeInstanceOf(ForbiddenError);
 
 			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
@@ -100,7 +99,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'author',
 				}),
-			).rejects.toBeInstanceOf(InsufficientPermissionsError);
+			).rejects.toBeInstanceOf(ForbiddenError);
 
 			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
@@ -122,7 +121,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(UserNotFoundError);
+			).rejects.toBeInstanceOf(NotFoundError);
 
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
 		});
@@ -148,7 +147,7 @@ describe('USE-CASE - Moderation', () => {
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(UserAlreadyBannedError);
+			).rejects.toBeInstanceOf(ConflictError);
 
 			expect(commandsRepository.createBan).not.toHaveBeenCalled();
 		});

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
-import { canViewPoem } from '../use-cases/Policies';
+import { canViewPoem } from '../use-cases/policies/Policies';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 export type UserProfilePoem = {

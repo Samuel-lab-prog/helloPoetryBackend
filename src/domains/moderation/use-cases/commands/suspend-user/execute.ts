@@ -3,13 +3,12 @@ import type {
 	SuspendUserParams,
 } from '../../../ports/Commands';
 import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
-import type { SuspendedUserResponse } from '../../Models';
+import type { SuspendedUserResponse } from '../../../ports/Models';
 import {
-	UserNotFoundError,
-	UserAlreadySuspendedError,
-	InsufficientPermissionsError,
-	CannotSuspendSelfError,
-} from '../../Errors';
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domain-error/domainError';
 import type { QueriesRepository } from '@Domains/moderation/ports/Queries';
 
 interface Dependencies {
@@ -28,18 +27,24 @@ export function suspendUserFactory({
 	): Promise<SuspendedUserResponse> {
 		const { userId, reason, requesterId, requesterRole } = params;
 
-		if (requesterId === userId) throw new CannotSuspendSelfError();
+		if (requesterId === userId) {
+			throw new ForbiddenError('A moderator cannot suspend themselves.');
+		}
 
-		if (requesterRole === 'author') throw new InsufficientPermissionsError();
+		if (requesterRole === 'author') {
+			throw new ForbiddenError('You do not have permission to ban users.');
+		}
 
 		const userExists = await usersContract.selectUserBasicInfo(userId);
 
-		if (!userExists.exists) throw new UserNotFoundError();
+		if (!userExists.exists) throw new NotFoundError('User not found.');
 
 		const activeSuspension =
 			await queriesRepository.selectActiveSuspensionByUserId({ userId });
 
-		if (activeSuspension) throw new UserAlreadySuspendedError();
+		if (activeSuspension) {
+			throw new ConflictError('User is already suspended.');
+		}
 
 		return commandsRepository.createSuspension({
 			userId,

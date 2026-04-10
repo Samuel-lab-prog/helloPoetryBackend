@@ -13,9 +13,9 @@ import {
 import type {
 	BlockedUserRecord,
 	FriendRequestRecord,
-} from '@Domains/friends-management/use-cases/Models';
+} from '@Domains/friends-management/ports/Models';
 
-import type { UserPrivateProfile } from '@Domains/users-management/use-cases/Models';
+import type { UserPrivateProfile } from '@Domains/users-management/ports/Models';
 import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
 import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 

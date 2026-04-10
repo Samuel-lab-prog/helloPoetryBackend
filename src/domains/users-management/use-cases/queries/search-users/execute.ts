@@ -1,6 +1,6 @@
 import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 import type { QueriesRepository, GetUsersParams } from '../../../ports/Queries';
-import type { UsersPage } from '../../Models';
+import type { UsersPage } from '../../../ports/Models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;

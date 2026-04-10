@@ -3,7 +3,7 @@ import type {
 	BlockedUserRecord,
 	FriendshipRecord,
 	FriendRequestsByUser,
-} from '../use-cases/Models';
+} from './Models';
 
 export interface QueriesRouterServices {
 	getMyFriendRequests(params: {

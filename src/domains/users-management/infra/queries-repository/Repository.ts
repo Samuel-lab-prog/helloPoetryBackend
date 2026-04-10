@@ -10,7 +10,7 @@ import type {
 	UserPrivateProfile,
 	UsersPage,
 	FullUser,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 import {
 	fullUserSelect,

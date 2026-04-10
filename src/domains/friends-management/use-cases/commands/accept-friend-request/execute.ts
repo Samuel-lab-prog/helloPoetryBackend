@@ -7,7 +7,7 @@ import type {
 	AcceptFriendRequestParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendshipRecord } from '../../Models';
+import type { FriendshipRecord } from '../../../ports/Models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 

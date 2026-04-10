@@ -5,7 +5,7 @@ import type { QueriesRepository } from '../../ports/Queries';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 import {
 	fromRawToSuspendedUser,
 	suspensionSelect,

@@ -6,7 +6,7 @@ import type {
 	FriendRequestRecord,
 	BlockedUserRecord,
 	FriendRequestsByUser,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 
 function normalizePair(a: number, b: number): [number, number] {
 	return a < b ? [a, b] : [b, a];

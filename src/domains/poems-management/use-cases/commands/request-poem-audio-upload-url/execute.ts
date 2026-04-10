@@ -4,7 +4,7 @@ import type {
 	AudioUploadUrlResult,
 } from '@SharedKernel/ports/Storage';
 import type { QueriesRepository } from '../../../ports/Queries';
-import { canManagePoemAudio } from '../../Policies';
+import { canManagePoemAudio } from '../../policies/Policies';
 import type { UserMetaData } from '../../../ports/Commands';
 
 export type RequestPoemAudioUploadUrlParams = {

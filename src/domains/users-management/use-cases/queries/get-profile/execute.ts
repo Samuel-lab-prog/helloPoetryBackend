@@ -6,7 +6,10 @@ import type {
 	QueriesRepository,
 	GetProfileParams,
 } from '../../../ports/Queries';
-import type { UserPrivateProfile, UserPublicProfile } from '../../Models';
+import type {
+	UserPrivateProfile,
+	UserPublicProfile,
+} from '../../../ports/Models';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 interface Dependencies {

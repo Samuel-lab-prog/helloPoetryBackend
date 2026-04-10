@@ -3,7 +3,7 @@ import type {
 	RejectFriendRequestParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendRequestRejectionRecord } from '../../Models';
+import type { FriendRequestRejectionRecord } from '../../../ports/Models';
 import {
 	ConflictError,
 	NotFoundError,

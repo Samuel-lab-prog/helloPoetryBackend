@@ -1,4 +1,4 @@
-import { canManagePoemAudio } from '../../Policies';
+import { canManagePoemAudio } from '../../policies/Policies';
 import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';

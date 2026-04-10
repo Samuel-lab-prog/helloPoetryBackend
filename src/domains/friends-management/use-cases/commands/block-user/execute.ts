@@ -3,7 +3,7 @@ import type {
 	BlockUserParams,
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
-import type { BlockedUserRecord } from '../../Models';
+import type { BlockedUserRecord } from '../../../ports/Models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {

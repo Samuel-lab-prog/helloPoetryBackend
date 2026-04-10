@@ -2,7 +2,7 @@ import { Elysia } from 'elysia';
 import { appErrorSchema, AppError } from '@GenericSubdomains/utils/AppError';
 import { CreateUserSchema, FullUserSchema } from '../ports/schemas/Index';
 import type { BootstrapAdminParams } from '../use-cases/commands/bootstrap-admin/execute';
-import type { FullUser } from '../use-cases/Models';
+import type { FullUser } from '../ports/Models';
 
 export type UsersInternalServices = {
 	bootstrapAdmin: (params: BootstrapAdminParams) => Promise<{

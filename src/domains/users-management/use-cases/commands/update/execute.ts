@@ -6,8 +6,8 @@ import type {
 	CommandsRepository,
 	UpdateUserParams,
 } from '../../../ports/Commands';
-import type { FullUser } from '../../Models';
-import { canUpdateData } from '../../Policies';
+import type { FullUser } from '../../../ports/Models';
+import { canUpdateData } from '../../policies/Policies';
 import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';
 
 interface Dependencies {

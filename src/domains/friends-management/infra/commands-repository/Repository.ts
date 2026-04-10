@@ -9,7 +9,7 @@ import type {
 	UnblockUserRecord,
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
-} from '../../use-cases/Models';
+} from '../../ports/Models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export const commandsRepository: CommandsRepository = {

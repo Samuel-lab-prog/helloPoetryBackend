@@ -6,7 +6,7 @@ import type {
 	UserPublicProfile,
 	UserRole,
 	UserStatus,
-} from '@Domains/users-management/use-cases/Models.ts';
+} from '@Domains/users-management/ports/Models.ts';
 import {
 	jsonRequest,
 	API_INSTANCE,

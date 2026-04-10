@@ -1,8 +1,5 @@
 import type { UserRole } from '@SharedKernel/Enums';
-import type {
-	BannedUserResponse,
-	SuspendedUserResponse,
-} from '../use-cases/Models';
+import type { BannedUserResponse, SuspendedUserResponse } from './Models';
 
 export type BanUserParams = {
 	userId: number;

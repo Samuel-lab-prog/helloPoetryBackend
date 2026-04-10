@@ -3,7 +3,7 @@ import type {
 	CreateUserParams,
 } from '../../../ports/Commands';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import type { FullUser } from '../../Models';
+import type { FullUser } from '../../../ports/Models';
 import {
 	ConflictError,
 	UnknownError,

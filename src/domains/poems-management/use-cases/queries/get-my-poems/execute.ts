@@ -3,7 +3,7 @@ import type {
 	GetMyPoemsParams,
 } from '../../../ports/Queries';
 import type { MyPoem } from '../../../ports/Models';
-import { canViewPoem } from '../../Policies';
+import { canViewPoem } from '../../policies/Policies';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;

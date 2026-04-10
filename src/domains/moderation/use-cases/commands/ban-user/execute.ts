@@ -4,13 +4,12 @@ import type {
 } from '../../../ports/Commands';
 import type { QueriesRepository } from '../../../ports/Queries';
 import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
-import type { BannedUserResponse } from '../../Models';
+import type { BannedUserResponse } from '../../../ports/Models';
 import {
-	UserNotFoundError,
-	UserAlreadyBannedError,
-	InsufficientPermissionsError,
-	CannotBanSelfError,
-} from '../../Errors';
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domain-error/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -28,16 +27,20 @@ export function banUserFactory({
 	): Promise<BannedUserResponse> {
 		const { userId, reason, requesterId, requesterRole } = params;
 
-		if (requesterId === userId) throw new CannotBanSelfError();
-		if (requesterRole === 'author') throw new InsufficientPermissionsError();
+		if (requesterId === userId) {
+			throw new ForbiddenError('A moderator cannot ban themselves.');
+		}
+		if (requesterRole === 'author') {
+			throw new ForbiddenError('You do not have permission to ban users.');
+		}
 
 		const userExists = await usersContract.selectUserBasicInfo(userId);
-		if (!userExists.exists) throw new UserNotFoundError();
+		if (!userExists.exists) throw new NotFoundError('User not found.');
 
 		const activeBan = await queriesRepository.selectActiveBanByUserId({
 			userId,
 		});
-		if (activeBan) throw new UserAlreadyBannedError();
+		if (activeBan) throw new ConflictError('User is already banned.');
 
 		return commandsRepository.createBan({
 			userId,

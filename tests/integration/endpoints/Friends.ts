@@ -13,7 +13,7 @@ import type {
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
 	BlockedUserRecord,
-} from '@Domains/friends-management/use-cases/Models.ts';
+} from '@Domains/friends-management/ports/Models.ts';
 import type { AppError } from '@GenericSubdomains/utils/AppError';
 
 export async function sendFriendRequest(

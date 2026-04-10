@@ -3,7 +3,7 @@ import type {
 	UserPrivateProfile,
 	UserPublicProfile,
 	UsersPage,
-} from '../Models';
+} from '../../ports/Models';
 import type { UsersManagementSutMocks } from './SutMocks';
 import {
 	DEFAULT_FULL_USER,

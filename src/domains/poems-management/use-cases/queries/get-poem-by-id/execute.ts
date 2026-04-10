@@ -1,5 +1,5 @@
 import type { QueriesRepository, GetPoemParams } from '../../../ports/Queries';
-import { canViewPoem } from '../../Policies';
+import { canViewPoem } from '../../policies/Policies';
 import type { AuthorPoem } from '../../../ports/Models';
 import {
 	ForbiddenError,
