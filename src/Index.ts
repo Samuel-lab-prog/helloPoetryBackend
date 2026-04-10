@@ -8,6 +8,7 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { SetupPlugin } from '@SetupPlugin';
 import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
 import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
+import { RequestCachePlugin } from '@GenericSubdomains/utils/plugins/requestCachePlugin';
 
 // Necessary to register notification event listeners.
 import '@Domains/notifications/EventListeners.ts';
@@ -74,6 +75,7 @@ function makeServer({
 			.use(enableLogger ? LoggerPlugin : undefined)
 			.use(cors(corsConfig))
 			.use(SetupPlugin)
+			.use(RequestCachePlugin)
 			.use(SecurityHeadersPlugin)
 			.use(CsrfPlugin)
 			.use(ErrorPlugin)

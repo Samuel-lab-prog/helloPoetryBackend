@@ -1,5 +1,5 @@
 import { clearDatabase } from '@ClearDatabase';
-import { setupHttpUsers } from 'tests/TestsSetups.ts';
+import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 import type { AuthUser } from '../endpoints/Index';
 
 export async function setupFriendsIntegrationScenario(): Promise<{

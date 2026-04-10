@@ -7,6 +7,7 @@ import type {
 	PoemStatus,
 	PoemVisibility,
 } from '../ports/Models';
+import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
 
 export type PoemBasicInfo = {
 	exists: boolean;
@@ -60,44 +61,46 @@ interface PoemsFeedContract {
 }
 
 function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
-	return withPrismaErrorHandling(async () => {
-		const poem = await prisma.poem.findUnique({
-			where: { id: poemId, deletedAt: null },
-			select: {
-				id: true,
-				authorId: true,
-				visibility: true,
-				moderationStatus: true,
-				status: true,
-				isCommentable: true,
-				title: true,
-			},
-		});
+	return withRequestCache(`poems.basic:${poemId}`, () =>
+		withPrismaErrorHandling(async () => {
+			const poem = await prisma.poem.findUnique({
+				where: { id: poemId, deletedAt: null },
+				select: {
+					id: true,
+					authorId: true,
+					visibility: true,
+					moderationStatus: true,
+					status: true,
+					isCommentable: true,
+					title: true,
+				},
+			});
 
-		if (!poem) {
+			if (!poem) {
+				return {
+					exists: false,
+					id: poemId,
+					authorId: -1,
+					visibility: 'private',
+					moderationStatus: 'pending',
+					status: 'draft',
+					isCommentable: false,
+					poemTitle: '',
+				};
+			}
+
 			return {
-				exists: false,
-				id: poemId,
-				authorId: -1,
-				visibility: 'private',
-				moderationStatus: 'pending',
-				status: 'draft',
-				isCommentable: false,
-				poemTitle: '',
+				exists: true,
+				id: poem.id,
+				authorId: poem.authorId,
+				visibility: poem.visibility,
+				moderationStatus: poem.moderationStatus,
+				status: poem.status,
+				isCommentable: poem.isCommentable,
+				poemTitle: poem.title,
 			};
-		}
-
-		return {
-			exists: true,
-			id: poem.id,
-			authorId: poem.authorId,
-			visibility: poem.visibility,
-			moderationStatus: poem.moderationStatus,
-			status: poem.status,
-			isCommentable: poem.isCommentable,
-			poemTitle: poem.title,
-		};
-	});
+		}),
+	);
 }
 export const poemsPublicContract: PoemsPublicContract = {
 	selectPoemBasicInfo,

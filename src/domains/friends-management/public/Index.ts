@@ -1,5 +1,6 @@
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
+import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
 
 export type UsersRelationBasicInfo = {
 	areFriends: boolean;
@@ -27,130 +28,148 @@ export interface FriendsPublicContract {
 }
 
 function areFriends(userAId: number, userBId: number): Promise<boolean> {
-	return withPrismaErrorHandling(async () => {
-		const friendship = await prisma.friendship.findFirst({
-			where: {
-				OR: [
-					{ userAId, userBId },
-					{ userAId: userBId, userBId: userAId },
-				],
-			},
-		});
-
-		return friendship !== null;
-	});
-}
-
-function areBlocked(userAId: number, userBId: number): Promise<boolean> {
-	return withPrismaErrorHandling(async () => {
-		const blocked = await prisma.blockedUser.findFirst({
-			where: {
-				blockerId: userAId,
-				blockedId: userBId,
-			},
-		});
-
-		return blocked !== null;
-	});
-}
-
-function selectFollowedUserIds(userId: number): Promise<number[]> {
-	return withPrismaErrorHandling(async () => {
-		const friendships = await prisma.friendship.findMany({
-			where: {
-				OR: [{ userAId: userId }, { userBId: userId }],
-			},
-			select: {
-				userAId: true,
-				userBId: true,
-			},
-		});
-
-		return friendships.map((f) =>
-			f.userAId === userId ? f.userBId : f.userAId,
-		);
-	});
-}
-
-function selectRelation(userAId: number, userBId: number): Promise<Relation> {
-	return withPrismaErrorHandling(async () => {
-		const [friendship, blockAtoB, blockBtoA, request] = await Promise.all([
-			prisma.friendship.findFirst({
+	const key = `friends.areFriends:${userAId}:${userBId}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(async () => {
+			const friendship = await prisma.friendship.findFirst({
 				where: {
 					OR: [
-						{ userAId: userAId, userBId: userBId },
+						{ userAId, userBId },
 						{ userAId: userBId, userBId: userAId },
 					],
 				},
-				select: { id: true },
-			}),
+			});
 
-			prisma.blockedUser.findFirst({
+			return friendship !== null;
+		}),
+	);
+}
+
+function areBlocked(userAId: number, userBId: number): Promise<boolean> {
+	const key = `friends.areBlocked:${userAId}:${userBId}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(async () => {
+			const blocked = await prisma.blockedUser.findFirst({
 				where: {
 					blockerId: userAId,
 					blockedId: userBId,
 				},
-				select: { id: true },
-			}),
+			});
 
-			prisma.blockedUser.findFirst({
-				where: {
-					blockerId: userBId,
-					blockedId: userAId,
-				},
-				select: { id: true },
-			}),
+			return blocked !== null;
+		}),
+	);
+}
 
-			prisma.friendshipRequest.findFirst({
+function selectFollowedUserIds(userId: number): Promise<number[]> {
+	const key = `friends.followedIds:${userId}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(async () => {
+			const friendships = await prisma.friendship.findMany({
 				where: {
-					OR: [
-						{ requesterId: userAId, addresseeId: userBId },
-						{ requesterId: userBId, addresseeId: userAId },
-					],
+					OR: [{ userAId: userId }, { userBId: userId }],
 				},
 				select: {
-					requesterId: true,
+					userAId: true,
+					userBId: true,
 				},
-			}),
-		]);
+			});
 
-		return {
-			friends: friendship !== null,
-			blockedId: blockAtoB?.id ?? null,
-			blockedBy: blockBtoA?.id ?? null,
-			requestSentByUserId: request?.requesterId ?? null,
-		};
-	});
+			return friendships.map((f) =>
+				f.userAId === userId ? f.userBId : f.userAId,
+			);
+		}),
+	);
+}
+
+function selectRelation(userAId: number, userBId: number): Promise<Relation> {
+	const key = `friends.relation:${userAId}:${userBId}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(async () => {
+			const [friendship, blockAtoB, blockBtoA, request] = await Promise.all([
+				prisma.friendship.findFirst({
+					where: {
+						OR: [
+							{ userAId: userAId, userBId: userBId },
+							{ userAId: userBId, userBId: userAId },
+						],
+					},
+					select: { id: true },
+				}),
+
+				prisma.blockedUser.findFirst({
+					where: {
+						blockerId: userAId,
+						blockedId: userBId,
+					},
+					select: { id: true },
+				}),
+
+				prisma.blockedUser.findFirst({
+					where: {
+						blockerId: userBId,
+						blockedId: userAId,
+					},
+					select: { id: true },
+				}),
+
+				prisma.friendshipRequest.findFirst({
+					where: {
+						OR: [
+							{ requesterId: userAId, addresseeId: userBId },
+							{ requesterId: userBId, addresseeId: userAId },
+						],
+					},
+					select: {
+						requesterId: true,
+					},
+				}),
+			]);
+
+			return {
+				friends: friendship !== null,
+				blockedId: blockAtoB?.id ?? null,
+				blockedBy: blockBtoA?.id ?? null,
+				requestSentByUserId: request?.requesterId ?? null,
+			};
+		}),
+	);
 }
 
 function selectBlockedUserIds(userId: number): Promise<number[]> {
-	return withPrismaErrorHandling(async () => {
-		const blocked = await prisma.blockedUser.findMany({
-			where: {
-				blockerId: userId,
-			},
-			select: {
-				blockedId: true,
-			},
-		});
+	const key = `friends.blockedIds:${userId}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(async () => {
+			const blocked = await prisma.blockedUser.findMany({
+				where: {
+					blockerId: userId,
+				},
+				select: {
+					blockedId: true,
+				},
+			});
 
-		return blocked.map((b) => b.blockedId);
-	});
+			return blocked.map((b) => b.blockedId);
+		}),
+	);
 }
 
-async function selectUsersRelation(
+function selectUsersRelation(
 	userAId: number,
 	userBId: number,
 ): Promise<UsersRelationBasicInfo> {
-	const [friends, blocked] = await Promise.all([
-		areFriends(userAId, userBId),
-		areBlocked(userAId, userBId),
-	]);
+	const key = `friends.usersRelation:${userAId}:${userBId}`;
+	return withRequestCache(key, async () => {
+		const [friends, blocked] = await Promise.all([
+			areFriends(userAId, userBId),
+			areBlocked(userAId, userBId),
+		]);
 
-	return {
-		areFriends: friends,
-		areBlocked: blocked,
-	};
+		return {
+			areFriends: friends,
+			areBlocked: blocked,
+		};
+	});
 }
 
 export const friendsPublicContract: FriendsPublicContract = {

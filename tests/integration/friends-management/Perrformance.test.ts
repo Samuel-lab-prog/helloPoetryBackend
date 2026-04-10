@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@ClearDatabase';
-import { setupHttpUsers } from 'tests/TestsSetups.ts';
+import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 import {
 	sendFriendRequest,
 	acceptFriendRequest,

@@ -1,6 +1,7 @@
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { UserStatus, UserRole } from '../use-cases/Models';
+import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
 
 export type UserBasicInfo = {
 	exists: boolean;
@@ -25,38 +26,40 @@ export interface UsersPublicContract {
 }
 
 async function selectUserBasicInfo(userId: number) {
-	return await withPrismaErrorHandling(async () => {
-		const user = await prisma.user.findUnique({
-			where: { id: userId },
-			select: {
-				id: true,
-				status: true,
-				role: true,
-				nickname: true,
-				avatarUrl: true,
-			},
-		});
+	return await withRequestCache(`users.basic:${userId}`, () =>
+		withPrismaErrorHandling(async () => {
+			const user = await prisma.user.findUnique({
+				where: { id: userId },
+				select: {
+					id: true,
+					status: true,
+					role: true,
+					nickname: true,
+					avatarUrl: true,
+				},
+			});
 
-		if (!user) {
+			if (!user) {
+				return {
+					exists: false,
+					id: -1,
+					status: 'banned' as const,
+					role: 'author' as const,
+					nickname: '',
+					avatarUrl: null,
+				};
+			}
+
 			return {
-				exists: false,
-				id: -1,
-				status: 'banned' as const,
-				role: 'author' as const,
-				nickname: '',
-				avatarUrl: null,
+				exists: true,
+				id: user.id,
+				status: user.status,
+				role: user.role,
+				nickname: user.nickname,
+				avatarUrl: user.avatarUrl,
 			};
-		}
-
-		return {
-			exists: true,
-			id: user.id,
-			status: user.status,
-			role: user.role,
-			nickname: user.nickname,
-			avatarUrl: user.avatarUrl,
-		};
-	});
+		}),
+	);
 }
 
 function selectAuthUserByEmail(

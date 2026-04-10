@@ -1,10 +1,8 @@
-/* eslint-disable max-nested-callbacks */
-/* eslint-disable max-lines-per-function */
 import { test, expect } from '@playwright/test';
 import bcrypt from 'bcryptjs';
 import { startServer, stopServer, type TestServer } from './helpers/server';
-import { clearDatabase } from '../src/generic-subdomains/persistance/prisma/ClearDatabase.ts';
-import { prisma } from '../src/generic-subdomains/persistance/prisma/PrismaClient.ts';
+import { clearDatabase } from '../../src/generic-subdomains/persistance/prisma/ClearDatabase.ts';
+import { prisma } from '@Prisma/PrismaClient.ts';
 
 type Credentials = {
 	email: string;
@@ -110,12 +108,14 @@ test.describe.serial('E2E Auth (cookies)', () => {
 			{ baseURL, creds },
 		);
 
-		const cookieNames = await page.evaluate(() =>
-			document.cookie
+		const cookieNames: string[] = await page.evaluate(() => {
+			const doc = (globalThis as unknown as { document?: { cookie?: string } })
+				.document;
+			return (doc?.cookie ?? '')
 				.split(';')
-				.map((c) => c.trim().split('=')[0])
-				.filter(Boolean),
-		);
+				.map((c: string) => c.trim().split('=')[0])
+				.filter((name): name is string => Boolean(name));
+		});
 		expect(cookieNames).toContain('csrf_token');
 		expect(cookieNames).not.toContain('token');
 	});

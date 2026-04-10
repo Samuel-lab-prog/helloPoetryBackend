@@ -17,7 +17,7 @@ import type {
 
 import type { UserPrivateProfile } from '@Domains/users-management/use-cases/Models';
 import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
-import { setupHttpUsers } from 'tests/TestsSetups.ts';
+import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 
 let user1: AuthUser;
 let user2: AuthUser;

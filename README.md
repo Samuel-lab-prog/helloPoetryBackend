@@ -54,7 +54,9 @@ src/
   generic-subdomains/      # Generic subdomains (auth, persistence, utils)
   shared-kernel/           # Shared types, ports, and utilities
   Server.ts                # Server entry point
-tests/                     # Integration/E2E and helpers
+tests/                     # Test suites
+  integration/             # Integration tests and helpers
+  end2end/                  # E2E tests
 ```
 
 Each domain follows the same internal organization:

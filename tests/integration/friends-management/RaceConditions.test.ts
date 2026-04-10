@@ -10,7 +10,7 @@ import {
 	blockUser,
 } from '../endpoints/Index';
 
-import { setupHttpUsers } from 'tests/TestsSetups.ts';
+import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 import { prisma } from '@Prisma/PrismaClient';
 
 let user1: AuthUser;

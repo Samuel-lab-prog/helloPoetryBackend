@@ -20,7 +20,7 @@ import type {
 } from '@Domains/poems-management/ports/Models';
 
 import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
-import { setupHttpUsers } from 'tests/TestsSetups.ts';
+import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 
 let author: AuthUser;
 let otherUser: AuthUser;

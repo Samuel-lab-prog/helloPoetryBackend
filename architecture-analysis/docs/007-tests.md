@@ -80,7 +80,8 @@ Rules:
 
 ### Integration and End-to-End Tests
 
-Integration and E2E tests live in a **dedicated root folder**: `tests/`.
+Integration tests live in `tests/integration/` and E2E tests live in
+`tests/end2end/`.
 
 These tests may:
 
@@ -132,7 +133,8 @@ Rules:
 - Infra: **encouraged tests**
 - Routers: **optional tests**
 - Unit tests live next to the code
-- Integration and E2E tests live in `/tests`
+- Integration tests live in `/tests/integration`
+- E2E tests live in `/tests/end2end`
 - Bun is the single test runner
 
 When unsure:
