@@ -1,4 +1,4 @@
-import type { FeedItem } from './Models';
+﻿import type { FeedItem } from './models';
 
 export interface PoemsFeedContract {
 	getFeedPoemsByAuthorIds(params: {

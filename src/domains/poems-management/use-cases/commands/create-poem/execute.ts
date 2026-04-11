@@ -1,9 +1,9 @@
-import type { SlugService } from '../../../ports/ExternalServices';
+﻿import type { SlugService } from '../../../ports/externalServices';
 import type {
 	CommandsRepository,
 	CreatePoemParams,
-} from '../../../ports/Commands';
-import type { CreatePoemDB, CreatePoemResult } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { CreatePoemDB, CreatePoemResult } from '../../../ports/models';
 import { canCreatePoem } from '../../policies/Policies';
 import { type EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

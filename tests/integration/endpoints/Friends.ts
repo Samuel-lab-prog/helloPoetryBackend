@@ -1,4 +1,4 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import {
 	jsonRequest,
 	API_INSTANCE,
@@ -13,7 +13,7 @@ import type {
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
 	BlockedUserRecord,
-} from '@Domains/friends-management/ports/Models.ts';
+} from '@Domains/friends-management/ports/models.ts';
 import type { AppError } from '@GenericSubdomains/utils/AppError';
 
 export async function sendFriendRequest(

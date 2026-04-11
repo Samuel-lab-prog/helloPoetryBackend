@@ -1,7 +1,7 @@
-import { createFriendsCommandsRouter } from './adapters/CommandsRouter';
+﻿import { createFriendsCommandsRouter } from './adapters/CommandsRouter';
 import { createFriendsQueriesRouter } from './adapters/QueriesRouter';
-import { type CommandsRouterServices } from './ports/Commands';
-import { type QueriesRouterServices } from './ports/Queries';
+import { type CommandsRouterServices } from './ports/commands';
+import { type QueriesRouterServices } from './ports/queries';
 import {
 	cancelFriendRequestFactory,
 	rejectFriendRequestFactory,

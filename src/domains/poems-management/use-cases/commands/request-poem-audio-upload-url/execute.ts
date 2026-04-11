@@ -1,11 +1,11 @@
-import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+﻿import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
 import type {
 	StorageService,
 	AudioUploadUrlResult,
 } from '@SharedKernel/ports/Storage';
-import type { QueriesRepository } from '../../../ports/Queries';
+import type { QueriesRepository } from '../../../ports/queries';
 import { canManagePoemAudio } from '../../policies/Policies';
-import type { UserMetaData } from '../../../ports/Commands';
+import type { UserMetaData } from '../../../ports/commands';
 
 export type RequestPoemAudioUploadUrlParams = {
 	poemId: number;

@@ -1,10 +1,10 @@
-import type {
+﻿import type {
 	FullUser,
 	CreateUserDB,
 	UpdateUserData,
 	CreateUser,
 	UserStatus,
-} from './Models';
+} from './models';
 import type { CommandResult } from '@SharedKernel/Types';
 import type { AvatarUploadUrlResult } from '@SharedKernel/ports/Storage';
 

@@ -2,8 +2,8 @@ import type {
 	TokenService,
 	TokenPayload,
 	LoginClientParams,
-} from '../../ports/Services';
-import type { LoginResponse } from '../../ports/Models';
+} from '../../../ports/externalServices';
+import type { LoginResponse } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';

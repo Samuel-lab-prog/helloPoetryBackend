@@ -1,7 +1,7 @@
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
-import { type QueriesRouterServices } from '../ports/Queries';
+import { type QueriesRouterServices } from '../ports/queries';
 import { FeedPoemSchema } from '../ports/schemas/Index';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 

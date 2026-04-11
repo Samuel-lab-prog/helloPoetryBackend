@@ -1,4 +1,4 @@
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import {
 	appErrorSchema,
 	makeValidationError,
@@ -13,7 +13,7 @@ import {
 	AvatarUploadUrlSchema,
 } from '../ports/schemas/Index';
 
-import { type UsersCommandsServices } from '../ports/Commands';
+import { type UsersCommandsServices } from '../ports/commands';
 
 // eslint-disable-next-line max-lines-per-function
 export function createUsersCommandsRouter(services: UsersCommandsServices) {

@@ -1,10 +1,10 @@
-import type {
+﻿import type {
 	MyPoem,
 	AuthorPoem,
 	PoemPreviewPage,
 	SavedPoem,
 	PoemCollection,
-} from './Models';
+} from './models';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 
 export type RequesterContext = {

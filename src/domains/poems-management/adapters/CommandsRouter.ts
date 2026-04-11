@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+﻿/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
@@ -19,7 +19,7 @@ import {
 	ModeratePoemResultSchema,
 } from '../ports/schemas/Index';
 
-import { type CommandsRouterServices } from '../ports/Commands';
+import { type CommandsRouterServices } from '../ports/commands';
 
 export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 	const maxPoemAudioUploadBytes = Number(

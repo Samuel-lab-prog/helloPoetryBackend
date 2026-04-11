@@ -1,7 +1,7 @@
-import type { FeedItem } from '../../../ports/Models';
-import type { GetFeedParams } from '../../../ports/Queries';
+﻿import type { FeedItem } from '../../../ports/models';
+import type { GetFeedParams } from '../../../ports/queries';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
-import type { PoemsFeedContract } from '@Domains/feed-engine/ports/ExternalServices';
+import type { PoemsFeedContract } from '@Domains/feed-engine/ports/externalServices';
 
 interface Dependencies {
 	poemsServices: PoemsFeedContract;

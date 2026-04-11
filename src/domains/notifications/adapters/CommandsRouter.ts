@@ -1,10 +1,10 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 import { NotificationSchema } from '../ports/schemas/Notification';
-import type { NotificationsCommandsServices } from '../ports/Commands';
+import type { NotificationsCommandsServices } from '../ports/commands';
 
 export function createNotificationsCommandsRouter(
 	services: NotificationsCommandsServices,

@@ -1,13 +1,13 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	DeleteFriendParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
-import type { RemovedFriendRecord } from '../../../ports/Models';
+import type { RemovedFriendRecord } from '../../../ports/models';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

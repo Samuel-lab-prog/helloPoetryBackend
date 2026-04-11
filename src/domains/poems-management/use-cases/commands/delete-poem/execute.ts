@@ -1,7 +1,7 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	DeletePoemParams,
-} from '../../../ports/Commands';
+} from '../../../ports/commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import {
 	ForbiddenError,

@@ -1,7 +1,7 @@
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { validator } from 'GlobalValidator';
-import type { QueriesRepository } from '@Domains/poems-management/ports/Queries';
-import type { SavedPoem } from '@Domains/poems-management/ports/Models';
+import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
+import type { SavedPoem } from '@Domains/poems-management/ports/models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;

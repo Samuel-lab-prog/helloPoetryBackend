@@ -1,4 +1,4 @@
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 import {
@@ -6,7 +6,7 @@ import {
 	bannedUserResponseSchema,
 	sanctionReasonSchema,
 } from '../ports/schemas/Index';
-import { type CommandsRouterServices } from '../ports/Commands';
+import { type CommandsRouterServices } from '../ports/commands';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 
 export function createModerationCommandsRouter(

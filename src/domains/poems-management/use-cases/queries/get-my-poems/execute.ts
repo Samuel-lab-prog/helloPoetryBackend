@@ -1,8 +1,8 @@
-import type {
+﻿import type {
 	QueriesRepository,
 	GetMyPoemsParams,
-} from '../../../ports/Queries';
-import type { MyPoem } from '../../../ports/Models';
+} from '../../../ports/queries';
+import type { MyPoem } from '../../../ports/models';
 import { canViewPoem } from '../../policies/Policies';
 
 interface Dependencies {

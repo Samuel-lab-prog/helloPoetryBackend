@@ -212,6 +212,12 @@ Violations are detected and enforced through CI.
 - Use cases have a CQRS segregation:
   - commands (state-changing) in `commands/`
   - queries (read-only) in `queries/`
+- The only allowed folders directly under `use-cases/` are:
+  - `commands/`
+  - `queries/`
+  - `policies/`
+  - `test-helpers/`
+  - Any other folder or file at the `use-cases/` root is a violation.
 - Errors are centralized in `@GenericSubdomains/utils` (notably `domainError.ts`
   and `AppError.ts`) and reused across use-cases.
 - Models and DTOs are defined in `ports/` and imported from there.

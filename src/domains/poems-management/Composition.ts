@@ -1,5 +1,5 @@
-import { queriesRepository } from './infra/queries-repository/repository';
-import type { QueriesRouterServices } from './ports/Queries';
+﻿import { queriesRepository } from './infra/queries-repository/repository';
+import type { QueriesRouterServices } from './ports/queries';
 import { commandsRepository } from './infra/commands-repository/repository';
 import { slugifyService } from './infra/slug-service/execute';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
@@ -20,7 +20,7 @@ import {
 	moderatePoemFactory,
 } from './use-cases/commands/Index';
 
-import type { CommandsRouterServices } from './ports/Commands';
+import type { CommandsRouterServices } from './ports/commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
 import { eventBus } from '@SharedKernel/events/EventBus';

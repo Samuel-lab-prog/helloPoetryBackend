@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	FullUser,
 	UserPrivateProfile,
 	UserPublicProfile,
 	UsersPage,
-} from '../../ports/Models';
+} from '../../ports/models';
 import type { UsersManagementSutMocks } from './SutMocks';
 import {
 	DEFAULT_FULL_USER,

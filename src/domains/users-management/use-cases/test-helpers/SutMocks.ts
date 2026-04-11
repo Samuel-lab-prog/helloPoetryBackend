@@ -1,10 +1,10 @@
-import {
+﻿import {
 	type MockedContract,
 	createMockedContract,
 } from '@GenericSubdomains/utils/TestUtils';
 import { mock } from 'bun:test';
-import type { CommandsRepository } from '../../ports/Commands';
-import type { QueriesRepository } from '../../ports/Queries';
+import type { CommandsRepository } from '../../ports/commands';
+import type { QueriesRepository } from '../../ports/queries';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import { createUserFactory } from '../commands/create/execute';

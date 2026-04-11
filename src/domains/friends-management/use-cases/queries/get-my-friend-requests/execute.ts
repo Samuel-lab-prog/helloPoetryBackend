@@ -1,5 +1,5 @@
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendRequestsByUser } from '../../../ports/Models';
+﻿import type { QueriesRepository } from '../../../ports/queries';
+import type { FriendRequestsByUser } from '../../../ports/models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;

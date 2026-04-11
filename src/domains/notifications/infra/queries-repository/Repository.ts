@@ -1,7 +1,7 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { QueriesRepository } from '../../ports/Queries';
-import type { NotificationPage } from '../../ports/Models';
+import type { QueriesRepository } from '../../ports/queries';
+import type { NotificationPage } from '../../ports/models';
 
 export function selectUserNotifications(
 	userId: number,

@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	ModeratePoemParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { ModeratePoemResult } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { ModeratePoemResult } from '../../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,

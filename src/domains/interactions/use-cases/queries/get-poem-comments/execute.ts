@@ -1,11 +1,11 @@
-import type {
+﻿import type {
 	QueriesRepository,
 	GetPoemCommentsParams,
-} from '../../../ports/Queries';
+} from '../../../ports/queries';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
-import type { PoemComment } from '../../../ports/Models';
+import type { PoemComment } from '../../../ports/models';
 import { validator } from '@SharedKernel/validators/Global';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';

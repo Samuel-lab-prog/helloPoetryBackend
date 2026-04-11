@@ -19,6 +19,8 @@ import {
 	printNoInvalidInfraDirectory,
 	printNoInvalidRepositoryFiles,
 	printNoInvalidUseCaseFolders,
+	printNoMissingUseCaseBarrels,
+	printNoInvalidPortsContent,
 } from './metrics/Index';
 
 function metrics(): void {
@@ -44,6 +46,8 @@ function metrics(): void {
 	printNoInvalidInfraDirectory(cloc);
 	printNoInvalidRepositoryFiles(cloc);
 	printNoInvalidUseCaseFolders(cloc);
+	printNoMissingUseCaseBarrels(cloc);
+	printNoInvalidPortsContent(cloc);
 }
 
 metrics();

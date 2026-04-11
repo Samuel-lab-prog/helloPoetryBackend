@@ -1,4 +1,4 @@
-import type { SlugService } from '../../ports/ExternalServices';
+﻿import type { SlugService } from '../../ports/externalServices';
 import slugify from 'slugify';
 
 function generateUniqueSlug(title: string): string {

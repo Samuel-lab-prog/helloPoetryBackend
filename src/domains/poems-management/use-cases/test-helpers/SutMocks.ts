@@ -1,13 +1,13 @@
-import { mock } from 'bun:test';
+﻿import { mock } from 'bun:test';
 import {
 	type MockedContract,
 	createMockedContract,
 } from '@GenericSubdomains/utils/TestUtils';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
-import type { CommandsRepository } from '../../ports/Commands';
-import type { QueriesRepository } from '../../ports/Queries';
-import type { SlugService } from '../../ports/ExternalServices';
+import type { CommandsRepository } from '../../ports/commands';
+import type { QueriesRepository } from '../../ports/queries';
+import type { SlugService } from '../../ports/externalServices';
 import { createPoemFactory } from '../commands/create-poem/execute';
 import { updatePoemFactory } from '../commands/update-poem/execute';
 import { getAuthorPoemsFactory } from '../queries/get-author-poems/execute';

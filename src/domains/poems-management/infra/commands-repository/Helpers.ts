@@ -1,10 +1,10 @@
-import type { Prisma } from '@PrismaGenerated/browser';
+﻿import type { Prisma } from '@PrismaGenerated/browser';
 import type {
 	CreatePoemResult,
 	UpdatePoemResult,
 	CreatePoemDB,
 	UpdatePoemDB,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 import { insertPoemSelect, updatePoemSelect } from './selects';
 

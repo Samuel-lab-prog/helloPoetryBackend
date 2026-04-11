@@ -1,4 +1,4 @@
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
@@ -7,7 +7,7 @@ import {
 	NotificationSchema,
 	NotificationsPageSchema,
 } from '../ports/schemas//Notification';
-import { type NotificationsQueriesServices } from '../ports/Queries';
+import { type NotificationsQueriesServices } from '../ports/queries';
 
 export function createNotificationsQueriesRouter(
 	services: NotificationsQueriesServices,

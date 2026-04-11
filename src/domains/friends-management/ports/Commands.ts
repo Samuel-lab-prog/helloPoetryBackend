@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	FriendshipRecord,
 	FriendRequestRecord,
 	CancelFriendRequestRecord,
@@ -6,7 +6,7 @@ import type {
 	UnblockUserRecord,
 	BlockedUserRecord,
 	RemovedFriendRecord,
-} from './Models';
+} from './models';
 
 import type { CommandResult } from '@SharedKernel/Types';
 

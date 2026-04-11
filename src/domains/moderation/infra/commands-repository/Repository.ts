@@ -1,11 +1,11 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
-import type { CommandsRepository } from '../../ports/Commands';
+import type { CommandsRepository } from '../../ports/commands';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 import {
 	banSelect,

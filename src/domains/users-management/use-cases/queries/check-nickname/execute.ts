@@ -1,4 +1,4 @@
-import type { QueriesRepository } from '../../../ports/Queries';
+﻿import type { QueriesRepository } from '../../../ports/queries';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;

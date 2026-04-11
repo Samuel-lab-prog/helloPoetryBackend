@@ -1,10 +1,10 @@
-import type { InputJsonValue } from '@PrismaGenerated/internal/prismaNamespace';
+﻿import type { InputJsonValue } from '@PrismaGenerated/internal/prismaNamespace';
 import type {
 	NotificationCreateResult,
 	NotificationDeleteResult,
 	NotificationType,
 	NotificationUpdateResult,
-} from './Models';
+} from './models';
 import type { CommandResult } from '@SharedKernel/Types';
 import type { Entity } from '@SharedKernel/events/EventBus';
 

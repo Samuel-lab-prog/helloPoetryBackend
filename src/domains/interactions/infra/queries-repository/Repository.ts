@@ -1,7 +1,7 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { QueriesRepository } from '../../ports/Queries';
-import type { PoemComment } from '../../ports/Models';
+import type { QueriesRepository } from '../../ports/queries';
+import type { PoemComment } from '../../ports/models';
 import type { CommentSelect } from '@PrismaGenerated/models';
 
 const poemCommentSelect: CommentSelect = {

@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect } from 'bun:test';
+﻿import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@ClearDatabase';
 
 import {
@@ -13,9 +13,9 @@ import {
 import type {
 	BlockedUserRecord,
 	FriendRequestRecord,
-} from '@Domains/friends-management/ports/Models';
+} from '@Domains/friends-management/ports/models';
 
-import type { UserPrivateProfile } from '@Domains/users-management/ports/Models';
+import type { UserPrivateProfile } from '@Domains/users-management/ports/models';
 import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
 import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 

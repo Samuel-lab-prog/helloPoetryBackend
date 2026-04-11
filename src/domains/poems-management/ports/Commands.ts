@@ -1,4 +1,4 @@
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+﻿import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { CommandResult } from '@SharedKernel/Types';
 
 import type {
@@ -11,7 +11,7 @@ import type {
 	CreateCollection,
 	ModeratePoemResult,
 	PoemModerationStatus,
-} from './Models';
+} from './models';
 
 export type UserMetaData = {
 	requesterId: number;

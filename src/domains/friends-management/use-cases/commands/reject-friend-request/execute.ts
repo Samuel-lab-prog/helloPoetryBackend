@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	RejectFriendRequestParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendRequestRejectionRecord } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { FriendRequestRejectionRecord } from '../../../ports/models';
 import {
 	ConflictError,
 	NotFoundError,

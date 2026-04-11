@@ -31,7 +31,15 @@ Ports never contain logic. They only define contracts.
 Ports live inside each domain at `src/domains/<domain>/ports/`, with shared
 contracts in `src/shared-kernel/ports/`.
 
-Example: `ports/` → `Queries.ts`, `Commands.ts`, `Models.ts`
+Example: `ports/` → `queries.ts`, `commands.ts`, `models.ts`
+
+Allowed contents:
+
+- `models.ts`
+- `commands.ts`
+- `queries.ts`
+- `externalServices.ts`
+- `schemas/` (folder for Zod schemas)
 
 Rules:
 

@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	UnblockUserParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { UnblockUserRecord } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { UnblockUserRecord } from '../../../ports/models';
 import {
 	ConflictError,
 	NotFoundError,

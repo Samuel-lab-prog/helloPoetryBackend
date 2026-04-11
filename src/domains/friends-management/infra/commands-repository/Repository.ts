@@ -1,6 +1,6 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaResult } from '@Prisma/PrismaErrorHandler';
-import type { CommandsRepository } from '../../ports/Commands';
+import type { CommandsRepository } from '../../ports/commands';
 import type {
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,
@@ -9,7 +9,7 @@ import type {
 	UnblockUserRecord,
 	CancelFriendRequestRecord,
 	RemovedFriendRecord,
-} from '../../ports/Models';
+} from '../../ports/models';
 import type { CommandResult } from '@SharedKernel/Types';
 
 export const commandsRepository: CommandsRepository = {

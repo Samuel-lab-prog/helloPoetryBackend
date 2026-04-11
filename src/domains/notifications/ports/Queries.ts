@@ -1,4 +1,4 @@
-import type { Notification, NotificationPage } from './Models';
+﻿import type { Notification, NotificationPage } from './models';
 
 export type GetUserNotificationsParams = {
 	userId: number;

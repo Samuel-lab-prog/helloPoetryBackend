@@ -1,6 +1,6 @@
-import { getFeedFactory } from './use-cases/queries/Index';
+﻿import { getFeedFactory } from './use-cases/queries/Index';
 import { createFeedQueriesRouter } from './adapters/QueriesRouter';
-import type { QueriesRouterServices } from './ports/Queries';
+import type { QueriesRouterServices } from './ports/queries';
 import { poemsFeedContract } from '@Domains/poems-management/public/Index';
 import { friendsPublicContract } from '@Domains/friends-management/public/Index';
 

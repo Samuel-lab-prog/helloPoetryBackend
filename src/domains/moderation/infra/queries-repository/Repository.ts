@@ -1,11 +1,11 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
-import type { QueriesRepository } from '../../ports/Queries';
+import type { QueriesRepository } from '../../ports/queries';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../ports/Models';
+} from '../../ports/models';
 import {
 	fromRawToSuspendedUser,
 	suspensionSelect,

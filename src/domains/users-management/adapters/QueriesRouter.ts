@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import {
 	appErrorSchema,
@@ -20,7 +20,7 @@ import {
 	UserPrivateProfileSchema,
 } from '../ports/schemas/Index';
 
-import { type UsersQueriesRouterServices } from '../ports/Queries';
+import { type UsersQueriesRouterServices } from '../ports/queries';
 
 export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	const NicknameSearchSchema = t.String({

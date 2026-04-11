@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import type {
 	AcceptFriendRequestParams,
 	BlockUserParams,
@@ -7,7 +7,7 @@ import type {
 	RejectFriendRequestParams,
 	SendFriendRequestParams,
 	UnblockUserParams,
-} from '../../ports/Commands';
+} from '../../ports/commands';
 import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 import {
 	givenAddressee,

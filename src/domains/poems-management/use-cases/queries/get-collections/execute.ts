@@ -1,7 +1,7 @@
-import type { QueriesRepository } from '../../../ports/Queries';
+﻿import type { QueriesRepository } from '../../../ports/queries';
 import { validator } from '@SharedKernel/validators/Global';
 import type { RequesterContext } from '@SharedKernel/Types';
-import type { PoemCollection } from '@Domains/poems-management/ports/Models';
+import type { PoemCollection } from '@Domains/poems-management/ports/models';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;

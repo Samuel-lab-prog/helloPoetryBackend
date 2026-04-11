@@ -1,10 +1,10 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
 
-import { type CommandsRouterServices } from '../ports/Commands';
+import { type CommandsRouterServices } from '../ports/commands';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { CommentContentSchema } from '../ports/schemas/Index';
 

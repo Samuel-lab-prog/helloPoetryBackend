@@ -1,11 +1,11 @@
-import type {
+﻿import type {
 	UserPrivateProfile,
 	UserPublicProfile,
 	UsersPage,
 	FullUser,
 	UserStatus,
 	UserRole,
-} from './Models';
+} from './models';
 
 export type GetUsersParams = {
 	requesterStatus: UserStatus;

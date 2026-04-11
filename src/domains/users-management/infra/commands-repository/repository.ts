@@ -1,14 +1,14 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaResult } from '@Prisma/PrismaErrorHandler';
 import type { UserCreateInput, UserUpdateInput } from '@PrismaGenerated/models';
 import type { CommandResult } from '@SharedKernel/Types';
 
-import type { CommandsRepository } from '../../ports/Commands';
+import type { CommandsRepository } from '../../ports/commands';
 import type {
 	UpdateUserData,
 	CreateUserDB,
 	FullUser,
-} from '../../ports/Models';
+} from '../../ports/models';
 import { fullUserSelect } from '../queries-repository/selects';
 
 function toPrismaCreateInput(user: CreateUserDB): UserCreateInput {

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	CreateUser,
 	CreateUserResult,
 	UpdateUserData,
@@ -6,7 +6,7 @@ import type {
 	UserPublicProfile,
 	UserRole,
 	UserStatus,
-} from '@Domains/users-management/ports/Models.ts';
+} from '@Domains/users-management/ports/models.ts';
 import {
 	jsonRequest,
 	API_INSTANCE,

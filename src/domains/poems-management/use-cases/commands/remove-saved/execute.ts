@@ -1,8 +1,8 @@
-import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
+﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { UnknownError } from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
-import type { QueriesRepository } from '@Domains/poems-management/ports/Queries';
+import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

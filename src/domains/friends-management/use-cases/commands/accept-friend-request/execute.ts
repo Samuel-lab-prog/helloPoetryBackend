@@ -1,13 +1,13 @@
-import {
+﻿import {
 	ConflictError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import type {
 	CommandsRepository,
 	AcceptFriendRequestParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { FriendshipRecord } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { FriendshipRecord } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 

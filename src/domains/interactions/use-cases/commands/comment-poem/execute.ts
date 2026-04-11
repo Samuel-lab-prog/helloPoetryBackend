@@ -1,7 +1,7 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	CommentPoemParams,
-} from '../../../ports/Commands';
+} from '../../../ports/commands';
 
 import { validator } from '@SharedKernel/validators/Global';
 

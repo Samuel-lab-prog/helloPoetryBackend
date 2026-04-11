@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect } from 'bun:test';
+﻿import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@ClearDatabase';
 
 import {
@@ -17,7 +17,7 @@ import {
 import type {
 	CreatePoemResult,
 	AuthorPoem,
-} from '@Domains/poems-management/ports/Models';
+} from '@Domains/poems-management/ports/models';
 
 import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
 import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';

@@ -1,5 +1,5 @@
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { CommandsRepository } from '../../ports/Commands';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { CommandsRepository } from '../../ports/commands';
 import type { NotificationsSutMocks } from './SutMocks';
 import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
 
@@ -13,7 +13,7 @@ import {
 	DEFAULT_NOTIFICATION_TYPE,
 	DEFAULT_PERFORMER_USER_ID,
 } from './Constants';
-import type { Notification, NotificationPage } from '../../ports/Models';
+import type { Notification, NotificationPage } from '../../ports/models';
 import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export type UserBasicInfoOverride = Partial<

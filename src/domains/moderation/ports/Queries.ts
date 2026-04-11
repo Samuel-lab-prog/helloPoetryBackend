@@ -1,4 +1,4 @@
-import type { BannedUserResponse, SuspendedUserResponse } from './Models';
+﻿import type { BannedUserResponse, SuspendedUserResponse } from './models';
 
 export interface QueriesRepository {
 	selectActiveBanByUserId(params: {

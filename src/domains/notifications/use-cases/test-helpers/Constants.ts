@@ -1,5 +1,5 @@
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-import type { NotificationPage, NotificationType } from '../../ports/Models';
+﻿import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import type { NotificationPage, NotificationType } from '../../ports/models';
 
 export const DEFAULT_USER_ID = 1;
 export const DEFAULT_PERFORMER_USER_ID = 2;

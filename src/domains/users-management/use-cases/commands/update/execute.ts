@@ -1,12 +1,12 @@
-import {
+﻿import {
 	ConflictError,
 	UnknownError,
 } from '@GenericSubdomains/utils/domainError';
 import type {
 	CommandsRepository,
 	UpdateUserParams,
-} from '../../../ports/Commands';
-import type { FullUser } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { FullUser } from '../../../ports/models';
 import { canUpdateData } from '../../policies/Policies';
 import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';
 

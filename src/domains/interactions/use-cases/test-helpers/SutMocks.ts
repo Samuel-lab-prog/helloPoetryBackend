@@ -1,4 +1,4 @@
-import {
+﻿import {
 	type MockedContract,
 	createMockedContract,
 } from '@GenericSubdomains/utils/TestUtils';
@@ -10,8 +10,8 @@ import {
 	type EventBus,
 	createInMemoryEventBus,
 } from '@SharedKernel/events/EventBus';
-import type { CommandsRepository } from '../../ports/Commands';
-import type { QueriesRepository } from '../../ports/Queries';
+import type { CommandsRepository } from '../../ports/commands';
+import type { QueriesRepository } from '../../ports/queries';
 import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
 import { likeCommentFactory } from '../commands/like-comment/execute';
 import { unlikeCommentFactory } from '../commands/unlike-comment/execute';

@@ -10,6 +10,7 @@
 
 		"./src/domains/friends-management/ports/schemas",
 		"./src/domains/friends-management/use-cases/commands",
+		"./src/domains/friends-management/use-cases/queries",
 
 		"./src/domains/interactions/ports/schemas",
 		"./src/domains/interactions/use-cases/commands",
@@ -29,7 +30,8 @@
 		"./tests/integration/endpoints",
 		"./tests/integration/data",
 
-		"./src/generic-subdomains/authentication/ports/schemas"
+		"./src/generic-subdomains/authentication/ports/schemas",
+		"./src/generic-subdomains/authentication/use-cases/commands"
 	],
 	"delete": true,
 	"location": "top",

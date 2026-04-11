@@ -3,7 +3,7 @@ import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
 import { SetupPlugin } from '../../utils/plugins/setupPlugin';
 import { LoginSchema } from '../ports/schemas/loginSchema';
-import type { AuthControllerServices } from '../ports/Services';
+import type { AuthControllerServices } from '../ports/externalServices';
 import {
 	CSRF_COOKIE_NAME,
 	setUpCookieTokenOptions,

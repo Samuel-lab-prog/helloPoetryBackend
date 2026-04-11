@@ -1,10 +1,10 @@
-import { createNotificationsCommandsRouter } from './adapters/CommandsRouter';
+﻿import { createNotificationsCommandsRouter } from './adapters/CommandsRouter';
 import { createNotificationsQueriesRouter } from './adapters/QueriesRouter';
 import { queriesRepository } from './infra/queries-repository/repository';
 import { commandsRepository } from './infra/commands-repository/repository';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
-import type { NotificationsQueriesServices } from './ports/Queries';
-import type { NotificationsCommandsServices } from './ports/Commands';
+import type { NotificationsQueriesServices } from './ports/queries';
+import type { NotificationsCommandsServices } from './ports/commands';
 import {
 	getUserNotificationsFactory,
 	getNotificationByIdFactory,

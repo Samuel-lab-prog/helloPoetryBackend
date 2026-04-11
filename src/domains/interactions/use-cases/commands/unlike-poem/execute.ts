@@ -1,13 +1,13 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	LikePoemParams,
-} from '../../../ports/Commands';
+} from '../../../ports/commands';
 import { NotFoundError } from '@GenericSubdomains/utils/domainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 
-import type { QueriesRepository } from '../../../ports/Queries';
+import type { QueriesRepository } from '../../../ports/queries';
 
 export interface UnlikePoemDependencies {
 	queriesRepository: QueriesRepository;

@@ -1,5 +1,5 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { TokenService } from '../../ports/Services';
+import type { TokenService } from '../../ports/externalServices';
 
 import type { AuthSutMocks } from './SutMocks';
 import { givenResolved } from '@GenericSubdomains/utils/TestUtils';

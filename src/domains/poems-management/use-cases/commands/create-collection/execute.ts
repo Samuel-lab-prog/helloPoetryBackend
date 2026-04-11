@@ -1,11 +1,11 @@
-import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
+﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
 import {
 	ConflictError,
 	UnknownError,
 } from '@GenericSubdomains/utils/domainError';
 import { validator } from 'GlobalValidator';
-import type { CreateCollection } from '@Domains/poems-management/ports/Models';
-import type { QueriesRepository } from '@Domains/poems-management/ports/Queries';
+import type { CreateCollection } from '@Domains/poems-management/ports/models';
+import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

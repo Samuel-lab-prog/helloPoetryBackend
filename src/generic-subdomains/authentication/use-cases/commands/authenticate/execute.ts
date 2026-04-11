@@ -1,9 +1,9 @@
-import type { TokenService } from '../../ports/Services';
+import type { TokenService } from '../../../ports/externalServices';
 import {
 	UnprocessableEntityError,
 	UnauthorizedError,
 } from '@GenericSubdomains/utils/domainError';
-import type { AuthClient } from '../../ports/Models';
+import type { AuthClient } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export interface AuthenticateClientDependencies {

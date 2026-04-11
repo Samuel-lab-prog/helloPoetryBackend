@@ -1,5 +1,5 @@
-import type { CommandResult } from '../../../shared-kernel/Types';
-import type { CommentStatus } from './Models';
+﻿import type { CommandResult } from '../../../shared-kernel/Types';
+import type { CommentStatus } from './models';
 
 export type LikeCommentParams = {
 	userId: number;

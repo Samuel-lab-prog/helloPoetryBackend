@@ -1,9 +1,9 @@
-import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+﻿import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
 import type {
 	QueriesRepository,
 	GetPendingPoemsParams,
-} from '../../../ports/Queries';
-import type { AuthorPoem } from '../../../ports/Models';
+} from '../../../ports/queries';
+import type { AuthorPoem } from '../../../ports/models';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;

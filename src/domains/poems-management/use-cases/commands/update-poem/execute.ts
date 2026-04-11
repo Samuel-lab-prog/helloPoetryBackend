@@ -1,10 +1,10 @@
-import type { SlugService } from '../../../ports/ExternalServices';
+﻿import type { SlugService } from '../../../ports/externalServices';
 import type {
 	UpdatePoemParams,
 	CommandsRepository,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { UpdatePoemResult } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { UpdatePoemResult } from '../../../ports/models';
 import { canUpdatePoem } from '../../policies/Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';

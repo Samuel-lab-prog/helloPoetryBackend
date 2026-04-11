@@ -1,7 +1,7 @@
-import type { HashServices } from '@SharedKernel/ports/HashServices';
+﻿import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { prisma } from '@Prisma/PrismaClient';
 import { fullUserSelect } from '../../../infra/queries-repository/selects';
-import type { FullUser } from '../../../ports/Models';
+import type { FullUser } from '../../../ports/models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 export type BootstrapAdminParams = {

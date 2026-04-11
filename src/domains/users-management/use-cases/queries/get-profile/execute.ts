@@ -1,15 +1,15 @@
-import {
+﻿import {
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import type {
 	QueriesRepository,
 	GetProfileParams,
-} from '../../../ports/Queries';
+} from '../../../ports/queries';
 import type {
 	UserPrivateProfile,
 	UserPublicProfile,
-} from '../../../ports/Models';
+} from '../../../ports/models';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 interface Dependencies {

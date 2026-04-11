@@ -1,11 +1,11 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+﻿import { describe, it, expect, mock, beforeEach } from 'bun:test';
 import { suspendUserFactory } from './execute';
 import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domain-error/domainError';
-import type { SuspendedUserResponse } from '../../../ports/Models';
+import type { SuspendedUserResponse } from '../../../ports/models';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Suspend User', () => {

@@ -1,15 +1,15 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	SuspendUserParams,
-} from '../../../ports/Commands';
-import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
-import type { SuspendedUserResponse } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { UsersServicesForModeration } from '../../../ports/externalServices';
+import type { SuspendedUserResponse } from '../../../ports/models';
 import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domain-error/domainError';
-import type { QueriesRepository } from '@Domains/moderation/ports/Queries';
+import type { QueriesRepository } from '@Domains/moderation/ports/queries';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;

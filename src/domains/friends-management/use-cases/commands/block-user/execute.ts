@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	BlockUserParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { BlockedUserRecord } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { BlockedUserRecord } from '../../../ports/models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {

@@ -1,6 +1,6 @@
-import { commandsRepository } from './infra/commands-repository/repository';
+﻿import { commandsRepository } from './infra/commands-repository/repository';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
-import type { UsersCommandsServices } from './ports/Commands';
+import type { UsersCommandsServices } from './ports/commands';
 import { createUsersCommandsRouter } from './adapters/CommandsRouter';
 import { createUsersInternalRouter } from './adapters/InternalRouter';
 import {
@@ -15,7 +15,7 @@ import {
 	getProfileFactory,
 	getUsersFactory,
 } from './use-cases/queries/index';
-import type { UsersQueriesRouterServices } from './ports/Queries';
+import type { UsersQueriesRouterServices } from './ports/queries';
 import { queriesRepository } from './infra/queries-repository/repository';
 import { createUsersReadRouter } from './adapters/QueriesRouter';
 import { friendsPublicContract } from '@Domains/friends-management/public/Index';

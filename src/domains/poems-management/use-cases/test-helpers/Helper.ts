@@ -1,18 +1,18 @@
-/* eslint-disable max-lines */
+﻿/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
 import type {
 	CreatePoemParams,
 	DeletePoemParams,
 	ModeratePoemParams,
 	UpdatePoemParams,
-} from '../../ports/Commands';
+} from '../../ports/commands';
 import type {
 	GetAuthorPoemsParams,
 	GetMyPoemsParams,
 	GetPendingPoemsParams,
 	GetPoemParams,
 	SearchPoemsParams,
-} from '../../ports/Queries';
+} from '../../ports/queries';
 import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 import {
 	type AuthorPoemOverride,
@@ -58,7 +58,7 @@ import {
 	poemsFactory,
 	poemsMockFactories,
 } from './SutMocks';
-import type { PoemPreviewPage } from '@Domains/poems-management/ports/Models';
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
 
 type CreatePoemScenarioParams = {
 	data?: Partial<CreatePoemParams['data']>;

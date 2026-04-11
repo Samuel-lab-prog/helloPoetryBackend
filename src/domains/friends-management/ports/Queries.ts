@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	FriendRequestRecord,
 	BlockedUserRecord,
 	FriendshipRecord,
 	FriendRequestsByUser,
-} from './Models';
+} from './models';
 
 export interface QueriesRouterServices {
 	getMyFriendRequests(params: {

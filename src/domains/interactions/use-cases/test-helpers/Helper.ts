@@ -1,11 +1,11 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import type {
 	CommentPoemParams,
 	DeleteCommentParams,
 	LikeCommentParams,
 	LikePoemParams,
-} from '../../ports/Commands';
-import type { GetPoemCommentsParams } from '../../ports/Queries';
+} from '../../ports/commands';
+import type { GetPoemCommentsParams } from '../../ports/queries';
 import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 import {
 	givenUser,

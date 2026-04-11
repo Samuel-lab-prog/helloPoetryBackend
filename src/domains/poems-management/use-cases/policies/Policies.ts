@@ -1,11 +1,11 @@
-import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+﻿import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { QueriesRepository } from '../../ports/Queries';
+import type { QueriesRepository } from '../../ports/queries';
 import type {
 	PoemStatus,
 	PoemVisibility,
 	PoemModerationStatus,
-} from '../../ports/Models';
+} from '../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,

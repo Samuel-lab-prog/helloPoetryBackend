@@ -1,13 +1,13 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import type {
 	CommandsRepository,
 	SendFriendRequestParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 import type {
 	FriendRequestRecord,
 	FriendshipRecord,
-} from '../../../ports/Models';
+} from '../../../ports/models';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

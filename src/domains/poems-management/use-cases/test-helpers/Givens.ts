@@ -1,7 +1,7 @@
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
 
-import type { AuthorPoem, MyPoem } from '../../ports/Models';
+import type { AuthorPoem, MyPoem } from '../../ports/models';
 import type { PoemsSutMocks } from './SutMocks';
 import {
 	DEFAULT_AUTHOR_ID,
@@ -19,7 +19,7 @@ import {
 	DEFAULT_USER_ROLE,
 	DEFAULT_USER_STATUS,
 } from './Constants';
-import type { PoemPreviewPage } from '@Domains/poems-management/ports/Models';
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

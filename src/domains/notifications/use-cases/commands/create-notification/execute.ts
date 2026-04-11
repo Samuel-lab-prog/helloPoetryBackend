@@ -1,7 +1,7 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	CreateNotificationParams,
-} from '../../../ports/Commands';
+} from '../../../ports/commands';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 

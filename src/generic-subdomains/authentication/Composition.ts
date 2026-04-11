@@ -1,7 +1,7 @@
 import { createAuthRouter } from './adapters/AuthRouter';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
-import { authenticateClientFactory } from './use-cases/authenticate/execute';
-import { loginClientFactory } from './use-cases/login/execute';
+import { authenticateClientFactory } from './use-cases/commands/authenticate/execute';
+import { loginClientFactory } from './use-cases/commands/login/execute';
 import {
 	JwtTokenService,
 	FakeJwtTokenService,

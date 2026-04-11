@@ -1,6 +1,6 @@
 import type { MockedContract } from '@GenericSubdomains/utils/TestUtils';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import type { TokenService } from '../../ports/Services';
+import type { TokenService } from '../../ports/externalServices';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 export type AuthSutMocks = {

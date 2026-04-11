@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from '@Prisma/PrismaClient';
 import type { UserWhereInput } from '@Prisma/generated/models/User';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
-import type { QueriesRepository, SelectUsersParams } from '../../ports/Queries';
+import type { QueriesRepository, SelectUsersParams } from '../../ports/queries';
 
 import type {
 	UserPublicProfile,
 	UserPrivateProfile,
 	UsersPage,
 	FullUser,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 import {
 	fullUserSelect,

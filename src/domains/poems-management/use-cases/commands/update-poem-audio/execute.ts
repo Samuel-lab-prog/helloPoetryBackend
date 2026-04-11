@@ -1,6 +1,6 @@
-import { canManagePoemAudio } from '../../policies/Policies';
-import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+﻿import { canManagePoemAudio } from '../../policies/Policies';
+import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 import { ensureAllowedCdnUrl } from '@SharedKernel/validators/Url';
 
 export type UpdatePoemAudioParams = {

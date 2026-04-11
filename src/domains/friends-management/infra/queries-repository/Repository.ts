@@ -1,12 +1,12 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { QueriesRepository } from '../../ports/Queries';
+import type { QueriesRepository } from '../../ports/queries';
 import type {
 	FriendshipRecord,
 	FriendRequestRecord,
 	BlockedUserRecord,
 	FriendRequestsByUser,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 function normalizePair(a: number, b: number): [number, number] {
 	return a < b ? [a, b] : [b, a];

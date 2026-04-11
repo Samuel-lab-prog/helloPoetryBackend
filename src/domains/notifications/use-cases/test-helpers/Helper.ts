@@ -1,10 +1,10 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 
 import type {
 	CreateNotificationParams,
 	DeleteNotificationParams,
 	MarkNotificationAsReadParams,
-} from '../../ports/Commands';
+} from '../../ports/commands';
 
 import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 
@@ -42,9 +42,9 @@ import {
 import type {
 	GetNotificationByIdParams,
 	GetUserNotificationsParams,
-} from '../../ports/Queries';
+} from '../../ports/queries';
 
-import type { NotificationPage } from '@Domains/notifications/ports/Models';
+import type { NotificationPage } from '@Domains/notifications/ports/models';
 import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export function makeNotificationsScenario() {

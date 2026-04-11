@@ -1,4 +1,4 @@
-import type { CommandsRepository } from '../../../ports/Commands';
+﻿import type { CommandsRepository } from '../../../ports/commands';
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

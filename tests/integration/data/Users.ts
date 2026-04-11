@@ -1,4 +1,4 @@
-import type { CreateUser } from '@Domains/users-management/ports/Models';
+﻿import type { CreateUser } from '@Domains/users-management/ports/models';
 
 function generateUsersData(quantity: number): CreateUser[] {
 	const data: CreateUser[] = [];

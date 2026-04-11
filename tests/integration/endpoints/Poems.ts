@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	UpdatePoem,
 	CreatePoem,
 	CreatePoemResult,
@@ -8,7 +8,7 @@ import type {
 	MyPoem,
 	AuthorPoem,
 	UpdatePoemResult,
-} from '@Domains/poems-management/ports/Models.ts';
+} from '@Domains/poems-management/ports/models.ts';
 import {
 	jsonRequest,
 	handleResponse,

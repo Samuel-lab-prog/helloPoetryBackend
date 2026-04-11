@@ -1,8 +1,8 @@
-import type { Prisma } from '@PrismaGenerated/browser';
+﻿import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
 import type { UserSelect as InternalUserSelect } from '@PrismaGenerated/internal/prismaNamespaceBrowser';
-import type { AuthUser } from '@Domains/users-management/ports/Models';
-import type { UsersPage } from '../../ports/Models';
+import type { AuthUser } from '@Domains/users-management/ports/models';
+import type { UsersPage } from '../../ports/models';
 
 export const authUserSelect = {
 	id: true,

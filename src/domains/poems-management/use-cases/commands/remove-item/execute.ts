@@ -1,4 +1,4 @@
-import type { CommandsRepository, UserMetaData } from '../../../ports/Commands';
+﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
 import {
 	NotFoundError,
 	ForbiddenError,

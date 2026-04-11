@@ -1,8 +1,8 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaResult } from '@Prisma/PrismaErrorHandler';
 import type { CommandResult } from '@SharedKernel/Types';
 
-import type { CommandsRepository } from '../../ports/Commands';
+import type { CommandsRepository } from '../../ports/commands';
 import type {
 	CreateCollection,
 	CreatePoemDB,
@@ -11,7 +11,7 @@ import type {
 	UpdatePoemResult,
 	ModeratePoemResult,
 	PoemModerationStatus,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 import {
 	insertPoemSelect,

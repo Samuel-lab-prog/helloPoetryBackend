@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	CreateUser,
 	FullUser,
 	UpdateUserData,
@@ -6,7 +6,7 @@ import type {
 	UserPublicProfile,
 	UserStatus,
 	UsersPage,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 export const DEFAULT_REQUESTER_ID = 1;
 export const DEFAULT_TARGET_ID = 1;

@@ -1,10 +1,10 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	BanUserParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
-import type { UsersServicesForModeration } from '../../../ports/ExternalServices';
-import type { BannedUserResponse } from '../../../ports/Models';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
+import type { UsersServicesForModeration } from '../../../ports/externalServices';
+import type { BannedUserResponse } from '../../../ports/models';
 import {
 	ConflictError,
 	ForbiddenError,

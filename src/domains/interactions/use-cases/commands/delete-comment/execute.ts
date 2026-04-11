@@ -1,11 +1,11 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	DeleteCommentParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { CommentStatus } from '@Domains/interactions/ports/Models';
+import type { CommentStatus } from '@Domains/interactions/ports/models';
 
 export interface DeleteCommentDependencies {
 	commandsRepository: CommandsRepository;

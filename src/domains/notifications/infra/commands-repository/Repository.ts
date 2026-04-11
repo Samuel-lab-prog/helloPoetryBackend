@@ -1,16 +1,16 @@
-import { prisma } from '@Prisma/PrismaClient';
+﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaResult } from '@Prisma/PrismaErrorHandler';
 import type { CommandResult } from '@SharedKernel/Types';
 
 import type {
 	CommandsRepository,
 	CreateNotificationParams,
-} from '../../ports/Commands';
+} from '../../ports/commands';
 import type {
 	NotificationCreateResult,
 	NotificationUpdateResult,
 	NotificationDeleteResult,
-} from '@Domains/notifications/ports/Models';
+} from '@Domains/notifications/ports/models';
 import type { NotificationCreateInput } from '@PrismaGenerated/models';
 
 function toPrismaCreateInput(

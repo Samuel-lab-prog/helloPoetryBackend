@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+﻿/* eslint-disable max-lines-per-function */
 import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import {
@@ -16,7 +16,7 @@ import {
 } from '../ports/schemas/Index';
 import { TagNameSchema } from '../ports/schemas/PoemFieldsSchemas';
 
-import { type QueriesRouterServices } from '../ports/Queries';
+import { type QueriesRouterServices } from '../ports/queries';
 
 export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 	const PoemTitleSearchSchema = t.String({

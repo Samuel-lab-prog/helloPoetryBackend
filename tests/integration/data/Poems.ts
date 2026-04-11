@@ -1,7 +1,7 @@
-import type {
+﻿import type {
 	UpdatePoem,
 	CreatePoem,
-} from '@Domains/poems-management/ports/Models';
+} from '@Domains/poems-management/ports/models';
 
 function generatePoemsData(quantity: number): CreatePoem[] {
 	const data: CreatePoem[] = [];

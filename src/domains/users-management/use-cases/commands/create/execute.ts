@@ -1,9 +1,9 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	CreateUserParams,
-} from '../../../ports/Commands';
+} from '../../../ports/commands';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import type { FullUser } from '../../../ports/Models';
+import type { FullUser } from '../../../ports/models';
 import {
 	ConflictError,
 	UnknownError,

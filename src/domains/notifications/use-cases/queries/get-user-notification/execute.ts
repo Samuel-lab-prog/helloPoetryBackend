@@ -1,11 +1,11 @@
-import type {
+﻿import type {
 	QueriesRepository,
 	GetNotificationByIdParams,
-} from '../../../ports/Queries';
+} from '../../../ports/queries';
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { Notification } from '@Domains/notifications/ports/Models';
+import type { Notification } from '@Domains/notifications/ports/models';
 
 export interface GetNotificationByIdDependencies {
 	queriesRepository: QueriesRepository;

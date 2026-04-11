@@ -1,4 +1,4 @@
-import type { PoemComment } from './Models';
+﻿import type { PoemComment } from './models';
 
 export type GetPoemCommentsParams = {
 	poemId: number;

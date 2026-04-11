@@ -1,8 +1,8 @@
-import type { Prisma } from '@PrismaGenerated/browser';
+﻿import type { Prisma } from '@PrismaGenerated/browser';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../../ports/Models';
+} from '../../ports/models';
 
 export const banSelect = {
 	id: true,

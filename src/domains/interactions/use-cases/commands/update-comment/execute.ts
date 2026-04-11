@@ -1,8 +1,8 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	PatchCommentParams,
-} from '../../../ports/Commands';
-import type { QueriesRepository } from '../../../ports/Queries';
+} from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 

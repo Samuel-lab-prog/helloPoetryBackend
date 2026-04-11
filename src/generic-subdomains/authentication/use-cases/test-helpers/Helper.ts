@@ -1,7 +1,10 @@
 import { mock } from 'bun:test';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { TokenService, LoginClientParams } from '../../ports/Services';
+import type {
+	TokenService,
+	LoginClientParams,
+} from '../../ports/externalServices';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 
 import {
@@ -20,7 +23,7 @@ import {
 	type AuthUserOverride,
 } from './Givens';
 
-import { loginClientFactory } from '../login/execute';
+import { loginClientFactory } from '../commands/login/execute';
 
 import {
 	DEFAULT_CLIENT_EMAIL,
@@ -29,7 +32,7 @@ import {
 } from './Constants';
 
 import type { AuthSutMocks } from './SutMocks';
-import { authenticateClientFactory } from '../authenticate/execute';
+import { authenticateClientFactory } from '../commands/authenticate/execute';
 
 function makeAuthMockFactories() {
 	return {

@@ -1,6 +1,6 @@
-import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
+﻿import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 import type { UserRole, UserStatus } from './Enums';
-export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/ports/Models';
+export type { ClientAuthCredentials } from '@GenericSubdomains/authentication/ports/models';
 
 export type CommandResult<T> =
 	| {
