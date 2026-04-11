@@ -1,32 +1,15 @@
-﻿import { describe, it, expect, mock, beforeEach } from 'bun:test';
-import { banUserFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domain-error/domainError';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import type { BannedUserResponse } from '../../../ports/models';
+import { makeModerationScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Ban User', () => {
-		let commandsRepository: any;
-		let queriesRepository: any;
-		let usersContract: any;
-
-		beforeEach(() => {
-			commandsRepository = {
-				createBan: mock(),
-				createSuspension: mock(),
-			};
-			queriesRepository = {
-				selectActiveBanByUserId: mock(),
-				selectActiveSuspensionByUserId: mock(),
-			};
-			usersContract = {
-				selectUserBasicInfo: mock(),
-			};
-		});
-
 		it('bans a user successfully', async () => {
 			const bannedResponse: BannedUserResponse = {
 				id: 1,
@@ -36,17 +19,12 @@ describe('USE-CASE - Moderation', () => {
 				bannedAt: new Date(),
 			};
 
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
-			queriesRepository.selectActiveBanByUserId.mockResolvedValue(null);
-			commandsRepository.createBan.mockResolvedValue(bannedResponse);
+			const scenario = makeModerationScenario()
+				.withUser()
+				.withNoActiveBan()
+				.withBanCreated(bannedResponse);
 
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			const result = await banUser({
+			const result = await scenario.executeBanUser({
 				userId: 2,
 				reason: 'spam',
 				requesterId: 1,
@@ -54,11 +32,13 @@ describe('USE-CASE - Moderation', () => {
 			});
 
 			expect(result).toEqual(bannedResponse);
-			expect(usersContract.selectUserBasicInfo).toHaveBeenCalledWith(2);
-			expect(queriesRepository.selectActiveBanByUserId).toHaveBeenCalledWith({
-				userId: 2,
-			});
-			expect(commandsRepository.createBan).toHaveBeenCalledWith({
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).toHaveBeenCalledWith(2);
+			expect(
+				scenario.mocks.queriesRepository.selectActiveBanByUserId,
+			).toHaveBeenCalledWith({ userId: 2 });
+			expect(scenario.mocks.commandsRepository.createBan).toHaveBeenCalledWith({
 				userId: 2,
 				reason: 'spam',
 				moderatorId: 1,
@@ -66,109 +46,83 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('Does not allow banning oneself', async () => {
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			const scenario = makeModerationScenario();
 
-			await expect(
-				banUser({
+			await expectError(
+				scenario.executeBanUser({
 					userId: 1,
 					reason: 'spam',
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
+				ForbiddenError,
+			);
 
-			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
-			expect(commandsRepository.createBan).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws InsufficientPermissionsError if requester is author', async () => {
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			const scenario = makeModerationScenario();
 
-			await expect(
-				banUser({
+			await expectError(
+				scenario.executeBanUser({
 					userId: 2,
 					reason: 'spam',
 					requesterId: 1,
 					requesterRole: 'author',
 				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
+				ForbiddenError,
+			);
 
-			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
-			expect(commandsRepository.createBan).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws UserNotFoundError if user does not exist', async () => {
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: false });
+			const scenario = makeModerationScenario().withUser({ exists: false });
 
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				banUser({
+			await expectError(
+				scenario.executeBanUser({
 					userId: 99,
 					reason: 'spam',
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(NotFoundError);
+				NotFoundError,
+			);
 
-			expect(commandsRepository.createBan).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws UserAlreadyBannedError if user already has an active ban', async () => {
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
-			queriesRepository.selectActiveBanByUserId.mockResolvedValue({
-				userId: 2,
-				reason: 'spam',
-				moderatorId: 1,
-			});
+			const scenario = makeModerationScenario().withUser().withActiveBan();
 
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			await expectError(scenario.executeBanUser(), ConflictError);
 
-			await expect(
-				banUser({
-					userId: 2,
-					reason: 'spam',
-					requesterId: 1,
-					requesterRole: 'moderator',
-				}),
-			).rejects.toBeInstanceOf(ConflictError);
-
-			expect(commandsRepository.createBan).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
 		});
 
 		it('does not swallow dependency errors', async () => {
-			usersContract.selectUserBasicInfo.mockRejectedValue(new Error('boom'));
+			const scenario = makeModerationScenario().withUser();
 
-			const banUser = banUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
+				new Error('boom'),
+			);
 
-			await expect(
-				banUser({
-					userId: 2,
-					reason: 'spam',
-					requesterId: 1,
-					requesterRole: 'moderator',
-				}),
-			).rejects.toThrow('boom');
+			await expectError(scenario.executeBanUser(), Error);
 		});
 	});
 });

@@ -1,32 +1,15 @@
-﻿import { describe, it, expect, mock, beforeEach } from 'bun:test';
-import { suspendUserFactory } from './execute';
+import { describe, it, expect } from 'bun:test';
 import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domain-error/domainError';
+import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import type { SuspendedUserResponse } from '../../../ports/models';
+import { makeModerationScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Suspend User', () => {
-		let commandsRepository: any;
-		let queriesRepository: any;
-		let usersContract: any;
-
-		beforeEach(() => {
-			commandsRepository = {
-				createSuspension: mock(),
-				createBan: mock(),
-			};
-			queriesRepository = {
-				selectActiveSuspensionByUserId: mock(),
-				selectActiveBanByUserId: mock(),
-			};
-			usersContract = {
-				selectUserBasicInfo: mock(),
-			};
-		});
-
 		it('suspends a user successfully', async () => {
 			const suspendedResponse: SuspendedUserResponse = {
 				id: 1,
@@ -34,20 +17,15 @@ describe('USE-CASE - Moderation', () => {
 				reason: 'misconduct',
 				moderatorId: 1,
 				suspendedAt: new Date(),
-				endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days suspension
+				endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 			};
 
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
-			queriesRepository.selectActiveSuspensionByUserId.mockResolvedValue(null);
-			commandsRepository.createSuspension.mockResolvedValue(suspendedResponse);
+			const scenario = makeModerationScenario()
+				.withUser()
+				.withNoActiveSuspension()
+				.withSuspensionCreated(suspendedResponse);
 
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			const result = await suspendUser({
+			const result = await scenario.executeSuspendUser({
 				userId: 2,
 				reason: 'misconduct',
 				requesterId: 1,
@@ -55,11 +33,15 @@ describe('USE-CASE - Moderation', () => {
 			});
 
 			expect(result).toEqual(suspendedResponse);
-			expect(usersContract.selectUserBasicInfo).toHaveBeenCalledWith(2);
 			expect(
-				queriesRepository.selectActiveSuspensionByUserId,
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).toHaveBeenCalledWith(2);
+			expect(
+				scenario.mocks.queriesRepository.selectActiveSuspensionByUserId,
 			).toHaveBeenCalledWith({ userId: 2 });
-			expect(commandsRepository.createSuspension).toHaveBeenCalledWith({
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).toHaveBeenCalledWith({
 				userId: 2,
 				reason: 'misconduct',
 				moderatorId: 1,
@@ -67,109 +49,85 @@ describe('USE-CASE - Moderation', () => {
 		});
 
 		it('does not allow suspending oneself', async () => {
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			const scenario = makeModerationScenario();
 
-			await expect(
-				suspendUser({
+			await expectError(
+				scenario.executeSuspendUser({
 					userId: 1,
 					reason: 'misconduct',
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
+				ForbiddenError,
+			);
 
-			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
-			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws InsufficientPermissionsError if requester is author', async () => {
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			const scenario = makeModerationScenario();
 
-			await expect(
-				suspendUser({
+			await expectError(
+				scenario.executeSuspendUser({
 					userId: 2,
 					reason: 'misconduct',
 					requesterId: 1,
 					requesterRole: 'author',
 				}),
-			).rejects.toBeInstanceOf(ForbiddenError);
+				ForbiddenError,
+			);
 
-			expect(usersContract.selectUserBasicInfo).not.toHaveBeenCalled();
-			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws UserNotFoundError if user does not exist', async () => {
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: false });
+			const scenario = makeModerationScenario().withUser({ exists: false });
 
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
-
-			await expect(
-				suspendUser({
+			await expectError(
+				scenario.executeSuspendUser({
 					userId: 99,
 					reason: 'misconduct',
 					requesterId: 1,
 					requesterRole: 'moderator',
 				}),
-			).rejects.toBeInstanceOf(NotFoundError);
+				NotFoundError,
+			);
 
-			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
 		});
 
 		it('throws UserAlreadySuspendedError if user already has an active suspension', async () => {
-			usersContract.selectUserBasicInfo.mockResolvedValue({ exists: true });
-			queriesRepository.selectActiveSuspensionByUserId.mockResolvedValue({
-				userId: 2,
-				reason: 'misconduct',
-				moderatorId: 1,
-			});
+			const scenario = makeModerationScenario()
+				.withUser()
+				.withActiveSuspension();
 
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			await expectError(scenario.executeSuspendUser(), ConflictError);
 
-			await expect(
-				suspendUser({
-					userId: 2,
-					reason: 'misconduct',
-					requesterId: 1,
-					requesterRole: 'moderator',
-				}),
-			).rejects.toBeInstanceOf(ConflictError);
-
-			expect(commandsRepository.createSuspension).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
 		});
 
 		it('does not swallow dependency errors', async () => {
-			usersContract.selectUserBasicInfo.mockRejectedValue(new Error('boom'));
+			const scenario = makeModerationScenario().withUser();
 
-			const suspendUser = suspendUserFactory({
-				commandsRepository,
-				queriesRepository,
-				usersContract,
-			});
+			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
+				new Error('boom'),
+			);
 
-			await expect(
-				suspendUser({
-					userId: 2,
-					reason: 'misconduct',
-					requesterId: 1,
-					requesterRole: 'moderator',
-				}),
-			).rejects.toThrow('boom');
+			await expectError(scenario.executeSuspendUser(), Error);
 		});
 	});
 });
