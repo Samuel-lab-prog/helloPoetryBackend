@@ -9,6 +9,8 @@ export type PoemModerationStatus =
 	| 'rejected'
 	| 'removed';
 
+export type SanctionType = 'suspension' | 'ban';
+
 export type CommentStatus =
 	| 'visible'
 	| 'deletedByAuthor'

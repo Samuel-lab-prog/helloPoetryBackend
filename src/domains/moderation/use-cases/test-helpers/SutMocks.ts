@@ -6,7 +6,16 @@ import {
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
 import type { UsersServicesForModeration } from '../../ports/externalServices';
-import { banUserFactory, suspendUserFactory } from '../commands/Index';
+import {
+	banUserFactory,
+	suspendUserFactory,
+	unbanUserFactory,
+	unsuspendUserFactory,
+} from '../commands/Index';
+import {
+	getUserSanctionStatusFactory,
+	getUserSanctionsFactory,
+} from '../queries/Index';
 
 export type ModerationSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -20,10 +29,13 @@ export function moderationMockFactories(): ModerationSutMocks {
 			createBan: mock(),
 			createSuspension: mock(),
 			updatePoemModerationStatus: mock(),
+			endBan: mock(),
+			endSuspension: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectActiveBanByUserId: mock(),
 			selectActiveSuspensionByUserId: mock(),
+			selectUserSanctions: mock(),
 			selectPoemById: mock(),
 			selectPoemNotificationsData: mock(),
 		}),
@@ -44,6 +56,24 @@ export function moderationFactory(deps: ModerationDeps) {
 		}),
 		suspendUser: suspendUserFactory({
 			commandsRepository: deps.commandsRepository,
+			queriesRepository: deps.queriesRepository,
+			usersContract: deps.usersContract,
+		}),
+		unbanUser: unbanUserFactory({
+			commandsRepository: deps.commandsRepository,
+			queriesRepository: deps.queriesRepository,
+			usersContract: deps.usersContract,
+		}),
+		unsuspendUser: unsuspendUserFactory({
+			commandsRepository: deps.commandsRepository,
+			queriesRepository: deps.queriesRepository,
+			usersContract: deps.usersContract,
+		}),
+		getUserSanctions: getUserSanctionsFactory({
+			queriesRepository: deps.queriesRepository,
+			usersContract: deps.usersContract,
+		}),
+		getUserSanctionStatus: getUserSanctionStatusFactory({
 			queriesRepository: deps.queriesRepository,
 			usersContract: deps.usersContract,
 		}),

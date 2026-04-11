@@ -27,6 +27,20 @@ export type SuspendUserParams = {
 	durationDays?: number;
 };
 
+export type UnbanUserParams = {
+	userId: number;
+	requesterId: number;
+	requesterRole: UserRole;
+	requesterStatus: UserStatus;
+};
+
+export type UnsuspendUserParams = {
+	userId: number;
+	requesterId: number;
+	requesterRole: UserRole;
+	requesterStatus: UserStatus;
+};
+
 export type ModeratePoemParams = {
 	poemId: number;
 	moderationStatus: PoemModerationStatus;
@@ -49,6 +63,8 @@ export interface CommandsRepository {
 		moderatorId: number;
 		endAt: Date;
 	}): Promise<SuspendedUserResponse>;
+	endBan(params: { banId: number; endAt: Date }): Promise<void>;
+	endSuspension(params: { suspensionId: number; endAt: Date }): Promise<void>;
 	updatePoemModerationStatus(params: {
 		poemId: number;
 		moderationStatus: PoemModerationStatus;
@@ -58,5 +74,7 @@ export interface CommandsRepository {
 export interface CommandsRouterServices {
 	banUser(params: BanUserParams): Promise<BannedUserResponse>;
 	suspendUser(params: SuspendUserParams): Promise<SuspendedUserResponse>;
+	unbanUser(params: UnbanUserParams): Promise<void>;
+	unsuspendUser(params: UnsuspendUserParams): Promise<void>;
 	moderatePoem(params: ModeratePoemParams): Promise<ModeratePoemResult>;
 }

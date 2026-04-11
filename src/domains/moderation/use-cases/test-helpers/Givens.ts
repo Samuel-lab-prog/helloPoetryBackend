@@ -118,3 +118,15 @@ export function givenSuspensionCreated(
 
 	givenResolved(commandsRepository, 'createSuspension', response);
 }
+
+export function givenBanEnded(
+	commandsRepository: ModerationSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'endBan', undefined);
+}
+
+export function givenSuspensionEnded(
+	commandsRepository: ModerationSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'endSuspension', undefined);
+}

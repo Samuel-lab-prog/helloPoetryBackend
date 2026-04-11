@@ -7,3 +7,5 @@ export * from './Fields';
 export * from './ModeratePoemBodySchema';
 export * from './ModeratePoemResultSchema';
 export * from './SuspendedUserResponse';
+export * from './UserSanctionsResponse';
+export * from './UserSanctionStatusResponse';

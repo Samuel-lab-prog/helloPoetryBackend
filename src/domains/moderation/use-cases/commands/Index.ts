@@ -5,3 +5,5 @@
 export * from './ban-user/execute';
 export * from './moderate-poem/execute';
 export * from './suspend-user/execute';
+export * from './unban-user/execute';
+export * from './unsuspend-user/execute';

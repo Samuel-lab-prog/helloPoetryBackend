@@ -7,6 +7,7 @@ import type {
 	PoemModerationRead,
 	PoemNotificationsData,
 	SuspendedUserResponse,
+	UserSanctionRead,
 } from '../../ports/models';
 import {
 	fromRawToSuspendedUser,
@@ -49,6 +50,37 @@ export function selectActiveSuspensionByUserId(params: {
 		});
 
 		return rs ? fromRawToSuspendedUser(rs) : null;
+	});
+}
+
+export function selectUserSanctions(params: {
+	userId: number;
+}): Promise<UserSanctionRead[]> {
+	const { userId } = params;
+	return withPrismaErrorHandling(async () => {
+		const sanctions = await prisma.userSanction.findMany({
+			where: { userId },
+			orderBy: { startAt: 'desc' },
+			select: {
+				id: true,
+				userId: true,
+				moderatorId: true,
+				type: true,
+				reason: true,
+				startAt: true,
+				endAt: true,
+			},
+		});
+
+		return sanctions.map((s) => ({
+			id: s.id,
+			userId: s.userId,
+			moderatorId: s.moderatorId,
+			type: s.type,
+			reason: s.reason,
+			startAt: s.startAt,
+			endAt: s.endAt ?? null,
+		}));
 	});
 }
 
@@ -139,6 +171,7 @@ export function selectPoemNotificationsData(
 export const queriesRepository: QueriesRepository = {
 	selectActiveBanByUserId,
 	selectActiveSuspensionByUserId,
+	selectUserSanctions,
 	selectPoemById,
 	selectPoemNotificationsData,
 };

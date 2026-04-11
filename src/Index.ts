@@ -37,7 +37,10 @@ import {
 	interactionsCommandsRouter,
 	interactionsQueriesRouter,
 } from '@Domains/interactions/Composition';
-import { moderationCommandsRouter } from '@Domains/moderation/Composition';
+import {
+	moderationCommandsRouter,
+	moderationQueriesRouter,
+} from '@Domains/moderation/Composition';
 import { feedQueriesRouter } from '@Domains/feed-engine/Composition';
 import {
 	notificationsCommandsRouter,
@@ -91,6 +94,7 @@ function makeServer({
 			.use(interactionsCommandsRouter)
 			.use(interactionsQueriesRouter)
 			.use(moderationCommandsRouter)
+			.use(moderationQueriesRouter)
 			.use(feedQueriesRouter)
 			.use(notificationsCommandsRouter)
 			.use(notificationsQueriesRouter)

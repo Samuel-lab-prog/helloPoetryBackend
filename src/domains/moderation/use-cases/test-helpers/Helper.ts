@@ -1,5 +1,14 @@
 /* eslint-disable max-lines-per-function */
-import type { BanUserParams, SuspendUserParams } from '../../ports/commands';
+import type {
+	BanUserParams,
+	SuspendUserParams,
+	UnbanUserParams,
+	UnsuspendUserParams,
+} from '../../ports/commands';
+import type {
+	GetUserSanctionStatusParams,
+	GetUserSanctionsParams,
+} from '../../ports/queries';
 import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
 import {
 	givenActiveBan,
@@ -106,6 +115,64 @@ export function makeModerationScenario() {
 						requesterRole: 'moderator',
 						requesterStatus: 'active',
 						durationDays: DEFAULT_SUSPENSION_DURATION_DAYS,
+					},
+					params,
+				),
+			);
+		},
+
+		executeUnbanUser(params: Partial<UnbanUserParams> = {}) {
+			return sutFactory.unbanUser(
+				makeParams(
+					{
+						userId: DEFAULT_USER_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterRole: 'moderator',
+						requesterStatus: 'active',
+					},
+					params,
+				),
+			);
+		},
+
+		executeUnsuspendUser(params: Partial<UnsuspendUserParams> = {}) {
+			return sutFactory.unsuspendUser(
+				makeParams(
+					{
+						userId: DEFAULT_USER_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterRole: 'moderator',
+						requesterStatus: 'active',
+					},
+					params,
+				),
+			);
+		},
+
+		executeGetUserSanctions(params: Partial<GetUserSanctionsParams> = {}) {
+			return sutFactory.getUserSanctions(
+				makeParams(
+					{
+						userId: DEFAULT_USER_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterRole: 'moderator',
+						requesterStatus: 'active',
+					},
+					params,
+				),
+			);
+		},
+
+		executeGetUserSanctionStatus(
+			params: Partial<GetUserSanctionStatusParams> = {},
+		) {
+			return sutFactory.getUserSanctionStatus(
+				makeParams(
+					{
+						userId: DEFAULT_USER_ID,
+						requesterId: DEFAULT_REQUESTER_ID,
+						requesterRole: 'moderator',
+						requesterStatus: 'active',
 					},
 					params,
 				),

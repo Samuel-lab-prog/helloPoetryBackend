@@ -82,8 +82,33 @@ export function updatePoemModerationStatus(params: {
 	});
 }
 
+export function endBan(params: { banId: number; endAt: Date }): Promise<void> {
+	const { banId, endAt } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.userSanction.update({
+			where: { id: banId },
+			data: { endAt },
+		});
+	});
+}
+
+export function endSuspension(params: {
+	suspensionId: number;
+	endAt: Date;
+}): Promise<void> {
+	const { suspensionId, endAt } = params;
+	return withPrismaErrorHandling(async () => {
+		await prisma.userSanction.update({
+			where: { id: suspensionId },
+			data: { endAt },
+		});
+	});
+}
+
 export const commandsRepository: CommandsRepository = {
 	createBan,
 	createSuspension,
 	updatePoemModerationStatus,
+	endBan,
+	endSuspension,
 };

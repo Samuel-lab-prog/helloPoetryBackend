@@ -79,6 +79,58 @@ export function createModerationCommandsRouter(
 				},
 			},
 		)
+		.post(
+			'/unban/:id',
+			({ auth, params }) => {
+				return services.unbanUser({
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+					userId: params.id,
+				});
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				detail: {
+					summary: 'Unban User',
+					description: 'Removes an active ban from a user.',
+					tags: ['Moderation'],
+				},
+			},
+		)
+		.post(
+			'/unsuspend/:id',
+			({ auth, params }) => {
+				return services.unsuspendUser({
+					requesterId: auth.clientId,
+					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
+					userId: params.id,
+				});
+			},
+			{
+				params: t.Object({
+					id: idSchema,
+				}),
+				response: {
+					200: t.Void(),
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				detail: {
+					summary: 'Unsuspend User',
+					description: 'Removes an active suspension from a user.',
+					tags: ['Moderation'],
+				},
+			},
+		)
 		.patch(
 			'/poems/:id',
 			({ auth, params, body }) => {
