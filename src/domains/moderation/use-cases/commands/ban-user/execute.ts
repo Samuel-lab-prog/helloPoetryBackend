@@ -25,10 +25,14 @@ export function banUserFactory({
 	return async function banUser(
 		params: BanUserParams,
 	): Promise<BannedUserResponse> {
-		const { userId, reason, requesterId, requesterRole } = params;
+		const { userId, reason, requesterId, requesterRole, requesterStatus } =
+			params;
 
 		if (requesterId === userId) {
 			throw new ForbiddenError('A moderator cannot ban themselves.');
+		}
+		if (requesterStatus !== 'active') {
+			throw new ForbiddenError('User is not active.');
 		}
 		if (requesterRole === 'author') {
 			throw new ForbiddenError('You do not have permission to ban users.');
@@ -41,6 +45,12 @@ export function banUserFactory({
 			userId,
 		});
 		if (activeBan) throw new ConflictError('User is already banned.');
+
+		const activeSuspension =
+			await queriesRepository.selectActiveSuspensionByUserId({ userId });
+		if (activeSuspension) {
+			throw new ConflictError('User is already suspended.');
+		}
 
 		return commandsRepository.createBan({
 			userId,

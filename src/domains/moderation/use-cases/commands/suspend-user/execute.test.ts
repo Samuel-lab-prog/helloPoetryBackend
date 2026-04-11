@@ -22,6 +22,7 @@ describe('USE-CASE - Moderation', () => {
 
 			const scenario = makeModerationScenario()
 				.withUser()
+				.withNoActiveBan()
 				.withNoActiveSuspension()
 				.withSuspensionCreated(suspendedResponse);
 
@@ -45,6 +46,7 @@ describe('USE-CASE - Moderation', () => {
 				userId: 2,
 				reason: 'misconduct',
 				moderatorId: 1,
+				endAt: expect.any(Date),
 			});
 		});
 
@@ -90,6 +92,24 @@ describe('USE-CASE - Moderation', () => {
 			).not.toHaveBeenCalled();
 		});
 
+		it('throws ForbiddenError when requester is not active', async () => {
+			const scenario = makeModerationScenario();
+
+			await expectError(
+				scenario.executeSuspendUser({
+					requesterStatus: 'banned',
+				}),
+				ForbiddenError,
+			);
+
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
+		});
+
 		it('throws UserNotFoundError if user does not exist', async () => {
 			const scenario = makeModerationScenario().withUser({ exists: false });
 
@@ -112,6 +132,19 @@ describe('USE-CASE - Moderation', () => {
 			const scenario = makeModerationScenario()
 				.withUser()
 				.withActiveSuspension();
+
+			await expectError(scenario.executeSuspendUser(), ConflictError);
+
+			expect(
+				scenario.mocks.commandsRepository.createSuspension,
+			).not.toHaveBeenCalled();
+		});
+
+		it('throws ConflictError if user is already banned', async () => {
+			const scenario = makeModerationScenario()
+				.withUser()
+				.withActiveBan()
+				.withNoActiveSuspension();
 
 			await expectError(scenario.executeSuspendUser(), ConflictError);
 

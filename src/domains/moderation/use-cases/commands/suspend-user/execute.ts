@@ -25,14 +25,25 @@ export function suspendUserFactory({
 	return async function suspendUser(
 		params: SuspendUserParams,
 	): Promise<SuspendedUserResponse> {
-		const { userId, reason, requesterId, requesterRole } = params;
+		const {
+			userId,
+			reason,
+			requesterId,
+			requesterRole,
+			requesterStatus,
+			durationDays,
+		} = params;
 
 		if (requesterId === userId) {
 			throw new ForbiddenError('A moderator cannot suspend themselves.');
 		}
 
+		if (requesterStatus !== 'active') {
+			throw new ForbiddenError('User is not active.');
+		}
+
 		if (requesterRole === 'author') {
-			throw new ForbiddenError('You do not have permission to ban users.');
+			throw new ForbiddenError('You do not have permission to suspend users.');
 		}
 
 		const userExists = await usersContract.selectUserBasicInfo(userId);
@@ -46,10 +57,19 @@ export function suspendUserFactory({
 			throw new ConflictError('User is already suspended.');
 		}
 
+		const activeBan = await queriesRepository.selectActiveBanByUserId({
+			userId,
+		});
+		if (activeBan) throw new ConflictError('User is already banned.');
+
+		const duration = durationDays ?? 7;
+		const endAt = new Date(Date.now() + duration * 24 * 60 * 60 * 1000);
+
 		return commandsRepository.createSuspension({
 			userId,
 			reason,
 			moderatorId: requesterId,
+			endAt,
 		});
 	};
 }

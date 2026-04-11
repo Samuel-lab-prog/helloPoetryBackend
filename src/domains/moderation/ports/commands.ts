@@ -15,6 +15,7 @@ export type BanUserParams = {
 	reason: string;
 	requesterId: number;
 	requesterRole: UserRole;
+	requesterStatus: UserStatus;
 };
 
 export type SuspendUserParams = {
@@ -22,6 +23,8 @@ export type SuspendUserParams = {
 	reason: string;
 	requesterId: number;
 	requesterRole: UserRole;
+	requesterStatus: UserStatus;
+	durationDays?: number;
 };
 
 export type ModeratePoemParams = {
@@ -44,6 +47,7 @@ export interface CommandsRepository {
 		userId: number;
 		reason: string;
 		moderatorId: number;
+		endAt: Date;
 	}): Promise<SuspendedUserResponse>;
 	updatePoemModerationStatus(params: {
 		poemId: number;

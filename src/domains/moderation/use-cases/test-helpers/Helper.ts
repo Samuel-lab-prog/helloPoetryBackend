@@ -21,6 +21,7 @@ import {
 import {
 	DEFAULT_REASON,
 	DEFAULT_REQUESTER_ID,
+	DEFAULT_SUSPENSION_DURATION_DAYS,
 	DEFAULT_USER_ID,
 } from './Constants';
 
@@ -88,6 +89,7 @@ export function makeModerationScenario() {
 						reason: DEFAULT_REASON,
 						requesterId: DEFAULT_REQUESTER_ID,
 						requesterRole: 'moderator',
+						requesterStatus: 'active',
 					},
 					params,
 				),
@@ -102,6 +104,8 @@ export function makeModerationScenario() {
 						reason: DEFAULT_REASON,
 						requesterId: DEFAULT_REQUESTER_ID,
 						requesterRole: 'moderator',
+						requesterStatus: 'active',
+						durationDays: DEFAULT_SUSPENSION_DURATION_DAYS,
 					},
 					params,
 				),

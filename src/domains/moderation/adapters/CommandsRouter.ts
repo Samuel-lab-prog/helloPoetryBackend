@@ -5,6 +5,7 @@ import {
 	suspendedUserResponseSchema,
 	bannedUserResponseSchema,
 	sanctionReasonSchema,
+	suspensionDurationDaysSchema,
 	ModeratePoemBodySchema,
 	ModeratePoemResultSchema,
 } from '../ports/schemas/Index';
@@ -22,6 +23,7 @@ export function createModerationCommandsRouter(
 				return services.banUser({
 					requesterId: auth.clientId,
 					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
 					userId: params.id,
 					reason: body.reason,
 				});
@@ -51,8 +53,10 @@ export function createModerationCommandsRouter(
 				return services.suspendUser({
 					requesterId: auth.clientId,
 					requesterRole: auth.clientRole,
+					requesterStatus: auth.clientStatus,
 					userId: params.id,
 					reason: body.reason,
+					durationDays: body.durationDays,
 				});
 			},
 			{
@@ -61,6 +65,7 @@ export function createModerationCommandsRouter(
 				}),
 				body: t.Object({
 					reason: sanctionReasonSchema,
+					durationDays: t.Optional(suspensionDurationDaysSchema),
 				}),
 				response: {
 					200: suspendedUserResponseSchema,

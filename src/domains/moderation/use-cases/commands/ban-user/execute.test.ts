@@ -22,6 +22,7 @@ describe('USE-CASE - Moderation', () => {
 			const scenario = makeModerationScenario()
 				.withUser()
 				.withNoActiveBan()
+				.withNoActiveSuspension()
 				.withBanCreated(bannedResponse);
 
 			const result = await scenario.executeBanUser({
@@ -37,6 +38,9 @@ describe('USE-CASE - Moderation', () => {
 			).toHaveBeenCalledWith(2);
 			expect(
 				scenario.mocks.queriesRepository.selectActiveBanByUserId,
+			).toHaveBeenCalledWith({ userId: 2 });
+			expect(
+				scenario.mocks.queriesRepository.selectActiveSuspensionByUserId,
 			).toHaveBeenCalledWith({ userId: 2 });
 			expect(scenario.mocks.commandsRepository.createBan).toHaveBeenCalledWith({
 				userId: 2,
@@ -87,6 +91,24 @@ describe('USE-CASE - Moderation', () => {
 			).not.toHaveBeenCalled();
 		});
 
+		it('throws ForbiddenError when requester is not active', async () => {
+			const scenario = makeModerationScenario();
+
+			await expectError(
+				scenario.executeBanUser({
+					requesterStatus: 'suspended',
+				}),
+				ForbiddenError,
+			);
+
+			expect(
+				scenario.mocks.usersContract.selectUserBasicInfo,
+			).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
+		});
+
 		it('throws UserNotFoundError if user does not exist', async () => {
 			const scenario = makeModerationScenario().withUser({ exists: false });
 
@@ -107,6 +129,19 @@ describe('USE-CASE - Moderation', () => {
 
 		it('throws UserAlreadyBannedError if user already has an active ban', async () => {
 			const scenario = makeModerationScenario().withUser().withActiveBan();
+
+			await expectError(scenario.executeBanUser(), ConflictError);
+
+			expect(
+				scenario.mocks.commandsRepository.createBan,
+			).not.toHaveBeenCalled();
+		});
+
+		it('throws ConflictError if user already has an active suspension', async () => {
+			const scenario = makeModerationScenario()
+				.withUser()
+				.withActiveSuspension()
+				.withNoActiveBan();
 
 			await expectError(scenario.executeBanUser(), ConflictError);
 
