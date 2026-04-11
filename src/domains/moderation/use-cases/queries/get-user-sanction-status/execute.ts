@@ -1,7 +1,9 @@
-import type { QueriesRepository } from '../../../ports/queries';
+import type {
+	GetUserSanctionStatusParams,
+	QueriesRepository,
+} from '../../../ports/queries';
 import type { UsersServicesForModeration } from '../../../ports/externalServices';
 import type { UserSanctionStatusResponse } from '../../../ports/models';
-import type { GetUserSanctionStatusParams } from '../../../ports/queries';
 import {
 	ForbiddenError,
 	NotFoundError,
