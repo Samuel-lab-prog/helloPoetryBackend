@@ -3,7 +3,6 @@
 import type {
 	CreatePoemParams,
 	DeletePoemParams,
-	ModeratePoemParams,
 	UpdatePoemParams,
 } from '../../ports/commands';
 import type {
@@ -21,7 +20,6 @@ import {
 	type UserBasicInfoOverride,
 	givenAuthorPoems,
 	givenCreatePoemResult,
-	givenModeratePoemResult,
 	givenMyPoems,
 	givenPendingPoems,
 	givenPoemById,
@@ -39,7 +37,6 @@ import {
 	DEFAULT_POEM_CONTENT,
 	DEFAULT_POEM_EXCERPT,
 	DEFAULT_POEM_ID,
-	DEFAULT_POEM_MODERATION_STATUS,
 	DEFAULT_POEM_STATUS,
 	DEFAULT_POEM_TAGS,
 	DEFAULT_POEM_TITLE,
@@ -169,20 +166,6 @@ export function makePoemsScenario() {
 			return this;
 		},
 
-		withModeratedPoem(
-			params: {
-				id?: number;
-				moderationStatus?: AuthorPoemOverride['moderationStatus'];
-			} = {},
-		) {
-			givenModeratePoemResult(mocks.commandsRepository, {
-				id: params.id,
-				moderationStatus:
-					params.moderationStatus ?? DEFAULT_POEM_MODERATION_STATUS,
-			});
-			return this;
-		},
-
 		executeSearchPoems(params: Partial<SearchPoemsParams> = {}) {
 			return sutFactory.searchPoems(
 				makeParams({
@@ -264,23 +247,6 @@ export function makePoemsScenario() {
 					},
 					params.meta,
 				),
-			});
-		},
-
-		executeModeratePoem(
-			params: Partial<ModeratePoemParams> = {},
-		): ReturnType<typeof sutFactory.moderatePoem> {
-			const defaultMeta: ModeratePoemParams['meta'] = {
-				requesterId: DEFAULT_REQUESTER_ID,
-				requesterStatus: DEFAULT_USER_STATUS,
-				requesterRole: 'moderator',
-			};
-
-			return sutFactory.moderatePoem({
-				poemId: params.poemId ?? DEFAULT_POEM_ID,
-				moderationStatus:
-					params.moderationStatus ?? DEFAULT_POEM_MODERATION_STATUS,
-				meta: makeParams(defaultMeta, params.meta),
 			});
 		},
 

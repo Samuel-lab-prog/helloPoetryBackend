@@ -4,4 +4,6 @@
 
 export * from './BannedUserResponse';
 export * from './Fields';
+export * from './ModeratePoemBodySchema';
+export * from './ModeratePoemResultSchema';
 export * from './SuspendedUserResponse';

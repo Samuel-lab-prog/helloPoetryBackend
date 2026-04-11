@@ -1,5 +1,4 @@
-﻿/* eslint-disable max-lines-per-function */
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import {
 	appErrorSchema,

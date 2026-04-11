@@ -4,6 +4,8 @@ import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/queries';
 import type {
 	BannedUserResponse,
+	PoemModerationRead,
+	PoemNotificationsData,
 	SuspendedUserResponse,
 } from '../../ports/models';
 import {
@@ -50,7 +52,93 @@ export function selectActiveSuspensionByUserId(params: {
 	});
 }
 
+export function selectPoemById(
+	poemId: number,
+): Promise<PoemModerationRead | null> {
+	return withPrismaErrorHandling(async () => {
+		const poem = await prisma.poem.findFirst({
+			where: {
+				id: poemId,
+				deletedAt: null,
+			},
+			select: {
+				id: true,
+				title: true,
+				moderationStatus: true,
+				author: {
+					select: {
+						id: true,
+						nickname: true,
+						avatarUrl: true,
+					},
+				},
+			},
+		});
+
+		if (!poem) return null;
+
+		return {
+			id: poem.id,
+			title: poem.title,
+			moderationStatus: poem.moderationStatus,
+			author: {
+				id: poem.author.id,
+				nickname: poem.author.nickname,
+				avatarUrl: poem.author.avatarUrl ?? null,
+			},
+		};
+	});
+}
+
+export function selectPoemNotificationsData(
+	poemId: number,
+): Promise<PoemNotificationsData | null> {
+	return withPrismaErrorHandling(async () => {
+		const poem = await prisma.poem.findFirst({
+			where: {
+				id: poemId,
+				deletedAt: null,
+			},
+			select: {
+				id: true,
+				title: true,
+				author: {
+					select: {
+						id: true,
+						nickname: true,
+						avatarUrl: true,
+					},
+				},
+				dedications: {
+					select: {
+						toUserId: true,
+					},
+				},
+				userMentions: {
+					select: {
+						mentionedUserId: true,
+					},
+				},
+			},
+		});
+
+		if (!poem) return null;
+
+		return {
+			id: poem.id,
+			title: poem.title,
+			authorId: poem.author.id,
+			authorNickname: poem.author.nickname,
+			authorAvatarUrl: poem.author.avatarUrl ?? null,
+			dedicatedUserIds: poem.dedications.map((d) => d.toUserId),
+			mentionedUserIds: poem.userMentions.map((m) => m.mentionedUserId),
+		};
+	});
+}
+
 export const queriesRepository: QueriesRepository = {
 	selectActiveBanByUserId,
 	selectActiveSuspensionByUserId,
+	selectPoemById,
+	selectPoemNotificationsData,
 };

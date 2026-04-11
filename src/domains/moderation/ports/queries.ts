@@ -1,4 +1,9 @@
-﻿import type { BannedUserResponse, SuspendedUserResponse } from './models';
+import type {
+	BannedUserResponse,
+	PoemModerationRead,
+	PoemNotificationsData,
+	SuspendedUserResponse,
+} from './models';
 
 export interface QueriesRepository {
 	selectActiveBanByUserId(params: {
@@ -7,4 +12,9 @@ export interface QueriesRepository {
 	selectActiveSuspensionByUserId(params: {
 		userId: number;
 	}): Promise<SuspendedUserResponse | null>;
+
+	selectPoemById(poemId: number): Promise<PoemModerationRead | null>;
+	selectPoemNotificationsData(
+		poemId: number,
+	): Promise<PoemNotificationsData | null>;
 }

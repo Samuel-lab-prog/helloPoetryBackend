@@ -1,4 +1,4 @@
-﻿import type {
+import type {
 	MyPoem,
 	AuthorPoem,
 	PoemPreviewPage,
@@ -26,16 +26,6 @@ export type PoemSortOptions = {
 export type PoemFilterOptions = {
 	searchTitle?: string;
 	tags?: string[];
-};
-
-export type PoemNotificationsData = {
-	id: number;
-	title: string;
-	authorId: number;
-	authorNickname: string;
-	authorAvatarUrl: string | null;
-	dedicatedUserIds: number[];
-	mentionedUserIds: number[];
 };
 
 export type GetAuthorPoemsParams = RequesterContext & {
@@ -74,9 +64,6 @@ export interface QueriesRepository {
 	selectMyPoems(requesterId: number): Promise<MyPoem[]>;
 	selectAuthorPoems(authorId: number): Promise<AuthorPoem[]>;
 	selectPoemById(poemId: number): Promise<AuthorPoem | null>;
-	selectPoemNotificationsData(
-		poemId: number,
-	): Promise<PoemNotificationsData | null>;
 	selectPendingPoems(params: {
 		navigationOptions: NavigationOptions;
 	}): Promise<AuthorPoem[]>;

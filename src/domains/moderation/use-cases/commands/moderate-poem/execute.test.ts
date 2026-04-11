@@ -4,12 +4,12 @@ import {
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { makePoemsScenario } from '../../test-helpers/Helper';
+import { makeModerationPoemScenario } from '../../test-helpers/PoemModerationHelper';
 
-describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
+describe.concurrent('USE-CASE - Moderation - ModeratePoem', () => {
 	describe('Successful execution', () => {
 		it('should update poem moderation status', async () => {
-			const scenario = makePoemsScenario()
+			const scenario = makeModerationPoemScenario()
 				.withPoem({ moderationStatus: 'pending' })
 				.withModeratedPoem({ id: 12, moderationStatus: 'approved' });
 
@@ -30,7 +30,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 
 	describe('Permissions', () => {
 		it('should throw ForbiddenError when requester is not moderator/admin', async () => {
-			const scenario = makePoemsScenario().withPoem();
+			const scenario = makeModerationPoemScenario().withPoem();
 
 			await expectError(
 				scenario.executeModeratePoem({
@@ -45,7 +45,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 		});
 
 		it('should throw ForbiddenError when requester is not active', async () => {
-			const scenario = makePoemsScenario().withPoem();
+			const scenario = makeModerationPoemScenario().withPoem();
 
 			await expectError(
 				scenario.executeModeratePoem({
@@ -62,7 +62,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 
 	describe('Validation', () => {
 		it('should throw ForbiddenError for invalid moderation status', async () => {
-			const scenario = makePoemsScenario().withPoem();
+			const scenario = makeModerationPoemScenario().withPoem();
 
 			await expectError(
 				scenario.executeModeratePoem({
@@ -78,7 +78,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 		});
 
 		it('should throw NotFoundError when poem does not exist', async () => {
-			const scenario = makePoemsScenario().withPoemNotFound();
+			const scenario = makeModerationPoemScenario().withPoemNotFound();
 
 			await expectError(
 				scenario.executeModeratePoem({
@@ -93,7 +93,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 		});
 
 		it('should throw ForbiddenError when poem is removed', async () => {
-			const scenario = makePoemsScenario().withPoem({
+			const scenario = makeModerationPoemScenario().withPoem({
 				moderationStatus: 'removed',
 			});
 
@@ -112,7 +112,7 @@ describe.concurrent('USE-CASE - Poems Management - ModeratePoem', () => {
 
 	describe('Error propagation', () => {
 		it('should not swallow repository errors', async () => {
-			const scenario = makePoemsScenario().withPoem();
+			const scenario = makeModerationPoemScenario().withPoem();
 
 			scenario.mocks.commandsRepository.updatePoemModerationStatus.mockResolvedValue(
 				{

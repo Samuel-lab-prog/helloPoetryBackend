@@ -1,4 +1,4 @@
-﻿import type {
+import type {
 	CommandsRepository,
 	ModeratePoemParams,
 } from '../../../ports/commands';
@@ -29,30 +29,22 @@ export function moderatePoemFactory({
 	queriesRepository,
 	eventBus,
 }: Dependencies) {
-	// eslint-disable-next-line max-lines-per-function
 	return async function moderatePoem(
 		params: ModeratePoemParams,
 	): Promise<ModeratePoemResult> {
 		const { poemId, moderationStatus, meta } = params;
 
-		if (meta.requesterRole !== 'moderator' && meta.requesterRole !== 'admin') {
+		if (meta.requesterRole !== 'moderator' && meta.requesterRole !== 'admin')
 			throw new ForbiddenError('Insufficient permissions');
-		}
-
-		if (meta.requesterStatus !== 'active') {
+		if (meta.requesterStatus !== 'active')
 			throw new ForbiddenError('User is not active');
-		}
-
-		if (!ALLOWED_STATUSES.has(moderationStatus)) {
+		if (!ALLOWED_STATUSES.has(moderationStatus))
 			throw new ForbiddenError('Invalid moderation status');
-		}
 
 		const poem = await queriesRepository.selectPoemById(poemId);
 		if (!poem) throw new NotFoundError('Poem not found');
-
-		if (poem.moderationStatus === 'removed') {
+		if (poem.moderationStatus === 'removed')
 			throw new ForbiddenError('Cannot moderate removed poem');
-		}
 
 		const result = await commandsRepository.updatePoemModerationStatus({
 			poemId,
@@ -86,7 +78,7 @@ export function moderatePoemFactory({
 						id,
 					} = notificationsData;
 
-					for (const toUserId of dedicatedUserIds) {
+					for (const toUserId of dedicatedUserIds)
 						eventBus.publish('POEM_DEDICATED', {
 							poemId: id,
 							userId: toUserId,
@@ -95,9 +87,8 @@ export function moderatePoemFactory({
 							actorAvatarUrl: authorAvatarUrl ?? null,
 							poemTitle: title,
 						});
-					}
 
-					for (const mentionedUserId of mentionedUserIds) {
+					for (const mentionedUserId of mentionedUserIds)
 						eventBus.publish('USER_MENTION_IN_POEM', {
 							poemId: id,
 							poemTitle: title,
@@ -106,7 +97,6 @@ export function moderatePoemFactory({
 							mentionerNickname: authorNickname,
 							actorAvatarUrl: authorAvatarUrl ?? null,
 						});
-					}
 				}
 			}
 

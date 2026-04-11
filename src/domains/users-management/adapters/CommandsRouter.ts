@@ -15,7 +15,6 @@ import {
 
 import { type UsersCommandsServices } from '../ports/commands';
 
-// eslint-disable-next-line max-lines-per-function
 export function createUsersCommandsRouter(services: UsersCommandsServices) {
 	const maxAvatarUploadBytes = Number(
 		process.env.MAX_AVATAR_UPLOAD_BYTES ?? 5_000_000,

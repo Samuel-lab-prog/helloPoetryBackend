@@ -1,4 +1,4 @@
-﻿import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import type { UserRole, UserStatus } from '@SharedKernel/Enums';
 import type { CommandResult } from '@SharedKernel/Types';
 
 import type {
@@ -9,8 +9,6 @@ import type {
 	CreatePoemDB,
 	UpdatePoemDB,
 	CreateCollection,
-	ModeratePoemResult,
-	PoemModerationStatus,
 } from './models';
 
 export type UserMetaData = {
@@ -27,12 +25,6 @@ export type CreatePoemParams = {
 export type UpdatePoemParams = {
 	data: UpdatePoem;
 	poemId: number;
-	meta: UserMetaData;
-};
-
-export type ModeratePoemParams = {
-	poemId: number;
-	moderationStatus: PoemModerationStatus;
 	meta: UserMetaData;
 };
 
@@ -57,7 +49,6 @@ export type UpdatePoemAudioParams = {
 export interface CommandsRouterServices {
 	createPoem: (params: CreatePoemParams) => Promise<CreatePoemResult>;
 	updatePoem: (params: UpdatePoemParams) => Promise<UpdatePoemResult>;
-	moderatePoem: (params: ModeratePoemParams) => Promise<ModeratePoemResult>;
 	deletePoem: (params: DeletePoemParams) => Promise<void>;
 	requestPoemAudioUploadUrl: (
 		params: RequestPoemAudioUploadUrlParams,
@@ -105,10 +96,6 @@ export interface CommandsRepository {
 		poemId: number,
 		poem: UpdatePoemDB,
 	): Promise<CommandResult<UpdatePoemResult>>;
-	updatePoemModerationStatus(params: {
-		poemId: number;
-		moderationStatus: PoemModerationStatus;
-	}): Promise<CommandResult<ModeratePoemResult>>;
 	deletePoem(poemId: number): Promise<CommandResult<void>>;
 	updatePoemAudio(params: {
 		poemId: number;

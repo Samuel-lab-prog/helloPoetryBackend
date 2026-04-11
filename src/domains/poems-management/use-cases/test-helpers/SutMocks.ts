@@ -14,10 +14,8 @@ import { getAuthorPoemsFactory } from '../queries/get-author-poems/execute';
 import { getMyPoemsFactory } from '../queries/get-my-poems/execute';
 import { getPoemFactory } from '../queries/get-poem-by-id/execute';
 import { deletePoemFactory } from '../commands/delete-poem/execute';
-import { moderatePoemFactory } from '../commands/moderate-poem/execute';
 import { getPendingPoemsFactory } from '../queries/get-pending-poems/execute';
 import { getPoemsFactory } from '../queries/index';
-import { eventBus } from '@SharedKernel/events/EventBus';
 
 export type PoemsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -39,13 +37,11 @@ export function poemsMockFactories() {
 			addItemToCollection: mock(),
 			createCollection: mock(),
 			deleteCollection: mock(),
-			updatePoemModerationStatus: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectMyPoems: mock(),
 			selectAuthorPoems: mock(),
 			selectPoemById: mock(),
-			selectPoemNotificationsData: mock(),
 			selectPoems: mock(),
 			selectSavedPoems: mock(),
 			selectSavedPoem: mock(),
@@ -90,11 +86,6 @@ export function poemsFactory(deps: PoemsDeps) {
 		deletePoem: deletePoemFactory({
 			commandsRepository: deps.commandsRepository,
 			usersContract: deps.usersContract,
-		}),
-		moderatePoem: moderatePoemFactory({
-			commandsRepository: deps.commandsRepository,
-			queriesRepository: deps.queriesRepository,
-			eventBus: eventBus,
 		}),
 		searchPoems: getPoemsFactory({
 			queriesRepository: deps.queriesRepository,

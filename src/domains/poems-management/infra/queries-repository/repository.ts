@@ -1,10 +1,7 @@
 ﻿import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 
-import type {
-	PoemNotificationsData,
-	QueriesRepository,
-} from '../../ports/queries';
+import type { QueriesRepository } from '../../ports/queries';
 import type {
 	MyPoem,
 	AuthorPoem,
@@ -18,7 +15,6 @@ import {
 	myPoemSelect,
 	poemPreviewSelect,
 	savedPoemSelect,
-	poemNotificationsSelect,
 } from './selects';
 import { mapPoem, mapPoemPreview } from './helpers';
 
@@ -67,32 +63,6 @@ export function selectPoemById(poemId: number): Promise<AuthorPoem | null> {
 		if (!poem) return null;
 
 		return mapPoem(poem, poem.author);
-	});
-}
-
-export function selectPoemNotificationsData(
-	poemId: number,
-): Promise<PoemNotificationsData | null> {
-	return withPrismaErrorHandling(async () => {
-		const poem = await prisma.poem.findFirst({
-			where: {
-				id: poemId,
-				deletedAt: null,
-			},
-			select: poemNotificationsSelect,
-		});
-
-		if (!poem) return null;
-
-		return {
-			id: poem.id,
-			title: poem.title,
-			authorId: poem.author.id,
-			authorNickname: poem.author.nickname,
-			authorAvatarUrl: poem.author.avatarUrl ?? null,
-			dedicatedUserIds: poem.dedications.map((d) => d.toUserId),
-			mentionedUserIds: poem.userMentions.map((m) => m.mentionedUserId),
-		};
 	});
 }
 
@@ -274,7 +244,6 @@ export const queriesRepository: QueriesRepository = {
 	selectMyPoems,
 	selectAuthorPoems,
 	selectPoemById,
-	selectPoemNotificationsData,
 	selectPendingPoems,
 	selectPoems,
 	selectSavedPoems,

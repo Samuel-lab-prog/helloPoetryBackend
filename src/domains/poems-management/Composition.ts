@@ -17,13 +17,11 @@ import {
 	requestPoemAudioUploadUrlFactory,
 	updatePoemAudioFactory,
 	updatePoemFactory,
-	moderatePoemFactory,
 } from './use-cases/commands/Index';
 
 import type { CommandsRouterServices } from './ports/commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
-import { eventBus } from '@SharedKernel/events/EventBus';
 import { savePoemFactory } from './use-cases/commands/save-poem/executet';
 import { removeSavedPoemFactory } from './use-cases/commands/remove-saved/execute';
 import { getSavedPoemsFactory } from './use-cases/queries/get-saved-poems/execute';
@@ -80,11 +78,6 @@ const commandsRouterServices: CommandsRouterServices = {
 	}),
 	deleteCollection: deleteCollectionFactory({
 		commandsRepository,
-	}),
-	moderatePoem: moderatePoemFactory({
-		commandsRepository,
-		queriesRepository,
-		eventBus: eventBus,
 	}),
 };
 

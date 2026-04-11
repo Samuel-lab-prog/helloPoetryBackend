@@ -7,8 +7,6 @@ export * from './PoemFieldsSchemas';
 export * from './commands/CreateCollectionBodySchema';
 export * from './commands/CreatePoemBodySchema';
 export * from './commands/CreatePoemResultSchema';
-export * from './commands/ModeratePoemBodySchema';
-export * from './commands/ModeratePoemResultSchema';
 export * from './commands/PoemAudioUpdateBodySchema';
 export * from './commands/PoemAudioUploadUrlSchema';
 export * from './commands/UpdatePoemBodySchema';

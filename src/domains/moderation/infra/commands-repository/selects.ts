@@ -52,3 +52,8 @@ export function fromRawToSuspendedUser(
 		endAt: raw.endAt!, // Valid because endAt is required for suspensions
 	};
 }
+
+export const poemModerationSelect = {
+	id: true,
+	moderationStatus: true,
+} as const satisfies Prisma.PoemSelect;

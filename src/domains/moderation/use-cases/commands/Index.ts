@@ -3,4 +3,5 @@
  */
 
 export * from './ban-user/execute';
+export * from './moderate-poem/execute';
 export * from './suspend-user/execute';

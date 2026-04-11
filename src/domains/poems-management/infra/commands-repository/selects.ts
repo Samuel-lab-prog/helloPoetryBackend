@@ -67,8 +67,3 @@ export const updatePoemSelect = {
 		},
 	},
 } as const satisfies PoemSelect;
-
-export const moderatePoemSelect = {
-	id: true,
-	moderationStatus: true,
-} as const satisfies PoemSelect;

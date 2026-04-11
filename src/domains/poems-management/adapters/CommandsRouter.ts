@@ -1,6 +1,4 @@
-﻿/* eslint-disable max-lines */
-/* eslint-disable max-lines-per-function */
-import { Elysia, t } from 'elysia';
+﻿import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import {
 	appErrorSchema,
@@ -15,8 +13,6 @@ import {
 	UpdatePoemResultSchema,
 	PoemAudioUploadUrlSchema,
 	PoemAudioUpdateBodySchema,
-	ModeratePoemBodySchema,
-	ModeratePoemResultSchema,
 } from '../ports/schemas/Index';
 
 import { type CommandsRouterServices } from '../ports/commands';
@@ -81,37 +77,6 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					summary: 'Update Poem',
 					description:
 						'Updates an existing poem authored by the authenticated user.',
-					tags: ['Poems Management'],
-				},
-			},
-		)
-		.patch(
-			'/:id/moderation',
-			({ auth, body, params }) => {
-				return services.moderatePoem({
-					poemId: params.id,
-					moderationStatus: body.moderationStatus,
-					meta: {
-						requesterId: auth.clientId,
-						requesterStatus: auth.clientStatus,
-						requesterRole: auth.clientRole,
-					},
-				});
-			},
-			{
-				response: {
-					200: ModeratePoemResultSchema,
-					403: appErrorSchema,
-					404: appErrorSchema,
-				},
-				params: t.Object({
-					id: idSchema,
-				}),
-				body: ModeratePoemBodySchema,
-				detail: {
-					summary: 'Moderate Poem',
-					description:
-						'Updates the moderation status of a poem for moderators or admins.',
 					tags: ['Poems Management'],
 				},
 			},

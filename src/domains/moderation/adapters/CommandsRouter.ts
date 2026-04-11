@@ -5,6 +5,8 @@ import {
 	suspendedUserResponseSchema,
 	bannedUserResponseSchema,
 	sanctionReasonSchema,
+	ModeratePoemBodySchema,
+	ModeratePoemResultSchema,
 } from '../ports/schemas/Index';
 import { type CommandsRouterServices } from '../ports/commands';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
@@ -68,6 +70,37 @@ export function createModerationCommandsRouter(
 				detail: {
 					summary: 'Suspend User',
 					description: 'Suspends a user by the authenticated moderator.',
+					tags: ['Moderation'],
+				},
+			},
+		)
+		.patch(
+			'/poems/:id',
+			({ auth, params, body }) => {
+				return services.moderatePoem({
+					poemId: params.id,
+					moderationStatus: body.moderationStatus,
+					meta: {
+						requesterId: auth.clientId,
+						requesterStatus: auth.clientStatus,
+						requesterRole: auth.clientRole,
+					},
+				});
+			},
+			{
+				response: {
+					200: ModeratePoemResultSchema,
+					403: appErrorSchema,
+					404: appErrorSchema,
+				},
+				params: t.Object({
+					id: idSchema,
+				}),
+				body: ModeratePoemBodySchema,
+				detail: {
+					summary: 'Moderate Poem',
+					description:
+						'Updates the moderation status of a poem for moderators or admins.',
 					tags: ['Moderation'],
 				},
 			},

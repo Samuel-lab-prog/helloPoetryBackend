@@ -19,10 +19,13 @@ export function moderationMockFactories(): ModerationSutMocks {
 		commandsRepository: createMockedContract<CommandsRepository>({
 			createBan: mock(),
 			createSuspension: mock(),
+			updatePoemModerationStatus: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectActiveBanByUserId: mock(),
 			selectActiveSuspensionByUserId: mock(),
+			selectPoemById: mock(),
+			selectPoemNotificationsData: mock(),
 		}),
 		usersContract: createMockedContract<UsersServicesForModeration>({
 			selectUserBasicInfo: mock(),
