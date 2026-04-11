@@ -22,6 +22,7 @@ export type ClientAuthCredentials = {
 
 export interface UsersPublicContract {
 	selectUserBasicInfo(userId: number): Promise<UserBasicInfo>;
+	selectUsersBasicInfo(userIds: number[]): Promise<UserBasicInfo[]>;
 	selectAuthUserByEmail(email: string): Promise<ClientAuthCredentials | null>;
 }
 
@@ -62,24 +63,81 @@ async function selectUserBasicInfo(userId: number) {
 	);
 }
 
+async function selectUsersBasicInfo(
+	userIds: number[],
+): Promise<UserBasicInfo[]> {
+	const ids = userIds.map(Number);
+	const uniqueIds = Array.from(new Set(ids));
+	if (uniqueIds.length === 0) return [];
+
+	const cacheKey = `users.basic.batch:${uniqueIds.sort((a, b) => a - b).join(',')}`;
+
+	const usersById = await withRequestCache(cacheKey, () =>
+		withPrismaErrorHandling(async () => {
+			const users = await prisma.user.findMany({
+				where: { id: { in: uniqueIds }, deletedAt: null },
+				select: {
+					id: true,
+					status: true,
+					role: true,
+					nickname: true,
+					avatarUrl: true,
+				},
+			});
+
+			return new Map(
+				users.map((user) => [
+					user.id,
+					{
+						exists: true,
+						id: user.id,
+						status: user.status,
+						role: user.role,
+						nickname: user.nickname,
+						avatarUrl: user.avatarUrl,
+					} satisfies UserBasicInfo,
+				]),
+			);
+		}),
+	);
+
+	return ids.map((id) => {
+		const cached = usersById.get(id);
+		if (cached) return cached;
+
+		return {
+			exists: false,
+			id: -1,
+			status: 'banned' as const,
+			role: 'author' as const,
+			nickname: '',
+			avatarUrl: null,
+		};
+	});
+}
+
 function selectAuthUserByEmail(
 	email: string,
 ): Promise<ClientAuthCredentials | null> {
-	return withPrismaErrorHandling(() =>
-		prisma.user.findUnique({
-			where: { email, deletedAt: null },
-			select: {
-				id: true,
-				email: true,
-				passwordHash: true,
-				role: true,
-				status: true,
-			},
-		}),
+	const key = `users.auth:${email.toLowerCase()}`;
+	return withRequestCache(key, () =>
+		withPrismaErrorHandling(() =>
+			prisma.user.findUnique({
+				where: { email, deletedAt: null },
+				select: {
+					id: true,
+					email: true,
+					passwordHash: true,
+					role: true,
+					status: true,
+				},
+			}),
+		),
 	);
 }
 
 export const usersPublicContract: UsersPublicContract = {
 	selectUserBasicInfo,
+	selectUsersBasicInfo,
 	selectAuthUserByEmail,
 };

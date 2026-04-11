@@ -30,10 +30,11 @@ export function getPoemCommentsFactory({
 
 		const v = validator();
 
-		const userInfo = await usersContract.selectUserBasicInfo(userId);
+		const [userInfo, poemInfo] = await Promise.all([
+			usersContract.selectUserBasicInfo(userId),
+			poemsContract.selectPoemBasicInfo(poemId),
+		]);
 		v.user(userInfo).withStatus(['active']);
-
-		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])

@@ -53,6 +53,7 @@ export function poemsMockFactories() {
 		}),
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),
+			selectUsersBasicInfo: mock(),
 			selectAuthUserByEmail: mock(),
 		}),
 		slugService: createMockedContract<SlugService>({

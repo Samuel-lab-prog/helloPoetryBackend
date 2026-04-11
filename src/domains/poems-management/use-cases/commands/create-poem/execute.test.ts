@@ -6,6 +6,7 @@ import {
 } from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
 describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 	describe('Successful execution', () => {
@@ -77,13 +78,21 @@ describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 				.withSlug()
 				.withCreatedPoem();
 
-			scenario.mocks.usersContract.selectUserBasicInfo.mockResolvedValue({
+			const invalidUser: Awaited<
+				ReturnType<UsersPublicContract['selectUserBasicInfo']>
+			> = {
 				exists: true,
 				id: 99,
 				status: 'banned',
 				role: 'author',
 				nickname: 'invalid-user',
-			});
+			};
+			scenario.mocks.usersContract.selectUserBasicInfo.mockResolvedValue(
+				invalidUser,
+			);
+			scenario.mocks.usersContract.selectUsersBasicInfo.mockResolvedValue([
+				invalidUser,
+			]);
 
 			await expectError(
 				scenario.executeCreatePoem({

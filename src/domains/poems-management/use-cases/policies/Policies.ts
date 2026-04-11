@@ -52,9 +52,7 @@ export async function validateUsers(
 	if (ids.includes(requesterId))
 		throw new ForbiddenError('Author cannot assign or mention themselves');
 
-	const users = await Promise.all(
-		ids.map((id) => usersContract.selectUserBasicInfo(id).catch(() => null)),
-	);
+	const users = await usersContract.selectUsersBasicInfo(ids);
 
 	const invalidUser = users.find((u) => !u || u.status !== 'active');
 

@@ -30,6 +30,7 @@ export function notificationsMockFactory() {
 	return {
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),
+			selectUsersBasicInfo: mock(),
 			selectAuthUserByEmail: mock(),
 		}),
 		commandsRepository: createMockedContract<CommandsRepository>({

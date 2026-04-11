@@ -41,6 +41,10 @@ Allowed contents:
 - `externalServices.ts`
 - `schemas/` (folder for Zod schemas)
 
+Schemas rule:
+
+- Every `ports/schemas/` folder must include an `index.ts` barrel.
+
 Rules:
 
 - Ports belong to the application, not to adapters or infra.

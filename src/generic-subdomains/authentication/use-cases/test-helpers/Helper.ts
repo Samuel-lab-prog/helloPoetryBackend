@@ -39,6 +39,7 @@ function makeAuthMockFactories() {
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectAuthUserByEmail: mock(),
 			selectUserBasicInfo: mock(),
+			selectUsersBasicInfo: mock(),
 		}),
 
 		hashService: createMockedContract<HashServices>({

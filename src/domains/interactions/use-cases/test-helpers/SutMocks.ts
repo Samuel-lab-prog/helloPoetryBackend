@@ -37,6 +37,7 @@ export function interactionsMockFactories() {
 	return {
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),
+			selectUsersBasicInfo: mock(),
 			selectAuthUserByEmail: mock(),
 		}),
 

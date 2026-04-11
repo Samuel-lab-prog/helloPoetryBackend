@@ -51,6 +51,7 @@ export function friendsManagementMockFactories(): FriendsManagementSutMocks {
 		}),
 		usersContract: createMockedContract<UsersPublicContract>({
 			selectUserBasicInfo: mock(),
+			selectUsersBasicInfo: mock(),
 			selectAuthUserByEmail: mock(),
 		}),
 		eventBus,

@@ -96,14 +96,17 @@ export function givenUser(
 	usersContract: PoemsSutMocks['usersContract'],
 	overrides: UserBasicInfoOverride = {},
 ) {
-	givenResolved(usersContract, 'selectUserBasicInfo', {
-		exists: true,
-		id: DEFAULT_REQUESTER_ID,
-		status: DEFAULT_USER_STATUS,
-		role: DEFAULT_USER_ROLE,
-		nickname: DEFAULT_USER_NICKNAME,
-		...overrides,
-	});
+	const user: Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>> =
+		{
+			exists: true,
+			id: DEFAULT_REQUESTER_ID,
+			status: DEFAULT_USER_STATUS,
+			role: DEFAULT_USER_ROLE,
+			nickname: DEFAULT_USER_NICKNAME,
+			...overrides,
+		};
+	givenResolved(usersContract, 'selectUserBasicInfo', user);
+	givenResolved(usersContract, 'selectUsersBasicInfo', [user]);
 }
 
 export function givenPoemsSelected(
