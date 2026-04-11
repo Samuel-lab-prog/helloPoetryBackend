@@ -174,6 +174,9 @@ Wherever possible, they are:
 If CI fails due to an architectural rule, the system is considered invalid,
 regardless of manual review.
 
+Case-sensitive import paths are enforced. Import statements must match the
+filesystem casing exactly to avoid Linux build failures.
+
 See:
 
 - ADR-016 – Linting rules
