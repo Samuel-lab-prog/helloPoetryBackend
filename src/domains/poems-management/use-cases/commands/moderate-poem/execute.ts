@@ -8,10 +8,12 @@ import {
 	ForbiddenError,
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
+import { type EventBus } from '@SharedKernel/events/EventBus';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
+	eventBus: EventBus;
 }
 
 const ALLOWED_STATUSES = new Set([
@@ -21,10 +23,13 @@ const ALLOWED_STATUSES = new Set([
 	'removed',
 ] as const);
 
+// eslint-disable-next-line max-lines-per-function
 export function moderatePoemFactory({
 	commandsRepository,
 	queriesRepository,
+	eventBus,
 }: Dependencies) {
+	// eslint-disable-next-line max-lines-per-function
 	return async function moderatePoem(
 		params: ModeratePoemParams,
 	): Promise<ModeratePoemResult> {
@@ -54,7 +59,59 @@ export function moderatePoemFactory({
 			moderationStatus,
 		});
 
-		if (result.ok) return result.data;
+		if (result.ok) {
+			const shouldNotify =
+				moderationStatus === 'approved' && poem.moderationStatus !== 'approved';
+
+			if (shouldNotify) {
+				eventBus.publish('POEM_APPROVED', {
+					poemId,
+					poemTitle: poem.title,
+					authorId: poem.author.id,
+					authorNickname: poem.author.nickname,
+					actorAvatarUrl: poem.author.avatarUrl ?? null,
+				});
+
+				const notificationsData =
+					await queriesRepository.selectPoemNotificationsData(poemId);
+
+				if (notificationsData) {
+					const {
+						authorId,
+						authorNickname,
+						authorAvatarUrl,
+						dedicatedUserIds,
+						mentionedUserIds,
+						title,
+						id,
+					} = notificationsData;
+
+					for (const toUserId of dedicatedUserIds) {
+						eventBus.publish('POEM_DEDICATED', {
+							poemId: id,
+							userId: toUserId,
+							dedicatorId: authorId,
+							dedicatorNickname: authorNickname,
+							actorAvatarUrl: authorAvatarUrl ?? null,
+							poemTitle: title,
+						});
+					}
+
+					for (const mentionedUserId of mentionedUserIds) {
+						eventBus.publish('USER_MENTION_IN_POEM', {
+							poemId: id,
+							poemTitle: title,
+							userId: mentionedUserId,
+							mentionerId: authorId,
+							mentionerNickname: authorNickname,
+							actorAvatarUrl: authorAvatarUrl ?? null,
+						});
+					}
+				}
+			}
+
+			return result.data;
+		}
 
 		throw result.error;
 	};

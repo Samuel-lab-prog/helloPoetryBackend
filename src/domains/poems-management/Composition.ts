@@ -39,7 +39,6 @@ const commandsRouterServices: CommandsRouterServices = {
 		commandsRepository,
 		slugService: slugifyService,
 		usersContract: usersPublicContract,
-		eventBus: eventBus,
 	}),
 	updatePoem: updatePoemFactory({
 		commandsRepository,
@@ -85,6 +84,7 @@ const commandsRouterServices: CommandsRouterServices = {
 	moderatePoem: moderatePoemFactory({
 		commandsRepository,
 		queriesRepository,
+		eventBus: eventBus,
 	}),
 };
 

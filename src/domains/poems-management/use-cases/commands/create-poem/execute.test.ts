@@ -134,11 +134,14 @@ describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 		it('should propagate users contract errors', async () => {
 			const scenario = makePoemsScenario().withSlug().withCreatedPoem();
 
-			scenario.mocks.usersContract.selectUserBasicInfo.mockRejectedValue(
+			scenario.mocks.usersContract.selectUsersBasicInfo.mockRejectedValue(
 				new Error('boom'),
 			);
 
-			await expectError(scenario.executeCreatePoem(), Error);
+			await expectError(
+				scenario.executeCreatePoem({ data: { toUserIds: [2] } }),
+				Error,
+			);
 		});
 	});
 });

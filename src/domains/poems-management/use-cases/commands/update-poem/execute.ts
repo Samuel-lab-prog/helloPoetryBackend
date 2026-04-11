@@ -8,7 +8,6 @@ import type { UpdatePoemResult } from '../../../ports/models';
 import { canUpdatePoem } from '../../policies/Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
-
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
@@ -36,12 +35,13 @@ export function updatePoemFactory(deps: Dependencies) {
 			},
 			usersContract,
 			toUserIds: data.toUserIds ?? [],
+			mentionedUserIds: data.mentionedUserIds,
 			poemId,
 			queriesRepository,
 		});
 
 		const slug = slugService.generateSlug(data.title);
-		const poem = { ...data, slug };
+		const poem = { ...data, slug, authorId: meta.requesterId };
 
 		const result = await commandsRepository.updatePoem(poemId, poem);
 

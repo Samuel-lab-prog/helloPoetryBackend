@@ -45,6 +45,7 @@ export function poemsMockFactories() {
 			selectMyPoems: mock(),
 			selectAuthorPoems: mock(),
 			selectPoemById: mock(),
+			selectPoemNotificationsData: mock(),
 			selectPoems: mock(),
 			selectSavedPoems: mock(),
 			selectSavedPoem: mock(),
@@ -70,7 +71,6 @@ export function poemsFactory(deps: PoemsDeps) {
 			commandsRepository: deps.commandsRepository,
 			usersContract: deps.usersContract,
 			slugService: deps.slugService,
-			eventBus: eventBus,
 		}),
 		updatePoem: updatePoemFactory({
 			commandsRepository: deps.commandsRepository,
@@ -94,6 +94,7 @@ export function poemsFactory(deps: PoemsDeps) {
 		moderatePoem: moderatePoemFactory({
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
+			eventBus: eventBus,
 		}),
 		searchPoems: getPoemsFactory({
 			queriesRepository: deps.queriesRepository,

@@ -62,6 +62,13 @@ interface DomainEvents {
 		actorAvatarUrl?: string | null;
 		userId: number;
 	};
+	POEM_APPROVED: {
+		poemId: number;
+		poemTitle: string;
+		authorId: number;
+		authorNickname: string;
+		actorAvatarUrl?: string | null;
+	};
 }
 
 export type EventName = keyof DomainEvents;

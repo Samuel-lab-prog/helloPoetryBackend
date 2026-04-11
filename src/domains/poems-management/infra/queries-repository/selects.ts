@@ -155,3 +155,25 @@ export const authorPoemSelect = {
 
 	_count: { select: countSelect },
 } as const satisfies PoemSelect;
+
+export const poemNotificationsSelect = {
+	id: true,
+	title: true,
+	author: {
+		select: {
+			id: true,
+			nickname: true,
+			avatarUrl: true,
+		},
+	},
+	dedications: {
+		select: {
+			toUserId: true,
+		},
+	},
+	userMentions: {
+		select: {
+			mentionedUserId: true,
+		},
+	},
+} as const satisfies PoemSelect;

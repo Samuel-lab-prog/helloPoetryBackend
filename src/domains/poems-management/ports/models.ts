@@ -26,7 +26,7 @@ export type ModeratePoemBody = (typeof ModeratePoemBodySchema)['static'];
 export type ModeratePoemResult = (typeof ModeratePoemResultSchema)['static'];
 
 export type UpdatePoem = (typeof UpdatePoemBodySchema)['static'];
-export type UpdatePoemDB = UpdatePoem & { slug: string };
+export type UpdatePoemDB = UpdatePoem & { slug: string; authorId: number };
 export type UpdatePoemResult = (typeof UpdatePoemResultSchema)['static'];
 
 export type AuthorPoem = (typeof AuthorPoemReadSchema)['static'];

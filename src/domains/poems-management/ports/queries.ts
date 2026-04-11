@@ -28,6 +28,16 @@ export type PoemFilterOptions = {
 	tags?: string[];
 };
 
+export type PoemNotificationsData = {
+	id: number;
+	title: string;
+	authorId: number;
+	authorNickname: string;
+	authorAvatarUrl: string | null;
+	dedicatedUserIds: number[];
+	mentionedUserIds: number[];
+};
+
 export type GetAuthorPoemsParams = RequesterContext & {
 	authorId: number;
 };
@@ -64,6 +74,9 @@ export interface QueriesRepository {
 	selectMyPoems(requesterId: number): Promise<MyPoem[]>;
 	selectAuthorPoems(authorId: number): Promise<AuthorPoem[]>;
 	selectPoemById(poemId: number): Promise<AuthorPoem | null>;
+	selectPoemNotificationsData(
+		poemId: number,
+	): Promise<PoemNotificationsData | null>;
 	selectPendingPoems(params: {
 		navigationOptions: NavigationOptions;
 	}): Promise<AuthorPoem[]>;
