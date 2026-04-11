@@ -26,6 +26,25 @@ describe.concurrent('USE-CASE - Moderation - ModeratePoem', () => {
 				moderationStatus: 'approved',
 			});
 		});
+
+		it('should allow removing a poem', async () => {
+			const scenario = makeModerationPoemScenario()
+				.withPoem({ moderationStatus: 'pending' })
+				.withModeratedPoem({ id: 12, moderationStatus: 'removed' });
+
+			const result = await scenario.executeModeratePoem({
+				poemId: 1,
+				moderationStatus: 'removed',
+			});
+
+			expect(result).toHaveProperty('id', 12);
+			expect(
+				scenario.mocks.commandsRepository.updatePoemModerationStatus,
+			).toHaveBeenCalledWith({
+				poemId: 1,
+				moderationStatus: 'removed',
+			});
+		});
 	});
 
 	describe('Permissions', () => {
