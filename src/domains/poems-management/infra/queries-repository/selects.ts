@@ -28,6 +28,7 @@ export const poemPreviewSelect = {
 	title: true,
 	slug: true,
 	createdAt: true,
+	status: true,
 	_count: {
 		select: {
 			poemLikes: true,

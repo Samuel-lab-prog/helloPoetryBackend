@@ -9,6 +9,7 @@ import {
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import { type EventBus } from '@SharedKernel/events/EventBus';
+import type { PoemModerationStatus } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -23,7 +24,81 @@ const ALLOWED_STATUSES = new Set([
 	'removed',
 ] as const);
 
-// eslint-disable-next-line max-lines-per-function
+type PoemNotificationContext = {
+	poemId: number;
+	title: string;
+	authorId: number;
+	authorNickname: string;
+	authorAvatarUrl?: string | null;
+};
+
+async function notifyPoemApproved(params: {
+	eventBus: EventBus;
+	queriesRepository: QueriesRepository;
+	poem: PoemNotificationContext;
+}) {
+	const { eventBus, queriesRepository, poem } = params;
+	await eventBus.publish('POEM_APPROVED', {
+		poemId: poem.poemId,
+		poemTitle: poem.title,
+		authorId: poem.authorId,
+		authorNickname: poem.authorNickname,
+		actorAvatarUrl: poem.authorAvatarUrl ?? null,
+	});
+
+	const notificationsData = await queriesRepository.selectPoemNotificationsData(
+		poem.poemId,
+	);
+
+	if (!notificationsData) return;
+
+	const {
+		authorId,
+		authorNickname,
+		authorAvatarUrl,
+		dedicatedUserIds,
+		mentionedUserIds,
+		title,
+		id,
+	} = notificationsData;
+
+	for (const toUserId of dedicatedUserIds)
+		await eventBus.publish('POEM_DEDICATED', {
+			poemId: id,
+			userId: toUserId,
+			dedicatorId: authorId,
+			dedicatorNickname: authorNickname,
+			actorAvatarUrl: authorAvatarUrl ?? null,
+			poemTitle: title,
+		});
+
+	for (const mentionedUserId of mentionedUserIds)
+		await eventBus.publish('USER_MENTION_IN_POEM', {
+			poemId: id,
+			poemTitle: title,
+			userId: mentionedUserId,
+			mentionerId: authorId,
+			mentionerNickname: authorNickname,
+			actorAvatarUrl: authorAvatarUrl ?? null,
+		});
+}
+
+async function notifyPoemRemoved(params: {
+	eventBus: EventBus;
+	poem: PoemNotificationContext;
+	reason?: string;
+}) {
+	const { eventBus, poem, reason } = params;
+	await eventBus.publish('POEM_REMOVED', {
+		poemId: poem.poemId,
+		poemTitle: poem.title,
+		authorId: poem.authorId,
+		authorNickname: poem.authorNickname,
+		actorAvatarUrl: poem.authorAvatarUrl ?? null,
+		reason: reason?.trim() || undefined,
+	});
+}
+
 export function moderatePoemFactory({
 	commandsRepository,
 	queriesRepository,
@@ -32,7 +107,7 @@ export function moderatePoemFactory({
 	return async function moderatePoem(
 		params: ModeratePoemParams,
 	): Promise<ModeratePoemResult> {
-		const { poemId, moderationStatus, meta } = params;
+		const { poemId, moderationStatus, reason, meta } = params;
 
 		if (meta.requesterRole !== 'moderator' && meta.requesterRole !== 'admin')
 			throw new ForbiddenError('Insufficient permissions');
@@ -45,6 +120,8 @@ export function moderatePoemFactory({
 		if (!poem) throw new NotFoundError('Poem not found');
 		if (poem.moderationStatus === 'removed')
 			throw new ForbiddenError('Cannot moderate removed poem');
+		if (moderationStatus === 'removed' && poem.status !== 'published')
+			throw new ForbiddenError('Only published poems can be removed');
 
 		const result = await commandsRepository.updatePoemModerationStatus({
 			poemId,
@@ -52,52 +129,38 @@ export function moderatePoemFactory({
 		});
 
 		if (result.ok) {
-			const shouldNotify =
+			const shouldNotifyApproved =
 				moderationStatus === 'approved' && poem.moderationStatus !== 'approved';
+			const shouldNotifyRemoved =
+				moderationStatus === ('removed' as PoemModerationStatus) &&
+				poem.moderationStatus !== ('removed' as PoemModerationStatus);
 
-			if (shouldNotify) {
-				eventBus.publish('POEM_APPROVED', {
-					poemId,
-					poemTitle: poem.title,
-					authorId: poem.author.id,
-					authorNickname: poem.author.nickname,
-					actorAvatarUrl: poem.author.avatarUrl ?? null,
+			if (shouldNotifyApproved) {
+				await notifyPoemApproved({
+					eventBus,
+					queriesRepository,
+					poem: {
+						poemId,
+						title: poem.title,
+						authorId: poem.author.id,
+						authorNickname: poem.author.nickname,
+						authorAvatarUrl: poem.author.avatarUrl ?? null,
+					},
 				});
+			}
 
-				const notificationsData =
-					await queriesRepository.selectPoemNotificationsData(poemId);
-
-				if (notificationsData) {
-					const {
-						authorId,
-						authorNickname,
-						authorAvatarUrl,
-						dedicatedUserIds,
-						mentionedUserIds,
-						title,
-						id,
-					} = notificationsData;
-
-					for (const toUserId of dedicatedUserIds)
-						eventBus.publish('POEM_DEDICATED', {
-							poemId: id,
-							userId: toUserId,
-							dedicatorId: authorId,
-							dedicatorNickname: authorNickname,
-							actorAvatarUrl: authorAvatarUrl ?? null,
-							poemTitle: title,
-						});
-
-					for (const mentionedUserId of mentionedUserIds)
-						eventBus.publish('USER_MENTION_IN_POEM', {
-							poemId: id,
-							poemTitle: title,
-							userId: mentionedUserId,
-							mentionerId: authorId,
-							mentionerNickname: authorNickname,
-							actorAvatarUrl: authorAvatarUrl ?? null,
-						});
-				}
+			if (shouldNotifyRemoved) {
+				await notifyPoemRemoved({
+					eventBus,
+					poem: {
+						poemId,
+						title: poem.title,
+						authorId: poem.author.id,
+						authorNickname: poem.author.nickname,
+						authorAvatarUrl: poem.author.avatarUrl ?? null,
+					},
+					reason,
+				});
 			}
 
 			return result.data;

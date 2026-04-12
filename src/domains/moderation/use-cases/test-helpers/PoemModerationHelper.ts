@@ -33,6 +33,7 @@ function makePoem(
 	return {
 		id: DEFAULT_POEM_ID,
 		title: DEFAULT_POEM_TITLE,
+		status: 'published',
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		author: {
 			id: DEFAULT_AUTHOR_ID,

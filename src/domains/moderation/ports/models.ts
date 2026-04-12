@@ -6,7 +6,11 @@ import {
 	userSanctionStatusResponseSchema,
 	userSanctionsResponseSchema,
 } from '../ports/schemas/Index';
-import type { PoemModerationStatus, SanctionType } from '@SharedKernel/Enums';
+import type {
+	PoemModerationStatus,
+	PoemStatus,
+	SanctionType,
+} from '@SharedKernel/Enums';
 
 export type BannedUserResponse = (typeof bannedUserResponseSchema)['static'];
 export type SuspendedUserResponse =
@@ -21,6 +25,7 @@ export type UserSanctionStatusResponse =
 export type PoemModerationRead = {
 	id: number;
 	title: string;
+	status: PoemStatus;
 	moderationStatus: PoemModerationStatus;
 	author: {
 		id: number;

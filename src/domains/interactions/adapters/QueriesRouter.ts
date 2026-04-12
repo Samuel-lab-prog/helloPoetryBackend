@@ -2,7 +2,7 @@
 import { AuthPlugin } from '@AuthPlugin';
 
 import { idSchema } from '@SharedKernel/Schemas';
-import { PoemCommentSchema } from '../ports/schemas/PoemCommentSchema';
+import { PoemCommentsPageSchema } from '../ports/schemas/PoemCommentsPageSchema';
 
 import { type QueriesRouterServices } from '../ports/queries';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
@@ -17,6 +17,8 @@ export function createInteractionsQueriesRouter(
 				poemId: params.id,
 				userId: auth.clientId,
 				parentId: query.parentId,
+				cursor: query.cursor,
+				limit: query.limit,
 			});
 		},
 		{
@@ -25,9 +27,11 @@ export function createInteractionsQueriesRouter(
 			}),
 			query: t.Object({
 				parentId: t.Optional(idSchema),
+				cursor: t.Optional(idSchema),
+				limit: t.Optional(t.Number({ minimum: 1, maximum: 100 })),
 			}),
 			response: {
-				200: t.Array(PoemCommentSchema),
+				200: PoemCommentsPageSchema,
 				404: appErrorSchema,
 				409: appErrorSchema,
 			},

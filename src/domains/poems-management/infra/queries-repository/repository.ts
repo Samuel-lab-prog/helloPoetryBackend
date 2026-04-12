@@ -81,6 +81,7 @@ export function selectPendingPoems(params: {
 			where: {
 				deletedAt: null,
 				moderationStatus: 'pending',
+				status: 'published',
 			},
 			select: authorPoemSelect,
 			orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],

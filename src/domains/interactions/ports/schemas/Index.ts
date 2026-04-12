@@ -4,3 +4,4 @@
 
 export * from './Fields';
 export * from './PoemCommentSchema';
+export * from './PoemCommentsPageSchema';

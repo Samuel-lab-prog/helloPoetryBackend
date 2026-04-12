@@ -10,12 +10,14 @@ import {
 	PoemTagsReadSchema,
 	PoemTitleSchema,
 } from '../PoemFieldsSchemas';
+import { PoemStatusEnumSchema } from '../Enums';
 
 export const PoemPreviewReadSchema = t.Object({
 	id: idSchema,
 	title: PoemTitleSchema,
 	slug: PoemSlugSchema,
 	createdAt: DateSchema,
+	status: PoemStatusEnumSchema,
 	likesCount: t.Optional(NonNegativeIntegerSchema),
 	commentsCount: t.Optional(NonNegativeIntegerSchema),
 	tags: PoemTagsReadSchema,

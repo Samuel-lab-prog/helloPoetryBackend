@@ -1,9 +1,11 @@
-﻿import type { PoemComment } from './models';
+import type { PoemComment, PoemCommentsPage } from './models';
 
 export type GetPoemCommentsParams = {
 	poemId: number;
 	userId: number;
 	parentId: number | undefined;
+	cursor?: number;
+	limit?: number;
 };
 
 export interface QueriesRepository {
@@ -15,7 +17,9 @@ export interface QueriesRepository {
 		poemId: number;
 		parentId?: number;
 		currentUserId?: number;
-	}): Promise<PoemComment[]>;
+		cursor?: number;
+		limit?: number;
+	}): Promise<PoemCommentsPage>;
 	selectPoemLike(params: { userId: number; poemId: number }): Promise<boolean>;
 	selectCommentLike(params: {
 		userId: number;
@@ -24,5 +28,5 @@ export interface QueriesRepository {
 }
 
 export interface QueriesRouterServices {
-	getPoemComments(params: GetPoemCommentsParams): Promise<PoemComment[]>;
+	getPoemComments(params: GetPoemCommentsParams): Promise<PoemCommentsPage>;
 }

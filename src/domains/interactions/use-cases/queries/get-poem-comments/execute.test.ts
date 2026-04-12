@@ -17,7 +17,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 			const result = await scenario.executeGetPoemComments();
 
-			expect(result).toHaveLength(1);
+			expect(result.comments).toHaveLength(1);
 		});
 
 		it('should allow friend to list comments for friends-only poem', async () => {
@@ -29,7 +29,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 			const result = await scenario.executeGetPoemComments();
 
-			expect(result).toHaveLength(1);
+			expect(result.comments).toHaveLength(1);
 		});
 
 		it('should allow author to list comments even if not friends', async () => {
@@ -41,7 +41,7 @@ describe.concurrent('USE-CASE - Interactions - GetPoemComments', () => {
 
 			const result = await scenario.executeGetPoemComments();
 
-			expect(result).toHaveLength(1);
+			expect(result.comments).toHaveLength(1);
 		});
 	});
 

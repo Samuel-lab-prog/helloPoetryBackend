@@ -44,6 +44,7 @@ export type UnsuspendUserParams = {
 export type ModeratePoemParams = {
 	poemId: number;
 	moderationStatus: PoemModerationStatus;
+	reason?: string;
 	meta: {
 		requesterId: number;
 		requesterStatus: UserStatus;

@@ -10,7 +10,10 @@ import type {
 } from '../../../ports/models';
 import { canUpdatePoem } from '../../policies/Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import {
+	ConflictError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
@@ -43,9 +46,20 @@ export function updatePoemFactory(deps: Dependencies) {
 			queriesRepository,
 		});
 
+		const existingPoem = await queriesRepository.selectPoemById(poemId);
+		if (!existingPoem) {
+			throw new NotFoundError('Poem not found');
+		}
+
 		const slug = slugService.generateSlug(data.title);
 		const moderationStatus: PoemModerationStatus =
-			data.status === 'published' ? 'pending' : 'approved';
+			data.status === 'draft'
+				? 'approved'
+				: existingPoem.moderationStatus === 'rejected'
+					? 'pending'
+					: data.status === 'published'
+						? 'pending'
+						: 'approved';
 		const poem = {
 			...data,
 			moderationStatus,

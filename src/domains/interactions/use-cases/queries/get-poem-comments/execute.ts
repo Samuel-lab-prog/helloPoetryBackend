@@ -5,7 +5,7 @@
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
-import type { PoemComment } from '../../../ports/models';
+import type { PoemCommentsPage } from '../../../ports/models';
 import { validator } from '@SharedKernel/validators/Global';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
@@ -25,8 +25,8 @@ export function getPoemCommentsFactory({
 }: GetPoemCommentsDependencies) {
 	return async function getPoemComments(
 		params: GetPoemCommentsParams,
-	): Promise<PoemComment[]> {
-		const { poemId, userId, parentId } = params;
+	): Promise<PoemCommentsPage> {
+		const { poemId, userId, parentId, cursor, limit } = params;
 
 		const v = validator();
 
@@ -54,6 +54,8 @@ export function getPoemCommentsFactory({
 			poemId,
 			parentId,
 			currentUserId: userId,
+			cursor,
+			limit,
 		});
 	};
 }

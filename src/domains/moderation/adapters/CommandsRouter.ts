@@ -1,4 +1,4 @@
-﻿import { Elysia, t } from 'elysia';
+import { Elysia, t } from 'elysia';
 import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
 import {
@@ -137,6 +137,7 @@ export function createModerationCommandsRouter(
 				return services.moderatePoem({
 					poemId: params.id,
 					moderationStatus: body.moderationStatus,
+					reason: body.reason,
 					meta: {
 						requesterId: auth.clientId,
 						requesterStatus: auth.clientStatus,

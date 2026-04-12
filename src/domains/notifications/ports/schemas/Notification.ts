@@ -14,6 +14,7 @@ const notificationTypes = [
 	'POEM_COMMENT_REPLIED',
 	'POEM_DEDICATED',
 	'USER_MENTION_IN_POEM',
+	'POEM_REMOVED',
 ] as const satisfies readonly EventName[];
 const entityTypes = [
 	'POEM',

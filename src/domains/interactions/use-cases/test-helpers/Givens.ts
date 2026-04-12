@@ -42,7 +42,9 @@ export type CreatePoemCommentOverride = Partial<
 	Awaited<ReturnType<CommandsRepository['createPoemComment']>>
 >;
 export type FindCommentsOverride = Partial<
-	Awaited<ReturnType<QueriesRepository['selectCommentsByPoemId']>>[number]
+	Awaited<
+		ReturnType<QueriesRepository['selectCommentsByPoemId']>
+	>['comments'][number]
 >;
 export type SelectCommentByIdOverride = Partial<
 	Awaited<ReturnType<QueriesRepository['selectCommentById']>>
@@ -174,25 +176,29 @@ export function givenExistingComments(
 	queriesRepository: InteractionsSutMocks['queriesRepository'],
 	overrides: FindCommentsOverride = {},
 ) {
-	givenResolved(queriesRepository, 'selectCommentsByPoemId', [
-		{
-			id: DEFAULT_COMMENT_ID,
-			poemId: DEFAULT_POEM_ID,
-			status: DEFAULT_COMMENT_STATUS,
-			parentId: DEFAULT_COMMENT_PARENT_ID,
-			content: DEFAULT_COMMENT_CONTENT,
-			createdAt: new Date(),
-			aggregateChildrenCount: 0,
-			likesCount: 0,
-			likedByCurrentUser: false,
-			author: {
-				id: DEFAULT_PERFORMER_USER_ID,
-				nickname: DEFAULT_USER_NICKNAME,
-				avatarUrl: 'http://example.com/avatar.jpg',
+	givenResolved(queriesRepository, 'selectCommentsByPoemId', {
+		comments: [
+			{
+				id: DEFAULT_COMMENT_ID,
+				poemId: DEFAULT_POEM_ID,
+				status: DEFAULT_COMMENT_STATUS,
+				parentId: DEFAULT_COMMENT_PARENT_ID,
+				content: DEFAULT_COMMENT_CONTENT,
+				createdAt: new Date(),
+				aggregateChildrenCount: 0,
+				likesCount: 0,
+				likedByCurrentUser: false,
+				author: {
+					id: DEFAULT_PERFORMER_USER_ID,
+					nickname: DEFAULT_USER_NICKNAME,
+					avatarUrl: 'http://example.com/avatar.jpg',
+				},
+				...overrides,
 			},
-			...overrides,
-		},
-	]);
+		],
+		hasMore: false,
+		nextCursor: undefined,
+	});
 }
 
 export function givenFoundComment(

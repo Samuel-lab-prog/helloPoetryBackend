@@ -40,6 +40,9 @@ export function banUserFactory({
 
 		const userExists = await usersContract.selectUserBasicInfo(userId);
 		if (!userExists.exists) throw new NotFoundError('User not found.');
+		if (userExists.role === 'moderator' && requesterRole !== 'admin') {
+			throw new ForbiddenError('Only admins can ban moderators.');
+		}
 
 		const activeBan = await queriesRepository.selectActiveBanByUserId({
 			userId,

@@ -96,6 +96,7 @@ export function selectPoemById(
 			select: {
 				id: true,
 				title: true,
+				status: true,
 				moderationStatus: true,
 				author: {
 					select: {
@@ -112,6 +113,7 @@ export function selectPoemById(
 		return {
 			id: poem.id,
 			title: poem.title,
+			status: poem.status,
 			moderationStatus: poem.moderationStatus,
 			author: {
 				id: poem.author.id,
