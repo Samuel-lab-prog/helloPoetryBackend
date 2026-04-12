@@ -4,7 +4,10 @@ import type {
 	CommandsRepository,
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
-import type { UpdatePoemResult } from '../../../ports/models';
+import type {
+	PoemModerationStatus,
+	UpdatePoemResult,
+} from '../../../ports/models';
 import { canUpdatePoem } from '../../policies/Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { ConflictError } from '@GenericSubdomains/utils/domainError';
@@ -41,7 +44,14 @@ export function updatePoemFactory(deps: Dependencies) {
 		});
 
 		const slug = slugService.generateSlug(data.title);
-		const poem = { ...data, slug, authorId: meta.requesterId };
+		const moderationStatus: PoemModerationStatus =
+			data.status === 'published' ? 'pending' : 'approved';
+		const poem = {
+			...data,
+			moderationStatus,
+			slug,
+			authorId: meta.requesterId,
+		};
 
 		const result = await commandsRepository.updatePoem(poemId, poem);
 

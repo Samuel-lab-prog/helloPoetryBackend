@@ -33,9 +33,14 @@ export function createPoemFactory(deps: Dependencies) {
 			toUserIds: data.toUserIds,
 			mentionedUserIds: data.mentionedUserIds,
 		});
+		const status = data.status ?? 'draft';
+		const moderationStatus: CreatePoemResult['moderationStatus'] =
+			status === 'published' ? 'pending' : 'approved';
 		const slug = slugService.generateSlug(data.title);
 		const poem: CreatePoemDB = {
 			...data,
+			status,
+			moderationStatus,
 			slug,
 			authorId: meta.requesterId,
 		};
