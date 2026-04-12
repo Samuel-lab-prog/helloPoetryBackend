@@ -13,6 +13,7 @@ import {
 	UpdatePoemResultSchema,
 	PoemAudioUploadUrlSchema,
 	PoemAudioUpdateBodySchema,
+	CreateCollectionSchema,
 } from '../ports/schemas/Index';
 
 import { type CommandsRouterServices } from '../ports/commands';
@@ -256,11 +257,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 					200: t.Void(),
 					403: appErrorSchema,
 				},
-				body: t.Object({
-					userId: idSchema,
-					name: t.String(),
-					description: t.String(),
-				}),
+				body: CreateCollectionSchema,
 				detail: {
 					summary: 'Create Collection',
 					description:

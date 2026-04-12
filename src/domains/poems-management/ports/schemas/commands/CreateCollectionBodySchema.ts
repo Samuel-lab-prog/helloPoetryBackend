@@ -12,10 +12,12 @@ export const CreateCollectionSchema = t.Object({
 			'Collection name must be between 3 and 60 characters and contain non-whitespace characters',
 		),
 	}),
-	description: t.String({
-		maxLength: 200,
-		...makeValidationError(
-			'Collection description must be at most 200 characters',
-		),
-	}),
+	description: t.Optional(
+		t.String({
+			maxLength: 200,
+			...makeValidationError(
+				'Collection description must be at most 200 characters',
+			),
+		}),
+	),
 });
