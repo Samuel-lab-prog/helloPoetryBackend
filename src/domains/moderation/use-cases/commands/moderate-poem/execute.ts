@@ -9,7 +9,7 @@ import {
 	NotFoundError,
 } from '@GenericSubdomains/utils/domainError';
 import { type EventBus } from '@SharedKernel/events/EventBus';
-import type { PoemModerationStatus } from '@SharedKernel/Enums';
+import type { PoemModerationStatus, PoemVisibility } from '@SharedKernel/Enums';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -30,6 +30,7 @@ type PoemNotificationContext = {
 	authorId: number;
 	authorNickname: string;
 	authorAvatarUrl?: string | null;
+	visibility: PoemVisibility;
 };
 
 async function notifyPoemApproved(params: {
@@ -38,6 +39,11 @@ async function notifyPoemApproved(params: {
 	poem: PoemNotificationContext;
 }) {
 	const { eventBus, queriesRepository, poem } = params;
+	const canNotifyByVisibility = poem.visibility !== 'private';
+	const canNotifyAudience =
+		poem.visibility === 'public' || poem.visibility === 'friends';
+	if (!canNotifyByVisibility) return;
+
 	await eventBus.publish('POEM_APPROVED', {
 		poemId: poem.poemId,
 		poemTitle: poem.title,
@@ -45,6 +51,8 @@ async function notifyPoemApproved(params: {
 		authorNickname: poem.authorNickname,
 		actorAvatarUrl: poem.authorAvatarUrl ?? null,
 	});
+
+	if (!canNotifyAudience) return;
 
 	const notificationsData = await queriesRepository.selectPoemNotificationsData(
 		poem.poemId,
@@ -56,13 +64,20 @@ async function notifyPoemApproved(params: {
 		authorId,
 		authorNickname,
 		authorAvatarUrl,
+		authorFriendIds,
 		dedicatedUserIds,
 		mentionedUserIds,
 		title,
 		id,
 	} = notificationsData;
 
-	for (const toUserId of dedicatedUserIds)
+	const audienceIds =
+		poem.visibility === 'friends'
+			? new Set(authorFriendIds)
+			: new Set([...dedicatedUserIds, ...mentionedUserIds]);
+
+	for (const toUserId of dedicatedUserIds) {
+		if (!audienceIds.has(toUserId)) continue;
 		await eventBus.publish('POEM_DEDICATED', {
 			poemId: id,
 			userId: toUserId,
@@ -71,8 +86,10 @@ async function notifyPoemApproved(params: {
 			actorAvatarUrl: authorAvatarUrl ?? null,
 			poemTitle: title,
 		});
+	}
 
-	for (const mentionedUserId of mentionedUserIds)
+	for (const mentionedUserId of mentionedUserIds) {
+		if (!audienceIds.has(mentionedUserId)) continue;
 		await eventBus.publish('USER_MENTION_IN_POEM', {
 			poemId: id,
 			poemTitle: title,
@@ -81,6 +98,7 @@ async function notifyPoemApproved(params: {
 			mentionerNickname: authorNickname,
 			actorAvatarUrl: authorAvatarUrl ?? null,
 		});
+	}
 }
 
 async function notifyPoemRemoved(params: {
@@ -145,6 +163,7 @@ export function moderatePoemFactory({
 						authorId: poem.author.id,
 						authorNickname: poem.author.nickname,
 						authorAvatarUrl: poem.author.avatarUrl ?? null,
+						visibility: poem.visibility,
 					},
 				});
 			}
@@ -158,6 +177,7 @@ export function moderatePoemFactory({
 						authorId: poem.author.id,
 						authorNickname: poem.author.nickname,
 						authorAvatarUrl: poem.author.avatarUrl ?? null,
+						visibility: poem.visibility,
 					},
 					reason,
 				});

@@ -9,6 +9,7 @@ import {
 import type {
 	PoemModerationStatus,
 	PoemStatus,
+	PoemVisibility,
 	SanctionType,
 } from '@SharedKernel/Enums';
 
@@ -26,6 +27,7 @@ export type PoemModerationRead = {
 	id: number;
 	title: string;
 	status: PoemStatus;
+	visibility: PoemVisibility;
 	moderationStatus: PoemModerationStatus;
 	author: {
 		id: number;
@@ -40,6 +42,7 @@ export type PoemNotificationsData = {
 	authorId: number;
 	authorNickname: string;
 	authorAvatarUrl: string | null;
+	authorFriendIds: number[];
 	dedicatedUserIds: number[];
 	mentionedUserIds: number[];
 };

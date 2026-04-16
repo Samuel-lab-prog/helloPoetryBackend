@@ -10,21 +10,50 @@ import type {
 	ModeratePoemParams,
 } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import type { PoemModerationRead } from '../../ports/models';
+import type {
+	ModeratePoemResult,
+	PoemModerationRead,
+} from '../../ports/models';
 import { moderatePoemFactory } from '../commands/moderate-poem/execute';
-import { eventBus } from '@SharedKernel/events/EventBus';
+import type { EventBus } from '@SharedKernel/events/EventBus';
 
 const DEFAULT_POEM_ID = 1;
 const DEFAULT_POEM_TITLE = 'Test Poem';
 const DEFAULT_POEM_MODERATION_STATUS: PoemModerationRead['moderationStatus'] =
 	'pending';
+const DEFAULT_POEM_VISIBILITY: PoemModerationRead['visibility'] = 'public';
 const DEFAULT_AUTHOR_ID = 10;
 const DEFAULT_AUTHOR_NICKNAME = 'author';
 const DEFAULT_REQUESTER_ID = 99;
+const DEFAULT_DEDICATED_USER_IDS = [20, 21];
+const DEFAULT_MENTIONED_USER_IDS = [30, 31];
+const DEFAULT_AUTHOR_FRIEND_IDS = [21, 30];
 
 type ModerationPoemSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
 	queriesRepository: MockedContract<QueriesRepository>;
+	eventBus: MockedContract<EventBus>;
+};
+
+type ModerationPoemSut = {
+	moderatePoem: (params: ModeratePoemParams) => Promise<ModeratePoemResult>;
+};
+
+type ModerationPoemScenario = {
+	withPoem(overrides?: Partial<PoemModerationRead>): ModerationPoemScenario;
+	withPoemNotFound(): ModerationPoemScenario;
+	withNotificationsData(
+		overrides?: NotificationsDataOverrides,
+	): ModerationPoemScenario;
+	withNoNotificationsData(): ModerationPoemScenario;
+	withModeratedPoem(params?: {
+		id?: number;
+		moderationStatus?: PoemModerationRead['moderationStatus'];
+	}): ModerationPoemScenario;
+	executeModeratePoem(
+		params?: Partial<ModeratePoemParams>,
+	): Promise<ModeratePoemResult>;
+	readonly mocks: ModerationPoemSutMocks;
 };
 
 function makePoem(
@@ -34,6 +63,7 @@ function makePoem(
 		id: DEFAULT_POEM_ID,
 		title: DEFAULT_POEM_TITLE,
 		status: 'published',
+		visibility: DEFAULT_POEM_VISIBILITY,
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		author: {
 			id: DEFAULT_AUTHOR_ID,
@@ -60,35 +90,86 @@ function moderationPoemMockFactories(): ModerationPoemSutMocks {
 			selectPoemById: mock(),
 			selectPoemNotificationsData: mock(),
 		}),
+		eventBus: createMockedContract<EventBus>({
+			publish: mock(),
+			subscribe: mock(() => () => {}),
+			once: mock(() => () => {}),
+		}),
 	};
 }
 
-export function makeModerationPoemScenario() {
-	const { sut: sutFactory, mocks } = makeSut(
-		(deps: ModerationPoemSutMocks) => ({
-			moderatePoem: moderatePoemFactory({
-				commandsRepository: deps.commandsRepository,
-				queriesRepository: deps.queriesRepository,
-				eventBus,
-			}),
-		}),
-		moderationPoemMockFactories(),
-	);
+type NotificationsDataOverrides = Partial<{
+	id: number;
+	title: string;
+	authorId: number;
+	authorNickname: string;
+	authorAvatarUrl: string | null;
+	authorFriendIds: number[];
+	dedicatedUserIds: number[];
+	mentionedUserIds: number[];
+}>;
 
+function addPoemControls(
+	mocks: ModerationPoemSutMocks,
+): Pick<ModerationPoemScenario, 'withPoem' | 'withPoemNotFound'> {
 	return {
-		withPoem(overrides: Partial<PoemModerationRead> = {}) {
+		withPoem(
+			this: ModerationPoemScenario,
+			overrides: Partial<PoemModerationRead> = {},
+		) {
 			mocks.queriesRepository.selectPoemById.mockResolvedValue(
 				makePoem(overrides),
 			);
 			return this;
 		},
 
-		withPoemNotFound() {
+		withPoemNotFound(this: ModerationPoemScenario) {
 			mocks.queriesRepository.selectPoemById.mockResolvedValue(null);
 			return this;
 		},
+	};
+}
 
+function addNotificationControls(
+	mocks: ModerationPoemSutMocks,
+): Pick<
+	ModerationPoemScenario,
+	'withNotificationsData' | 'withNoNotificationsData'
+> {
+	return {
+		withNotificationsData(
+			this: ModerationPoemScenario,
+			overrides: NotificationsDataOverrides = {},
+		) {
+			mocks.queriesRepository.selectPoemNotificationsData.mockResolvedValue({
+				id: DEFAULT_POEM_ID,
+				title: DEFAULT_POEM_TITLE,
+				authorId: DEFAULT_AUTHOR_ID,
+				authorNickname: DEFAULT_AUTHOR_NICKNAME,
+				authorAvatarUrl: null,
+				authorFriendIds: DEFAULT_AUTHOR_FRIEND_IDS,
+				dedicatedUserIds: DEFAULT_DEDICATED_USER_IDS,
+				mentionedUserIds: DEFAULT_MENTIONED_USER_IDS,
+				...overrides,
+			});
+			return this;
+		},
+
+		withNoNotificationsData(this: ModerationPoemScenario) {
+			mocks.queriesRepository.selectPoemNotificationsData.mockResolvedValue(
+				null,
+			);
+			return this;
+		},
+	};
+}
+
+function addModerationControls(
+	mocks: ModerationPoemSutMocks,
+): Pick<ModerationPoemScenario, 'withModeratedPoem'> {
+	return {
 		withModeratedPoem(
+			this: ModerationPoemScenario,
 			params: {
 				id?: number;
 				moderationStatus?: PoemModerationRead['moderationStatus'];
@@ -104,7 +185,13 @@ export function makeModerationPoemScenario() {
 			});
 			return this;
 		},
+	};
+}
 
+function addExecutionControls(
+	sutFactory: ModerationPoemSut,
+): Pick<ModerationPoemScenario, 'executeModeratePoem'> {
+	return {
 		executeModeratePoem(
 			params: Partial<ModeratePoemParams> = {},
 		): ReturnType<typeof sutFactory.moderatePoem> {
@@ -121,9 +208,33 @@ export function makeModerationPoemScenario() {
 				meta: makeParams(defaultMeta, params.meta),
 			});
 		},
+	};
+}
 
+export function makeModerationPoemScenario(): ModerationPoemScenario {
+	const { sut: sutFactory, mocks } = makeSut<
+		ModerationPoemSutMocks,
+		ModerationPoemSut
+	>(
+		(deps: ModerationPoemSutMocks) => ({
+			moderatePoem: moderatePoemFactory({
+				commandsRepository: deps.commandsRepository,
+				queriesRepository: deps.queriesRepository,
+				eventBus: deps.eventBus,
+			}),
+		}),
+		moderationPoemMockFactories(),
+	);
+
+	const scenario: ModerationPoemScenario = {
+		...addPoemControls(mocks),
+		...addNotificationControls(mocks),
+		...addModerationControls(mocks),
+		...addExecutionControls(sutFactory),
 		get mocks(): ModerationPoemSutMocks {
 			return mocks;
 		},
 	};
+
+	return scenario;
 }

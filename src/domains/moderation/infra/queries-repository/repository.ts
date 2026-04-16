@@ -97,6 +97,7 @@ export function selectPoemById(
 				id: true,
 				title: true,
 				status: true,
+				visibility: true,
 				moderationStatus: true,
 				author: {
 					select: {
@@ -114,6 +115,7 @@ export function selectPoemById(
 			id: poem.id,
 			title: poem.title,
 			status: poem.status,
+			visibility: poem.visibility,
 			moderationStatus: poem.moderationStatus,
 			author: {
 				id: poem.author.id,
@@ -141,6 +143,18 @@ export function selectPoemNotificationsData(
 						id: true,
 						nickname: true,
 						avatarUrl: true,
+						friendshipsFrom: {
+							select: {
+								userBId: true,
+								userAId: true,
+							},
+						},
+						friendshipsTo: {
+							select: {
+								userAId: true,
+								userBId: true,
+							},
+						},
 					},
 				},
 				dedications: {
@@ -158,12 +172,18 @@ export function selectPoemNotificationsData(
 
 		if (!poem) return null;
 
+		const authorFriendIds = [
+			...(poem.author.friendshipsFrom?.map((f) => f.userBId) || []),
+			...(poem.author.friendshipsTo?.map((f) => f.userAId) || []),
+		];
+
 		return {
 			id: poem.id,
 			title: poem.title,
 			authorId: poem.author.id,
 			authorNickname: poem.author.nickname,
 			authorAvatarUrl: poem.author.avatarUrl ?? null,
+			authorFriendIds,
 			dedicatedUserIds: poem.dedications.map((d) => d.toUserId),
 			mentionedUserIds: poem.userMentions.map((m) => m.mentionedUserId),
 		};
