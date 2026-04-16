@@ -17,7 +17,7 @@ export function authenticateClientFactory(
 	const { tokenService, usersContract } = dependencies;
 	return async function authenticateClient(token: string): Promise<AuthClient> {
 		const payload = await tokenService.verifyToken(token);
-		if (!payload || !payload.email)
+		if (!payload || !payload.email || payload.tokenType !== 'access')
 			throw new UnprocessableEntityError('Invalid token');
 
 		const client = await usersContract.selectAuthUserByEmail(payload.email);

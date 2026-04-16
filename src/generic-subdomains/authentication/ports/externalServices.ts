@@ -7,6 +7,7 @@ export type LoginClientParams = {
 };
 export interface AuthControllerServices {
 	login: (params: LoginClientParams) => Promise<LoginResponse>;
+	refreshSession: (refreshToken: string) => Promise<LoginResponse>;
 }
 
 export interface AuthPluginServices {
@@ -17,6 +18,7 @@ export type TokenPayload = {
 	clientId: number;
 	role: UserRole;
 	email: string;
+	tokenType: 'access' | 'refresh';
 };
 
 export interface TokenService {

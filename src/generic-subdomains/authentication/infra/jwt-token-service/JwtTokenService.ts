@@ -66,21 +66,23 @@ function fakeGenerateToken(payload: TokenPayload, _expiresIn: number): string {
 	const role = payload.role;
 	const email = payload.email;
 	const clientId = payload.clientId;
-	return `${role}-${email}-${clientId}`;
+	const tokenType = payload.tokenType;
+	return `${tokenType}-${role}-${email}-${clientId}`;
 }
 
 function fakeVerifyToken(token: string): TokenPayload | null {
 	const parts = token.split('-');
-	if (parts.length !== 3) return null;
-	const [role, email, clientIdStr] = parts;
+	if (parts.length !== 4) return null;
+	const [tokenType, role, email, clientIdStr] = parts;
 	const clientId = Number(clientIdStr);
 	if (
 		isNaN(clientId) ||
+		(tokenType !== 'access' && tokenType !== 'refresh') ||
 		(role !== 'admin' && role !== 'author' && role !== 'moderator') ||
 		!email
 	)
 		return null;
-	return { role, email, clientId };
+	return { role, email, clientId, tokenType };
 }
 
 export const JwtTokenService: TokenService = {

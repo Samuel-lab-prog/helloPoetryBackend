@@ -14,7 +14,8 @@ describe.concurrent('USE-CASE - Authentication - LoginClient', () => {
 
 			const result = await scenario.executeLogin();
 			expect(result).toEqual({
-				token: expect.any(String),
+				accessToken: expect.any(String),
+				refreshToken: expect.any(String),
 				client: {
 					id: expect.any(Number),
 					role: expect.any(String),
@@ -35,7 +36,8 @@ describe.concurrent('USE-CASE - Authentication - LoginClient', () => {
 			const result = await scenario.executeLogin();
 
 			expect(result).toEqual({
-				token: 'my-token',
+				accessToken: 'my-token',
+				refreshToken: 'my-token',
 				client: {
 					id: 10,
 					role: 'admin',
@@ -82,6 +84,7 @@ describe.concurrent('USE-CASE - Authentication - LoginClient', () => {
 					clientId: 42,
 					role: 'author',
 					email: 'test@mail.com',
+					tokenType: 'access',
 				},
 				expect.any(Number),
 			);

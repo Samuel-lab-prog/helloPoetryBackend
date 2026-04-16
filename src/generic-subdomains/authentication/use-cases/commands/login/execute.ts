@@ -7,7 +7,10 @@ import type { LoginResponse } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';
-import { TOKEN_EXPIRATION_TIME } from 'server-config/config';
+import {
+	ACCESS_TOKEN_EXPIRATION_TIME,
+	REFRESH_TOKEN_EXPIRATION_TIME,
+} from 'server-config/config';
 
 export interface LoginClientDependencies {
 	tokenService: TokenService;
@@ -106,18 +109,32 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 
 		clearLockout(lockoutKey);
 
-		const tokenPayload: TokenPayload = {
+		const accessTokenPayload: TokenPayload = {
 			clientId: client.id,
 			role: client.role,
 			email: client.email,
+			tokenType: 'access',
 		};
 
-		const token = await tokenService.generateToken(
-			tokenPayload,
-			TOKEN_EXPIRATION_TIME,
+		const refreshTokenPayload: TokenPayload = {
+			clientId: client.id,
+			role: client.role,
+			email: client.email,
+			tokenType: 'refresh',
+		};
+
+		const accessToken = await tokenService.generateToken(
+			accessTokenPayload,
+			ACCESS_TOKEN_EXPIRATION_TIME,
+		);
+
+		const refreshToken = await tokenService.generateToken(
+			refreshTokenPayload,
+			REFRESH_TOKEN_EXPIRATION_TIME,
 		);
 		return {
-			token,
+			accessToken,
+			refreshToken,
 			client: {
 				id: client.id,
 				role: client.role,

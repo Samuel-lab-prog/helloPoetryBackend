@@ -90,7 +90,9 @@ export {
 	CSRF_HEADER_NAME,
 	getJwtSecretKey,
 	isCsrfEnabled,
+	ACCESS_TOKEN_EXPIRATION_TIME,
+	REFRESH_TOKEN_EXPIRATION_TIME,
+	setUpRefreshCookieOptions,
 	setUpCookieTokenOptions,
 	setUpCsrfCookieOptions,
-	TOKEN_EXPIRATION_TIME,
 } from './auth/config';

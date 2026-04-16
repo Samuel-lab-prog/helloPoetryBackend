@@ -4,7 +4,8 @@ import { AuthClientSchema } from './schemas/Index';
 export type AuthClient = (typeof AuthClientSchema)['static'];
 
 export type LoginResponse = {
-	token: string;
+	accessToken: string;
+	refreshToken: string;
 	client: AuthClient;
 };
 

@@ -12,7 +12,8 @@ import {
 export {
 	CSRF_COOKIE_NAME,
 	CSRF_HEADER_NAME,
-	TOKEN_EXPIRATION_TIME,
+	ACCESS_TOKEN_EXPIRATION_TIME,
+	REFRESH_TOKEN_EXPIRATION_TIME,
 } from './variables';
 
 /** Returns true when CSRF protection should be enabled. */
@@ -30,7 +31,7 @@ export function setUpCookieTokenOptions(token: CookieOptions) {
 
 	token.httpOnly = true;
 	token.path = '/';
-	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
+	token.maxAge = 60 * 60;
 	token.secure = isProd || isCrossSite;
 	token.sameSite = isCrossSite ? 'none' : 'lax';
 
@@ -48,6 +49,23 @@ export function setUpCsrfCookieOptions(token: CookieOptions) {
 	token.httpOnly = false;
 	token.path = '/';
 	token.maxAge = isProd ? 60 * 60 * 24 * 7 : 60 * 60;
+	token.secure = isProd || isCrossSite;
+	token.sameSite = isCrossSite ? 'none' : 'lax';
+
+	if (COOKIE_DOMAIN) token.domain = COOKIE_DOMAIN;
+}
+
+/**
+ * Configures refresh token cookie options for the current environment.
+ * Uses a longer lifetime for session continuity.
+ */
+export function setUpRefreshCookieOptions(token: CookieOptions) {
+	const isProd = NODE_ENV === 'production';
+	const isCrossSite = CROSS_SITE_COOKIES;
+
+	token.httpOnly = true;
+	token.path = '/';
+	token.maxAge = 60 * 60 * 24 * 7;
 	token.secure = isProd || isCrossSite;
 	token.sameSite = isCrossSite ? 'none' : 'lax';
 

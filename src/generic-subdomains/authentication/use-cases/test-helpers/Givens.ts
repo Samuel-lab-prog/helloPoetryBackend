@@ -63,6 +63,7 @@ export function givenTokenValid(
 		email: DEFAULT_CLIENT_EMAIL,
 		clientId: DEFAULT_CLIENT_ID,
 		role: DEFAULT_CLIENT_ROLE,
+		tokenType: 'access',
 		...overrides,
 	});
 }
