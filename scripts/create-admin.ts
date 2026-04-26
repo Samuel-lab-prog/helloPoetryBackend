@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { prisma } from '../src/generic-subdomains/persistance/prisma/PrismaClient';
 import { BcryptHashService } from '../src/shared-kernel/infra/Bcrypt';
 import { createInterface } from 'node:readline/promises';
@@ -70,7 +71,9 @@ async function main() {
 					name: nameInput ?? existingByEmail.name,
 					nickname: nicknameInput ?? existingByEmail.nickname,
 					bio: bioInput ?? existingByEmail.bio,
-					...(avatarUrlInput !== undefined ? { avatarUrl: avatarUrlInput } : {}),
+					...(avatarUrlInput !== undefined
+						? { avatarUrl: avatarUrlInput }
+						: {}),
 				},
 			});
 
@@ -89,17 +92,32 @@ async function main() {
 			);
 		}
 
-		await prisma.user.create({
-			data: {
-				email,
-				passwordHash,
-				name: nameInput ?? 'Admin',
-				nickname,
-				bio: bioInput ?? 'Admin account',
-				avatarUrl: avatarUrlInput ?? '',
-				role: 'admin',
-			},
-		});
+		const createData = {
+			email,
+			passwordHash,
+			name: nameInput ?? 'Admin',
+			nickname,
+			bio: bioInput ?? 'Admin account',
+			avatarUrl: avatarUrlInput ?? null,
+			role: 'admin' as const,
+		};
+
+		try {
+			await prisma.user.create({ data: createData });
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
+			// Some local/dev databases still have avatarUrl as NOT NULL.
+			if (error?.code === 'P2011' && createData.avatarUrl === null) {
+				await prisma.user.create({
+					data: {
+						...createData,
+						avatarUrl: 'https://i.pravatar.cc/150?u=admin',
+					},
+				});
+			} else {
+				throw error;
+			}
+		}
 
 		console.log(`Admin user created for email ${email}.`);
 	} finally {

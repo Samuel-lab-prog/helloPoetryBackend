@@ -70,6 +70,15 @@ export type ProfileViewer = {
 	status?: string;
 };
 
+function normalizeAvatarUrl(
+	avatarUrl: string | null | undefined,
+): string | null {
+	if (!avatarUrl) return null;
+
+	const trimmed = avatarUrl.trim();
+	return trimmed.length > 0 ? trimmed : null;
+}
+
 export const privateProfileSelect = {
 	id: true,
 	nickname: true,
@@ -174,7 +183,7 @@ export function fromRawToPrivateProfile(
 		nickname: raw.nickname,
 		name: raw.name,
 		bio: raw.bio,
-		avatarUrl: raw.avatarUrl,
+		avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
 		role: raw.role,
 		status: raw.status,
 		email: raw.email,
@@ -195,7 +204,7 @@ export function fromRawToPrivateProfile(
 				id: raw.id,
 				name: raw.name,
 				nickname: raw.nickname,
-				avatarUrl: raw.avatarUrl,
+				avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
 			},
 		})),
 		stats,
@@ -281,7 +290,7 @@ export function fromRawToPublicProfile(
 		nickname: raw.nickname,
 		name: raw.name,
 		bio: raw.bio,
-		avatarUrl: raw.avatarUrl,
+		avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
 		role: raw.role,
 		status: raw.status,
 		poems: visiblePoems.map((poem) => ({
@@ -299,7 +308,7 @@ export function fromRawToPublicProfile(
 				id: raw.id,
 				name: raw.name,
 				nickname: raw.nickname,
-				avatarUrl: raw.avatarUrl,
+				avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
 			},
 		})),
 

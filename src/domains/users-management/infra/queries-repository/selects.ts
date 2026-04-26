@@ -4,6 +4,15 @@ import type { UserSelect as InternalUserSelect } from '@PrismaGenerated/internal
 import type { AuthUser } from '@Domains/users-management/ports/models';
 import type { UsersPage } from '../../ports/models';
 
+function normalizeAvatarUrl(
+	avatarUrl: string | null | undefined,
+): string | null {
+	if (!avatarUrl) return null;
+
+	const trimmed = avatarUrl.trim();
+	return trimmed.length > 0 ? trimmed : null;
+}
+
 export const authUserSelect = {
 	id: true,
 	email: true,
@@ -60,7 +69,7 @@ export function fromRawToPreviewUser(
 		id: raw.id,
 		name: raw.name,
 		nickname: raw.nickname,
-		avatarUrl: raw.avatarUrl,
+		avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
 		role: raw.role,
 	};
 }
