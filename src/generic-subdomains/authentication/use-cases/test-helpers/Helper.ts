@@ -33,6 +33,7 @@ import {
 
 import type { AuthSutMocks } from './SutMocks';
 import { authenticateClientFactory } from '../commands/authenticate/execute';
+import { refreshSessionFactory } from '../commands/refresh/execute';
 
 function makeAuthMockFactories() {
 	return {
@@ -58,6 +59,7 @@ function authFactory(deps: ReturnType<typeof makeAuthMockFactories>) {
 	return {
 		login: loginClientFactory(deps),
 		authenticateClient: authenticateClientFactory(deps),
+		refreshSession: refreshSessionFactory(deps),
 	};
 }
 
@@ -114,6 +116,10 @@ export function makeAuthScenario() {
 
 		executeAuthenticate(token: string = DEFAULT_TOKEN) {
 			return sutFactory.authenticateClient(token);
+		},
+
+		executeRefresh(token: string = DEFAULT_TOKEN) {
+			return sutFactory.refreshSession(token);
 		},
 
 		get mocks(): AuthSutMocks {

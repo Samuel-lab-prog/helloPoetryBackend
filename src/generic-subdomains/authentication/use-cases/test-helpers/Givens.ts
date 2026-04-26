@@ -52,14 +52,14 @@ export function givenTokenGenerated(
 	tokenService: AuthSutMocks['tokenService'],
 	token: string = DEFAULT_TOKEN,
 ) {
-	givenResolved(tokenService, 'generateToken', token);
+	tokenService.generateToken.mockReturnValue(token);
 }
 
 export function givenTokenValid(
 	tokenService: AuthSutMocks['tokenService'],
 	overrides: TokenPayloadOverride = {},
 ) {
-	givenResolved(tokenService, 'verifyToken', {
+	tokenService.verifyToken.mockReturnValue({
 		email: DEFAULT_CLIENT_EMAIL,
 		clientId: DEFAULT_CLIENT_ID,
 		role: DEFAULT_CLIENT_ROLE,
@@ -69,5 +69,5 @@ export function givenTokenValid(
 }
 
 export function givenTokenInvalid(tokenService: AuthSutMocks['tokenService']) {
-	givenResolved(tokenService, 'verifyToken', null);
+	tokenService.verifyToken.mockReturnValue(null);
 }
