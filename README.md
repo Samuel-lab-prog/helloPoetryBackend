@@ -1,8 +1,9 @@
-# OlaPoesia Backend
+# HelloPoetry Backend
 
-Backend for the **OlaPoesia** poetry social network. This repository implements
-the API and business rules using **DDD**, **CQRS**, and a **domain-oriented
-architecture**, focused on isolation, testability, and long-term evolution.
+Backend for the **HelloPoetry** poetry social network. This repository
+implements the API and business rules using **DDD**, **CQRS**, and a
+**domain-oriented architecture**, focused on isolation, testability, and
+long-term evolution.
 
 Main technologies:
 
@@ -43,6 +44,52 @@ Practical guides (how to work within the decisions):
 ADRs (decisions, rules, and enforcement):
 
 - [ADR index](architecture-analysis/adrs/READEME.md)
+
+---
+
+## Architecture Analysis Tool (Highlighted)
+
+The backend includes an internal architecture analysis tool in
+`architecture-analysis/` that acts as an **automatic architecture guardian**.
+It validates structural rules, detects erosion signals, and fails local/CI
+checks when critical constraints are violated.
+
+### What it checks
+
+- Dependency direction and forbidden cross-domain calls
+- Domain isolation and coupling indicators
+- Entry-point concentration and main sequence distance
+- Architectural test coverage rules
+- Naming/folder conventions (use-cases, ports, infra, repositories, schemas)
+
+### Run commands
+
+Run only the architecture analyzer:
+
+```bash
+bun run metrics:analysis
+```
+
+Run full architecture metrics pipeline:
+
+```bash
+bun run metrics
+```
+
+Run the complete quality gate (includes architecture checks):
+
+```bash
+bun run check
+```
+
+### Generated artifacts
+
+- `cloc.json`: LOC and distribution metrics
+- `depcruise.json`: dependency graph and coupling data
+- console report from `architecture-analysis/src/main.ts` with rule failures
+
+If a rule fails, treat it as a design issue first (not only a lint issue):
+either fix the architecture drift or update the ADR/rule with clear rationale.
 
 ---
 
