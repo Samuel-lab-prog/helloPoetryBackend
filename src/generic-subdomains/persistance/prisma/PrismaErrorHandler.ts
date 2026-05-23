@@ -3,11 +3,12 @@ import {
 	DatabaseConflictError,
 	DatabaseNotFoundError,
 	DatabaseUnknownError,
+	DatabaseValidationError,
 } from '@GenericSubdomains/utils/databaseError';
 import type { CommandResult } from '@SharedKernel/Types';
 
 type PrismaMappedError = {
-	code: 'CONFLICT' | 'NOT_FOUND' | 'UNKNOWN';
+	code: 'CONFLICT' | 'NOT_FOUND' | 'VALIDATION' | 'UNKNOWN';
 	message: string;
 	error: PrismaClientKnownRequestError;
 };
@@ -46,6 +47,12 @@ function mapPrismaError(
 				message: `The requested model (${modelName}) was not found`,
 				error,
 			};
+		case 'P2011':
+			return {
+				code: 'VALIDATION',
+				message: `Null constraint violation in ${modelName ?? 'model'}`,
+				error,
+			};
 
 		default:
 			return {
@@ -65,6 +72,9 @@ function handlePrismaError(error: PrismaClientKnownRequestError): never {
 
 		case 'NOT_FOUND':
 			throw new DatabaseNotFoundError(mapped.message);
+
+		case 'VALIDATION':
+			throw new DatabaseValidationError(mapped.message);
 
 		default:
 			throw new DatabaseUnknownError(mapped.message);

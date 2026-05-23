@@ -33,6 +33,13 @@ export class DatabaseConflictError extends DatabaseError {
 	}
 }
 
+export class DatabaseValidationError extends DatabaseError {
+	constructor(message?: string) {
+		super('VALIDATION', message || 'Database validation error');
+		this.name = 'DatabaseValidationError';
+	}
+}
+
 export class DatabaseUnknownError extends DatabaseError {
 	constructor(message?: string) {
 		super('UNKNOWN', message || 'Unknown database error occurred');

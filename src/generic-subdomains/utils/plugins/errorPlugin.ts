@@ -38,6 +38,13 @@ function convertDatabaseError(error: DatabaseError): AppError {
 				code: 'CONFLICT',
 				originalError: error,
 			});
+		case 'VALIDATION':
+			return new AppError({
+				statusCode: 422,
+				message: error.message,
+				code: 'VALIDATION',
+				originalError: error,
+			});
 
 		case 'FORBIDDEN':
 			return new AppError({
@@ -206,7 +213,6 @@ type HandleErrorContext = {
 
 function handleError(ctx: HandleErrorContext) {
 	const { set, error, code, request, store, auth } = ctx;
-	console.log('Handling error:', { error, code });
 
 	const appError = normalizeError(code, error);
 	const context = buildErrorContext(request, { store, auth });

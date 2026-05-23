@@ -7,6 +7,7 @@ import type { FullUser } from '../../../ports/models';
 import {
 	ConflictError,
 	UnknownError,
+	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
@@ -29,6 +30,10 @@ export function createUserFactory({
 		});
 
 		if (result.ok) return result.data;
+		if (result.code === 'VALIDATION')
+			throw new UnprocessableEntityError(
+				result.message ?? 'Invalid user data provided',
+			);
 		if (result.code !== 'CONFLICT')
 			throw new UnknownError(result.message ?? 'Failed to create user');
 		if (result.message?.includes('nickname'))
