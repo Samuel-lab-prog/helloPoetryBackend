@@ -1,9 +1,5 @@
 import { defineConfig } from 'prisma/config';
-import { config } from 'dotenv';
-const DEFAULT_DATABASE_URL =
-	'postgresql://postgres:postgres@localhost:5432/postgres?schema=public';
-
-config();
+import './src/server-config/utils/loadEnv';
 
 export default defineConfig({
 	schema: 'src/generic-subdomains/persistance/prisma/schema.prisma',
@@ -14,6 +10,6 @@ export default defineConfig({
 	},
 
 	datasource: {
-		url: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+		url: process.env.DATABASE_URL,
 	},
 });
