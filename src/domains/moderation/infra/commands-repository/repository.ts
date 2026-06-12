@@ -67,11 +67,18 @@ export function createSuspension(params: {
 export function updatePoemModerationStatus(params: {
 	poemId: number;
 	moderationStatus: ModeratePoemResult['moderationStatus'];
+	reason?: string;
 }) {
 	return withPrismaResult(async () => {
 		const rs = await prisma.poem.update({
 			where: { id: params.poemId, deletedAt: null },
-			data: { moderationStatus: params.moderationStatus },
+			data: {
+				moderationStatus: params.moderationStatus,
+				rejectionReason:
+					params.moderationStatus === 'rejected'
+						? params.reason?.trim() || null
+						: null,
+			},
 			select: poemModerationSelect,
 		});
 

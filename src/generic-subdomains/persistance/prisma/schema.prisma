@@ -153,6 +153,7 @@ model Poem {
   status           PoemStatus           @default(draft)
   visibility       PoemVisibility       @default(public)
   moderationStatus PoemModerationStatus @default(pending)
+  rejectionReason  String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -377,6 +378,7 @@ enum NotificationType {
   POEM_DEDICATED
   USER_MENTION_IN_POEM
   POEM_APPROVED
+  POEM_REJECTED
   POEM_REMOVED
 }
 

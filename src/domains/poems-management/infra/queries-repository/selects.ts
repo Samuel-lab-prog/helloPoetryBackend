@@ -27,6 +27,7 @@ export const poemPreviewSelect = {
 	id: true,
 	title: true,
 	slug: true,
+	excerpt: true,
 	createdAt: true,
 	status: true,
 	_count: {
@@ -111,6 +112,7 @@ export const myPoemSelect = {
 	visibility: true,
 	status: true,
 	moderationStatus: true,
+	rejectionReason: true,
 
 	isCommentable: true,
 
@@ -142,6 +144,7 @@ export const authorPoemSelect = {
 	status: true,
 	visibility: true,
 	moderationStatus: true,
+	rejectionReason: true,
 
 	isCommentable: true,
 

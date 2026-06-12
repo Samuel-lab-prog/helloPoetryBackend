@@ -2,6 +2,7 @@ import { eventBus } from '@SharedKernel/events/EventBus';
 import { log } from '@GenericSubdomains/utils/logger';
 import { notificationsCommandsServices } from './Composition';
 import { registerPoemApprovedNotification } from './handlers/poemApproved';
+import { registerPoemRejectedNotification } from './handlers/poemRejected';
 import { registerPoemRemovedNotification } from './handlers/poemRemoved';
 
 eventBus.subscribe('POEM_COMMENT_CREATED', async (p) => {
@@ -276,4 +277,5 @@ eventBus.subscribe('USER_MENTION_IN_POEM', async (p) => {
 });
 
 registerPoemApprovedNotification(eventBus);
+registerPoemRejectedNotification(eventBus);
 registerPoemRemovedNotification(eventBus);

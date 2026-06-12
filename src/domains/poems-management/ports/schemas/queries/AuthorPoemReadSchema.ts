@@ -35,6 +35,7 @@ export const AuthorPoemReadSchema = t.Object({
 	status: PoemStatusEnumSchema,
 	visibility: PoemVisibilityEnumSchema,
 	moderationStatus: PoemModerationStatusEnumSchema,
+	rejectionReason: t.Nullable(t.String()),
 
 	isCommentable: PoemIsCommentableSchema,
 

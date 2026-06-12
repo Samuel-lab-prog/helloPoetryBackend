@@ -26,12 +26,34 @@ export function getFeedFactory({
 
 		const feedAuthorIds = friendsIds.filter((id) => !blockedSet.has(id));
 
-		const friendPoems = await poemsServices.getFeedPoemsByAuthorIds({
-			authorIds: feedAuthorIds,
-			limit: FEED_LIMIT,
-		});
+		const [friendPoems, ownPoems] = await Promise.all([
+			poemsServices.getFeedPoemsByAuthorIds({
+				authorIds: feedAuthorIds,
+				limit: FEED_LIMIT,
+				visibilities: ['public', 'friends'],
+			}),
+			poemsServices.getFeedPoemsByAuthorIds({
+				authorIds: [userId],
+				limit: FEED_LIMIT,
+				visibilities: ['public', 'friends', 'private', 'unlisted'],
+			}),
+		]);
 
-		const selected: FeedItem[] = [...friendPoems];
+		const seenIds = new Set<number>();
+		const selected: FeedItem[] = [];
+		const pushUnique = (items: FeedItem[]) => {
+			for (const item of items) {
+				if (seenIds.has(item.id)) continue;
+				seenIds.add(item.id);
+				selected.push(item);
+			}
+		};
+
+		pushUnique(
+			[...friendPoems, ...ownPoems].sort(
+				(a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
+			),
+		);
 
 		if (selected.length < FEED_LIMIT) {
 			const remaining = FEED_LIMIT - selected.length;
@@ -42,7 +64,7 @@ export function getFeedFactory({
 				excludePoemIds: selected.map((p) => p.id),
 			});
 
-			selected.push(...publicPoems);
+			pushUnique(publicPoems);
 		}
 
 		return selected;

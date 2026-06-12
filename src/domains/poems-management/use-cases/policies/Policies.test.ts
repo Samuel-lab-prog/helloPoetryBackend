@@ -114,6 +114,16 @@ describe.concurrent('POLICY - Poems Management', () => {
 			await expectError(scenario.executeCanUpdatePoem(), ForbiddenError);
 		});
 
+		it('should allow update when a published poem was rejected', async () => {
+			const scenario = makePoemsScenario().withPoem({
+				author: { id: 1 },
+				status: 'published',
+				moderationStatus: 'rejected',
+			});
+
+			await expect(scenario.executeCanUpdatePoem()).resolves.toBeUndefined();
+		});
+
 		it('should throw ForbiddenError when poem is removed', async () => {
 			const scenario = makePoemsScenario().withPoem({
 				author: { id: 1 },

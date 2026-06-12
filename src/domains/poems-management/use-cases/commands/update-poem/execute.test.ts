@@ -80,6 +80,29 @@ describe.concurrent('USE-CASE - Poems Management - UpdatePoem', () => {
 			await expectError(scenario.executeUpdatePoem(), ForbiddenError);
 		});
 
+		it('should allow updating a published rejected poem', async () => {
+			const scenario = makePoemsScenario()
+				.withPoem({
+					author: { id: 1 },
+					status: 'published',
+					moderationStatus: 'rejected',
+				})
+				.withSlug('updated-title')
+				.withUpdatedPoem();
+
+			const result = await scenario.executeUpdatePoem({
+				data: { title: 'Updated title', content: 'Updated content' },
+			});
+
+			expect(result).toHaveProperty('id');
+			expect(scenario.mocks.commandsRepository.updatePoem).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					moderationStatus: 'pending',
+				}),
+			);
+		});
+
 		it('should throw ForbiddenError when poem is removed', async () => {
 			const scenario = makePoemsScenario().withPoem({
 				author: { id: 1 },

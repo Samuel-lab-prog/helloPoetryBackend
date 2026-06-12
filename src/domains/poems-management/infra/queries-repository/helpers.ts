@@ -57,6 +57,7 @@ export function mapPoemPreview(raw: any) {
 		id: raw.id,
 		title: raw.title,
 		slug: raw.slug,
+		excerpt: raw.excerpt ?? null,
 		createdAt: raw.createdAt,
 		status: raw.status,
 		likesCount: raw._count?.poemLikes,

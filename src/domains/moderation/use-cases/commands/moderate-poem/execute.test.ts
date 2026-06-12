@@ -46,6 +46,25 @@ describe.concurrent('USE-CASE - Moderation - ModeratePoem', () => {
 				moderationStatus: 'removed',
 			});
 		});
+
+		it('should allow rejecting a poem', async () => {
+			const scenario = makeModerationPoemScenario()
+				.withPoem({ moderationStatus: 'pending' })
+				.withModeratedPoem({ id: 12, moderationStatus: 'rejected' });
+
+			const result = await scenario.executeModeratePoem({
+				poemId: 1,
+				moderationStatus: 'rejected',
+			});
+
+			expect(result).toHaveProperty('id', 12);
+			expect(
+				scenario.mocks.commandsRepository.updatePoemModerationStatus,
+			).toHaveBeenCalledWith({
+				poemId: 1,
+				moderationStatus: 'rejected',
+			});
+		});
 	});
 
 	describe('Permissions', () => {
@@ -246,6 +265,26 @@ describe.concurrent('USE-CASE - Moderation - ModeratePoem', () => {
 			});
 
 			expect(scenario.mocks.eventBus.publish).not.toHaveBeenCalled();
+		});
+
+		it('should notify the author when a poem is rejected', async () => {
+			const scenario = makeModerationPoemScenario()
+				.withPoem({ moderationStatus: 'pending', visibility: 'public' })
+				.withModeratedPoem({ moderationStatus: 'rejected' });
+
+			await scenario.executeModeratePoem({
+				poemId: 1,
+				moderationStatus: 'rejected',
+			});
+
+			const publishCalls = scenario.mocks.eventBus.publish.mock.calls as Array<
+				[EventName, Record<string, unknown>]
+			>;
+			const eventNames = publishCalls.map(([name]) => name);
+
+			expect(eventNames).toContain('POEM_REJECTED');
+			expect(eventNames).not.toContain('POEM_APPROVED');
+			expect(eventNames).not.toContain('POEM_REMOVED');
 		});
 	});
 });

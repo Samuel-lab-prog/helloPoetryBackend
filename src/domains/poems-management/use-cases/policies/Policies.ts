@@ -98,7 +98,10 @@ export async function canUpdatePoem(
 	if (!existingPoem) throw new NotFoundError('Poem not found');
 	if (existingPoem.author.id !== author.id)
 		throw new ForbiddenError('User is not the author');
-	if (existingPoem.status === 'published')
+	if (
+		existingPoem.status === 'published' &&
+		existingPoem.moderationStatus !== 'rejected'
+	)
 		throw new ForbiddenError('Cannot update published poem');
 	if (existingPoem.moderationStatus === 'removed')
 		throw new ForbiddenError('Cannot update removed poem');

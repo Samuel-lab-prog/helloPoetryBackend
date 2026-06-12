@@ -50,9 +50,9 @@ ADRs (decisions, rules, and enforcement):
 ## Architecture Analysis Tool (Highlighted)
 
 The backend includes an internal architecture analysis tool in
-`architecture-analysis/` that acts as an **automatic architecture guardian**.
-It validates structural rules, detects erosion signals, and fails local/CI
-checks when critical constraints are violated.
+`architecture-analysis/` that acts as an **automatic architecture guardian**. It
+validates structural rules, detects erosion signals, and fails local/CI checks
+when critical constraints are violated.
 
 ### What it checks
 

@@ -44,14 +44,22 @@ describe.concurrent('USE-CASE - Feed Engine - GetFeed', () => {
 		const { sut, poemsServices, friendsServices } = makeSut();
 		friendsServices.selectFollowedUserIds.mockResolvedValue([2, 3, 4]);
 		friendsServices.selectBlockedUserIds.mockResolvedValue([3]);
-		poemsServices.getFeedPoemsByAuthorIds.mockResolvedValue([makeFeedItem(1)]);
+		poemsServices.getFeedPoemsByAuthorIds
+			.mockResolvedValueOnce([makeFeedItem(1)])
+			.mockResolvedValueOnce([makeFeedItem(2)]);
 		poemsServices.getPublicFeedPoems.mockResolvedValue([]);
 
 		await sut({ userId: 1 });
 
-		expect(poemsServices.getFeedPoemsByAuthorIds).toHaveBeenCalledWith({
+		expect(poemsServices.getFeedPoemsByAuthorIds).toHaveBeenNthCalledWith(1, {
 			authorIds: [2, 4],
 			limit: 20,
+			visibilities: ['public', 'friends'],
+		});
+		expect(poemsServices.getFeedPoemsByAuthorIds).toHaveBeenNthCalledWith(2, {
+			authorIds: [1],
+			limit: 20,
+			visibilities: ['public', 'friends', 'private', 'unlisted'],
 		});
 	});
 
@@ -59,15 +67,17 @@ describe.concurrent('USE-CASE - Feed Engine - GetFeed', () => {
 		const { sut, poemsServices, friendsServices } = makeSut();
 		friendsServices.selectFollowedUserIds.mockResolvedValue([2]);
 		friendsServices.selectBlockedUserIds.mockResolvedValue([9]);
-		poemsServices.getFeedPoemsByAuthorIds.mockResolvedValue([makeFeedItem(1)]);
+		poemsServices.getFeedPoemsByAuthorIds
+			.mockResolvedValueOnce([makeFeedItem(1)])
+			.mockResolvedValueOnce([makeFeedItem(2)]);
 		poemsServices.getPublicFeedPoems.mockResolvedValue([makeFeedItem(2)]);
 
 		const result = await sut({ userId: 1 });
 
 		expect(poemsServices.getPublicFeedPoems).toHaveBeenCalledWith({
-			limit: 19,
+			limit: 18,
 			excludeAuthorIds: [9],
-			excludePoemIds: [1],
+			excludePoemIds: [1, 2],
 		});
 		expect(result).toHaveLength(2);
 	});
@@ -80,7 +90,9 @@ describe.concurrent('USE-CASE - Feed Engine - GetFeed', () => {
 
 		friendsServices.selectFollowedUserIds.mockResolvedValue([2, 3]);
 		friendsServices.selectBlockedUserIds.mockResolvedValue([]);
-		poemsServices.getFeedPoemsByAuthorIds.mockResolvedValue(fullFeed);
+		poemsServices.getFeedPoemsByAuthorIds
+			.mockResolvedValueOnce(fullFeed)
+			.mockResolvedValueOnce([]);
 		poemsServices.getPublicFeedPoems.mockResolvedValue([]);
 
 		const result = await sut({ userId: 1 });

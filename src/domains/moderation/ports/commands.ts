@@ -69,6 +69,7 @@ export interface CommandsRepository {
 	updatePoemModerationStatus(params: {
 		poemId: number;
 		moderationStatus: PoemModerationStatus;
+		reason?: string;
 	}): Promise<CommandResult<ModeratePoemResult>>;
 }
 

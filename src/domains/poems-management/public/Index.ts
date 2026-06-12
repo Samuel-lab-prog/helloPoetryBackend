@@ -49,6 +49,7 @@ interface PoemsFeedContract {
 	getFeedPoemsByAuthorIds(params: {
 		authorIds: number[];
 		limit: number;
+		visibilities?: PoemVisibility[];
 		cursor?: Date;
 	}): Promise<FeedPoem[]>;
 
@@ -154,10 +155,10 @@ function mapToFeedPoem(poem: any): FeedPoem {
 	};
 }
 
-function baseWhere(): PoemWhereInput {
+function baseWhere(visibilities?: PoemVisibility[]): PoemWhereInput {
 	return {
 		deletedAt: null,
-		visibility: 'public',
+		visibility: visibilities?.length ? { in: visibilities } : 'public',
 		moderationStatus: 'approved',
 		status: 'published',
 	};
@@ -167,16 +168,17 @@ function baseWhere(): PoemWhereInput {
 async function getFeedPoemsByAuthorIds(params: {
 	authorIds: number[];
 	limit: number;
+	visibilities?: PoemVisibility[];
 	cursor?: Date;
 }): Promise<FeedPoem[]> {
-	const { authorIds, limit, cursor } = params;
+	const { authorIds, limit, cursor, visibilities } = params;
 
 	if (authorIds.length === 0) return [];
 
 	return withPrismaErrorHandling(async () => {
 		const poems = await prisma.poem.findMany({
 			where: {
-				...baseWhere(),
+				...baseWhere(visibilities ?? ['public']),
 				authorId: { in: authorIds },
 				...(cursor && {
 					createdAt: { lt: cursor },

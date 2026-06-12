@@ -1,9 +1,12 @@
-﻿import type { FeedItem } from './models';
+import type { PoemVisibility } from '@Domains/poems-management/ports/models';
+
+import type { FeedItem } from './models';
 
 export interface PoemsFeedContract {
 	getFeedPoemsByAuthorIds(params: {
 		authorIds: number[];
 		limit: number;
+		visibilities?: PoemVisibility[];
 		cursor?: Date;
 	}): Promise<FeedItem[]>;
 

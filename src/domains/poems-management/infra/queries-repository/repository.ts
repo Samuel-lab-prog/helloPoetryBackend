@@ -117,6 +117,8 @@ export function selectPoems(params: {
 
 		const where = {
 			deletedAt: null,
+			status: 'published' as const,
+			moderationStatus: 'approved' as const,
 			...(filterOptions.searchTitle && {
 				title: {
 					contains: filterOptions.searchTitle,
