@@ -23,6 +23,25 @@ describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 			expect(result).toHaveProperty('id', 42);
 		});
 
+		it('should approve published poems created by moderators immediately', async () => {
+			const scenario = makePoemsScenario()
+				.withUser({ role: 'moderator' })
+				.withSlug('my-poem')
+				.withCreatedPoem();
+
+			await scenario.executeCreatePoem({
+				data: { title: 'My Poem', content: 'Some content', status: 'published' },
+				meta: { requesterRole: 'moderator' },
+			});
+
+			expect(scenario.mocks.commandsRepository.insertPoem).toHaveBeenCalledWith(
+				expect.objectContaining({
+					status: 'published',
+					moderationStatus: 'approved',
+				}),
+			);
+		});
+
 		it('should persist transformed data with generated slug', async () => {
 			const scenario = makePoemsScenario()
 				.withUser()

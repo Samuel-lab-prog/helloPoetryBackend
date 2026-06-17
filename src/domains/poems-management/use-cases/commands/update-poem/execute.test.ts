@@ -103,6 +103,30 @@ describe.concurrent('USE-CASE - Poems Management - UpdatePoem', () => {
 			);
 		});
 
+		it('should approve published poems updated by moderators immediately', async () => {
+			const scenario = makePoemsScenario()
+				.withUser({ role: 'moderator' })
+				.withPoem({
+					author: { id: 1 },
+					status: 'published',
+					moderationStatus: 'rejected',
+				})
+				.withSlug('updated-title')
+				.withUpdatedPoem();
+
+			await scenario.executeUpdatePoem({
+				data: { title: 'Updated title', content: 'Updated content' },
+				meta: { requesterRole: 'moderator' },
+			});
+
+			expect(scenario.mocks.commandsRepository.updatePoem).toHaveBeenCalledWith(
+				1,
+				expect.objectContaining({
+					moderationStatus: 'approved',
+				}),
+			);
+		});
+
 		it('should throw ForbiddenError when poem is removed', async () => {
 			const scenario = makePoemsScenario().withPoem({
 				author: { id: 1 },

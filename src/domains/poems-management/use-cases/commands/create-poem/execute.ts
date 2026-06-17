@@ -34,8 +34,14 @@ export function createPoemFactory(deps: Dependencies) {
 			mentionedUserIds: data.mentionedUserIds,
 		});
 		const status = data.status ?? 'draft';
+		const canAutoApprove =
+			meta.requesterRole === 'admin' || meta.requesterRole === 'moderator';
 		const moderationStatus: CreatePoemResult['moderationStatus'] =
-			status === 'published' ? 'pending' : 'approved';
+			status === 'published'
+				? canAutoApprove
+					? 'approved'
+					: 'pending'
+				: 'approved';
 		const slug = slugService.generateSlug(data.title);
 		const poem: CreatePoemDB = {
 			...data,

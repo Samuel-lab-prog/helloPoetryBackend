@@ -52,13 +52,19 @@ export function updatePoemFactory(deps: Dependencies) {
 		}
 
 		const slug = slugService.generateSlug(data.title);
+		const canAutoApprove =
+			meta.requesterRole === 'admin' || meta.requesterRole === 'moderator';
 		const moderationStatus: PoemModerationStatus =
 			data.status === 'draft'
 				? 'approved'
 				: existingPoem.moderationStatus === 'rejected'
-					? 'pending'
+					? canAutoApprove
+						? 'approved'
+						: 'pending'
 					: data.status === 'published'
-						? 'pending'
+						? canAutoApprove
+							? 'approved'
+							: 'pending'
 						: 'approved';
 		const poem = {
 			...data,
