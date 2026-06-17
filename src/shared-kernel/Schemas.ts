@@ -5,7 +5,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const URL_SCHEME_PATTERN =
 	NODE_ENV === 'production' ? '^https://' : '^https?://';
 
-export const idSchema = t.Number({
+export const idSchema = t.Numeric({
 	minimum: 1,
 	example: 1,
 	readOnly: true,
@@ -14,7 +14,7 @@ export const idSchema = t.Number({
 
 export const orderDirectionSchema = t.UnionEnum(['asc', 'desc']);
 
-export const paginationLimitSchema = t.Number({
+export const paginationLimitSchema = t.Numeric({
 	minimum: 1,
 	maximum: 200,
 	...makeValidationError('Limit must be a positive integer between 1 and 200'),
@@ -27,7 +27,7 @@ export const DateSchema = t.Date({
 
 export const NullableDateSchema = t.Nullable(DateSchema);
 
-export const NonNegativeIntegerSchema = t.Number({
+export const NonNegativeIntegerSchema = t.Numeric({
 	minimum: 0,
 	...makeValidationError('Value must be a non-negative integer'),
 });

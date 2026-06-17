@@ -27,7 +27,7 @@ export function createNotificationsQueriesRouter(
 			{
 				query: t.Partial(
 					t.Object({
-						onlyUnread: t.Boolean(),
+						onlyUnread: t.BooleanString(),
 						limit: NonNegativeIntegerSchema,
 						nextCursor: idSchema,
 					}),

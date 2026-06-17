@@ -28,7 +28,7 @@ export function createInteractionsQueriesRouter(
 			query: t.Object({
 				parentId: t.Optional(idSchema),
 				cursor: t.Optional(idSchema),
-				limit: t.Optional(t.Number({ minimum: 1, maximum: 100 })),
+				limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100 })),
 			}),
 			response: {
 				200: PoemCommentsPageSchema,
