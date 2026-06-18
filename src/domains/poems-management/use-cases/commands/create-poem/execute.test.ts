@@ -30,7 +30,11 @@ describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 				.withCreatedPoem();
 
 			await scenario.executeCreatePoem({
-				data: { title: 'My Poem', content: 'Some content', status: 'published' },
+				data: {
+					title: 'My Poem',
+					content: 'Some content',
+					status: 'published',
+				},
 				meta: { requesterRole: 'moderator' },
 			});
 

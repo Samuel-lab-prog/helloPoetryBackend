@@ -50,12 +50,14 @@ describe.concurrent('USE-CASE - Notifications - GetUserNotifications', () => {
 		});
 
 		it('should allow suspended users', async () => {
-			const scenario = makeNotificationsScenario().withUser({
-				status: 'suspended',
-			}).withUserNotifications({
-				notifications: [],
-				hasMore: false,
-			});
+			const scenario = makeNotificationsScenario()
+				.withUser({
+					status: 'suspended',
+				})
+				.withUserNotifications({
+					notifications: [],
+					hasMore: false,
+				});
 
 			await expect(
 				scenario.executeGetUserNotifications(),

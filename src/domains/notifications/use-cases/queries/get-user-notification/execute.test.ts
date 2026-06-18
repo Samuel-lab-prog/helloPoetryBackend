@@ -40,13 +40,15 @@ describe.concurrent('USE-CASE - Notifications - GetNotificationById', () => {
 		});
 
 		it('should allow suspended users', async () => {
-			const scenario = makeNotificationsScenario().withUser({
-				status: 'suspended',
-			}).withNotificationFound();
+			const scenario = makeNotificationsScenario()
+				.withUser({
+					status: 'suspended',
+				})
+				.withNotificationFound();
 
-			await expect(
-				scenario.getNotificationById(),
-			).resolves.toHaveProperty('id');
+			await expect(scenario.getNotificationById()).resolves.toHaveProperty(
+				'id',
+			);
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {
