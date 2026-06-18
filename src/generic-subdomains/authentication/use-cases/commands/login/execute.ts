@@ -80,21 +80,22 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 	): Promise<LoginResponse> {
 		const { tokenService, hashService, usersContract } = dependencies;
 		const lockoutKey = normalizeKey(params.email);
+		const client = await usersContract.selectAuthUserByEmail(lockoutKey);
+
+		if (client?.status === 'banned') {
+			registerFailedAttempt(lockoutKey);
+			throw new UnauthorizedError('Client is banned');
+		}
+
 		const lockoutEntry = getLockoutEntry(lockoutKey);
 
 		if (lockoutEntry?.lockedUntil && lockoutEntry.lockedUntil > Date.now()) {
 			throw new UnauthorizedError('Too many login attempts. Try again later.');
 		}
 
-		const client = await usersContract.selectAuthUserByEmail(params.email);
-
 		if (!client) {
 			registerFailedAttempt(lockoutKey);
 			throw new UnauthorizedError('Invalid credentials');
-		}
-		if (client.status === 'banned') {
-			registerFailedAttempt(lockoutKey);
-			throw new UnauthorizedError('Client is banned');
 		}
 
 		const isPasswordValid = await hashService.compare(

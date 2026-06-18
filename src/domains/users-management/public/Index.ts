@@ -119,11 +119,15 @@ async function selectUsersBasicInfo(
 function selectAuthUserByEmail(
 	email: string,
 ): Promise<ClientAuthCredentials | null> {
-	const key = `users.auth:${email.toLowerCase()}`;
+	const normalizedEmail = email.trim().toLowerCase();
+	const key = `users.auth:${normalizedEmail}`;
 	return withRequestCache(key, () =>
 		withPrismaErrorHandling(() =>
-			prisma.user.findUnique({
-				where: { email, deletedAt: null },
+			prisma.user.findFirst({
+				where: {
+					email: { equals: normalizedEmail, mode: 'insensitive' },
+					deletedAt: null,
+				},
 				select: {
 					id: true,
 					email: true,
