@@ -39,12 +39,14 @@ describe.concurrent('USE-CASE - Notifications - DeleteNotification', () => {
 			await expectError(scenario.deleteNotification(), NotFoundError);
 		});
 
-		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeNotificationsScenario().withUser({
-				status: 'suspended',
-			});
+		it('should allow suspended users', async () => {
+			const scenario = makeNotificationsScenario()
+				.withUser({
+					status: 'suspended',
+				})
+				.withNotificationDeleted();
 
-			await expectError(scenario.deleteNotification(), ForbiddenError);
+			await expect(scenario.deleteNotification()).resolves.toBeDefined();
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {

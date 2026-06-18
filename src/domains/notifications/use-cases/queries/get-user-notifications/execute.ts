@@ -30,7 +30,7 @@ export function getUserNotificationsFactory({
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
-		v.user(userInfo).withStatus(['active']);
+		v.user(userInfo).withStatus(['active', 'suspended']);
 
 		const notifications = await queriesRepository.selectUserNotifications(
 			userId,

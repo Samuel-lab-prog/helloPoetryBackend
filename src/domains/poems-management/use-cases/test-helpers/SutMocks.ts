@@ -85,7 +85,7 @@ export function poemsFactory(deps: PoemsDeps) {
 		}),
 		deletePoem: deletePoemFactory({
 			commandsRepository: deps.commandsRepository,
-			usersContract: deps.usersContract,
+			queriesRepository: deps.queriesRepository,
 		}),
 		searchPoems: getPoemsFactory({
 			queriesRepository: deps.queriesRepository,

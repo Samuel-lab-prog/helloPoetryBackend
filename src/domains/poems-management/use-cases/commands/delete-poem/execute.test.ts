@@ -7,6 +7,7 @@ describe.concurrent('USE-CASE - Poems Management - DeletePoem', () => {
 		it('should delete a poem', async () => {
 			const scenario = makePoemsScenario()
 				.withUser({ id: 1 })
+				.withPoem({ author: { id: 1 } })
 				.withPoemDeleted();
 
 			const result = await scenario.executeDeletePoem({
@@ -19,6 +20,7 @@ describe.concurrent('USE-CASE - Poems Management - DeletePoem', () => {
 		it('should call deletePoem with correct params', async () => {
 			const scenario = makePoemsScenario()
 				.withUser({ id: 1 })
+				.withPoem({ author: { id: 1 } })
 				.withPoemDeleted();
 
 			await scenario.executeDeletePoem({
@@ -35,6 +37,7 @@ describe.concurrent('USE-CASE - Poems Management - DeletePoem', () => {
 		it('should not swallow dependency errors', async () => {
 			const scenario = makePoemsScenario()
 				.withPoem({ author: { id: 1 }, status: 'draft' })
+				.withUser({ id: 1 })
 				.withSlug('updated-title');
 
 			scenario.mocks.commandsRepository.deletePoem.mockResolvedValue({
@@ -43,6 +46,14 @@ describe.concurrent('USE-CASE - Poems Management - DeletePoem', () => {
 				data: null,
 				code: 'UNKNOWN',
 			});
+
+			await expectError(scenario.executeDeletePoem(), Error);
+		});
+
+		it('should forbid deleting another author poem', async () => {
+			const scenario = makePoemsScenario()
+				.withUser({ id: 1 })
+				.withPoem({ author: { id: 2 } });
 
 			await expectError(scenario.executeDeletePoem(), Error);
 		});

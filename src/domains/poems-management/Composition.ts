@@ -54,7 +54,7 @@ const commandsRouterServices: CommandsRouterServices = {
 	}),
 	deletePoem: deletePoemFactory({
 		commandsRepository,
-		usersContract: usersPublicContract,
+		queriesRepository,
 	}),
 	savePoem: savePoemFactory({
 		commandsRepository,

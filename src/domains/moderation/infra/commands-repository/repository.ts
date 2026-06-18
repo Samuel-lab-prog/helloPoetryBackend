@@ -27,14 +27,23 @@ export function createBan(params: {
 	const { userId, reason, moderatorId } = params;
 
 	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.userSanction.create({
-			data: {
-				userId,
-				moderatorId,
-				reason,
-				type: 'ban',
-			},
-			select: banSelect,
+		const rs = await prisma.$transaction(async (tx) => {
+			const created = await tx.userSanction.create({
+				data: {
+					userId,
+					moderatorId,
+					reason,
+					type: 'ban',
+				},
+				select: banSelect,
+			});
+
+			await tx.user.update({
+				where: { id: userId, deletedAt: null },
+				data: { status: 'banned' },
+			});
+
+			return created;
 		});
 
 		return fromRawToBannedUser(rs);
@@ -50,15 +59,24 @@ export function createSuspension(params: {
 	const { userId, reason, moderatorId, endAt } = params;
 
 	return withPrismaErrorHandling(async () => {
-		const rs = await prisma.userSanction.create({
-			data: {
-				userId,
-				moderatorId,
-				reason,
-				endAt,
-				type: 'suspension',
-			},
-			select: suspensionSelect,
+		const rs = await prisma.$transaction(async (tx) => {
+			const created = await tx.userSanction.create({
+				data: {
+					userId,
+					moderatorId,
+					reason,
+					endAt,
+					type: 'suspension',
+				},
+				select: suspensionSelect,
+			});
+
+			await tx.user.update({
+				where: { id: userId, deletedAt: null },
+				data: { status: 'suspended' },
+			});
+
+			return created;
 		});
 		return fromRawToSuspendedUser(rs);
 	});
@@ -92,9 +110,17 @@ export function updatePoemModerationStatus(params: {
 export function endBan(params: { banId: number; endAt: Date }): Promise<void> {
 	const { banId, endAt } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.userSanction.update({
-			where: { id: banId },
-			data: { endAt },
+		await prisma.$transaction(async (tx) => {
+			const sanction = await tx.userSanction.update({
+				where: { id: banId },
+				data: { endAt },
+				select: { userId: true },
+			});
+
+			await tx.user.update({
+				where: { id: sanction.userId, deletedAt: null },
+				data: { status: 'active' },
+			});
 		});
 	});
 }
@@ -105,9 +131,17 @@ export function endSuspension(params: {
 }): Promise<void> {
 	const { suspensionId, endAt } = params;
 	return withPrismaErrorHandling(async () => {
-		await prisma.userSanction.update({
-			where: { id: suspensionId },
-			data: { endAt },
+		await prisma.$transaction(async (tx) => {
+			const sanction = await tx.userSanction.update({
+				where: { id: suspensionId },
+				data: { endAt },
+				select: { userId: true },
+			});
+
+			await tx.user.update({
+				where: { id: sanction.userId, deletedAt: null },
+				data: { status: 'active' },
+			});
 		});
 	});
 }

@@ -23,7 +23,7 @@ export function markNotificationAsReadFactory({
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
-		v.user(userInfo).withStatus(['active']);
+		v.user(userInfo).withStatus(['active', 'suspended']);
 
 		const notification = await commandsRepository.markNotificationAsRead(
 			notificationId,

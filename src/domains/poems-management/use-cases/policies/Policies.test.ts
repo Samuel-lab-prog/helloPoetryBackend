@@ -5,7 +5,7 @@ import {
 	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { validateUsers } from './Policies';
+import { canUpdatePoem, validateUsers } from './Policies';
 import { makePoemsScenario } from '../test-helpers/Helper';
 
 describe.concurrent('POLICY - Poems Management', () => {

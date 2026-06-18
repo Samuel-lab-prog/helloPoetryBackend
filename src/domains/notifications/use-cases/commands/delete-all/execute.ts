@@ -18,7 +18,7 @@ export function deleteAllNotificationsFactory({
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
-		v.user(userInfo).withStatus(['active']);
+		v.user(userInfo).withStatus(['active', 'suspended']);
 
 		const result = await commandsRepository.deleteAllNotifications({
 			userId,

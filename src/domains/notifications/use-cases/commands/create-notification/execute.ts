@@ -18,7 +18,7 @@ export function createNotificationFactory({
 		const v = validator();
 
 		const userInfo = await usersContract.selectUserBasicInfo(params.userId);
-		v.user(userInfo).withStatus(['active']);
+		v.user(userInfo).withStatus(['active', 'suspended']);
 
 		const result = await commandsRepository.insertNotification(params);
 

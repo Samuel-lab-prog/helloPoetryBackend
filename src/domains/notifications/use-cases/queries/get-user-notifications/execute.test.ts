@@ -49,12 +49,17 @@ describe.concurrent('USE-CASE - Notifications - GetUserNotifications', () => {
 			await expectError(scenario.executeGetUserNotifications(), NotFoundError);
 		});
 
-		it('should throw ForbiddenError when user is suspended', async () => {
+		it('should allow suspended users', async () => {
 			const scenario = makeNotificationsScenario().withUser({
 				status: 'suspended',
+			}).withUserNotifications({
+				notifications: [],
+				hasMore: false,
 			});
 
-			await expectError(scenario.executeGetUserNotifications(), ForbiddenError);
+			await expect(
+				scenario.executeGetUserNotifications(),
+			).resolves.toHaveProperty('notifications');
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {

@@ -1,28 +1,31 @@
-﻿import type {
+import type {
 	CommandsRepository,
 	DeletePoemParams,
 } from '../../../ports/commands';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import type { QueriesRepository } from '../../../ports/queries';
 import {
 	ForbiddenError,
+	NotFoundError,
 	UnknownError,
 } from '@GenericSubdomains/utils/domainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
-	usersContract: UsersPublicContract;
+	queriesRepository: QueriesRepository;
 }
 
 export function deletePoemFactory(deps: Dependencies) {
-	const { commandsRepository, usersContract } = deps;
-	return async function deletePoem(params: DeletePoemParams): Promise<void> {
-		const { meta } = params;
-		const userInfo = await usersContract.selectUserBasicInfo(meta.requesterId);
+	const { commandsRepository, queriesRepository } = deps;
 
-		if (meta.requesterId !== userInfo.id && meta.requesterRole === 'author')
+	return async function deletePoem(params: DeletePoemParams): Promise<void> {
+		const { meta, poemId } = params;
+		const poem = await queriesRepository.selectPoemById(poemId);
+
+		if (!poem) throw new NotFoundError('Poem not found');
+		if (meta.requesterId !== poem.author.id)
 			throw new ForbiddenError('You are not allowed to delete this poem');
 
-		const result = await commandsRepository.deletePoem(params.poemId);
+		const result = await commandsRepository.deletePoem(poemId);
 		if (result.ok === true) return result.data;
 
 		if (result.ok === false) throw new UnknownError('Failed to delete poem');

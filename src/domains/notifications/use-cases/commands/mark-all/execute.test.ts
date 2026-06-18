@@ -28,12 +28,14 @@ describe.concurrent(
 				await expectError(scenario.markAllAsRead(), NotFoundError);
 			});
 
-			it('should throw ForbiddenError when user is suspended', async () => {
-				const scenario = makeNotificationsScenario().withUser({
-					status: 'suspended',
-				});
+			it('should allow suspended users', async () => {
+				const scenario = makeNotificationsScenario()
+					.withUser({
+						status: 'suspended',
+					})
+					.withAllNotificationsMarkedAsRead();
 
-				await expectError(scenario.markAllAsRead(), ForbiddenError);
+				await expect(scenario.markAllAsRead()).resolves.toBeUndefined();
 			});
 
 			it('should throw ForbiddenError when user is banned', async () => {

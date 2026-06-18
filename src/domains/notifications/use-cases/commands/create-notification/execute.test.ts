@@ -51,17 +51,25 @@ describe.concurrent('USE-CASE - Notifications - CreateNotification', () => {
 			);
 		});
 
-		it('should throw ForbiddenError when user is suspended', async () => {
-			const scenario = makeNotificationsScenario().withUser({
-				status: 'suspended',
-			});
+		it('should allow suspended users', async () => {
+			const scenario = makeNotificationsScenario()
+				.withUser({
+					status: 'suspended',
+				})
+				.withNotificationInserted({
+					type: 'POEM_COMMENT_CREATED',
+					actorId: 2,
+					entityId: 42,
+					entityType: 'POEM',
+					data: { commentSnippet: 'Hello World' },
+					aggregatedCount: 1,
+				});
 
-			await expectError(
+			await expect(
 				scenario.createNotification({
 					type: 'POEM_COMMENT_CREATED',
 				}),
-				ForbiddenError,
-			);
+			).resolves.toBeDefined();
 		});
 
 		it('should throw ForbiddenError when user is banned', async () => {
