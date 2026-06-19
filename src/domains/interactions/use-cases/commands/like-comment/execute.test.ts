@@ -12,6 +12,7 @@ describe.concurrent('USE-CASE - Interactions - LikeComment', () => {
 		it('should like a comment successfully', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser()
+				.withFoundComment()
 				.withCommentLikeCreated();
 
 			const result = await scenario.executeLikeComment();
@@ -40,10 +41,45 @@ describe.concurrent('USE-CASE - Interactions - LikeComment', () => {
 		});
 	});
 
+	describe('Comment validation', () => {
+		it('should throw NotFoundError when comment does not exist', async () => {
+			const scenario = makeInteractionsScenario().withUser();
+			await expectError(scenario.executeLikeComment(), NotFoundError);
+		});
+
+		it('should throw ForbiddenError when comment is not visible', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withFoundComment({ status: 'deletedByAuthor' });
+
+			await expectError(scenario.executeLikeComment(), ForbiddenError);
+		});
+
+		it('should throw ForbiddenError when comment author is banned', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withFoundComment({
+					author: {
+						id: 2,
+						avatarUrl: 'http://example.com/avatar.jpg',
+						nickname: 'nickname',
+						status: 'banned',
+					},
+				});
+
+			await expectError(scenario.executeLikeComment(), ForbiddenError);
+
+			expect(
+				scenario.mocks.commandsRepository.createCommentLike,
+			).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('Already liked', () => {
 		it('should throw ConflictError when comment is already liked', async () => {
 			const scenario = makeInteractionsScenario()
 				.withUser()
+				.withFoundComment()
 				.withFoundCommentLike();
 			await expectError(scenario.executeLikeComment(), ConflictError);
 		});

@@ -8,6 +8,8 @@ import type {
 	PoemVisibility,
 } from '../ports/models';
 import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
+import type { UserStatus } from '@SharedKernel/Enums';
 
 export type PoemBasicInfo = {
 	exists: boolean;
@@ -16,6 +18,7 @@ export type PoemBasicInfo = {
 	visibility: PoemVisibility;
 	moderationStatus: PoemModerationStatus;
 	status: PoemStatus;
+	authorStatus: UserStatus;
 	isCommentable: boolean;
 	poemTitle: string;
 };
@@ -69,6 +72,11 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 				select: {
 					id: true,
 					authorId: true,
+					author: {
+						select: {
+							status: true,
+						},
+					},
 					visibility: true,
 					moderationStatus: true,
 					status: true,
@@ -85,6 +93,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 					visibility: 'private',
 					moderationStatus: 'pending',
 					status: 'draft',
+					authorStatus: 'banned',
 					isCommentable: false,
 					poemTitle: '',
 				};
@@ -97,6 +106,7 @@ function selectPoemBasicInfo(poemId: number): Promise<PoemBasicInfo> {
 				visibility: poem.visibility,
 				moderationStatus: poem.moderationStatus,
 				status: poem.status,
+				authorStatus: poem.author.status,
 				isCommentable: poem.isCommentable,
 				poemTitle: poem.title,
 			};
@@ -116,8 +126,16 @@ const feedSelect: PoemSelect = {
 	createdAt: true,
 	_count: {
 		select: {
-			poemLikes: true,
-			comments: true,
+			poemLikes: {
+				where: {
+					user: publicUserRelationFilter,
+				},
+			},
+			comments: {
+				where: {
+					author: publicUserRelationFilter,
+				},
+			},
 		},
 	},
 	author: {
@@ -126,6 +144,7 @@ const feedSelect: PoemSelect = {
 			name: true,
 			nickname: true,
 			avatarUrl: true,
+			status: true,
 		},
 	},
 	tags: {
@@ -161,6 +180,7 @@ function baseWhere(visibilities?: PoemVisibility[]): PoemWhereInput {
 		visibility: visibilities?.length ? { in: visibilities } : 'public',
 		moderationStatus: 'approved',
 		status: 'published',
+		author: publicUserRelationFilter,
 	};
 }
 

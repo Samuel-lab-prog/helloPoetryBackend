@@ -89,6 +89,7 @@ export function friendsManagementFactory(deps: FriendsManagementDeps) {
 		blockUser: blockUserFactory({
 			commandsRepository: deps.commandsRepository,
 			queriesRepository: deps.queriesRepository,
+			usersContract: deps.usersContract,
 		}),
 		unblockUser: unblockUserFactory({
 			commandsRepository: deps.commandsRepository,

@@ -1,6 +1,7 @@
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
 
 export type UsersRelationBasicInfo = {
 	areFriends: boolean;
@@ -34,8 +35,8 @@ function areFriends(userAId: number, userBId: number): Promise<boolean> {
 			const friendship = await prisma.friendship.findFirst({
 				where: {
 					OR: [
-						{ userAId, userBId },
-						{ userAId: userBId, userBId: userAId },
+						{ userAId, userBId, userA: publicUserRelationFilter, userB: publicUserRelationFilter },
+						{ userAId: userBId, userBId: userAId, userA: publicUserRelationFilter, userB: publicUserRelationFilter },
 					],
 				},
 			});
@@ -67,7 +68,10 @@ function selectFollowedUserIds(userId: number): Promise<number[]> {
 		withPrismaErrorHandling(async () => {
 			const friendships = await prisma.friendship.findMany({
 				where: {
-					OR: [{ userAId: userId }, { userBId: userId }],
+					OR: [
+						{ userAId: userId, userB: publicUserRelationFilter },
+						{ userBId: userId, userA: publicUserRelationFilter },
+					],
 				},
 				select: {
 					userAId: true,
@@ -90,8 +94,18 @@ function selectRelation(userAId: number, userBId: number): Promise<Relation> {
 				prisma.friendship.findFirst({
 					where: {
 						OR: [
-							{ userAId: userAId, userBId: userBId },
-							{ userAId: userBId, userBId: userAId },
+							{
+								userAId: userAId,
+								userBId: userBId,
+								userA: publicUserRelationFilter,
+								userB: publicUserRelationFilter,
+							},
+							{
+								userAId: userBId,
+								userBId: userAId,
+								userA: publicUserRelationFilter,
+								userB: publicUserRelationFilter,
+							},
 						],
 					},
 					select: { id: true },
@@ -116,8 +130,18 @@ function selectRelation(userAId: number, userBId: number): Promise<Relation> {
 				prisma.friendshipRequest.findFirst({
 					where: {
 						OR: [
-							{ requesterId: userAId, addresseeId: userBId },
-							{ requesterId: userBId, addresseeId: userAId },
+							{
+								requesterId: userAId,
+								addresseeId: userBId,
+								requester: publicUserRelationFilter,
+								addressee: publicUserRelationFilter,
+							},
+							{
+								requesterId: userBId,
+								addresseeId: userAId,
+								requester: publicUserRelationFilter,
+								addressee: publicUserRelationFilter,
+							},
 						],
 					},
 					select: {

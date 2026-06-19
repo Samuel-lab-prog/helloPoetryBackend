@@ -5,7 +5,7 @@ import {
 } from '@GenericSubdomains/utils/domain-error/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeModerationScenario } from '../../test-helpers/Helper';
-import { givenBanEnded } from '../../test-helpers/Givens';
+import { givenBanEnded, givenUserActivated } from '../../test-helpers/Givens';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Unban User', () => {
@@ -76,6 +76,21 @@ describe('USE-CASE - Moderation', () => {
 			const scenario = makeModerationScenario().withUser().withNoActiveBan();
 
 			await expectError(scenario.executeUnbanUser(), NotFoundError);
+		});
+
+		it('repairs banned status when there is no active ban record', async () => {
+			const scenario = makeModerationScenario()
+				.withUser({ status: 'banned' })
+				.withNoActiveBan();
+
+			givenUserActivated(scenario.mocks.commandsRepository);
+
+			await scenario.executeUnbanUser();
+
+			expect(scenario.mocks.commandsRepository.activateUser).toHaveBeenCalledWith({
+				userId: 2,
+			});
+			expect(scenario.mocks.commandsRepository.endBan).not.toHaveBeenCalled();
 		});
 	});
 });

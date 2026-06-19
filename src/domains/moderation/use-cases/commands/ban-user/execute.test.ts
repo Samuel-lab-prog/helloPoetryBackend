@@ -39,9 +39,6 @@ describe('USE-CASE - Moderation', () => {
 			expect(
 				scenario.mocks.queriesRepository.selectActiveBanByUserId,
 			).toHaveBeenCalledWith({ userId: 2 });
-			expect(
-				scenario.mocks.queriesRepository.selectActiveSuspensionByUserId,
-			).toHaveBeenCalledWith({ userId: 2 });
 			expect(scenario.mocks.commandsRepository.createBan).toHaveBeenCalledWith({
 				userId: 2,
 				reason: 'spam',
@@ -137,17 +134,28 @@ describe('USE-CASE - Moderation', () => {
 			).not.toHaveBeenCalled();
 		});
 
-		it('throws ConflictError if user already has an active suspension', async () => {
+		it('allows banning a suspended user', async () => {
+			const bannedResponse: BannedUserResponse = {
+				id: 1,
+				bannedUserId: 2,
+				reason: 'spam',
+				moderatorId: 1,
+				bannedAt: new Date(),
+			};
+
 			const scenario = makeModerationScenario()
 				.withUser()
 				.withActiveSuspension()
-				.withNoActiveBan();
+				.withNoActiveBan()
+				.withBanCreated(bannedResponse);
 
-			await expectError(scenario.executeBanUser(), ConflictError);
+			await expect(scenario.executeBanUser()).resolves.toEqual(bannedResponse);
 
-			expect(
-				scenario.mocks.commandsRepository.createBan,
-			).not.toHaveBeenCalled();
+			expect(scenario.mocks.commandsRepository.createBan).toHaveBeenCalledWith({
+				userId: 2,
+				reason: 'spam',
+				moderatorId: 1,
+			});
 		});
 
 		it('does not swallow dependency errors', async () => {

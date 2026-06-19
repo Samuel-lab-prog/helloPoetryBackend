@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
 function getFriendIdsFromRelations(user: {
 	friendshipsFrom?: { userBId: number }[] | null;
@@ -20,10 +21,12 @@ function calculateStats(poem: {
 }
 
 function mapToUsers(dedications: { toUser: any }[]) {
-	return dedications.map((d) => ({
-		...d.toUser,
-		friendIds: getFriendIdsFromRelations(d.toUser),
-	}));
+	return dedications
+		.filter((d) => !isBannedUser(d.toUser.status))
+		.map((d) => ({
+			...d.toUser,
+			friendIds: getFriendIdsFromRelations(d.toUser),
+		}));
 }
 
 export function mapPoem<

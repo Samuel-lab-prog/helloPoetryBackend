@@ -66,6 +66,7 @@ export interface CommandsRepository {
 	}): Promise<SuspendedUserResponse>;
 	endBan(params: { banId: number; endAt: Date }): Promise<void>;
 	endSuspension(params: { suspensionId: number; endAt: Date }): Promise<void>;
+	activateUser(params: { userId: number }): Promise<void>;
 	updatePoemModerationStatus(params: {
 		poemId: number;
 		moderationStatus: PoemModerationStatus;

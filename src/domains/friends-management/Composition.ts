@@ -42,6 +42,7 @@ const commandsServices: CommandsRouterServices = {
 	blockUser: blockUserFactory({
 		commandsRepository,
 		queriesRepository,
+		usersContract: usersPublicContract,
 	}),
 	deleteFriend: deleteFriendFactory({
 		commandsRepository,

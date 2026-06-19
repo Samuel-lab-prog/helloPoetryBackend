@@ -39,7 +39,14 @@ export function unbanUserFactory({
 		const activeBan = await queriesRepository.selectActiveBanByUserId({
 			userId,
 		});
-		if (!activeBan) throw new NotFoundError('User is not banned.');
+		if (!activeBan) {
+			if (userExists.status === 'banned') {
+				await commandsRepository.activateUser({ userId });
+				return;
+			}
+
+			throw new NotFoundError('User is not banned.');
+		}
 
 		await commandsRepository.endBan({
 			banId: activeBan.id,

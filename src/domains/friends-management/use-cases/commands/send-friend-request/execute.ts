@@ -8,9 +8,14 @@ import type {
 	FriendRequestRecord,
 	FriendshipRecord,
 } from '../../../ports/models';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import {
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -39,6 +44,10 @@ export function sendFriendRequestFactory({
 			usersContract.selectUserBasicInfo(requesterId),
 			usersContract.selectUserBasicInfo(addresseeId),
 		]);
+		if (isBannedUser(requesterInfo.status))
+			throw new ForbiddenError('Banned users cannot send friend requests');
+		if (!addresseeInfo.exists || isBannedUser(addresseeInfo.status))
+			throw new NotFoundError('User not found');
 
 		const blocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,

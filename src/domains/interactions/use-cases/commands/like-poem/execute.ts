@@ -36,6 +36,7 @@ export function likePoemFactory({
 
 		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
+			.withAuthorStatus(['active', 'suspended'])
 			.withStatus(['published'])
 			.withVisibility(['public', 'friends', 'unlisted'])
 			.withStatus(['published'])

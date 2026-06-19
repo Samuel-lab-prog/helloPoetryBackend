@@ -3,6 +3,7 @@ import {
 	DateSchema,
 	idSchema,
 	NonNegativeIntegerSchema,
+	UserStatusSchema,
 } from '@SharedKernel/Schemas';
 import { CommentContentSchema, CommentStatusSchema } from './Fields';
 
@@ -20,5 +21,7 @@ export const PoemCommentSchema = t.Object({
 		id: idSchema,
 		nickname: t.String(),
 		avatarUrl: t.Nullable(t.String()),
+		status: t.Optional(UserStatusSchema),
+		isUnavailable: t.Optional(t.Boolean()),
 	}),
 });

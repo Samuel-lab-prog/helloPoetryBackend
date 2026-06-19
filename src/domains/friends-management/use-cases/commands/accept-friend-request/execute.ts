@@ -10,6 +10,7 @@ import type { QueriesRepository } from '../../../ports/queries';
 import type { FriendshipRecord } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { EventBus } from '@SharedKernel/events/EventBus';
+import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -34,6 +35,15 @@ export function acceptFriendRequestFactory({
 				'Users cannot accept friend requests from themselves',
 			);
 		const requesterInfo = await usersContract.selectUserBasicInfo(requesterId);
+		const addresseeInfo = await usersContract.selectUserBasicInfo(addresseeId);
+		if (
+			!requesterInfo.exists ||
+			isBannedUser(requesterInfo.status) ||
+			!addresseeInfo.exists ||
+			isBannedUser(addresseeInfo.status)
+		) {
+			throw new NotFoundError('Friend request not found');
+		}
 		const friendship = await queriesRepository.findFriendshipBetweenUsers({
 			user1Id: requesterId,
 			user2Id: addresseeId,

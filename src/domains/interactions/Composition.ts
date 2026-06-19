@@ -54,6 +54,7 @@ const commandsRouterServices: CommandsRouterServices = {
 
 	commentPoem: commentPoemFactory({
 		commandsRepository,
+		queriesRepository,
 		poemsContract: poemsPublicContract,
 		usersContract: usersPublicContract,
 		friendsContract: friendsPublicContract,

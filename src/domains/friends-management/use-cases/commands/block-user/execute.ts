@@ -4,16 +4,24 @@
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
 import type { BlockedUserRecord } from '../../../ports/models';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import {
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
+	usersContract: UsersPublicContract;
 }
 
 export function blockUserFactory({
 	commandsRepository,
 	queriesRepository,
+	usersContract,
 }: Dependencies) {
 	return async function blockUser(
 		params: BlockUserParams,
@@ -22,6 +30,15 @@ export function blockUserFactory({
 
 		if (requesterId === addresseeId)
 			throw new ConflictError('Users cannot block themselves');
+
+		const [requesterInfo, addresseeInfo] = await Promise.all([
+			usersContract.selectUserBasicInfo(requesterId),
+			usersContract.selectUserBasicInfo(addresseeId),
+		]);
+		if (isBannedUser(requesterInfo.status))
+			throw new ForbiddenError('Banned users cannot block users');
+		if (!addresseeInfo.exists || isBannedUser(addresseeInfo.status))
+			throw new NotFoundError('User not found');
 
 		const alreadyBlocked = await queriesRepository.findBlockedRelationship({
 			userId1: requesterId,

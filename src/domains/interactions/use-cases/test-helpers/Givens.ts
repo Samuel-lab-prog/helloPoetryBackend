@@ -87,6 +87,7 @@ export function givenPoem(
 		visibility: DEFAULT_POEM_VISIBILITY,
 		moderationStatus: DEFAULT_POEM_MODERATION_STATUS,
 		status: DEFAULT_POEM_STATUS,
+		authorStatus: DEFAULT_USER_STATUS,
 		isCommentable: true,
 		poemTitle: DEFAULT_POEM_TITLE,
 		...overrides,
@@ -219,6 +220,7 @@ export function givenFoundComment(
 			id: DEFAULT_PERFORMER_USER_ID,
 			nickname: DEFAULT_USER_NICKNAME,
 			avatarUrl: 'http://example.com/avatar.jpg',
+			status: DEFAULT_USER_STATUS,
 		},
 		...overrides,
 	});

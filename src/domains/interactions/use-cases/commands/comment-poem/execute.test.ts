@@ -31,6 +31,18 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 
 			expect(result).toHaveProperty('commentId');
 		});
+		it('should create a reply when parent comment is available', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withPoem()
+				.withFoundComment()
+				.withUsersRelation({ areFriends: true, areBlocked: false })
+				.withCreatedComment();
+
+			const result = await scenario.executeCommentPoem({ parentId: 1 });
+
+			expect(result).toHaveProperty('commentId');
+		});
 	});
 	describe('User validation', () => {
 		it('should throw NotFoundError when user does not exist', async () => {
@@ -99,6 +111,29 @@ describe.concurrent('USE-CASE - Interactions - CommentPoem', () => {
 				.withUser()
 				.withPoem({ status: 'draft' });
 			await expectError(scenario.executeCommentPoem(), ForbiddenError);
+		});
+		it('should throw ForbiddenError when replying to a banned author comment', async () => {
+			const scenario = makeInteractionsScenario()
+				.withUser()
+				.withPoem()
+				.withFoundComment({
+					author: {
+						id: 2,
+						avatarUrl: 'http://example.com/avatar.jpg',
+						nickname: 'nickname',
+						status: 'banned',
+					},
+				})
+				.withUsersRelation({ areFriends: true, areBlocked: false });
+
+			await expectError(
+				scenario.executeCommentPoem({ parentId: 1 }),
+				ForbiddenError,
+			);
+
+			expect(
+				scenario.mocks.commandsRepository.createPoemComment,
+			).not.toHaveBeenCalled();
 		});
 	});
 

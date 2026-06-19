@@ -49,12 +49,6 @@ export function banUserFactory({
 		});
 		if (activeBan) throw new ConflictError('User is already banned.');
 
-		const activeSuspension =
-			await queriesRepository.selectActiveSuspensionByUserId({ userId });
-		if (activeSuspension) {
-			throw new ConflictError('User is already suspended.');
-		}
-
 		return commandsRepository.createBan({
 			userId,
 			reason,

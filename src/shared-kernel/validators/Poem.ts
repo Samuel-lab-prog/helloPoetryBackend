@@ -7,6 +7,7 @@ import type {
 	PoemStatus,
 	PoemModerationStatus,
 	PoemVisibility,
+	UserStatus,
 } from '@SharedKernel/Enums';
 
 export function poem(poem: PoemBasicInfo) {
@@ -49,6 +50,15 @@ export function poem(poem: PoemBasicInfo) {
 				throw new ForbiddenError(
 					msg ||
 						`Cannot perform this action on a poem with status ${poem.status}`,
+				);
+			return this;
+		},
+
+		withAuthorStatus(allowedStatuses: UserStatus[], msg?: string) {
+			if (!allowedStatuses.includes(poem.authorStatus))
+				throw new ForbiddenError(
+					msg ||
+						`Cannot perform this action on a poem whose author has status ${poem.authorStatus}`,
 				);
 			return this;
 		},

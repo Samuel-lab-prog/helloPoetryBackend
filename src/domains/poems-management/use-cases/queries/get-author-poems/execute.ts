@@ -19,7 +19,11 @@ export function getAuthorPoemsFactory({ poemQueriesRepository }: Dependencies) {
 
 		return poems.filter((poem) =>
 			canViewPoem({
-				author: { id: poem.author.id, friendIds: poem.author.friendIds },
+				author: {
+					id: poem.author.id,
+					friendIds: poem.author.friendIds,
+					status: poem.author.status,
+				},
 				poem: {
 					id: poem.id,
 					status: poem.status,

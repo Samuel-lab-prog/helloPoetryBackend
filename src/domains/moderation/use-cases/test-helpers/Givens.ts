@@ -130,3 +130,9 @@ export function givenSuspensionEnded(
 ) {
 	givenResolved(commandsRepository, 'endSuspension', undefined);
 }
+
+export function givenUserActivated(
+	commandsRepository: ModerationSutMocks['commandsRepository'],
+) {
+	givenResolved(commandsRepository, 'activateUser', undefined);
+}

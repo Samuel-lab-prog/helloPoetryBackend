@@ -1,7 +1,22 @@
 import type { PoemSelect, SavedPoemSelect } from '@PrismaGenerated/models';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
+
 const tagsSelect = {
 	id: true,
 	name: true,
+} as const;
+
+const publicEngagementCountSelect = {
+	poemLikes: {
+		where: {
+			user: publicUserRelationFilter,
+		},
+	},
+	comments: {
+		where: {
+			author: publicUserRelationFilter,
+		},
+	},
 } as const;
 
 export const savedPoemSelect = {
@@ -17,6 +32,7 @@ export const savedPoemSelect = {
 					name: true,
 					nickname: true,
 					avatarUrl: true,
+					status: true,
 				},
 			},
 		},
@@ -31,10 +47,7 @@ export const poemPreviewSelect = {
 	createdAt: true,
 	status: true,
 	_count: {
-		select: {
-			poemLikes: true,
-			comments: true,
-		},
+		select: publicEngagementCountSelect,
 	},
 	author: {
 		select: {
@@ -42,6 +55,7 @@ export const poemPreviewSelect = {
 			name: true,
 			nickname: true,
 			avatarUrl: true,
+			status: true,
 		},
 	},
 	tags: {
@@ -59,6 +73,7 @@ const dedicationsSelect = {
 			name: true,
 			nickname: true,
 			avatarUrl: true,
+			status: true,
 			friendshipsFrom: {
 				select: {
 					userBId: true,
@@ -75,16 +90,12 @@ const dedicationsSelect = {
 	},
 } as const;
 
-const countSelect = {
-	poemLikes: true,
-	comments: true,
-} as const;
-
 const authorPreviewSelect = {
 	id: true,
 	name: true,
 	nickname: true,
 	avatarUrl: true,
+	status: true,
 	friendshipsFrom: {
 		select: {
 			userBId: true,
@@ -124,10 +135,7 @@ export const myPoemSelect = {
 	},
 
 	_count: {
-		select: {
-			poemLikes: true,
-			comments: true,
-		},
+		select: publicEngagementCountSelect,
 	},
 } as const satisfies PoemSelect;
 
@@ -157,5 +165,5 @@ export const authorPoemSelect = {
 		select: dedicationsSelect,
 	},
 
-	_count: { select: countSelect },
+	_count: { select: publicEngagementCountSelect },
 } as const satisfies PoemSelect;

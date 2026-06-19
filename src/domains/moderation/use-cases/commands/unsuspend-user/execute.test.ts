@@ -5,7 +5,10 @@ import {
 } from '@GenericSubdomains/utils/domain-error/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeModerationScenario } from '../../test-helpers/Helper';
-import { givenSuspensionEnded } from '../../test-helpers/Givens';
+import {
+	givenSuspensionEnded,
+	givenUserActivated,
+} from '../../test-helpers/Givens';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Unsuspend User', () => {
@@ -82,6 +85,23 @@ describe('USE-CASE - Moderation', () => {
 				.withNoActiveSuspension();
 
 			await expectError(scenario.executeUnsuspendUser(), NotFoundError);
+		});
+
+		it('repairs suspended status when there is no active suspension record', async () => {
+			const scenario = makeModerationScenario()
+				.withUser({ status: 'suspended' })
+				.withNoActiveSuspension();
+
+			givenUserActivated(scenario.mocks.commandsRepository);
+
+			await scenario.executeUnsuspendUser();
+
+			expect(scenario.mocks.commandsRepository.activateUser).toHaveBeenCalledWith({
+				userId: 2,
+			});
+			expect(
+				scenario.mocks.commandsRepository.endSuspension,
+			).not.toHaveBeenCalled();
 		});
 	});
 });

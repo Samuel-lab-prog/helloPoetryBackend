@@ -42,7 +42,14 @@ export function unsuspendUserFactory({
 
 		const activeSuspension =
 			await queriesRepository.selectActiveSuspensionByUserId({ userId });
-		if (!activeSuspension) throw new NotFoundError('User is not suspended.');
+		if (!activeSuspension) {
+			if (userExists.status === 'suspended') {
+				await commandsRepository.activateUser({ userId });
+				return;
+			}
+
+			throw new NotFoundError('User is not suspended.');
+		}
 
 		await commandsRepository.endSuspension({
 			suspensionId: activeSuspension.id,

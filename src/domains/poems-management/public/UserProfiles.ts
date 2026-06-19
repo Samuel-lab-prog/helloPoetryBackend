@@ -3,6 +3,10 @@ import type { Prisma } from '@PrismaGenerated/browser';
 import type { UserSelect } from '@PrismaGenerated/models';
 import { canViewPoem } from '../use-cases/policies/Policies';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import {
+	isBannedUser,
+	publicUserRelationFilter,
+} from '@SharedKernel/policies/BannedUserVisibility';
 
 export type UserProfilePoem = {
 	id: number;
@@ -79,6 +83,19 @@ function normalizeAvatarUrl(
 	return trimmed.length > 0 ? trimmed : null;
 }
 
+const publicPoemEngagementCountSelect = {
+	poemLikes: {
+		where: {
+			user: publicUserRelationFilter,
+		},
+	},
+	comments: {
+		where: {
+			author: publicUserRelationFilter,
+		},
+	},
+} as const;
+
 export const privateProfileSelect = {
 	id: true,
 	nickname: true,
@@ -106,10 +123,7 @@ export const privateProfileSelect = {
 			visibility: true,
 			moderationStatus: true,
 			_count: {
-				select: {
-					poemLikes: true,
-					comments: true,
-				},
+				select: publicPoemEngagementCountSelect,
 			},
 			tags: {
 				select: {
@@ -121,11 +135,25 @@ export const privateProfileSelect = {
 	},
 	comments: { select: { id: true } },
 	friendshipsFrom: {
-		select: { userBId: true },
+		select: {
+			userBId: true,
+			userB: {
+				select: {
+					status: true,
+				},
+			},
+		},
 	},
 
 	friendshipsTo: {
-		select: { userAId: true },
+		select: {
+			userAId: true,
+			userA: {
+				select: {
+					status: true,
+				},
+			},
+		},
 	},
 
 	blockedUsers: { select: { blockedId: true } },
@@ -135,29 +163,39 @@ type PrivateProfileRaw = Prisma.UserGetPayload<{
 	select: typeof privateProfileSelect;
 }>;
 
-export function fromRawToPrivateProfile(
-	raw: PrivateProfileRaw,
-	viewer: ProfileViewer,
-): UserPrivateProfileView {
+function getPrivateProfileFriends(raw: PrivateProfileRaw) {
 	const friendsSet = new Set<number>();
 
 	for (const friendship of raw.friendshipsFrom) {
+		if (isBannedUser(friendship.userB.status)) continue;
 		friendsSet.add(friendship.userBId);
 	}
 
 	for (const friendship of raw.friendshipsTo) {
+		if (isBannedUser(friendship.userA.status)) continue;
 		friendsSet.add(friendship.userAId);
 	}
 
-	const friends = Array.from(friendsSet.values()).map((id) => ({ id }));
-	const visiblePoems = raw.poems.filter((poem) =>
+	return Array.from(friendsSet.values()).map((id) => ({ id }));
+}
+
+function getPrivateProfileVisiblePoems(
+	raw: PrivateProfileRaw,
+	viewer: ProfileViewer,
+	friends: Array<{ id: number }>,
+) {
+	return raw.poems.filter((poem) =>
 		canViewPoem({
 			viewer: {
 				id: viewer.id,
 				role: viewer.role as UserRole,
 				status: viewer.status as UserStatus,
 			},
-			author: { id: raw.id, friendIds: friends.map((f) => f.id) },
+			author: {
+				id: raw.id,
+				friendIds: friends.map((f) => f.id),
+				status: raw.status,
+			},
 			poem: {
 				id: poem.id,
 				status: poem.status,
@@ -166,7 +204,39 @@ export function fromRawToPrivateProfile(
 			},
 		}),
 	);
+}
 
+function mapPrivateProfilePoems(
+	raw: PrivateProfileRaw,
+	visiblePoems: PrivateProfileRaw['poems'],
+) {
+	return visiblePoems.map((poem) => ({
+		id: poem.id,
+		title: poem.title,
+		slug: poem.slug,
+		createdAt: poem.createdAt,
+		likesCount: poem._count.poemLikes,
+		commentsCount: poem._count.comments,
+		tags: poem.tags.map((tag) => ({
+			id: tag.id,
+			name: tag.name,
+		})),
+		author: {
+			id: raw.id,
+			name: raw.name,
+			nickname: raw.nickname,
+			avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
+		},
+	}));
+}
+
+export function fromRawToPrivateProfile(
+	raw: PrivateProfileRaw,
+	viewer: ProfileViewer,
+	options: { unreadNotificationsCount?: number } = {},
+): UserPrivateProfileView {
+	const friends = getPrivateProfileFriends(raw);
+	const visiblePoems = getPrivateProfileVisiblePoems(raw, viewer, friends);
 	const stats = {
 		poems: visiblePoems.map((poem) => ({
 			id: poem.id,
@@ -188,25 +258,8 @@ export function fromRawToPrivateProfile(
 		status: raw.status,
 		email: raw.email,
 		emailVerifiedAt: raw.emailVerifiedAt,
-		unreadNotificationsCount: raw.notifications.length,
-		poems: visiblePoems.map((poem) => ({
-			id: poem.id,
-			title: poem.title,
-			slug: poem.slug,
-			createdAt: poem.createdAt,
-			likesCount: poem._count.poemLikes,
-			commentsCount: poem._count.comments,
-			tags: poem.tags.map((tag) => ({
-				id: tag.id,
-				name: tag.name,
-			})),
-			author: {
-				id: raw.id,
-				name: raw.name,
-				nickname: raw.nickname,
-				avatarUrl: normalizeAvatarUrl(raw.avatarUrl),
-			},
-		})),
+		unreadNotificationsCount: options.unreadNotificationsCount ?? raw.notifications.length,
+		poems: mapPrivateProfilePoems(raw, visiblePoems),
 		stats,
 		blockedUsersIds: blockedUserIds,
 	};
@@ -233,10 +286,7 @@ export const publicProfileSelect = {
 			visibility: true,
 			moderationStatus: true,
 			_count: {
-				select: {
-					poemLikes: true,
-					comments: true,
-				},
+				select: publicPoemEngagementCountSelect,
 			},
 			tags: {
 				select: {
@@ -248,8 +298,26 @@ export const publicProfileSelect = {
 	},
 	comments: { select: { id: true } },
 
-	friendshipsFrom: { select: { userBId: true } },
-	friendshipsTo: { select: { userAId: true } },
+	friendshipsFrom: {
+		select: {
+			userBId: true,
+			userB: {
+				select: {
+					status: true,
+				},
+			},
+		},
+	},
+	friendshipsTo: {
+		select: {
+			userAId: true,
+			userA: {
+				select: {
+					status: true,
+				},
+			},
+		},
+	},
 
 	blockedUsers: { select: { blockedId: true } },
 	blockedBy: { select: { blockerId: true } },
@@ -264,8 +332,12 @@ export function fromRawToPublicProfile(
 	viewer: ProfileViewer,
 ): UserPublicProfileView {
 	const friendIds = [
-		...raw.friendshipsFrom.map((f) => f.userBId),
-		...raw.friendshipsTo.map((f) => f.userAId),
+		...raw.friendshipsFrom
+			.filter((f) => !isBannedUser(f.userB.status))
+			.map((f) => f.userBId),
+		...raw.friendshipsTo
+			.filter((f) => !isBannedUser(f.userA.status))
+			.map((f) => f.userAId),
 	];
 
 	const visiblePoems = raw.poems.filter((poem) =>
@@ -275,7 +347,7 @@ export function fromRawToPublicProfile(
 				role: viewer.role as UserRole,
 				status: viewer.status as UserStatus,
 			},
-			author: { id: raw.id, friendIds },
+			author: { id: raw.id, friendIds, status: raw.status },
 			poem: {
 				id: poem.id,
 				status: poem.status,

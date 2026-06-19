@@ -3,6 +3,13 @@ import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/queries';
 import type { PoemComment, PoemCommentsPage } from '../../ports/models';
 import type { CommentSelect } from '@PrismaGenerated/models';
+import {
+	canViewBannedUserHistory,
+	isBannedUser,
+	publicUserRelationFilter,
+	unavailableCommentContent,
+	unavailableUserNickname,
+} from '@SharedKernel/policies/BannedUserVisibility';
 
 const poemCommentSelect: CommentSelect = {
 	id: true,
@@ -17,6 +24,7 @@ const poemCommentSelect: CommentSelect = {
 			id: true,
 			nickname: true,
 			avatarUrl: true,
+			status: true,
 		},
 	},
 };
@@ -33,6 +41,7 @@ type CommentRecord = {
 		id: number;
 		nickname: string;
 		avatarUrl: string | null;
+		status: string;
 	};
 };
 
@@ -80,6 +89,7 @@ export function selectCommentById(params: {
 				id: comment.author.id,
 				nickname: comment.author.nickname,
 				avatarUrl: comment.author.avatarUrl,
+				status: comment.author.status,
 			},
 		};
 	});
@@ -102,21 +112,26 @@ function mapComment(
 	repliesMap: Map<number, number>,
 	likesMap: Map<number, number>,
 	likedMap: Map<number, boolean>,
+	viewer: { role?: string; status?: string } = {},
 ): PoemComment {
+	const shouldHideAuthor =
+		isBannedUser(comment.author.status) && !canViewBannedUserHistory(viewer);
+
 	return {
 		id: comment.id,
-		content: comment.content,
+		content: shouldHideAuthor ? unavailableCommentContent : comment.content,
 		poemId: comment.poemId,
 		parentId: comment.parentId,
 		status: comment.status,
 		createdAt: comment.createdAt,
 		aggregateChildrenCount: repliesMap.get(comment.id) ?? 0,
-		likesCount: likesMap.get(comment.id) ?? 0,
-		likedByCurrentUser: likedMap.get(comment.id) ?? false,
+		likesCount: shouldHideAuthor ? 0 : (likesMap.get(comment.id) ?? 0),
+		likedByCurrentUser: shouldHideAuthor ? false : (likedMap.get(comment.id) ?? false),
 		author: {
 			id: comment.author.id,
-			nickname: comment.author.nickname,
-			avatarUrl: comment.author.avatarUrl,
+			nickname: shouldHideAuthor ? unavailableUserNickname : comment.author.nickname,
+			avatarUrl: shouldHideAuthor ? null : comment.author.avatarUrl,
+			isUnavailable: shouldHideAuthor || undefined,
 		},
 	};
 }
@@ -133,7 +148,10 @@ async function buildRepliesMap(commentIds: number[]) {
 async function buildLikesMap(commentIds: number[]) {
 	const likesCounts = await prisma.commentLike.groupBy({
 		by: ['commentId'],
-		where: { commentId: { in: commentIds } },
+		where: {
+			commentId: { in: commentIds },
+			user: publicUserRelationFilter,
+		},
 		_count: { userId: true },
 	});
 	return new Map(likesCounts.map((l) => [l.commentId, l._count.userId]));
@@ -155,10 +173,12 @@ export function selectCommentsByPoemId(params: {
 	poemId: number;
 	currentUserId?: number;
 	parentId?: number;
+	viewerRole?: string;
+	viewerStatus?: string;
 	cursor?: number;
 	limit?: number;
 }): Promise<PoemCommentsPage> {
-	const { poemId, currentUserId, parentId } = params;
+	const { poemId, currentUserId, parentId, viewerRole, viewerStatus } = params;
 	const { take, cursor } = resolvePagination(params);
 
 	return withPrismaErrorHandling(async () => {
@@ -189,7 +209,10 @@ export function selectCommentsByPoemId(params: {
 			buildLikedMap(commentIds, currentUserId),
 		]);
 		const mappedComments = items.map((c) =>
-			mapComment(c, repliesMap, likesMap, likedMap),
+			mapComment(c, repliesMap, likesMap, likedMap, {
+				role: viewerRole,
+				status: viewerStatus,
+			}),
 		);
 
 		return {

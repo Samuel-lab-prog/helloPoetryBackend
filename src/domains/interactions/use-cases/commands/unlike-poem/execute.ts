@@ -32,6 +32,7 @@ export function unlikePoemFactory({
 
 		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 		v.poem(poemInfo)
+			.withAuthorStatus(['active', 'suspended'])
 			.withModerationStatus(['approved'])
 			.withStatus(['published'])
 			.withVisibility(['public', 'friends', 'unlisted']);

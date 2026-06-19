@@ -20,6 +20,7 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 			author: {
 				id: poem.author.id,
 				friendIds: poem.author.friendIds,
+				status: poem.author.status,
 				directAccess: true, // valid because this is accessed via direct link
 			},
 			poem: {

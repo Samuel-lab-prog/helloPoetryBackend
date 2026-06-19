@@ -36,6 +36,7 @@ export function getPoemCommentsFactory({
 		]);
 		v.user(userInfo).withStatus(['active']);
 		v.poem(poemInfo)
+			.withAuthorStatus(['active', 'suspended'])
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])
 			.withStatus(['published'])
@@ -54,6 +55,8 @@ export function getPoemCommentsFactory({
 			poemId,
 			parentId,
 			currentUserId: userId,
+			viewerRole: userInfo.role,
+			viewerStatus: userInfo.status,
 			cursor,
 			limit,
 		});

@@ -11,10 +11,22 @@ import type {
 	UserPublicProfile,
 } from '../../../ports/models';
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
+import { canExposeUserToViewer } from '@SharedKernel/policies/BannedUserVisibility';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
 	friendsContract: FriendsPublicContract;
+}
+
+function withoutSocialRelation(profile: UserPublicProfile): UserPublicProfile {
+	return {
+		...profile,
+		isFriend: false,
+		hasBlockedRequester: false,
+		isBlockedByRequester: false,
+		isFriendRequester: false,
+		hasIncomingFriendRequest: false,
+	};
 }
 
 export function getProfileFactory({
@@ -42,6 +54,21 @@ export function getProfileFactory({
 
 		if (!profile) throw new NotFoundError('Profile not found');
 		if (!('isFriend' in profile)) return profile;
+
+		if (
+			!canExposeUserToViewer(
+				{ id: profile.id, status: profile.status },
+				{
+					id: requesterId,
+					role: params.requesterRole,
+					status: requesterStatus,
+				},
+			)
+		) {
+			throw new NotFoundError('Profile not found');
+		}
+
+		if (profile.status === 'banned') return withoutSocialRelation(profile);
 
 		const relation = await friendsContract.selectRelation(requesterId, id);
 

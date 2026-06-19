@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'bun:test';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import {
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+} from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
@@ -16,6 +20,7 @@ describe('USE-CASE - Friends Management', () => {
 
 		it('Prevents blocking if one of the users has already blocked the other', async () => {
 			const scenario = makeFriendsManagementScenario()
+				.withAddressee()
 				.withBlockedRelationship()
 				.withNoFriendship()
 				.withNoFriendRequest();
@@ -32,6 +37,7 @@ describe('USE-CASE - Friends Management', () => {
 
 		it('Should block the user and return the result when no errors occur', async () => {
 			const scenario = makeFriendsManagementScenario()
+				.withAddressee()
 				.withNoBlockedRelationship()
 				.withNoFriendship()
 				.withNoFriendRequest()
@@ -42,6 +48,42 @@ describe('USE-CASE - Friends Management', () => {
 
 			expect(result).toHaveProperty('blockedById', 1);
 			expect(result).toHaveProperty('blockedUserId', 2);
+		});
+
+		it('Should not allow banned users to block users', async () => {
+			const scenario = makeFriendsManagementScenario();
+			scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
+				(userId) => Promise.resolve({
+					exists: true,
+					id: userId,
+					status: userId === 1 ? 'banned' : 'active',
+					role: 'author',
+					nickname: 'user',
+					avatarUrl: null,
+				}),
+			);
+
+			await expectError(scenario.executeBlockUser(), ForbiddenError);
+
+			expect(scenario.mocks.commandsRepository.blockUser).not.toHaveBeenCalled();
+		});
+
+		it('Should hide banned users from block actions', async () => {
+			const scenario = makeFriendsManagementScenario();
+			scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
+				(userId) => Promise.resolve({
+					exists: true,
+					id: userId,
+					status: userId === 2 ? 'banned' : 'active',
+					role: 'author',
+					nickname: 'user',
+					avatarUrl: null,
+				}),
+			);
+
+			await expectError(scenario.executeBlockUser(), NotFoundError);
+
+			expect(scenario.mocks.commandsRepository.blockUser).not.toHaveBeenCalled();
 		});
 	});
 });

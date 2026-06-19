@@ -5,6 +5,7 @@ import {
 } from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
+import { DEFAULT_ADDRESSEE_ID, DEFAULT_REQUESTER_ID } from '../../test-helpers/Constants';
 
 describe.concurrent(
 	'USE-CASE - Friends Management - AcceptFriendRequest',
@@ -64,6 +65,40 @@ describe.concurrent(
 					.withNoFriendship()
 					.withNoBlockedRelationship()
 					.withNoFriendRequest();
+
+				await expectError(scenario.executeAcceptFriendRequest(), NotFoundError);
+			});
+
+			it('should throw NotFoundError when requester is banned', async () => {
+				const scenario = makeFriendsManagementScenario();
+				scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
+					// eslint-disable-next-line require-await
+					async (userId) => ({
+						exists: true,
+						id: userId,
+						status: userId === DEFAULT_REQUESTER_ID ? 'banned' : 'active',
+						role: 'author',
+						nickname: 'test_user',
+						avatarUrl: null,
+					}),
+				);
+
+				await expectError(scenario.executeAcceptFriendRequest(), NotFoundError);
+			});
+
+			it('should throw NotFoundError when addressee is banned', async () => {
+				const scenario = makeFriendsManagementScenario();
+				scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
+					// eslint-disable-next-line require-await
+					async (userId) => ({
+						exists: true,
+						id: userId,
+						status: userId === DEFAULT_ADDRESSEE_ID ? 'banned' : 'active',
+						role: 'author',
+						nickname: 'test_user',
+						avatarUrl: null,
+					}),
+				);
 
 				await expectError(scenario.executeAcceptFriendRequest(), NotFoundError);
 			});

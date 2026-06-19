@@ -2,6 +2,10 @@
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { QueriesRepository } from '../../ports/queries';
 import type { NotificationPage } from '../../ports/models';
+import {
+	selectBannedUserIds,
+	visibleNotificationActorWhere,
+} from '@Prisma/VisibilityFilters';
 
 export function selectUserNotifications(
 	userId: number,
@@ -10,8 +14,10 @@ export function selectUserNotifications(
 	const { onlyUnread, limit, nextCursor } = params;
 
 	return withPrismaErrorHandling(async () => {
+		const bannedUserIds = await selectBannedUserIds();
 		const where = {
 			userId,
+			...visibleNotificationActorWhere(bannedUserIds),
 			...(onlyUnread && { readAt: null }),
 		};
 
@@ -41,10 +47,12 @@ export function selectUserNotifications(
 
 function selectNotificationById(notificationId: number, userId: number) {
 	return withPrismaErrorHandling(async () => {
+		const bannedUserIds = await selectBannedUserIds();
 		const notification = await prisma.notification.findFirst({
 			where: {
 				id: notificationId,
 				userId,
+				...visibleNotificationActorWhere(bannedUserIds),
 			},
 		});
 		return notification;

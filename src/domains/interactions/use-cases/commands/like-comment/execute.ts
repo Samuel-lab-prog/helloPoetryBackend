@@ -28,6 +28,15 @@ export function likeCommentFactory({
 		const userInfo = await usersContract.selectUserBasicInfo(userId);
 		v.user(userInfo).withStatus(['active']);
 
+		const rawComment = await queriesRepository.selectCommentById({ commentId });
+		const comment = v
+			.comment(rawComment)
+			.withStatus(['visible'], 'Comment is not available');
+		v.comment(comment).withAuthorStatus(
+			['active', 'suspended'],
+			'Comment is not available',
+		);
+
 		const alreadyLiked = await queriesRepository.selectCommentLike({
 			userId,
 			commentId,

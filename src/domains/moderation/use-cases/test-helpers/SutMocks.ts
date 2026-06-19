@@ -31,6 +31,7 @@ export function moderationMockFactories(): ModerationSutMocks {
 			updatePoemModerationStatus: mock(),
 			endBan: mock(),
 			endSuspension: mock(),
+			activateUser: mock(),
 		}),
 		queriesRepository: createMockedContract<QueriesRepository>({
 			selectActiveBanByUserId: mock(),

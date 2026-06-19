@@ -2,6 +2,7 @@
 	CommandsRepository,
 	CommentPoemParams,
 } from '../../../ports/commands';
+import type { QueriesRepository } from '../../../ports/queries';
 
 import { validator } from '@SharedKernel/validators/Global';
 
@@ -10,18 +11,44 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
-import { UnknownError } from '@GenericSubdomains/utils/domainError';
+import {
+	ForbiddenError,
+	UnknownError,
+} from '@GenericSubdomains/utils/domainError';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
+	queriesRepository: QueriesRepository;
 	poemsContract: PoemsPublicContract;
 	usersContract: UsersPublicContract;
 	friendsContract: FriendsPublicContract;
 	eventBus: EventBus;
 }
 
+async function validateParentComment(params: {
+	v: ReturnType<typeof validator>;
+	queriesRepository: QueriesRepository;
+	parentId?: number;
+	poemId: number;
+}) {
+	const { v, queriesRepository, parentId, poemId } = params;
+	if (!parentId) return;
+
+	const parentComment = v
+		.comment(await queriesRepository.selectCommentById({ commentId: parentId }))
+		.withStatus(['visible'], 'Parent comment is not available');
+	v.comment(parentComment).withAuthorStatus(
+		['active', 'suspended'],
+		'Parent comment is not available',
+	);
+
+	if (parentComment.poemId !== poemId)
+		throw new ForbiddenError('Parent comment is not available');
+}
+
 export function commentPoemFactory({
 	commandsRepository,
+	queriesRepository,
 	poemsContract,
 	usersContract,
 	friendsContract,
@@ -48,10 +75,13 @@ export function commentPoemFactory({
 		const poemInfo = await poemsContract.selectPoemBasicInfo(poemId);
 
 		v.poem(poemInfo)
+			.withAuthorStatus(['active', 'suspended'])
 			.withModerationStatus(['approved'])
 			.withVisibility(['public', 'friends', 'unlisted'])
 			.withStatus(['published'])
 			.withCommentability(true);
+
+		await validateParentComment({ v, queriesRepository, parentId, poemId });
 
 		const usersRelationInfo = await friendsContract.selectUsersRelation(
 			userId,

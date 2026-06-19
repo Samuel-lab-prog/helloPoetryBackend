@@ -7,6 +7,7 @@ import type {
 	BlockedUserRecord,
 	FriendRequestsByUser,
 } from '../../ports/models';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
 
 function normalizePair(a: number, b: number): [number, number] {
 	return a < b ? [a, b] : [b, a];
@@ -20,7 +21,12 @@ function findFriendshipBetweenUsers(params: {
 
 	return withPrismaErrorHandling(async () => {
 		const rs = await prisma.friendship.findFirst({
-			where: { userAId, userBId },
+			where: {
+				userAId,
+				userBId,
+				userA: publicUserRelationFilter,
+				userB: publicUserRelationFilter,
+			},
 		});
 		if (!rs) return null;
 
@@ -42,6 +48,8 @@ function findFriendRequest(params: {
 			where: {
 				requesterId: params.requesterId,
 				addresseeId: params.addresseeId,
+				requester: publicUserRelationFilter,
+				addressee: publicUserRelationFilter,
 			},
 		});
 		if (!rs) return null;
@@ -95,7 +103,10 @@ function selectFriendRequestsByUser(
 	return withPrismaErrorHandling(async () => {
 		const [sent, received] = await Promise.all([
 			prisma.friendshipRequest.findMany({
-				where: { requesterId: userId },
+				where: {
+					requesterId: userId,
+					addressee: publicUserRelationFilter,
+				},
 				select: {
 					addresseeId: true,
 					addressee: {
@@ -109,7 +120,10 @@ function selectFriendRequestsByUser(
 				orderBy: { createdAt: 'desc' },
 			}),
 			prisma.friendshipRequest.findMany({
-				where: { addresseeId: userId },
+				where: {
+					addresseeId: userId,
+					requester: publicUserRelationFilter,
+				},
 				select: {
 					requesterId: true,
 					requester: {

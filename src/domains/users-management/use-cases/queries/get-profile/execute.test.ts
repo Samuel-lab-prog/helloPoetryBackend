@@ -50,6 +50,35 @@ describe.concurrent('USE-CASE - Users Management - GetProfile', () => {
 				scenario.mocks.queriesRepository.selectProfile,
 			).not.toHaveBeenCalled();
 		});
+
+		it('should hide banned public profiles from regular users', async () => {
+			const scenario = makeUsersManagementScenario().withPublicProfile({
+				status: 'banned',
+			});
+
+			await expectError(scenario.executeGetProfile({ id: 2 }), NotFoundError);
+			expect(scenario.mocks.friendsContract.selectRelation).not.toHaveBeenCalled();
+		});
+
+		it('should allow active moderators to view banned public profiles', async () => {
+			const scenario = makeUsersManagementScenario().withPublicProfile({
+				status: 'banned',
+				isFriend: true,
+				isFriendRequester: true,
+				hasIncomingFriendRequest: true,
+			});
+
+			const result = await scenario.executeGetProfile({
+				id: 2,
+				requesterRole: 'moderator',
+			});
+
+			expect(result).toHaveProperty('status', 'banned');
+			expect(result).toHaveProperty('isFriend', false);
+			expect(result).toHaveProperty('isFriendRequester', false);
+			expect(result).toHaveProperty('hasIncomingFriendRequest', false);
+			expect(scenario.mocks.friendsContract.selectRelation).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('Profile validation', () => {

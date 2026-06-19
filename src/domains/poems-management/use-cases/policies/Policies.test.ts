@@ -296,5 +296,39 @@ describe.concurrent('POLICY - Poems Management', () => {
 
 			expect(result).toBe(true);
 		});
+
+		it('should deny poems from banned authors to regular viewers', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
+				viewer: { id: 2, role: 'author', status: 'active' },
+				author: { id: 1, status: 'banned' },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'public',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(result).toBe(false);
+		});
+
+		it('should allow active moderators to view poems from banned authors', () => {
+			const scenario = makePoemsScenario();
+
+			const result = scenario.executeCanViewPoem({
+				viewer: { id: 2, role: 'moderator', status: 'active' },
+				author: { id: 1, status: 'banned' },
+				poem: {
+					id: 1,
+					status: 'published',
+					visibility: 'public',
+					moderationStatus: 'approved',
+				},
+			});
+
+			expect(result).toBe(true);
+		});
 	});
 });

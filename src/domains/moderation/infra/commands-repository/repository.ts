@@ -43,6 +43,25 @@ export function createBan(params: {
 				data: { status: 'banned' },
 			});
 
+			await tx.userSanction.updateMany({
+				where: {
+					userId,
+					type: 'suspension',
+					endAt: null,
+				},
+				data: { endAt: new Date() },
+			});
+
+			await tx.friendshipRequest.deleteMany({
+				where: {
+					OR: [{ requesterId: userId }, { addresseeId: userId }],
+				},
+			});
+
+			await tx.notification.deleteMany({
+				where: { actorId: userId },
+			});
+
 			return created;
 		});
 
@@ -146,10 +165,20 @@ export function endSuspension(params: {
 	});
 }
 
+export function activateUser(params: { userId: number }): Promise<void> {
+	return withPrismaErrorHandling(async () => {
+		await prisma.user.update({
+			where: { id: params.userId, deletedAt: null },
+			data: { status: 'active' },
+		});
+	});
+}
+
 export const commandsRepository: CommandsRepository = {
 	createBan,
 	createSuspension,
 	updatePoemModerationStatus,
 	endBan,
 	endSuspension,
+	activateUser,
 };

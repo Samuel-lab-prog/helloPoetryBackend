@@ -11,6 +11,10 @@ import {
 	NotFoundError,
 	UnprocessableEntityError,
 } from '@GenericSubdomains/utils/domainError';
+import {
+	canViewBannedUserHistory,
+	isBannedUser,
+} from '@SharedKernel/policies/BannedUserVisibility';
 
 type AuthorContext = {
 	status: UserStatus;
@@ -139,6 +143,7 @@ type ViewerContext = { id?: number; role?: UserRole; status?: UserStatus };
 type AuthorContextForView = {
 	friendIds?: number[];
 	id: number;
+	status?: UserStatus;
 	directAccess?: boolean;
 };
 type PoemContext = {
@@ -161,10 +166,12 @@ export function canViewPoem(c: PoemPolicyContextForView): boolean {
 	if (isViewerOwnAuthor) return true;
 
 	if (viewer.status === 'banned') return false;
+	if (isBannedUser(author.status) && !canViewBannedUserHistory(viewer))
+		return false;
 	if (poem.moderationStatus !== 'approved') return false;
 	if (poem.status === 'draft') return false;
 
-	const isViewerModerator = viewer.role === 'moderator';
+	const isViewerModerator = canViewBannedUserHistory(viewer);
 	const isPoemPrivate = poem.visibility === 'private';
 	if (isViewerModerator && !isPoemPrivate) return true;
 

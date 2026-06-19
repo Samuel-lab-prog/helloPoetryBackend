@@ -17,6 +17,7 @@ import {
 	savedPoemSelect,
 } from './selects';
 import { mapPoem, mapPoemPreview } from './helpers';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
 
 const DEFAULT_LIMIT = 20;
 
@@ -119,6 +120,7 @@ export function selectPoems(params: {
 			deletedAt: null,
 			status: 'published' as const,
 			moderationStatus: 'approved' as const,
+			author: publicUserRelationFilter,
 			...(filterOptions.searchTitle && {
 				title: {
 					contains: filterOptions.searchTitle,
@@ -168,7 +170,13 @@ export function selectPoems(params: {
 function selectSavedPoems(requesterId: number): Promise<SavedPoem[]> {
 	return withPrismaErrorHandling(async () => {
 		const savedPoems = await prisma.savedPoem.findMany({
-			where: { userId: requesterId },
+			where: {
+				userId: requesterId,
+				poem: {
+					deletedAt: null,
+					author: publicUserRelationFilter,
+				},
+			},
 			select: savedPoemSelect,
 		});
 
@@ -219,6 +227,12 @@ function selectCollections(requesterId: number): Promise<PoemCollection[]> {
 				name: true,
 				description: true,
 				items: {
+					where: {
+						poem: {
+							deletedAt: null,
+							author: publicUserRelationFilter,
+						},
+					},
 					select: {
 						poem: {
 							select: {

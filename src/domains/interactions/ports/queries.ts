@@ -17,6 +17,8 @@ export interface QueriesRepository {
 		poemId: number;
 		parentId?: number;
 		currentUserId?: number;
+		viewerRole?: string;
+		viewerStatus?: string;
 		cursor?: number;
 		limit?: number;
 	}): Promise<PoemCommentsPage>;

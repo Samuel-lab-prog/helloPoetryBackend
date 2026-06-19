@@ -24,6 +24,11 @@ import {
 	privateProfileSelect,
 	fromRawToPrivateProfile,
 } from '@Domains/poems-management/public/Index';
+import { publicUserStatusFilter } from '@SharedKernel/policies/BannedUserVisibility';
+import {
+	selectBannedUserIds,
+	visibleNotificationActorWhere,
+} from '@Prisma/VisibilityFilters';
 
 type UserUniqueWhere =
 	| { id: number }
@@ -63,17 +68,26 @@ function selectProfile(params: {
 		});
 
 		if (!user) return null;
-		return params.isPrivate
-			? fromRawToPrivateProfile(user as any, {
-					id: params.requesterId,
-					role: params.requesterRole,
-					status: params.requesterStatus,
-				})
-			: fromRawToPublicProfile(user as any, {
-					id: params.requesterId,
-					role: params.requesterRole,
-					status: params.requesterStatus,
-				});
+		const viewer = {
+			id: params.requesterId,
+			role: params.requesterRole,
+			status: params.requesterStatus,
+		};
+
+		if (!params.isPrivate) return fromRawToPublicProfile(user as any, viewer);
+
+		const bannedUserIds = await selectBannedUserIds();
+		const unreadNotificationsCount = await prisma.notification.count({
+			where: {
+				userId: params.id,
+				readAt: null,
+				...visibleNotificationActorWhere(bannedUserIds),
+			},
+		});
+
+		return fromRawToPrivateProfile(user as any, viewer, {
+			unreadNotificationsCount,
+		});
 	});
 }
 
@@ -88,7 +102,7 @@ function selectUsers(params: SelectUsersParams): Promise<UsersPage> {
 		const where: UserWhereInput = {
 			deletedAt: null,
 			...(role && { role }),
-			...(status && { status }),
+			status: status ?? publicUserStatusFilter,
 			...(searchNickname && {
 				nickname: {
 					contains: searchNickname,
