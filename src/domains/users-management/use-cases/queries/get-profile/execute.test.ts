@@ -57,7 +57,9 @@ describe.concurrent('USE-CASE - Users Management - GetProfile', () => {
 			});
 
 			await expectError(scenario.executeGetProfile({ id: 2 }), NotFoundError);
-			expect(scenario.mocks.friendsContract.selectRelation).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.friendsContract.selectRelation,
+			).not.toHaveBeenCalled();
 		});
 
 		it('should allow active moderators to view banned public profiles', async () => {
@@ -77,7 +79,9 @@ describe.concurrent('USE-CASE - Users Management - GetProfile', () => {
 			expect(result).toHaveProperty('isFriend', false);
 			expect(result).toHaveProperty('isFriendRequester', false);
 			expect(result).toHaveProperty('hasIncomingFriendRequest', false);
-			expect(scenario.mocks.friendsContract.selectRelation).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.friendsContract.selectRelation,
+			).not.toHaveBeenCalled();
 		});
 	});
 

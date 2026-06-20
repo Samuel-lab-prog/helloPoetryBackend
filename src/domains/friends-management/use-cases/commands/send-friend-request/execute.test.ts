@@ -6,7 +6,10 @@ import {
 } from '@GenericSubdomains/utils/domainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
-import { DEFAULT_ADDRESSEE_ID, DEFAULT_REQUESTER_ID } from '../../test-helpers/Constants';
+import {
+	DEFAULT_ADDRESSEE_ID,
+	DEFAULT_REQUESTER_ID,
+} from '../../test-helpers/Constants';
 
 describe('USE-CASE - Friends Management', () => {
 	describe('Send Friend Request', () => {

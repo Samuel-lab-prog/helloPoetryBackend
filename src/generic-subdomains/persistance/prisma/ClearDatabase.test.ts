@@ -36,6 +36,7 @@ const expectedApplicationTables = [
 describe('clearDatabase', () => {
 	beforeEach(() => {
 		executeRawUnsafeMock.mockClear();
+		executeRawUnsafeMock.mockImplementation(async () => undefined);
 	});
 
 	it('executes truncate statement once', async () => {
@@ -57,5 +58,36 @@ describe('clearDatabase', () => {
 		}
 		expect(sql).not.toContain('"_prisma_migrations"');
 		expect(sql).toContain('RESTART IDENTITY CASCADE');
+	});
+
+	it('retries transient deadlocks before succeeding', async () => {
+		let attempts = 0;
+		executeRawUnsafeMock.mockImplementation(async () => {
+			attempts++;
+			if (attempts === 1)
+				throw Object.assign(
+					new Error(
+						'Raw query failed. Code: `40P01`. Message: `impasse detectado`',
+					),
+					{ code: 'P2010' },
+				);
+		});
+
+		await clearDatabase();
+
+		expect(executeRawUnsafeMock).toHaveBeenCalledTimes(2);
+	});
+
+	it('does not retry non-deadlock failures', async () => {
+		const error = Object.assign(new Error('permission denied'), {
+			code: 'P2010',
+		});
+		executeRawUnsafeMock.mockImplementation(async () => {
+			throw error;
+		});
+
+		await expect(clearDatabase()).rejects.toThrow('permission denied');
+
+		expect(executeRawUnsafeMock).toHaveBeenCalledTimes(1);
 	});
 });

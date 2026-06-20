@@ -19,7 +19,10 @@ export function comment(comment?: PoemComment | null) {
 		},
 
 		withAuthorStatus(allowedStatuses: UserStatus[], msg?: string): PoemComment {
-			if (!comment.author.status || !allowedStatuses.includes(comment.author.status))
+			if (
+				!comment.author.status ||
+				!allowedStatuses.includes(comment.author.status)
+			)
 				throw new ForbiddenError(
 					msg ||
 						`Cannot perform this action on a comment whose author has status ${comment.author.status}`,

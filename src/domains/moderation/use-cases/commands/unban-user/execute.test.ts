@@ -87,7 +87,9 @@ describe('USE-CASE - Moderation', () => {
 
 			await scenario.executeUnbanUser();
 
-			expect(scenario.mocks.commandsRepository.activateUser).toHaveBeenCalledWith({
+			expect(
+				scenario.mocks.commandsRepository.activateUser,
+			).toHaveBeenCalledWith({
 				userId: 2,
 			});
 			expect(scenario.mocks.commandsRepository.endBan).not.toHaveBeenCalled();

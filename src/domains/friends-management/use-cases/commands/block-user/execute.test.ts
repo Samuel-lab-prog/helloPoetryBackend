@@ -53,37 +53,43 @@ describe('USE-CASE - Friends Management', () => {
 		it('Should not allow banned users to block users', async () => {
 			const scenario = makeFriendsManagementScenario();
 			scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
-				(userId) => Promise.resolve({
-					exists: true,
-					id: userId,
-					status: userId === 1 ? 'banned' : 'active',
-					role: 'author',
-					nickname: 'user',
-					avatarUrl: null,
-				}),
+				(userId) =>
+					Promise.resolve({
+						exists: true,
+						id: userId,
+						status: userId === 1 ? 'banned' : 'active',
+						role: 'author',
+						nickname: 'user',
+						avatarUrl: null,
+					}),
 			);
 
 			await expectError(scenario.executeBlockUser(), ForbiddenError);
 
-			expect(scenario.mocks.commandsRepository.blockUser).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.blockUser,
+			).not.toHaveBeenCalled();
 		});
 
 		it('Should hide banned users from block actions', async () => {
 			const scenario = makeFriendsManagementScenario();
 			scenario.mocks.usersContract.selectUserBasicInfo.mockImplementation(
-				(userId) => Promise.resolve({
-					exists: true,
-					id: userId,
-					status: userId === 2 ? 'banned' : 'active',
-					role: 'author',
-					nickname: 'user',
-					avatarUrl: null,
-				}),
+				(userId) =>
+					Promise.resolve({
+						exists: true,
+						id: userId,
+						status: userId === 2 ? 'banned' : 'active',
+						role: 'author',
+						nickname: 'user',
+						avatarUrl: null,
+					}),
 			);
 
 			await expectError(scenario.executeBlockUser(), NotFoundError);
 
-			expect(scenario.mocks.commandsRepository.blockUser).not.toHaveBeenCalled();
+			expect(
+				scenario.mocks.commandsRepository.blockUser,
+			).not.toHaveBeenCalled();
 		});
 	});
 });

@@ -35,8 +35,18 @@ function areFriends(userAId: number, userBId: number): Promise<boolean> {
 			const friendship = await prisma.friendship.findFirst({
 				where: {
 					OR: [
-						{ userAId, userBId, userA: publicUserRelationFilter, userB: publicUserRelationFilter },
-						{ userAId: userBId, userBId: userAId, userA: publicUserRelationFilter, userB: publicUserRelationFilter },
+						{
+							userAId,
+							userBId,
+							userA: publicUserRelationFilter,
+							userB: publicUserRelationFilter,
+						},
+						{
+							userAId: userBId,
+							userBId: userAId,
+							userA: publicUserRelationFilter,
+							userB: publicUserRelationFilter,
+						},
 					],
 				},
 			});

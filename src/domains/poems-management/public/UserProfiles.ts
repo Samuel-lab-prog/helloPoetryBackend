@@ -258,7 +258,8 @@ export function fromRawToPrivateProfile(
 		status: raw.status,
 		email: raw.email,
 		emailVerifiedAt: raw.emailVerifiedAt,
-		unreadNotificationsCount: options.unreadNotificationsCount ?? raw.notifications.length,
+		unreadNotificationsCount:
+			options.unreadNotificationsCount ?? raw.notifications.length,
 		poems: mapPrivateProfilePoems(raw, visiblePoems),
 		stats,
 		blockedUsersIds: blockedUserIds,

@@ -96,7 +96,9 @@ describe('USE-CASE - Moderation', () => {
 
 			await scenario.executeUnsuspendUser();
 
-			expect(scenario.mocks.commandsRepository.activateUser).toHaveBeenCalledWith({
+			expect(
+				scenario.mocks.commandsRepository.activateUser,
+			).toHaveBeenCalledWith({
 				userId: 2,
 			});
 			expect(

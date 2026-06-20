@@ -126,10 +126,14 @@ function mapComment(
 		createdAt: comment.createdAt,
 		aggregateChildrenCount: repliesMap.get(comment.id) ?? 0,
 		likesCount: shouldHideAuthor ? 0 : (likesMap.get(comment.id) ?? 0),
-		likedByCurrentUser: shouldHideAuthor ? false : (likedMap.get(comment.id) ?? false),
+		likedByCurrentUser: shouldHideAuthor
+			? false
+			: (likedMap.get(comment.id) ?? false),
 		author: {
 			id: comment.author.id,
-			nickname: shouldHideAuthor ? unavailableUserNickname : comment.author.nickname,
+			nickname: shouldHideAuthor
+				? unavailableUserNickname
+				: comment.author.nickname,
 			avatarUrl: shouldHideAuthor ? null : comment.author.avatarUrl,
 			isUnavailable: shouldHideAuthor || undefined,
 		},
