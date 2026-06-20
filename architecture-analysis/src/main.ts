@@ -4,9 +4,11 @@ import {
 	printChangeAmplification,
 	printDomainIsolation,
 	printDomainCodeStats,
+	printDomainDrivenStructure,
 	printMainSeqDist,
 	printDomainStatistics,
 	printEndpointAndUseCaseTotals,
+	printNoCircularDependencies,
 	printTopFanIn,
 	printHotspotModules,
 	printTopFanOut,
@@ -39,7 +41,9 @@ function metrics(): void {
 	printDomainCodeStats(cloc);
 	printEndpointAndUseCaseTotals(cloc);
 
+	printDomainDrivenStructure(cloc);
 	printNoCrossDomainCalls(depcruise);
+	printNoCircularDependencies(depcruise);
 	printNoInvalidRootNamespaces(depcruise);
 	printNoRootSourceCode(depcruise);
 	printNoInvalidDirectionalDependencies(depcruise);

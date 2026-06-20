@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { ClocResult } from '../Types';
 import { printTable, type TableColumn } from '../PrintTable';
+import { ADR, withAdr } from './adr-labels';
 
 type TotalMetric = {
 	label: string;
@@ -79,5 +80,9 @@ export function printEndpointAndUseCaseTotals(cloc: ClocResult): void {
 		},
 	];
 
-	printTable('Endpoint & Use-Case Totals', columns, totals);
+	printTable(
+		withAdr('Endpoint & Use-Case Totals', ADR.architecturalMetrics),
+		columns,
+		totals,
+	);
 }

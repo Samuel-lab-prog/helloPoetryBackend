@@ -1,6 +1,7 @@
 import { red, green } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Layer = 'adapters' | 'use-cases' | 'domain';
 
@@ -57,7 +58,11 @@ export function printNoInvalidDirectionalDependencies(
 	const violations = detectDirectionalViolations(cruiseResult);
 
 	if (violations.length === 0) {
-		console.log(green('✔ No invalid directional dependencies found'));
+		console.log(
+			green(
+				`✔ ${withAdr('No invalid directional dependencies found', ADR.directionalDependencies)}`,
+			),
+		);
 		return;
 	}
 
@@ -91,7 +96,10 @@ export function printNoInvalidDirectionalDependencies(
 	];
 
 	printTable(
-		`Directional violations (${violations.length})`,
+		withAdr(
+			`Directional violations (${violations.length})`,
+			ADR.directionalDependencies,
+		),
 		columns,
 		violations,
 	);

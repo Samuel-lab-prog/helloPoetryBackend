@@ -7,6 +7,7 @@ import {
 	extractIntegrationTestDomainFromPath,
 	isTestFile,
 } from '../Utils';
+import { ADR, withAdr } from './adr-labels';
 
 type DomainCodeStats = {
 	domain: string;
@@ -166,8 +167,9 @@ export function printDomainCodeStats(cloc: ClocResult): void {
 		testLOC: totals.testLOC,
 		testPercent: totalPercent,
 	};
-	printTable('Domain Code Metrics (by lines of test code)', columns, [
-		...sortedMetrics,
-		totalRow,
-	]);
+	printTable(
+		withAdr('Domain Code Metrics (by lines of test code)', ADR.domainTests),
+		columns,
+		[...sortedMetrics, totalRow],
+	);
 }

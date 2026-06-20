@@ -1,6 +1,7 @@
 import { red, green } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -62,7 +63,11 @@ export function printNoMissingSchemaBarrels(cloc: ClocResult): void {
 	const violations = checkMissingSchemaBarrels(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All schemas folders have index.ts'));
+		console.log(
+			green(
+				`✔ ${withAdr('All schemas folders have index.ts', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -102,7 +107,10 @@ export function printNoMissingSchemaBarrels(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Missing schemas barrels (${violations.length})`,
+		withAdr(
+			`Missing schemas barrels (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

@@ -1,24 +1,44 @@
-# ADR-003: Entry points exclusion from fan-out metrics
+# ADR-003: Orchestration Boundaries Exclusion from Fan-Out Metrics
 
 ## Status
 
-Accepted at 2026-02-08
+Accepted at 2026-02-08.
+
+Amended at 2026-06-20 to include domain `Composition.ts` files.
 
 ## Context
 
-Files such as index.ts and application bootstrap files naturally aggregate
-dependencies but do not represent business logic or behavioral coupling.
+Files such as `index.ts`, application bootstrap files, and domain
+`Composition.ts` files naturally aggregate dependencies.
 
-Including them in fan-out metrics caused false positives.
+They are orchestration boundaries:
+
+- application entry points assemble global plugins and routers,
+- domain composition roots assemble repositories, services, use-cases, and
+  routers.
+
+High fan-out in these files does not represent business coupling in the same way
+high fan-out in a use-case, policy, mapper, or repository would.
+
+Including orchestration boundaries in fan-out hotspot metrics creates false
+positives and hides the modules that actually need design attention.
 
 ## Decision
 
-- Entry-point files (e.g. \*/index.ts, src/index.ts) are excluded from fan-out
-  metrics.
-- Entry points are considered orchestration boundaries, not architectural units.
+The following files are excluded from fan-out hotspot metrics:
+
+- `index.ts`
+- `Index.ts`
+- `src/index.ts`
+- `Composition.ts`
+
+These files remain visible to other architecture rules where relevant, but they
+are not treated as ordinary architectural units for fan-out classification.
 
 ## Consequences
 
-- Fan-out metrics better reflect real coupling.
-- Entry points remain visible but are not penalized.
-- Prevents misleading CI failures.
+- Fan-out metrics better reflect behavioral and structural coupling.
+- Entry points and composition roots remain allowed to aggregate dependencies.
+- Business logic must still stay out of entry points and composition roots.
+- Directional dependency rules still apply where they are relevant.
+- Metrics become less noisy and more useful for prioritizing refactors.

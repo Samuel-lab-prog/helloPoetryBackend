@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -77,7 +78,11 @@ export function printNoInvalidPortsContent(cloc: ClocResult): void {
 	const violations = checkNoInvalidPortsContent(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All ports folders follow file rules'));
+		console.log(
+			green(
+				`✔ ${withAdr('All ports folders follow file rules', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -125,7 +130,10 @@ export function printNoInvalidPortsContent(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Ports file violations (${violations.length})`,
+		withAdr(
+			`Ports file violations (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

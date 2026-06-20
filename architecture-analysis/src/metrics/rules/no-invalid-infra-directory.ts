@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -79,7 +80,11 @@ export function printNoInvalidInfraDirectory(cloc: ClocResult): void {
 	const violations = checkNoInvalidInfraDirectory(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All infra folders are valid'));
+		console.log(
+			green(
+				`✔ ${withAdr('All infra folders are valid', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -127,7 +132,10 @@ export function printNoInvalidInfraDirectory(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Infra structure violations (${violations.length})`,
+		withAdr(
+			`Infra structure violations (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

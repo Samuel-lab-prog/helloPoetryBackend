@@ -1,12 +1,10 @@
 # Adapters
 
-This document explains the role, responsibilities, and constraints of
-**adapters** in this codebase.
+This document explains the role, responsibilities, and constraints of adapters
+in this codebase.
 
-Adapters are responsible for translating **external inputs** into application
-use-cases and wiring together concrete implementations of ports.
-
-They form the outermost layer of the system.
+Adapters translate external inputs into application calls. They form the
+delivery layer and keep framework-specific concerns away from use-cases.
 
 ---
 
@@ -15,59 +13,60 @@ They form the outermost layer of the system.
 An adapter is a module that:
 
 - receives requests from the outside world,
-- validates and normalizes input,
-- invokes use-cases,
+- validates and normalizes external input,
+- invokes already-assembled application services,
 - maps outputs to external responses.
 
-Adapters do **not** contain business logic.
+Adapters do not contain business logic.
 
-They exist to connect the application to external systems while preserving clean
+They connect the application to external systems while preserving clean
 dependency boundaries.
 
 ---
 
 ## Adapter Ownership
 
-Adapters are part of the delivery layer and live inside each domain under
-`src/domains/<domain>/adapters/`.
+Adapters live inside each domain under:
 
-Structure:
+```text
+src/domains/<domain>/adapters/
+```
 
-`adapters/CommandsRouter.ts` `adapters/QueriesRouter.ts`
+Typical files:
+
+- `CommandsRouter.ts`
+- `QueriesRouter.ts`
 
 Rules:
 
-- Adapters may depend on ports, schemas, and use-cases.
-- Adapters must not be depended on by any other layer.
-- Adapters may import infrastructure implementations only for wiring.
+- adapters may depend on framework APIs, schemas, and port-owned service types,
+- adapters receive services from `Composition.ts`,
+- adapters must not be depended on by use-cases or infra,
+- adapters should not import concrete repositories or construct use-cases.
 
 See:
 
-- ADR-013 – Directional dependencies
+- ADR-013 - Directional dependencies
 
 ---
 
 ## Commands vs Queries
 
-Adapters are split by **intent**, mirroring the use-cases and ports structure.
+Adapters are split by intent, mirroring use-cases and ports.
 
 ### Command Adapters
 
 - Trigger state changes.
-- Perform validations for write operations.
-- Call command use-cases.
+- Validate write-operation input.
+- Call command services.
 
 ### Query Adapters
 
 - Perform read-only operations.
-- Call query use-cases.
+- Call query services.
 - Must not cause side effects.
 
-This separation ensures:
-
-- clearer mental models,
-- easier enforcement of read/write boundaries,
-- reduced accidental coupling.
+This separation keeps read/write boundaries easy to reason about.
 
 ---
 
@@ -75,16 +74,19 @@ This separation ensures:
 
 Adapters are responsible for:
 
-- input validation (syntax and shape),
-- routing and orchestration,
-- dependency wiring,
-- mapping use-case results to external formats.
+- route definition,
+- input validation at the boundary,
+- extracting raw params/body/query/auth,
+- calling services passed into the router factory,
+- declaring response schemas and route metadata,
+- mapping use-case results to external formats when necessary.
 
-Adapters are **not** responsible for:
+Adapters are not responsible for:
 
 - business rules,
 - persistence logic,
-- cross-use-case coordination.
+- dependency assembly,
+- cross-use-case business coordination.
 
 If logic becomes reusable or domain-related, it belongs elsewhere.
 
@@ -92,7 +94,7 @@ If logic becomes reusable or domain-related, it belongs elsewhere.
 
 ## Routers
 
-Router files define **how external requests are mapped to services**.
+Router files define how external requests are mapped to services.
 
 Examples:
 
@@ -103,40 +105,40 @@ Routers:
 
 - define routes or entry points,
 - extract raw input,
-- delegate to use-cases (or optional service helpers).
+- delegate to services supplied by `Composition.ts`.
 
-Routers must remain thin and free of logic.
+Routers must remain thin and free of business logic.
 
 ---
 
-## Services (Optional)
+## Services Object
 
-This codebase typically keeps adapters thin and uses routers directly. If a
-domain introduces a `Services.ts` file, it should only:
+Routers are usually created by a factory that accepts a services object.
 
-- validate inputs using schemas,
-- instantiate use-cases,
-- inject concrete port implementations,
-- return normalized responses.
+Typical flow:
 
-It must not:
+1. `Composition.ts` assembles use-cases from factories.
+2. `Composition.ts` groups them into a typed services object.
+3. `Composition.ts` passes the services object to the router factory.
+4. Router handlers call the services.
 
-- embed business rules,
-- bypass use-cases to call repositories directly.
+This keeps routers from knowing which infrastructure implementation backs a
+service.
 
 ---
 
 ## Dependency Injection
 
-Adapters are the primary location where **dependency injection occurs**.
+Concrete dependency injection belongs in `Composition.ts`, not in router
+handlers.
 
-Typical flow:
+Adapters may define the service shape they need through port-owned types, but
+they should not:
 
-1. Adapter receives external input.
-2. Adapter resolves port implementations.
-3. Adapter constructs the use-case.
-4. Adapter executes the use-case.
-5. Adapter maps the output.
+- import concrete infra,
+- choose implementations,
+- instantiate repositories,
+- construct use-case factories in handlers.
 
 This keeps use-cases:
 
@@ -150,9 +152,9 @@ This keeps use-cases:
 
 Adapters:
 
-- depend on port interfaces,
-- choose which implementation to use,
-- pass implementations into use-cases.
+- use port-owned schemas and service types,
+- receive services that satisfy those types,
+- keep route-level input/output contracts aligned with port models.
 
 Adapters must never:
 
@@ -162,19 +164,22 @@ Adapters must never:
 
 See:
 
-- `ports/Queries.ts`
-- `ports/Commands.ts`
+- `ports/queries.ts`
+- `ports/commands.ts`
+- `ports/schemas/Index.ts`
 
 ---
 
 ## Interaction with Infrastructure
 
-Adapters are allowed to import **concrete infrastructure implementations**, but
-only for wiring purposes.
+Adapters should not import infrastructure implementations directly. Concrete
+infrastructure is imported by `Composition.ts` and passed into use-case
+factories there.
 
 Rules:
 
-- adapters choose implementations,
+- composition chooses implementations,
+- adapters expose routes,
 - infrastructure never chooses adapters,
 - use-cases never know implementations exist.
 
@@ -184,13 +189,13 @@ At no point does infrastructure reference adapters or use-cases.
 
 ## Validation and Schemas
 
-Adapters use schemas to validate external input before invoking use-cases.
+Adapters use schemas to validate external input before invoking services.
 
 Rules:
 
-- schemas are used only at boundaries,
-- use-cases assume validated input,
-- validation errors are handled by adapters.
+- schemas are used at boundaries,
+- use-cases receive normalized application input,
+- validation errors are handled by adapters and shared schema helpers.
 
 ---
 
@@ -198,24 +203,29 @@ Rules:
 
 Adapters:
 
-- catch and map use-case errors,
-- translate them into external error formats,
-- avoid leaking internal error types.
+- translate use-case errors into external error formats through shared plugins,
+- declare expected error schemas where useful,
+- avoid leaking internal error types or persistence errors.
 
 Use-case errors should be:
 
 - domain-specific,
 - explicit,
-- mapped at the adapter level.
+- mapped consistently at the boundary.
 
 ---
 
 ## Testing Strategy
 
-We are not testing adapters directly. Instead, we test the use-cases they call.
-This keeps tests focused on business logic and avoids coupling tests to external
-interfaces. We do not need to test other's people code. That is the
-responsibility of the framework or library authors.
+Adapter tests are optional. Prefer testing the use-cases that adapters call.
+
+Router tests are useful only when:
+
+- routing logic is non-trivial,
+- error mapping is complex,
+- request normalization has meaningful behavior.
+
+Thin routers with no logic do not require direct tests.
 
 ---
 
@@ -226,9 +236,10 @@ Adapters must not:
 - implement business rules,
 - perform persistence logic,
 - call repositories directly,
-- coordinate multiple use-cases.
+- coordinate multiple use-cases for business decisions,
+- hide dependency construction in route handlers.
 
-Violations here usually indicate misplaced logic.
+Violations usually indicate misplaced logic.
 
 ---
 
@@ -236,12 +247,13 @@ Violations here usually indicate misplaced logic.
 
 Adapters:
 
-- are the system’s entry points,
+- are delivery-layer entry points,
 - translate external input to application calls,
 - enforce clean boundaries,
 - keep business logic isolated and testable.
 
 When unsure:
 
-> If the code is about _how to talk to the outside world_, it belongs in an
-> adapter.
+> If the code is about how to talk to the outside world, it belongs in an
+> adapter. If the code chooses concrete dependencies, it belongs in
+> `Composition.ts`.

@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -76,7 +77,11 @@ export function printNoInvalidUseCaseFolders(cloc: ClocResult): void {
 	const violations = checkNoInvalidUseCaseFolders(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All use-cases folders are valid'));
+		console.log(
+			green(
+				`✔ ${withAdr('All use-cases folders are valid', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -124,7 +129,10 @@ export function printNoInvalidUseCaseFolders(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Use-cases folder violations (${violations.length})`,
+		withAdr(
+			`Use-cases folder violations (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

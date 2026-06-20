@@ -2,6 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
 import { extractRootNamespace } from '../../Utils';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	module: string;
@@ -45,7 +46,11 @@ export function printNoInvalidRootNamespaces(
 	const violations = checkRootNamespaceRestriction(cruiseResult);
 
 	if (violations.length === 0) {
-		console.log(green('✔ All root namespaces are valid'));
+		console.log(
+			green(
+				`✔ ${withAdr('All root namespaces are valid', ADR.rootNamespaces)}`,
+			),
+		);
 		return;
 	}
 
@@ -69,7 +74,10 @@ export function printNoInvalidRootNamespaces(
 	];
 
 	printTable(
-		`Invalid root namespaces (${violations.length})`,
+		withAdr(
+			`Invalid root namespaces (${violations.length})`,
+			ADR.rootNamespaces,
+		),
 		columns,
 		violations,
 	);

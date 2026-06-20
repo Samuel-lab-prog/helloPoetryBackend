@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -105,7 +106,11 @@ export function printNoInvalidRepositoryFiles(cloc: ClocResult): void {
 	const violations = checkRepositoryFiles(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All repository folders follow file rules'));
+		console.log(
+			green(
+				`✔ ${withAdr('All repository folders follow file rules', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -153,7 +158,10 @@ export function printNoInvalidRepositoryFiles(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Repository file violations (${violations.length})`,
+		withAdr(
+			`Repository file violations (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

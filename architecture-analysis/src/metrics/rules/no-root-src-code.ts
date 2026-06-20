@@ -2,6 +2,7 @@ import { red, green } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { padRight, divider } from '../../ConsoleFormatUtils';
 import { isRootLevelSourceFile } from '../../Utils';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	module: string;
@@ -26,12 +27,18 @@ export function printNoRootSourceCode(cruiseResult: DepcruiseResult): void {
 	const violations = checkNoRootSourceCode(cruiseResult);
 
 	if (violations.length === 0) {
-		console.log(green('✔ No source files found at src root'));
+		console.log(
+			green(
+				`✔ ${withAdr('No source files found at src root', ADR.noRootSourceCode)}`,
+			),
+		);
 		return;
 	}
 
 	console.log(
-		red(`✖ ${violations.length} source file(s) found at src root\n`),
+		red(
+			`✖ ${withAdr(`${violations.length} source file(s) found at src root`, ADR.noRootSourceCode)}\n`,
+		),
 	);
 
 	console.log(padRight('MODULE', 60));

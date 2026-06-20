@@ -57,6 +57,7 @@ export function calculateDomainStatistics(
 
 import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
+import { ADR, withAdr } from './adr-labels';
 
 function classifySizeResult(percent: number): {
 	label: string;
@@ -126,7 +127,7 @@ export function printDomainStatistics(clocResult: ClocResult): void {
 	];
 
 	printTable(
-		'Domain Size Metrics',
+		withAdr('Domain Size Metrics', ADR.domainSize),
 		columns,
 		[...metrics].sort((a, b) => b.loc - a.loc),
 	);

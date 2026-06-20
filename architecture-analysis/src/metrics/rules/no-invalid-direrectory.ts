@@ -1,6 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -72,7 +73,11 @@ export function printNoMissingDirectories(cloc: ClocResult): void {
 	const violations = checkPortsAndAdaptersStructure(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('✔ All domains follow ports & adapters structure'));
+		console.log(
+			green(
+				`✔ ${withAdr('All domains follow ports & adapters structure', ADR.mandatoryDomainFolders)}`,
+			),
+		);
 		return;
 	}
 
@@ -112,7 +117,10 @@ export function printNoMissingDirectories(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Ports & Adapters violations (${violations.length})`,
+		withAdr(
+			`Ports & Adapters violations (${violations.length})`,
+			ADR.mandatoryDomainFolders,
+		),
 		columns,
 		violations,
 	);

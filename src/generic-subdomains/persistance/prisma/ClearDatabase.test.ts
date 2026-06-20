@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
-// eslint-disable-next-line require-await
-const executeRawUnsafeMock = mock(async (_query: string) => undefined);
+const executeRawUnsafeMock = mock((_query: string) =>
+	Promise.resolve(undefined),
+);
 
 mock.module('@Prisma/PrismaClient', () => ({
 	prisma: {
@@ -36,7 +37,7 @@ const expectedApplicationTables = [
 describe('clearDatabase', () => {
 	beforeEach(() => {
 		executeRawUnsafeMock.mockClear();
-		executeRawUnsafeMock.mockImplementation(async () => undefined);
+		executeRawUnsafeMock.mockImplementation(() => Promise.resolve(undefined));
 	});
 
 	it('executes truncate statement once', async () => {
@@ -62,15 +63,18 @@ describe('clearDatabase', () => {
 
 	it('retries transient deadlocks before succeeding', async () => {
 		let attempts = 0;
-		executeRawUnsafeMock.mockImplementation(async () => {
+		executeRawUnsafeMock.mockImplementation(() => {
 			attempts++;
 			if (attempts === 1)
-				throw Object.assign(
-					new Error(
-						'Raw query failed. Code: `40P01`. Message: `impasse detectado`',
+				return Promise.reject(
+					Object.assign(
+						new Error(
+							'Raw query failed. Code: `40P01`. Message: `impasse detectado`',
+						),
+						{ code: 'P2010' },
 					),
-					{ code: 'P2010' },
 				);
+			return Promise.resolve(undefined);
 		});
 
 		await clearDatabase();
@@ -82,9 +86,7 @@ describe('clearDatabase', () => {
 		const error = Object.assign(new Error('permission denied'), {
 			code: 'P2010',
 		});
-		executeRawUnsafeMock.mockImplementation(async () => {
-			throw error;
-		});
+		executeRawUnsafeMock.mockImplementation(() => Promise.reject(error));
 
 		await expect(clearDatabase()).rejects.toThrow('permission denied');
 

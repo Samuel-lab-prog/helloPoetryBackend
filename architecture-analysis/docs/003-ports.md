@@ -1,19 +1,19 @@
 # Ports
 
-This document describes how **ports** are defined, used, and implemented in this
+This document describes how ports are defined, used, and implemented in this
 codebase.
 
-Ports are the **formal boundary** between application logic (use-cases and
-domains) and external concerns such as persistence, APIs, or infrastructure.
+Ports are the formal boundary between application logic and external concerns
+such as persistence, APIs, storage, hashing, or other infrastructure.
 
-They are a core mechanism for enforcing dependency direction and testability.
+They enforce dependency direction and make use-cases testable.
 
 ---
 
 ## What Is a Port
 
-A port is a **TypeScript interface** that defines how the application
-_communicates outward_.
+A port is a TypeScript interface that defines how the application communicates
+outward.
 
 Ports:
 
@@ -28,47 +28,55 @@ Ports never contain logic. They only define contracts.
 
 ## Port Ownership and Location
 
-Ports live inside each domain at `src/domains/<domain>/ports/`, with shared
-contracts in `src/shared-kernel/ports/`.
+Ports live inside each domain at:
 
-Example: `ports/` → `queries.ts`, `commands.ts`, `models.ts`
+```text
+src/domains/<domain>/ports/
+```
 
-Allowed contents:
+Shared contracts live under:
+
+```text
+src/shared-kernel/ports/
+```
+
+Typical domain port files:
 
 - `models.ts`
 - `commands.ts`
 - `queries.ts`
 - `externalServices.ts`
-- `schemas/` (folder for Zod schemas)
+- `schemas/`
 
 Schemas rule:
 
-- Every `ports/schemas/` folder must include an `index.ts` barrel.
+- every `ports/schemas/` folder must include an `Index.ts` barrel.
 
 Rules:
 
-- Ports belong to the application, not to adapters or infra.
-- Ports must not import from adapters, infra, or frameworks.
-- Ports may import **application-level types** (models, DTOs).
+- ports belong to the application, not to adapters or infra,
+- ports must not import adapters, infra, Prisma, or framework routers,
+- ports may import application-level models, DTOs, enums, and schemas.
 
-This ensures that dependency direction always points inward.
+This ensures dependency direction points inward.
 
 See:
 
-- ADR-013 – Directional dependencies
+- ADR-013 - Directional dependencies
 
 ---
 
 ## Read vs Write Separation
 
-Ports are split by **intent**, not by technical concerns.
+Ports are split by intent, not by technical concerns.
 
-This codebase follows a clear separation between:
+This codebase separates:
 
-- **Query ports** (read-only)
-- **Command ports** (state-changing)
+- query ports for read-only operations,
+- command ports for state-changing operations,
+- external service ports for dependencies such as storage or hashing.
 
-Example:
+Example repository port names:
 
 - `QueriesRepository`
 - `CommandsRepository`
@@ -82,13 +90,13 @@ This separation:
 
 ---
 
-## Example: QueriesRepository Port
+## Example Query Port
 
 ```ts
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
-} from '../ports/Models';
+} from '../ports/models';
 
 export interface QueriesRepository {
 	selectActiveBanByUserId(params: {
@@ -108,52 +116,84 @@ Key properties:
 - nullable results are encoded in the type system,
 - no infrastructure details leak into the interface.
 
+---
+
 ## Who Uses Ports
 
 Use-cases depend on ports to:
 
-query current state, perform state transitions.
+- query current state,
+- perform state transitions,
+- interact with external services.
 
 Use-cases must:
 
-- receive ports via dependency injection,
+- receive ports through dependency injection,
 - treat ports as opaque abstractions,
 - never assume implementation details.
 
-See:
+Concrete wiring happens in `Composition.ts`.
 
-use-cases/commands use-cases/queries
+---
 
 ## Implementations
 
-Ports are implemented by infrastructure modules (infra/\*-repository).
+Ports are implemented by infrastructure modules.
+
+Typical locations:
+
+- `infra/queries-repository/repository.ts`
+- `infra/commands-repository/repository.ts`
+- `infra/<something>-service/execute.ts`
+
+Implementations:
 
 - must fully satisfy the port interface,
 - may depend on frameworks, ORMs, or external services,
-- must not introduce additional application logic.
+- must not introduce application/business logic,
+- must not return raw infrastructure shapes.
+
+---
 
 ## Adapters and Ports
 
-Adapters act as binders between external inputs and use-cases.
+Adapters use port-owned schemas and service types to define the route boundary.
 
 Adapters:
 
-- receive external requests (HTTP, CLI, etc.),
-- resolve concrete implementations of ports,
-- inject them into use-cases.
+- receive external requests,
+- validate input through schemas,
+- call services that were assembled in `Composition.ts`.
 
 Adapters must not:
 
 - redefine port contracts,
-- bypass ports to call infrastructure directly.
+- bypass ports to call infrastructure directly,
+- choose concrete infrastructure implementations.
 
 Example adapter locations:
 
-`adapters/CommandsRouter.ts` `adapters/QueriesRouter.ts`
+- `adapters/CommandsRouter.ts`
+- `adapters/QueriesRouter.ts`
+
+---
+
+## Schemas
+
+Domain schemas live under `ports/schemas/` and use Elysia's schema utilities.
+
+Rules:
+
+- keep schemas close to the domain contract,
+- export them through `ports/schemas/Index.ts`,
+- keep response schemas in sync with returned application models,
+- reuse shared schemas from `src/shared-kernel/Schemas.ts` when appropriate.
+
+---
 
 ## Testing Strategy
 
-- Ports are a primary enabler of testability.
+- Ports enable isolated use-case tests.
 - Use-cases test against mocked or fake ports.
 - Infrastructure implementations are tested separately.
 - Port interfaces themselves are not tested directly.
@@ -165,7 +205,10 @@ This allows:
 
 See:
 
-ADR-006 – Use cases tests ADR-007 – Domain tests
+- ADR-006 - Use case tests
+- ADR-007 - Domain tests
+
+---
 
 ## What Ports Must Not Do
 
@@ -173,16 +216,19 @@ Ports must not:
 
 - contain business logic,
 - reference adapters or infra code,
-- depend on framework types,
-- encode transport or persistence details.
+- depend on framework routers,
+- encode transport or persistence details,
+- expose Prisma models or raw database rows.
 
-If a port starts to feel “smart”, it is likely doing too much.
+If a port starts to feel smart, it is likely doing too much.
+
+---
 
 ## Summary
 
 Ports:
 
-- define the application’s external needs,
+- define the application's external needs,
 - enforce dependency inversion,
 - decouple use-cases from infrastructure,
 - enable isolated testing and architectural enforcement.

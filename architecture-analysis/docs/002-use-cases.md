@@ -1,10 +1,10 @@
 # Use Cases
 
-This document describes how **use-cases** are structured, implemented, and
-tested in this codebase.
+This document describes how use-cases are structured, implemented, and tested in
+this codebase.
 
-Use-cases are the core of the application. They define **what the system does**
-in response to a request, independent of delivery mechanisms, frameworks, or
+Use-cases are the core of the application. They define what the system does in
+response to a request, independent of delivery mechanisms, frameworks, and
 infrastructure.
 
 Normative constraints are defined in ADRs. This document explains how to apply
@@ -14,14 +14,14 @@ them in practice.
 
 ## What Is a Use Case
 
-A use-case represents a **single application action** or business capability.
+A use-case represents a single application action or business capability.
 
 Examples:
 
-- accept a friend request
-- create an account
-- publish a poem
-- cancel a subscription
+- accept a friend request,
+- create an account,
+- publish a poem,
+- cancel a subscription.
 
 A use-case:
 
@@ -30,7 +30,7 @@ A use-case:
 - coordinates reads and writes through ports,
 - returns a meaningful result or throws a domain error.
 
-It is **not** a controller, service, or repository.
+It is not a controller, service, or repository.
 
 ---
 
@@ -42,9 +42,9 @@ A use-case is responsible for:
 - enforcing business invariants,
 - querying current state when needed,
 - executing state-changing commands,
-- deciding _what happens next_.
+- deciding what happens next.
 
-A use-case is **not** responsible for:
+A use-case is not responsible for:
 
 - HTTP concerns,
 - persistence details,
@@ -57,8 +57,8 @@ A use-case is **not** responsible for:
 
 Use-cases depend only on:
 
-- **domains** (policies, invariants),
-- **ports** (interfaces for external interaction, models, DTOs).
+- domain policies and invariants,
+- ports for external interaction, models, and DTOs.
 
 They must not depend on:
 
@@ -68,17 +68,19 @@ They must not depend on:
 
 Dependency direction:
 
-Adapters → Use-cases → Ports ← Infrastructure
+```text
+Adapters -> Use-cases -> Ports <- Infrastructure
+```
 
 See:
 
-- ADR-013 – Directional dependencies
+- ADR-013 - Directional dependencies
 
 ---
 
 ## Factory Pattern for Use Cases
 
-Use-cases must be created through **factory functions** that receive their
+Use-cases must be created through factory functions that receive their
 dependencies explicitly.
 
 This enables:
@@ -90,10 +92,10 @@ This enables:
 ### Recommended Pattern
 
 ```ts
-import { SomePort, AnotherPort } from '../ports/*';
-import type { SomeDomainModel } from '../ports/Models';
+import type { SomePort, AnotherPort } from '../ports/queries';
+import type { SomeDomainModel } from '../ports/models';
 import { BadRequestError } from '@GenericSubdomains/utils/domainError';
-import { SomePolicy } from '../Policies';
+import { SomePolicy } from '../policies/Policies';
 
 interface Dependencies {
 	dependencyA: SomePort;
@@ -101,15 +103,13 @@ interface Dependencies {
 }
 
 export type SomeUseCaseParams = {
-	// input parameters for the use-case
-	// Is very important to export this type to help with typing in adapters and tests,
-	// but we gonna talk about this later.
+	// Export this type when adapters or tests need the use-case input shape.
 };
 
 export function someUseCaseFactory({ dependencyA, dependencyB }: Dependencies) {
 	return async function someUseCase(
 		params: SomeUseCaseParams,
-	): Promise<Result> {
+	): Promise<SomeDomainModel> {
 		if (somethingIsWrong(params)) throw new BadRequestError('Invalid input');
 
 		const someData = await dependencyA.fetchSomething(params);
@@ -117,8 +117,7 @@ export function someUseCaseFactory({ dependencyA, dependencyB }: Dependencies) {
 		if (!SomePolicy.isSatisfied(someData))
 			throw new BadRequestError('Business rule violation');
 
-		const result = await dependencyB.executeCommand(someData);
-		return result;
+		return dependencyB.executeCommand(someData);
 	};
 }
 ```
@@ -127,7 +126,7 @@ Key properties of this pattern:
 
 - dependencies are injected once,
 - the returned function is pure application logic,
-- infrastructure is bound at the edges (infra and adapters).
+- infrastructure is bound at the edge through `Composition.ts`.
 
 This example demonstrates:
 
@@ -135,25 +134,28 @@ This example demonstrates:
 - orchestration through ports,
 - business rule enforcement,
 - domain-level error signaling,
-- no framework or adapter leakage.
+- no framework, adapter, or infrastructure leakage.
+
+---
 
 ## Error Handling
 
 Use-cases signal failure by throwing domain or application errors. In this
-codebase, error types are centralized in `@GenericSubdomains/utils` (see
-`domainError.ts` and `AppError.ts`).
+codebase, error types are centralized in `@GenericSubdomains/utils`, especially
+`domainError.ts` and `AppError.ts`.
 
 Rules:
 
 - errors must be meaningful and explicit,
 - errors belong to the domain or application layer,
 - adapters are responsible for translating errors to external representations
-- (HTTP status codes, CLI output, etc.).
+  such as HTTP status codes,
+- use-cases must not return error codes or status objects.
 
-Use-cases must not:
+Use-cases must not catch errors just to rethrow generic ones. Preserve useful
+dependency errors unless there is a clear domain translation to perform.
 
-- catch errors just to rethrow generic ones,
-- return error codes or status objects.
+---
 
 ## Naming and Scope
 
@@ -161,22 +163,25 @@ Guidelines:
 
 - one use-case per file,
 - one exported factory per use-case,
-- names must describe an action (verb-based),
-- avoid “manager”, “service”, or “handler” suffixes.
+- names must describe an action,
+- prefer verb-based names,
+- avoid "manager", "service", or "handler" suffixes.
 
 Good:
 
-- acceptFriendRequest
-- publishPoem
+- `acceptFriendRequest`
+- `publishPoem`
 
 Bad:
 
-- friendshipService
-- userManager
+- `friendshipService`
+- `userManager`
+
+---
 
 ## Testing Requirements
 
-Every use-case must have a corresponding test file named **execute.test.ts**.
+Every use-case must have a corresponding test file named `execute.test.ts`.
 
 Tests must:
 
@@ -189,7 +194,10 @@ A use-case without tests is considered incomplete.
 
 See:
 
-ADR-006 – Use cases tests ADR-007 – Domain tests
+- ADR-006 - Use case tests
+- ADR-007 - Domain tests
+
+---
 
 ## What to Avoid
 
@@ -197,34 +205,36 @@ Use-cases must not:
 
 - access databases directly,
 - import adapters or frameworks,
+- import concrete infrastructure,
 - contain presentation logic,
 - call other domains directly,
 - hide dependencies through globals or singletons.
 
 Violations are detected and enforced through CI.
 
-## Some conventions
+---
 
-- Use-cases live in the **use-cases** directory.
+## Conventions
+
+- Use-cases live in the `use-cases` directory.
 - Each use-case is a folder containing:
   - `execute.ts` with the factory function,
   - `execute.test.ts` with tests.
-- Use cases have a CQRS segregation:
-  - commands (state-changing) in `commands/`
-  - queries (read-only) in `queries/`
+- CQRS folders are used by default:
+  - commands in `commands/`,
+  - queries in `queries/`.
 - The only allowed folders directly under `use-cases/` are:
-  - `commands/`
-  - `queries/`
-  - `policies/`
-  - `test-helpers/`
-  - Any other folder or file at the `use-cases/` root is a violation.
-- Errors are centralized in `@GenericSubdomains/utils` (notably `domainError.ts`
-  and `AppError.ts`) and reused across use-cases.
+  - `commands/`,
+  - `queries/`,
+  - `policies/`,
+  - `test-helpers/`.
+- Any other folder or file at the `use-cases/` root is a violation.
+- Errors are centralized in `@GenericSubdomains/utils`.
 - Models and DTOs are defined in `ports/` and imported from there.
-- Use-cases should not have subfolders unless necessary for complexity.
-- All models are derived from schemas defined in the ports.
-- Use-cases should not import models from other domains directly; they should go
-  through ports.
+- Use-cases should not import models from other domains directly; use public
+  contracts or ports.
+
+---
 
 ## Summary
 
@@ -235,7 +245,5 @@ Use-cases are:
 - independent of infrastructure,
 - governed by architectural rules.
 
-Take a look at the ADRs for more details on the architectural decisions that
-govern use-cases. And remember: use-cases are not just a pattern, they are a
-fundamental architectural unit that shapes how the system evolves and maintains
-its integrity over time.
+When in doubt, keep the use-case focused on what the application should do. Keep
+how external systems do it behind ports and infrastructure.

@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyChangeAmplification } from '../Classify';
 import { extractDomainFromPath } from '../Utils';
+import { ADR, withAdr } from './adr-labels';
 
 type ChangeAmplificationMetric = {
 	domain: string;
@@ -128,7 +129,10 @@ export function printChangeAmplification(): void {
 	);
 
 	printTable(
-		`Change Amplification Metrics (last ${COMMITS_TO_ANALYZE} commits)`,
+		withAdr(
+			`Change Amplification Metrics (last ${COMMITS_TO_ANALYZE} commits)`,
+			ADR.changeAmplification,
+		),
 		columns,
 		sorted,
 	);

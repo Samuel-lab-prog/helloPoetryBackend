@@ -2,6 +2,7 @@ import { red, green } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
 import { extractDomainFromPath } from '../../Utils';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	domain: string;
@@ -72,7 +73,11 @@ export function printNoUntestedUsecase(cloc: ClocResult): void {
 	const violations = checkMissingExecuteTests(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('✔ All use-cases have execute.test.ts'));
+		console.log(
+			green(
+				`✔ ${withAdr('All use-cases have execute.test.ts', ADR.useCaseTests)}`,
+			),
+		);
 		return;
 	}
 
@@ -102,7 +107,7 @@ export function printNoUntestedUsecase(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Missing execute.test.ts (${violations.length})`,
+		withAdr(`Missing execute.test.ts (${violations.length})`, ADR.useCaseTests),
 		columns,
 		violations,
 	);

@@ -120,7 +120,7 @@ automatically.
 
 See:
 
-- ADR-003 – Entry points exclusion
+- ADR-003 - Orchestration boundaries exclusion
 - ADR-009 – Distance from main sequence
 
 ---

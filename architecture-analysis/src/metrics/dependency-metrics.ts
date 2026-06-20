@@ -3,6 +3,7 @@ import { red, yellow, green } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyFanOut, classifyFanIn } from '../Classify';
 import { attachLocToFanOut, buildLocMap } from './Index';
+import { ADR, withAdr } from './adr-labels';
 
 const IGNORED_MODULES = [
 	'node_modules/',
@@ -38,6 +39,7 @@ function isEntryPoint(modulePath: string): boolean {
 	return (
 		modulePath.endsWith('/index.ts') ||
 		modulePath.endsWith('/Index.ts') ||
+		modulePath.endsWith('/Composition.ts') ||
 		modulePath === 'src/index.ts'
 	);
 }
@@ -123,7 +125,11 @@ export function printTopFanOut(depcruise: DepcruiseResult): void {
 		.sort((a, b) => b.dependencies - a.dependencies)
 		.slice(0, FAN_OUT_LIMIT);
 	printTable(
-		`Top ${FAN_OUT_LIMIT} Fan-out (outgoing dependencies)`,
+		withAdr(
+			`Top ${FAN_OUT_LIMIT} Fan-out (outgoing dependencies)`,
+			ADR.fanOutLimits,
+			ADR.orchestrationBoundaries,
+		),
 		columns,
 		sorted,
 	);
@@ -169,7 +175,10 @@ export function printTopFanIn(depcruise: DepcruiseResult): void {
 	];
 
 	printTable(
-		`Top ${FAN_IN_LIMIT} Fan-in (incoming dependencies)`,
+		withAdr(
+			`Top ${FAN_IN_LIMIT} Fan-in (incoming dependencies)`,
+			ADR.architecturalMetrics,
+		),
 		columns,
 		metrics,
 	);
@@ -193,7 +202,11 @@ export function printHotspotModules(
 	);
 
 	if (!hotspots.length) {
-		console.log(green('✔ No hotspot modules detected'));
+		console.log(
+			green(
+				`✔ ${withAdr('No hotspot modules detected', ADR.fanOutLimits, ADR.orchestrationBoundaries)}`,
+			),
+		);
 		return;
 	}
 
@@ -226,5 +239,9 @@ export function printHotspotModules(
 		},
 	];
 
-	printTable('Hotspot modules', columns, hotspots);
+	printTable(
+		withAdr('Hotspot modules', ADR.fanOutLimits, ADR.orchestrationBoundaries),
+		columns,
+		hotspots,
+	);
 }

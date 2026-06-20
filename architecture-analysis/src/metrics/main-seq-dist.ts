@@ -9,6 +9,7 @@ import {
 	classifyDomainKind,
 	type DomainKind,
 } from '../Utils';
+import { ADR, withAdr } from './adr-labels';
 
 export type DomainArchitectureMetric = {
 	domain: string;
@@ -204,7 +205,10 @@ export function printMainSeqDist(
 	];
 	const sorted = [...metrics].sort((a, b) => b.distance - a.distance);
 	printTable(
-		'Instability, Abstraction & Distance from the Main Sequence',
+		withAdr(
+			'Instability, Abstraction & Distance from the Main Sequence',
+			ADR.mainSequenceDistance,
+		),
 		columns,
 		sorted,
 	);

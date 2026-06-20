@@ -3,6 +3,7 @@ import { printTable, type TableColumn } from '../PrintTable';
 import type { DepcruiseResult } from '../Types';
 import { classifyIsolation } from '../Classify';
 import { extractDomainFromPath } from '../Utils';
+import { ADR, withAdr } from './adr-labels';
 
 type DomainIsolationMetric = {
 	domain: string;
@@ -105,7 +106,7 @@ export function printDomainIsolation(cruiseResult: DepcruiseResult): void {
 	];
 
 	printTable(
-		'Domain Isolation Metrics',
+		withAdr('Domain Isolation Metrics', ADR.domainIsolation),
 		columns,
 		metrics.sort((a, b) => b.externalPercent - a.externalPercent),
 	);

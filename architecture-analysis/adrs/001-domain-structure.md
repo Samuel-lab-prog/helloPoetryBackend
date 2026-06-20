@@ -10,14 +10,14 @@ The codebase is organized around business domains (e.g. users-management,
 authentication, poems-management) instead of technical layers.
 
 This structure aims to reduce coupling, improve change locality, and make
-architectural boundaries explicit. By separting into domains, we can better
+architectural boundaries explicit. By separating into domains, we can better
 manage complexity and enable teams to work independently on different areas of
 the system.
 
 Each domain can have its own internal structure and dependencies, but
-cross-domain interactions must be explicit and controlled through ports and
-adapters. This promotes a clear separation of concerns and allows for better
-maintainability and scalability as the system evolves.
+cross-domain interactions must be explicit and controlled through public
+contracts or ports. This promotes a clear separation of concerns and allows for
+better maintainability and scalability as the system evolves.
 
 ## Decision
 

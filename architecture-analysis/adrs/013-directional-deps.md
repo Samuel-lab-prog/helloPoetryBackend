@@ -2,30 +2,73 @@
 
 ## Status
 
-Accepted at 2026-02-08
+Accepted at 2026-02-08.
+
+Amended at 2026-06-20 to document domain `Composition.ts` files as composition
+roots.
 
 ## Context
 
-Layered architectures rely on strict dependency direction to preserve separation
-of concerns. Violations of dependency direction often introduce tight coupling,
-hidden cycles, and reduced testability.
+Layered and ports/adapters architectures rely on strict dependency direction to
+preserve separation of concerns. Violations often introduce tight coupling,
+hidden cycles, fragile tests, and business rules leaking into delivery or
+infrastructure code.
 
-Without enforcement, directional rules tend to be violated incrementally,
-leading to long-term architectural degradation.
+This backend is organized by domains. Each domain has its own adapters,
+use-cases, ports, infrastructure implementations, and composition root.
+
+The current domain composition pattern is:
+
+```text
+src/domains/<domain>/Composition.ts
+```
+
+That file intentionally imports both use-case factories and concrete
+infrastructure so it can assemble ready-to-use routers.
+
+Without an explicit rule for composition files, two bad outcomes are easy:
+
+- routers start constructing use-cases and choosing repositories,
+- use-cases or infrastructure gain illegal knowledge of each other.
 
 ## Decision
 
-- Dependencies must respect the predefined architectural direction.
-- Invalid directional dependencies are **not allowed**.
-- Any detected violation causes the CI pipeline to **fail**.
-- Dependency direction rules must be explicitly defined and machine-enforced.
+Dependencies must respect this architectural direction:
+
+```text
+Composition -> Adapters -> Use-cases -> Ports <- Infrastructure
+```
+
+More precisely:
+
+- `Composition.ts` is the composition root for a domain.
+- `Composition.ts` may import adapters, use-case factories, infrastructure
+  implementations, and public contracts from other domains.
+- adapters receive already-assembled services from `Composition.ts`.
+- adapters may import framework APIs, schemas, port-owned service types, and
+  shared boundary helpers.
+- adapters must not import concrete repositories or construct use-cases.
+- use-cases may import ports, port-owned models, and domain policies.
+- use-cases must not import adapters, `Composition.ts`, Prisma, concrete infra,
+  or framework-specific router types.
+- ports define contracts and application-owned models/schemas.
+- ports must not import adapters, concrete infra, Prisma, or use-cases.
+- infrastructure implements ports and may import external libraries, Prisma, and
+  shared persistence helpers.
+- infrastructure must not import adapters, use-cases, or `Composition.ts`.
+- cross-domain access must go through explicit public contracts.
+
+Invalid directional dependencies are not allowed. Whenever the rule is
+machine-detectable, CI must enforce it.
 
 ## Consequences
 
-- Prevents dependency cycles and architectural shortcuts.
-- Preserves layer responsibilities.
-- Makes architectural intent explicit and enforceable.
-- Some refactoring may be required to fix existing directional violations.
-- Enables architectural metrics such as:
-  - number of directional violations
-  - change amplification due to directional dependencies
+- Business logic remains in use-cases and policies.
+- Routers stay thin and focused on delivery concerns.
+- Concrete dependency choices stay centralized in domain `Composition.ts` files.
+- Use-cases remain easy to test with mocked ports.
+- Infrastructure can evolve without leaking implementation details upward.
+- Some modules, especially `Composition.ts`, naturally have higher fan-out and
+  must be treated as orchestration boundaries in metrics.
+- Refactoring may be required when older code wires dependencies in adapters or
+  bypasses ports.

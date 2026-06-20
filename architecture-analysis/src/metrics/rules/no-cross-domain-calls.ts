@@ -2,6 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
 import { extractDomainFromPath, isGenericSubdomain } from '../../Utils';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	from: string;
@@ -49,7 +50,11 @@ export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 	const violations = checkDomainNamespaceIntegrity(cruiseResult);
 
 	if (violations.length === 0) {
-		console.log(green('✔ No cross-domain violations found'));
+		console.log(
+			green(
+				`✔ ${withAdr('No cross-domain violations found', ADR.noCrossDomainCalls)}`,
+			),
+		);
 		return;
 	}
 
@@ -80,7 +85,10 @@ export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 	];
 
 	printTable(
-		`Cross-domain violations (${violations.length})`,
+		withAdr(
+			`Cross-domain violations (${violations.length})`,
+			ADR.noCrossDomainCalls,
+		),
 		columns,
 		violations,
 	);

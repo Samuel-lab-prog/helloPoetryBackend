@@ -3,6 +3,7 @@ import path from 'node:path';
 import { red, yellow, green } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
+import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {
 	file: string;
@@ -122,7 +123,11 @@ export function printNoCaseMismatchImports(cloc: ClocResult): void {
 	const violations = findCaseMismatchImports(cloc);
 
 	if (violations.length === 0) {
-		console.log(green('All imports match filesystem casing'));
+		console.log(
+			green(
+				`✔ ${withAdr('All imports match filesystem casing', ADR.linting)}`,
+			),
+		);
 		return;
 	}
 
@@ -162,7 +167,10 @@ export function printNoCaseMismatchImports(cloc: ClocResult): void {
 	];
 
 	printTable(
-		`Case-sensitive import violations (${violations.length})`,
+		withAdr(
+			`Case-sensitive import violations (${violations.length})`,
+			ADR.linting,
+		),
 		columns,
 		violations,
 	);

@@ -1,4 +1,4 @@
-import type { PoemVisibility } from '@Domains/poems-management/ports/models';
+import type { PoemVisibility } from '@SharedKernel/Enums';
 
 import type { FeedItem } from './models';
 
