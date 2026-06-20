@@ -30,6 +30,11 @@ tests.
   `development`.
 - Existing env files are `.env.development`, `.env.test`, and `.env.production`.
 - Prisma config imports `loadEnv`, so Prisma commands also depend on `NODE_ENV`.
+- `DATABASE_URL` is required in every environment. Runtime and Prisma config
+  reject mismatches such as `NODE_ENV=test` pointing to a dev/prod database or
+  `NODE_ENV=development` pointing to a test/prod database.
+- `bun run check:db-isolation` verifies `.env.development` and `.env.test` point
+  to different database identities.
 - Test database migrations are run through `bun run test:prepare`, which maps to
   `bun run db:migrate:test`.
 - Do not assume an env file or DB target. Check the relevant script before
@@ -85,8 +90,10 @@ Database and maintenance:
 - `bun run db:migrate:prod`
 - `bun run db:seed`
 - `bun run db:reset:dev`
+- `bun run db:reset:test`
 - `bun run db:reset:prod`
-- `bun run db:drop`
+- `bun run db:drop:dev`
+- `bun run db:drop:test`
 - `bun run data:add-test`
 - `bun run admin:create`
 - `bun run admin:create:prod`
@@ -527,8 +534,10 @@ When changing schema:
 Be extra careful with destructive scripts:
 
 - `db:reset:dev`
+- `db:reset:test`
 - `db:reset:prod`
-- `db:drop`
+- `db:drop:dev`
+- `db:drop:test`
 
 Confirm the target environment and database before running them.
 

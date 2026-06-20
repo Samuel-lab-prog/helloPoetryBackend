@@ -105,6 +105,11 @@ Prisma also loads this environment through `prisma.config.ts`, so set `NODE_ENV`
 intentionally when running database commands. Test scripts already do this for
 you.
 
+`DATABASE_URL` is required in every environment. Development must point to a
+database/schema containing `dev` or `development`; tests must point to a
+database/schema containing `test`. The env checks also verify that
+`.env.development` and `.env.test` do not point to the same database.
+
 ---
 
 ## Running Locally
@@ -229,8 +234,10 @@ bun run db:migrate:test
 bun run db:migrate:prod
 bun run db:seed
 bun run db:reset:dev
+bun run db:reset:test
 bun run db:reset:prod
-bun run db:drop
+bun run db:drop:dev
+bun run db:drop:test
 ```
 
 Admin and data helpers:
@@ -254,8 +261,9 @@ Compatibility aliases are still available for older habits and docs:
 - `create-admin`
 - `create-adminprod`
 
-Be careful with reset/drop commands. Confirm `NODE_ENV` and the target database
-before destructive operations.
+Be careful with reset/drop commands. Dev and test destructive scripts set
+`NODE_ENV` explicitly, and startup/Prisma config validates the database name
+against the environment before connecting.
 
 ---
 

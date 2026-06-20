@@ -11,7 +11,7 @@ security controls are in place.
 
 ## Environment Variables Used
 
-### Required (Typical Production)
+### Required
 
 - `DATABASE_URL`
 - `JWT_SECRET_KEY`
@@ -76,8 +76,9 @@ happens when environment variables are missing or invalid.
 - `PORT`: defaults to `5000`.
 - `BODY_LIMIT_BYTES`: defaults to `1_000_000` bytes.
 - `SECURITY_HEADERS_ENABLED`: defaults to `true` (set to `false` to disable).
-- `DATABASE_URL`: required in production; defaults to a local test DB URL in
-  non-production.
+- `DATABASE_URL`: required in every environment. `NODE_ENV=development` must use
+  a database/schema containing `dev` or `development`; `NODE_ENV=test` must use
+  a database/schema containing `test`.
 
 ### Auth/Token Settings (`auth/config.ts`)
 
@@ -92,12 +93,14 @@ happens when environment variables are missing or invalid.
 
 - `validateServerEnv()` checks required envs at startup and throws
   `MissingEnvVarError` when a required value is missing.
-- Production requirements:
+- Requirements:
   - `DATABASE_URL`
-  - `JWT_SECRET_KEY`
+  - `JWT_SECRET_KEY` outside tests
   - `CORS_ORIGIN` or `FRONTEND_URL` when `CROSS_SITE_COOKIES=true`
   - `TRUSTED_PROXY_IPS` when `TRUST_PROXY=true`
-- Non-test environments require `JWT_SECRET_KEY`.
+- Database target validation rejects test runs pointed at dev/prod databases,
+  development runs pointed at test/prod databases, and production runs pointed
+  at dev/test databases.
 
 ### CORS Settings (`cors/config.ts`, `cors/variables.ts`)
 

@@ -3,6 +3,7 @@ import { BunAdapter } from 'elysia/adapter/bun';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 import { MissingEnvVarError } from '@AppError';
 import { parseNumber } from './utils/envParsers';
+import { assertDatabaseSafety } from './utils/databaseSafety';
 
 /** API prefix for all routes. */
 export const API_URL_PREFIX = '/api/v1';
@@ -70,17 +71,15 @@ export function getLogLevel(): LogLevel {
 	return 'info';
 }
 
-const DEFAULT_TEST_DATABASE_URL =
-	'postgresql://postgres:postgres@localhost:5432/postgres?schema=public';
 /**
- * Database URL from env with a test fallback outside production.
+ * Database URL from env. It must match the active NODE_ENV so test and
+ * development never share the same database by accident.
  */
 export function getDatabaseUrl(): string {
-	const url =
-		process.env.DATABASE_URL ??
-		(NODE_ENV === 'production' ? undefined : DEFAULT_TEST_DATABASE_URL);
+	const url = process.env.DATABASE_URL;
 
 	if (!url) throw MissingEnvVarError('DATABASE_URL');
+	assertDatabaseSafety({ databaseUrl: url, nodeEnv: NODE_ENV });
 
 	return url;
 }

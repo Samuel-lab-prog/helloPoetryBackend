@@ -1,6 +1,7 @@
 import kleur from 'kleur';
 import { MissingEnvVarError } from '@AppError';
 import { parseBoolean } from './envParsers';
+import { getDatabaseSafetyError } from './databaseSafety';
 import { printTable } from '../../../architecture-analysis/src/PrintTable';
 
 type EnvName = Parameters<typeof MissingEnvVarError>[0];
@@ -68,7 +69,7 @@ const buildRequiredVars = (): EnvName[] => {
 	});
 
 	const required: EnvName[] = [];
-	if (isProd) required.push('DATABASE_URL');
+	required.push('DATABASE_URL');
 	if (!isTest) required.push('JWT_SECRET_KEY');
 	if (isProd && crossSiteCookies) required.push('CORS_ORIGIN');
 	if (trustProxy) required.push('TRUSTED_PROXY_IPS');
@@ -144,6 +145,13 @@ export function validateServerEnv(options: ValidateEnvOptions = {}): void {
 
 		if (missingRequired.length > 0)
 			throw MissingEnvVarError(missingRequired[0]!);
+
+		const databaseSafetyError = getDatabaseSafetyError({
+			databaseUrl: process.env.DATABASE_URL,
+			nodeEnv: process.env.NODE_ENV,
+		});
+
+		if (databaseSafetyError) throw new Error(databaseSafetyError);
 
 		if (!silent) console.log(kleur.green('Env check passed.'));
 	} catch (error) {
