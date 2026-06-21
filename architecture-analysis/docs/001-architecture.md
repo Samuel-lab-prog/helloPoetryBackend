@@ -1,4 +1,4 @@
-# Architecture Overview
+﻿# Architecture Overview
 
 This document describes how the codebase is organized and how architectural
 decisions are applied in practice.
@@ -28,8 +28,8 @@ This approach prioritizes:
 
 See:
 
-- ADR-001 – Domain-based structure
-- ADR-005 – Domain isolation rules
+- ADR-01.001 – Domain-based structure
+- ADR-02.002 – Domain isolation rules
 
 ---
 
@@ -77,8 +77,8 @@ depend on use-cases.
 
 See:
 
-- ADR-013 – Directional dependencies
-- ADR-015 – Prohibition of circular dependencies
+- ADR-02.006 – Directional dependencies
+- ADR-02.007 – Prohibition of circular dependencies
 
 ---
 
@@ -98,9 +98,9 @@ classified.
 
 See:
 
-- ADR-008 – Domain size limits
-- ADR-010 – No cross-domain calls
-- ADR-015 – Prohibition of circular dependencies
+- ADR-01.004 – Domain size limits
+- ADR-02.003 – No cross-domain calls
+- ADR-02.007 – Prohibition of circular dependencies
 
 ---
 
@@ -120,8 +120,8 @@ automatically.
 
 See:
 
-- ADR-003 - Orchestration boundaries exclusion
-- ADR-009 – Distance from main sequence
+- ADR-02.001 – Orchestration boundaries exclusion
+- ADR-01.005 – Distance from main sequence
 
 ---
 
@@ -156,8 +156,8 @@ through CI.
 
 See:
 
-- ADR-006 – Use cases tests
-- ADR-007 – Domain tests
+- ADR-03.001 – Use cases tests
+- ADR-03.002 – Domain tests
 
 ---
 
@@ -179,10 +179,10 @@ filesystem casing exactly to avoid Linux build failures.
 
 See:
 
-- ADR-016 – Linting rules
-- ADR-017 – Mandatory code formatting
-- ADR-018 – Reproducible and deterministic builds
-- ADR-019 – CI as a gatekeeper
+- ADR-04.001 – Linting rules
+- ADR-04.002 – Mandatory code formatting
+- ADR-04.003 – Reproducible and deterministic builds
+- ADR-04.004 – CI as a gatekeeper
 
 ---
 
@@ -201,4 +201,4 @@ as absolute measures of quality.
 
 See:
 
-- ADR-020 – Architectural metrics
+- ADR-05.001 – Architectural metrics

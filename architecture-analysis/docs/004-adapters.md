@@ -1,4 +1,4 @@
-# Adapters
+﻿# Adapters
 
 This document explains the role, responsibilities, and constraints of adapters
 in this codebase.
@@ -46,7 +46,7 @@ Rules:
 
 See:
 
-- ADR-013 - Directional dependencies
+- ADR-02.006 – Directional dependencies
 
 ---
 

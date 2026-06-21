@@ -1,4 +1,4 @@
-# Ports
+﻿# Ports
 
 This document describes how ports are defined, used, and implemented in this
 codebase.
@@ -62,7 +62,7 @@ This ensures dependency direction points inward.
 
 See:
 
-- ADR-013 - Directional dependencies
+- ADR-02.006 – Directional dependencies
 
 ---
 
@@ -205,8 +205,8 @@ This allows:
 
 See:
 
-- ADR-006 - Use case tests
-- ADR-007 - Domain tests
+- ADR-03.001 – Use case tests
+- ADR-03.002 – Domain tests
 
 ---
 

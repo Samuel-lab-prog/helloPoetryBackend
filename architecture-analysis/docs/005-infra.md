@@ -1,4 +1,4 @@
-# Infrastructure (Infra)
+﻿# Infrastructure (Infra)
 
 This document describes the **infrastructure layer** of the system: its role,
 responsibilities, constraints, and interaction with the rest of the
@@ -38,8 +38,8 @@ Infrastructure:
 
 See:
 
-- ADR-013 – Directional dependencies
-- ADR-015 – Prohibition of circular dependencies
+- ADR-02.006 – Directional dependencies
+- ADR-02.007 – Prohibition of circular dependencies
 
 ---
 

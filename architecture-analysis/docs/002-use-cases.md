@@ -1,4 +1,4 @@
-# Use Cases
+﻿# Use Cases
 
 This document describes how use-cases are structured, implemented, and tested in
 this codebase.
@@ -74,7 +74,7 @@ Adapters -> Use-cases -> Ports <- Infrastructure
 
 See:
 
-- ADR-013 - Directional dependencies
+- ADR-02.006 – Directional dependencies
 
 ---
 
@@ -94,7 +94,7 @@ This enables:
 ```ts
 import type { SomePort, AnotherPort } from '../ports/queries';
 import type { SomeDomainModel } from '../ports/models';
-import { BadRequestError } from '@GenericSubdomains/utils/domainError';
+import { BadRequestError } from '@DomainError';
 import { SomePolicy } from '../policies/Policies';
 
 interface Dependencies {
@@ -194,8 +194,8 @@ A use-case without tests is considered incomplete.
 
 See:
 
-- ADR-006 - Use case tests
-- ADR-007 - Domain tests
+- ADR-03.001 – Use case tests
+- ADR-03.002 – Domain tests
 
 ---
 
