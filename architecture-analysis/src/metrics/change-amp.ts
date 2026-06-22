@@ -2,7 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
 import { printTable, type TableColumn } from '../PrintTable';
 import { classifyChangeAmplification } from '../Classify';
-import { extractDomainFromPath } from '../Utils';
+import { extractDomainFromPath } from '../utils/Utils';
 import { ADR, withAdr } from './adr-labels';
 
 type ChangeAmplificationMetric = {

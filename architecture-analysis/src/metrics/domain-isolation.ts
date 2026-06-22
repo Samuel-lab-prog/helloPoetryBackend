@@ -2,7 +2,7 @@ import { red, green, yellow } from 'kleur/colors';
 import { printTable, type TableColumn } from '../PrintTable';
 import type { DepcruiseResult } from '../Types';
 import { classifyIsolation } from '../Classify';
-import { extractDomainFromPath } from '../Utils';
+import { extractDomainFromPath } from '../utils/Utils';
 import { ADR, withAdr } from './adr-labels';
 
 type DomainIsolationMetric = {

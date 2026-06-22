@@ -1,7 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
-import { extractRootNamespace } from '../../Utils';
+import { extractRootNamespace } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {

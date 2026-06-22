@@ -1,7 +1,7 @@
 import { red, green, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
-import { extractDomainFromPath, isGenericSubdomain } from '../../Utils';
+import { extractDomainFromPath, isGenericSubdomain } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {

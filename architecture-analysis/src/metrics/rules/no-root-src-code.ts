@@ -1,7 +1,7 @@
 import { red, green } from 'kleur/colors';
 import type { DepcruiseResult } from '../../Types';
 import { padRight, divider } from '../../ConsoleFormatUtils';
-import { isRootLevelSourceFile } from '../../Utils';
+import { isRootLevelSourceFile } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {

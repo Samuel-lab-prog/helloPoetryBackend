@@ -6,7 +6,7 @@ import {
 	extractDomainFromPath,
 	extractIntegrationTestDomainFromPath,
 	isTestFile,
-} from '../Utils';
+} from '../utils/Utils';
 import { ADR, withAdr } from './adr-labels';
 
 type DomainCodeStats = {

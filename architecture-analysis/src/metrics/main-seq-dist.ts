@@ -8,7 +8,7 @@ import {
 	isTestFile,
 	classifyDomainKind,
 	type DomainKind,
-} from '../Utils';
+} from '../utils/Utils';
 import { ADR, withAdr } from './adr-labels';
 
 export type DomainArchitectureMetric = {

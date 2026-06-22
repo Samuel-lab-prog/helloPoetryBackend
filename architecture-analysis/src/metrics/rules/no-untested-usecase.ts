@@ -1,7 +1,7 @@
 import { red, green } from 'kleur/colors';
 import type { ClocResult } from '../../Types';
 import { printTable, type TableColumn } from '../../PrintTable';
-import { extractDomainFromPath } from '../../Utils';
+import { extractDomainFromPath } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
 type Violation = {

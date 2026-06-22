@@ -1,3 +1,7 @@
+function normalizePath(path: string): string {
+	return path.replace(/\\/g, '/');
+}
+
 /**
  * Given a file path, determines if it is an abstract file based on certain conventions or content.
  * @param path The file path
@@ -5,9 +9,9 @@
  * @returns True if the file is considered abstract, false otherwise
  */
 export function isAbstractFile(path: string, content?: string): boolean {
+	const normalizedPath = normalizePath(path);
 	return (
-		path.includes('/ports/') ||
-		path.includes('\\ports\\') ||
+		normalizedPath.includes('/ports/') ||
 		(content?.includes('interface ') ?? false) ||
 		(content?.includes('abstract class') ?? false)
 	);
@@ -19,21 +23,23 @@ export function isAbstractFile(path: string, content?: string): boolean {
  * @returns The domain name
  */
 export function extractDomainFromPath(path: string): string | null {
-	const match = path.match(
-		/(?:^|\/|\\)src[/\\](domains|generic-subdomains)[/\\]([^/\\]+)[/\\]/,
+	const normalizedPath = normalizePath(path);
+	const match = normalizedPath.match(
+		/(?:^|\/)src\/(domains|generic-subdomains)\/([^/]+)\//,
 	);
-	return match ? match[2]! : null;
+	return match?.[2] ?? null;
 }
 
 export function extractIntegrationTestDomainFromPath(
 	path: string,
 ): string | null {
-	const match = path.match(
-		/(?:^|[/\\])tests[/\\]integration[/\\](?!test-helpers[/\\])([^/\\]+)[/\\]/i,
+	const normalizedPath = normalizePath(path);
+	const match = normalizedPath.match(
+		/(?:^|\/)tests\/integration\/(?!test-helpers\/)([^/]+)\//i,
 	);
 	if ((match && match[1] === 'endpoints') || (match && match[1] === 'data'))
 		return null;
-	return match ? match[1]! : null;
+	return match?.[1] ?? null;
 }
 
 /**
@@ -42,13 +48,14 @@ export function extractIntegrationTestDomainFromPath(
  * @returns True if the file is a test file, false otherwise
  */
 export function isTestFile(path: string): boolean {
-	const testHelpersPattern = /[/\\]test-helpers([/\\]|$)/i;
-	const integrationTestsPattern = /[/\\]tests([/\\].*)?/i;
+	const normalizedPath = normalizePath(path);
+	const testHelpersPattern = /\/test-helpers(\/|$)/i;
+	const integrationTestsPattern = /\/tests(\/.*)?/i;
 
-	if (testHelpersPattern.test(path)) return true;
-	if (integrationTestsPattern.test(path)) return true;
+	if (testHelpersPattern.test(normalizedPath)) return true;
+	if (integrationTestsPattern.test(normalizedPath)) return true;
 
-	return path.endsWith('.test.ts') || path.endsWith('.spec.ts');
+	return normalizedPath.endsWith('.test.ts') || normalizedPath.endsWith('.spec.ts');
 }
 
 export type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';
@@ -71,7 +78,7 @@ export function classifyDomainKind(domain: string): DomainKind {
  * @returns True if the path is within a generic subdomain, false otherwise
  */
 export function isGenericSubdomain(path: string): boolean {
-	return path.startsWith('src/generic-subdomains/');
+	return normalizePath(path).startsWith('src/generic-subdomains/');
 }
 
 /**
@@ -80,7 +87,7 @@ export function isGenericSubdomain(path: string): boolean {
  * @returns The root namespace or null if not found
  */
 export function extractRootNamespace(path: string): string | null {
-	const match = path.match(/^src\/([^/]+)\//);
+	const match = normalizePath(path).match(/^src\/([^/]+)\//);
 	return match?.[1] ?? null;
 }
 
@@ -90,5 +97,5 @@ export function extractRootNamespace(path: string): string | null {
  * @returns True if the path is a root-level source file, false otherwise
  */
 export function isRootLevelSourceFile(path: string): boolean {
-	return /^src\/[^/]+\.(ts|js)$/.test(path);
+	return /^src\/[^/]+\.(ts|js)$/.test(normalizePath(path));
 }
