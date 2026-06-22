@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import ts from 'typescript';
-import { green, red, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	file: string;
@@ -93,8 +94,9 @@ export function printNoInvalidUseCaseErrorImports(cloc: ClocResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`OK ${withAdr('Use-case errors must come from @DomainError', ADR.useCaseDomainErrorAlias)}`,
+			formatRuleSuccess(
+				'Use-case errors must come from @DomainError',
+				ADR.useCaseDomainErrorAlias,
 			),
 		);
 		return;

@@ -1,8 +1,9 @@
-import { red, green, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { extractRootNamespace } from '../../../../utils/Utils';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	module: string;
@@ -47,9 +48,7 @@ export function printNoInvalidRootNamespaces(
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`✔ ${withAdr('All root namespaces are valid', ADR.rootNamespaces)}`,
-			),
+			formatRuleSuccess('All root namespaces are valid', ADR.rootNamespaces),
 		);
 		return;
 	}

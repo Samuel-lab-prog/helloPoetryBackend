@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { red, yellow, green } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	file: string;
@@ -124,9 +125,7 @@ export function printNoCaseMismatchImports(cloc: ClocResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`✔ ${withAdr('All imports match filesystem casing', ADR.linting)}`,
-			),
+			formatRuleSuccess('All imports match filesystem casing', ADR.linting),
 		);
 		return;
 	}

@@ -1,7 +1,8 @@
-import { green, red, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	domain: string;
@@ -62,8 +63,9 @@ export function printNoInvalidUseCaseFolderNames(cloc: ClocResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`OK ${withAdr('Use-case folders use kebab-case action names', ADR.useCaseFolderNames)}`,
+			formatRuleSuccess(
+				'Use-case folders use kebab-case action names',
+				ADR.useCaseFolderNames,
 			),
 		);
 		return;

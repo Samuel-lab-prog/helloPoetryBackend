@@ -22,7 +22,7 @@
 	architecturalMetrics: 'ADR-05.001',
 } as const;
 
-type Adr = (typeof ADR)[keyof typeof ADR];
+export type Adr = (typeof ADR)[keyof typeof ADR];
 
 export function withAdr(label: string, ...adrs: Adr[]): string {
 	return `${label} (${adrs.join(', ')})`;

@@ -1,4 +1,4 @@
-import { red, green, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import {
@@ -6,6 +6,7 @@ import {
 	isGenericSubdomain,
 } from '../../../../utils/Utils';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	from: string;
@@ -54,8 +55,9 @@ export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`✔ ${withAdr('No cross-domain violations found', ADR.noCrossDomainCalls)}`,
+			formatRuleSuccess(
+				'No cross-domain violations found',
+				ADR.noCrossDomainCalls,
 			),
 		);
 		return;

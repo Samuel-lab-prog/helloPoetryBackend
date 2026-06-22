@@ -1,8 +1,9 @@
-import { red, green } from 'kleur/colors';
+import { red } from 'kleur/colors';
 import type { ClocResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { extractDomainFromPath } from '../../../../utils/Utils';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	domain: string;
@@ -74,9 +75,7 @@ export function printNoUntestedUsecase(cloc: ClocResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`✔ ${withAdr('All use-cases have execute.test.ts', ADR.useCaseTests)}`,
-			),
+			formatRuleSuccess('All use-cases have execute.test.ts', ADR.useCaseTests),
 		);
 		return;
 	}

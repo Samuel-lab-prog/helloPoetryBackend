@@ -3,6 +3,7 @@
  */
 
 export * from './adr-labels';
+export * from './rule-messages';
 export * from './reports/change-amp';
 export * from './reports/dependency-metrics';
 export * from './reports/domain-isolation';

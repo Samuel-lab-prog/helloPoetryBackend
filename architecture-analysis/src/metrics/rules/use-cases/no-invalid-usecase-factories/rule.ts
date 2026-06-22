@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import ts from 'typescript';
-import { green, red, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { ClocResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	file: string;
@@ -168,8 +169,9 @@ export function printNoInvalidUseCaseFactories(cloc: ClocResult): void {
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`OK ${withAdr('Use-case factories use a single explicit signature', ADR.useCaseFactorySignature)}`,
+			formatRuleSuccess(
+				'Use-case factories use a single explicit signature',
+				ADR.useCaseFactorySignature,
 			),
 		);
 		return;

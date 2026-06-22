@@ -1,7 +1,8 @@
-import { red, green, yellow } from 'kleur/colors';
+import { red, yellow } from 'kleur/colors';
 import type { DepcruiseResult } from '../../../../Types';
 import { printTable, type TableColumn } from '../../../../PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
+import { formatRuleSuccess } from '../../../rule-messages';
 
 type CycleViolation = {
 	from: string;
@@ -120,8 +121,9 @@ export function printNoCircularDependencies(
 
 	if (violations.length === 0) {
 		console.log(
-			green(
-				`✔ ${withAdr('No circular dependencies found', ADR.circularDependencies)}`,
+			formatRuleSuccess(
+				'No circular dependencies found',
+				ADR.circularDependencies,
 			),
 		);
 		return;

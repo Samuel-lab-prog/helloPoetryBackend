@@ -9,6 +9,7 @@ depcruise.json
 /.vscode
 .env
 bun.xml
+architecture-analysis/bun-test-report.xml
 ai-contexts
 a.
 .eslintcache
