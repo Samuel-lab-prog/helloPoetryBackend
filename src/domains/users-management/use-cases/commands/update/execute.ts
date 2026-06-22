@@ -1,7 +1,7 @@
 ﻿import {
 	ConflictError,
 	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import type {
 	CommandsRepository,
 	UpdateUserParams,
@@ -41,3 +41,4 @@ export function updateUserFactory({ commandsRepository }: Dependencies) {
 		throw new UnknownError('Failed to update user due to unknown conflict');
 	};
 }
+

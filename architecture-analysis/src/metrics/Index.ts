@@ -16,6 +16,8 @@ export * from './rules/no-case-mismatch-imports';
 export * from './rules/no-circular-dependencies';
 export * from './rules/no-cross-domain-calls';
 export * from './rules/no-invalid-directional-dependencies';
+export * from './rules/no-invalid-usecase-factories';
+export * from './rules/no-invalid-usecase-error-imports';
 export * from './rules/no-invalid-direrectory';
 export * from './rules/no-invalid-infra-directory';
 export * from './rules/no-invalid-namespaces';

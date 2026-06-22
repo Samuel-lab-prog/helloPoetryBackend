@@ -6,7 +6,7 @@ import type { QueriesRepository } from '../../../ports/queries';
 import {
 	ConflictError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import type { RemovedFriendRecord } from '../../../ports/models';
 
 interface Dependencies {
@@ -43,3 +43,4 @@ export function deleteFriendFactory({
 		return result.data!;
 	};
 }
+

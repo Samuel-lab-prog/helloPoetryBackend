@@ -8,7 +8,7 @@ import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
@@ -81,3 +81,4 @@ export function blockUserFactory({
 		return blockResult.data!;
 	};
 }
+

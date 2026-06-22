@@ -1,5 +1,5 @@
-/* eslint-disable require-await */
-import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+﻿/* eslint-disable require-await */
+import { UnprocessableEntityError } from '@DomainError';
 import type {
 	StorageService,
 	AvatarUploadUrlResult,
@@ -51,3 +51,4 @@ export function requestAvatarUploadUrlFactory({
 		);
 	};
 }
+

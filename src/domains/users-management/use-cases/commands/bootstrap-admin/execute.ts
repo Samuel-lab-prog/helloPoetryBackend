@@ -2,7 +2,7 @@
 import { prisma } from '@Prisma/PrismaClient';
 import { fullUserSelect } from '../../../infra/queries-repository/selects';
 import type { FullUser } from '../../../ports/models';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import { ConflictError } from '@DomainError';
 
 export type BootstrapAdminParams = {
 	email: string;
@@ -95,3 +95,4 @@ export function bootstrapAdminFactory({ hashServices }: Dependencies) {
 		return { user: created, created: true };
 	};
 }
+

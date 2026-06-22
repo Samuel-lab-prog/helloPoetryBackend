@@ -1,5 +1,5 @@
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { UnauthorizedError } from '@DomainError';
 import type {
 	TokenPayload,
 	TokenService,
@@ -68,3 +68,4 @@ export function refreshSessionFactory(
 		};
 	};
 }
+

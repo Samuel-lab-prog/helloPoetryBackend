@@ -1,4 +1,4 @@
-﻿import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+﻿import { ForbiddenError } from '@DomainError';
 import type { QueriesRepository, GetUsersParams } from '../../../ports/queries';
 import type { UsersPage } from '../../../ports/models';
 
@@ -34,3 +34,4 @@ export function getUsersFactory({ queriesRepository }: Dependencies) {
 		});
 	};
 }
+

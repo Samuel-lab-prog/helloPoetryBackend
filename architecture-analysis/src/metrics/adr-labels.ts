@@ -16,6 +16,8 @@
 	circularDependencies: 'ADR-02.007',
 	linting: 'ADR-04.001',
 	useCaseDependenciesPrivate: 'ADR-04.005',
+	useCaseFactorySignature: 'ADR-04.006',
+	useCaseDomainErrorAlias: 'ADR-04.007',
 	architecturalMetrics: 'ADR-05.001',
 } as const;
 

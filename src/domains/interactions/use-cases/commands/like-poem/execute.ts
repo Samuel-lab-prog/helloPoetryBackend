@@ -3,7 +3,7 @@
 	LikePoemParams,
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+import { ConflictError } from '@DomainError';
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
@@ -72,3 +72,4 @@ export function likePoemFactory({
 		});
 	};
 }
+

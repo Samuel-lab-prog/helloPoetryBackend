@@ -128,6 +128,8 @@ Key properties of this pattern:
 - the returned function is pure application logic,
 - infrastructure is bound at the edge through `Composition.ts`.
 - the internal `Dependencies` type stays local to the file and is not exported.
+- the factory is a named export whose name ends with `Factory`.
+- the factory accepts exactly one dependency contract parameter.
 
 This example demonstrates:
 
@@ -138,14 +140,16 @@ This example demonstrates:
 - no framework, adapter, or infrastructure leakage.
 
 This rule is enforced in `metrics:analysis` and documented in ADR-04.005.
+Factory signatures are also checked in `metrics:analysis` and documented in
+ADR-04.006.
 
 ---
 
 ## Error Handling
 
 Use-cases signal failure by throwing domain or application errors. In this
-codebase, error types are centralized in `@GenericSubdomains/utils`, especially
-`domainError.ts` and `AppError.ts`.
+codebase, domain error types are centralized in `@DomainError`, while
+`AppError.ts` handles higher-level application errors.
 
 Rules:
 
@@ -157,6 +161,9 @@ Rules:
 
 Use-cases must not catch errors just to rethrow generic ones. Preserve useful
 dependency errors unless there is a clear domain translation to perform.
+
+Error imports in use-cases must come from `@DomainError`. Direct imports from
+internal error modules are disallowed and enforced in `metrics:analysis`.
 
 ---
 

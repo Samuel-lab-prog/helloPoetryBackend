@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	TokenService,
 	TokenPayload,
 	LoginClientParams,
@@ -6,7 +6,7 @@ import type {
 import type { LoginResponse } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
-import { UnauthorizedError } from '@GenericSubdomains/utils/domainError';
+import { UnauthorizedError } from '@DomainError';
 import {
 	ACCESS_TOKEN_EXPIRATION_TIME,
 	REFRESH_TOKEN_EXPIRATION_TIME,
@@ -144,3 +144,4 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 		};
 	};
 }
+

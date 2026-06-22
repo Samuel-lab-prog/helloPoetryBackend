@@ -25,6 +25,8 @@ import {
 	printNoInvalidPortsContent,
 	printNoMissingSchemaBarrels,
 	printNoExportedUseCaseDependencies,
+	printNoInvalidUseCaseFactories,
+	printNoInvalidUseCaseErrorImports,
 	printNoCaseMismatchImports,
 } from './metrics/Index';
 
@@ -55,6 +57,8 @@ function metrics(): void {
 	printNoInvalidUseCaseFolders(cloc);
 	printNoMissingUseCaseBarrels(cloc);
 	printNoExportedUseCaseDependencies(cloc);
+	printNoInvalidUseCaseFactories(cloc);
+	printNoInvalidUseCaseErrorImports(cloc);
 	printNoInvalidPortsContent(cloc);
 	printNoMissingSchemaBarrels(cloc);
 	printNoCaseMismatchImports(cloc);

@@ -4,7 +4,7 @@ import {
 	NotFoundError,
 	ForbiddenError,
 	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {
@@ -47,3 +47,4 @@ export function addCollectionItemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to add item to collection');
 	};
 }
+

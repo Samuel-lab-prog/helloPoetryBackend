@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	UnsuspendUserParams,
 } from '../../../ports/commands';
@@ -7,7 +7,7 @@ import type { UsersServicesForModeration } from '../../../ports/externalServices
 import {
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -57,3 +57,4 @@ export function unsuspendUserFactory({
 		});
 	};
 }
+

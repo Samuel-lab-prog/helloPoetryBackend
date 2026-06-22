@@ -8,7 +8,7 @@ import {
 	ConflictError,
 	UnknownError,
 	UnprocessableEntityError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -45,3 +45,4 @@ export function createUserFactory({
 		);
 	};
 }
+

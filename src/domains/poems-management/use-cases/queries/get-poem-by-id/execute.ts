@@ -4,7 +4,7 @@ import type { AuthorPoem } from '../../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
@@ -41,3 +41,4 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 		return poem;
 	};
 }
+

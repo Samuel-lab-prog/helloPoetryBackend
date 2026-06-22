@@ -1,4 +1,4 @@
-﻿import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+﻿import { UnprocessableEntityError } from '@DomainError';
 import type {
 	StorageService,
 	AudioUploadUrlResult,
@@ -66,3 +66,4 @@ export function requestPoemAudioUploadUrlFactory({
 		);
 	};
 }
+

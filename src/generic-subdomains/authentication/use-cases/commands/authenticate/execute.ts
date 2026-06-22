@@ -1,8 +1,8 @@
-import type { TokenService } from '../../../ports/externalServices';
+﻿import type { TokenService } from '../../../ports/externalServices';
 import {
 	UnprocessableEntityError,
 	UnauthorizedError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import type { AuthClient } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
@@ -32,3 +32,4 @@ export function authenticateClientFactory(
 		};
 	};
 }
+

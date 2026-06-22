@@ -1,4 +1,4 @@
-﻿import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+﻿import { ForbiddenError } from '@DomainError';
 import type {
 	QueriesRepository,
 	SearchPoemsParams,
@@ -39,3 +39,4 @@ export function getPoemsFactory({ queriesRepository }: Dependencies) {
 		});
 	};
 }
+

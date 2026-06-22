@@ -7,7 +7,7 @@ import type { UnblockUserRecord } from '../../../ports/models';
 import {
 	ConflictError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -45,3 +45,4 @@ export function unblockUserFactory({
 		return result.data;
 	};
 }
+

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	ModeratePoemParams,
 } from '../../../ports/commands';
@@ -7,7 +7,7 @@ import type { ModeratePoemResult } from '../../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { type EventBus } from '@SharedKernel/events/EventBus';
 import type { PoemModerationStatus, PoemVisibility } from '@SharedKernel/Enums';
 
@@ -228,3 +228,4 @@ export function moderatePoemFactory({
 		return result.data;
 	};
 }
+

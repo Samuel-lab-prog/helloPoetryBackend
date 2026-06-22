@@ -12,7 +12,7 @@ import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import type { EventBus } from '@SharedKernel/events/EventBus';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
@@ -123,3 +123,4 @@ export function sendFriendRequestFactory({
 		return result.data;
 	};
 }
+

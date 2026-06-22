@@ -14,7 +14,7 @@ import type { EventBus } from '@SharedKernel/events/EventBus';
 import {
 	ForbiddenError,
 	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -116,3 +116,4 @@ export function commentPoemFactory({
 		return comment;
 	};
 }
+

@@ -3,7 +3,7 @@ import {
 	NotFoundError,
 	ForbiddenError,
 	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {
@@ -44,3 +44,4 @@ export function removeCollectionItemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to remove item from collection');
 	};
 }
+

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	GetUserSanctionStatusParams,
 	QueriesRepository,
 } from '../../../ports/queries';
@@ -7,7 +7,7 @@ import type { UserSanctionStatusResponse } from '../../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -44,3 +44,4 @@ export function getUserSanctionStatusFactory({
 		};
 	};
 }
+

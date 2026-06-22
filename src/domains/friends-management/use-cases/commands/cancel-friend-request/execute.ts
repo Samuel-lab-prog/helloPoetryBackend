@@ -7,7 +7,7 @@ import type { CancelFriendRequestRecord } from '../../../ports/models';
 import {
 	ConflictError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -44,3 +44,4 @@ export function cancelFriendRequestFactory({
 		return result.data!;
 	};
 }
+

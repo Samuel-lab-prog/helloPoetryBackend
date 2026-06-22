@@ -1,4 +1,4 @@
-﻿import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+﻿import { ForbiddenError } from '@DomainError';
 import type {
 	QueriesRepository,
 	GetPendingPoemsParams,
@@ -35,3 +35,4 @@ export function getPendingPoemsFactory({
 		});
 	};
 }
+

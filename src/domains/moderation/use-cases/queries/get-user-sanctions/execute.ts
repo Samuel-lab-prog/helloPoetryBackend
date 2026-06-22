@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	GetUserSanctionsParams,
 	QueriesRepository,
 } from '../../../ports/queries';
@@ -7,7 +7,7 @@ import type { UserSanctionsResponse } from '../../../ports/models';
 import {
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -37,3 +37,4 @@ export function getUserSanctionsFactory({
 		return { items };
 	};
 }
+

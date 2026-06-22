@@ -9,7 +9,7 @@ import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -56,3 +56,4 @@ export function banUserFactory({
 		});
 	};
 }
+

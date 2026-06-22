@@ -1,4 +1,4 @@
-import type {
+﻿import type {
 	CommandsRepository,
 	DeletePoemParams,
 } from '../../../ports/commands';
@@ -7,7 +7,7 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -31,3 +31,4 @@ export function deletePoemFactory(deps: Dependencies) {
 		if (result.ok === false) throw new UnknownError('Failed to delete poem');
 	};
 }
+

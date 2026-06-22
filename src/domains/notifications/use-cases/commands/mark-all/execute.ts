@@ -2,7 +2,7 @@
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnknownError } from '@GenericSubdomains/utils/domainError';
+import { UnknownError } from '@DomainError';
 
 export interface MarkAllAsReadDependencies {
 	commandsRepository: CommandsRepository;
@@ -28,3 +28,4 @@ export function markAllNotificationsAsReadFactory({
 			throw new UnknownError('Failed to mark notifications as read');
 	};
 }
+

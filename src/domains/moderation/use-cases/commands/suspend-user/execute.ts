@@ -8,7 +8,7 @@ import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+} from '@DomainError';
 import type { QueriesRepository } from '@Domains/moderation/ports/queries';
 
 interface Dependencies {
@@ -73,3 +73,4 @@ export function suspendUserFactory({
 		});
 	};
 }
+

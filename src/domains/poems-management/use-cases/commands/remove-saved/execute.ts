@@ -1,6 +1,6 @@
 ﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnknownError } from '@GenericSubdomains/utils/domainError';
+import { UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
 import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
 
@@ -30,3 +30,4 @@ export function removeSavedPoemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to remove saved poem');
 	};
 }
+

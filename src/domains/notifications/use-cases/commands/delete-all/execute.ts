@@ -2,7 +2,7 @@
 
 import { validator } from '@SharedKernel/validators/Global';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnknownError } from '@GenericSubdomains/utils/domainError';
+import { UnknownError } from '@DomainError';
 
 export interface DeleteAllNotificationsDependencies {
 	commandsRepository: CommandsRepository;
@@ -28,3 +28,4 @@ export function deleteAllNotificationsFactory({
 			throw new UnknownError('Failed to delete all notifications');
 	};
 }
+
