@@ -1,9 +1,5 @@
 ﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
-import {
-	NotFoundError,
-	ForbiddenError,
-	UnknownError,
-} from '@DomainError';
+import { NotFoundError, ForbiddenError, UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {
@@ -42,4 +38,3 @@ export function deleteCollectionFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to delete collection');
 	};
 }
-

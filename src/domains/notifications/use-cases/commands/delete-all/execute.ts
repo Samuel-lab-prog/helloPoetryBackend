@@ -28,4 +28,3 @@ export function deleteAllNotificationsFactory({
 			throw new UnknownError('Failed to delete all notifications');
 	};
 }
-

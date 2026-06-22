@@ -22,9 +22,11 @@ function normalize(path: string): string {
 function hasExportModifier(
 	node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration,
 ): boolean {
-	return node.modifiers?.some(
-		(modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-	) ?? false;
+	return (
+		node.modifiers?.some(
+			(modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+		) ?? false
+	);
 }
 
 function findExportedDependencies(file: string): Violation[] {
@@ -48,9 +50,10 @@ function findExportedDependencies(file: string): Violation[] {
 		) {
 			violations.push({
 				file,
-				declaration: statement.kind === ts.SyntaxKind.InterfaceDeclaration
-					? 'export interface Dependencies'
-					: 'export type Dependencies',
+				declaration:
+					statement.kind === ts.SyntaxKind.InterfaceDeclaration
+						? 'export interface Dependencies'
+						: 'export type Dependencies',
 			});
 			continue;
 		}

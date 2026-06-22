@@ -28,4 +28,3 @@ export function markAllNotificationsAsReadFactory({
 			throw new UnknownError('Failed to mark notifications as read');
 	};
 }
-

@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
+﻿import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { requestPoemAudioUploadUrlFactory } from './execute';
 import { makeAuthorPoem } from '../../test-helpers/Givens';
 

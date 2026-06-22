@@ -1,9 +1,6 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
+﻿import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import { updatePoemAudioFactory } from './execute';
 import { makeAuthorPoem } from '../../test-helpers/Givens';
 

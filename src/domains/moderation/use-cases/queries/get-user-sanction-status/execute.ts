@@ -4,10 +4,7 @@
 } from '../../../ports/queries';
 import type { UsersServicesForModeration } from '../../../ports/externalServices';
 import type { UserSanctionStatusResponse } from '../../../ports/models';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	queriesRepository: QueriesRepository;
@@ -44,4 +41,3 @@ export function getUserSanctionStatusFactory({
 		};
 	};
 }
-

@@ -4,10 +4,7 @@
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
 import type { UsersServicesForModeration } from '../../../ports/externalServices';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -57,4 +54,3 @@ export function unsuspendUserFactory({
 		});
 	};
 }
-

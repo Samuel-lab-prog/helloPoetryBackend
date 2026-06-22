@@ -1,7 +1,4 @@
-﻿import {
-	ConflictError,
-	NotFoundError,
-} from '@DomainError';
+﻿import { ConflictError, NotFoundError } from '@DomainError';
 import type {
 	CommandsRepository,
 	AcceptFriendRequestParams,
@@ -91,4 +88,3 @@ export function acceptFriendRequestFactory({
 		return result.data;
 	};
 }
-

@@ -1,8 +1,5 @@
 ﻿import type { PoemComment } from '@Domains/interactions/ports/models';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import type { CommentStatus, UserStatus } from '@SharedKernel/Enums';
 
 export function comment(comment?: PoemComment | null) {

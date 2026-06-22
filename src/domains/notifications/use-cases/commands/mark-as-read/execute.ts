@@ -38,4 +38,3 @@ export function markNotificationAsReadFactory({
 		return notification.data!;
 	};
 }
-

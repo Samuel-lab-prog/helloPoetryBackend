@@ -1,7 +1,4 @@
-﻿import {
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
 import type {
 	QueriesRepository,
 	GetProfileParams,
@@ -82,4 +79,3 @@ export function getProfileFactory({
 		};
 	};
 }
-

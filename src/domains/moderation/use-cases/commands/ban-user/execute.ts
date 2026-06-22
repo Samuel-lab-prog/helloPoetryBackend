@@ -5,11 +5,7 @@
 import type { QueriesRepository } from '../../../ports/queries';
 import type { UsersServicesForModeration } from '../../../ports/externalServices';
 import type { BannedUserResponse } from '../../../ports/models';
-import {
-	ConflictError,
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -56,4 +52,3 @@ export function banUserFactory({
 		});
 	};
 }
-

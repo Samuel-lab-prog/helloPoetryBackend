@@ -1,10 +1,6 @@
 ﻿import type { CommandsRepository } from '../../../ports/commands';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import {
-	ConflictError,
-	NotFoundError,
-	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+import { ConflictError, NotFoundError, UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
 import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
 

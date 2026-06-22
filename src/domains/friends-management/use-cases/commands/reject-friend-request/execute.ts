@@ -4,10 +4,7 @@
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
 import type { FriendRequestRejectionRecord } from '../../../ports/models';
-import {
-	ConflictError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -45,4 +42,3 @@ export function rejectFriendRequestFactory({
 		return result.data!;
 	};
 }
-

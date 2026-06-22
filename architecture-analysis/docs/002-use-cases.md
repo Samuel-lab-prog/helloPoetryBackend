@@ -162,8 +162,9 @@ Rules:
 Use-cases must not catch errors just to rethrow generic ones. Preserve useful
 dependency errors unless there is a clear domain translation to perform.
 
-Error imports in use-cases must come from `@DomainError`. Direct imports from
-internal error modules are disallowed and enforced in `metrics:analysis`.
+Error imports in use-cases, their policy helpers, and their tests must come from
+`@DomainError`. Direct imports from internal error modules are disallowed and
+enforced in `metrics:analysis`.
 
 ---
 

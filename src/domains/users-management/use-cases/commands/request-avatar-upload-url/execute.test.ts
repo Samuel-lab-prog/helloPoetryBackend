@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
+﻿import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+import { UnprocessableEntityError } from '@DomainError';
 import { requestAvatarUploadUrlFactory } from './execute';
 
 describe('USE-CASE - Users Management - RequestAvatarUploadUrl', () => {

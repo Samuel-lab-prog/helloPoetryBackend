@@ -12,10 +12,11 @@ type Violation = {
 };
 
 const USE_CASE_FILE_REGEX =
-	/^src[\\/](domains|generic-subdomains)[\\/][^\\/]+[\\/]use-cases[\\/].+execute\.ts$/;
+	/^src[\\/](domains|generic-subdomains)[\\/][^\\/]+[\\/]use-cases[\\/].+\.ts$/;
 const USE_CASE_FILE_EXCLUSIONS =
-	/(?:^|[\\/])(index|Index)\.ts$|[\\/](test-helpers|policies)[\\/]|\.test\.ts$|\.spec\.ts$/i;
+	/(?:^|[\\/])(index|Index)\.ts$|[\\/](test-helpers)[\\/]/i;
 const DOMAIN_ERROR_ALIAS = '@DomainError';
+const DOMAIN_ERROR_IMPORT_PATTERN = /domain[-]?error/i;
 
 function normalizePath(file: string): string {
 	return file.replace(/\\/g, '/');
@@ -44,6 +45,7 @@ function findImportViolations(file: string): Violation[] {
 
 		const importPath = statement.moduleSpecifier.text;
 		if (importPath === DOMAIN_ERROR_ALIAS) continue;
+		if (!DOMAIN_ERROR_IMPORT_PATTERN.test(importPath)) continue;
 
 		const clause = statement.importClause;
 		if (!clause) continue;

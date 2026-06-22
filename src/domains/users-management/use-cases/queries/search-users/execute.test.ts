@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'bun:test';
-import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+﻿import { describe, expect, it } from 'bun:test';
+import { ForbiddenError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 

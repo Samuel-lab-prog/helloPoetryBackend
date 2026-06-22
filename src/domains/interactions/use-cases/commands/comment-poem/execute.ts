@@ -11,10 +11,7 @@ import type { PoemsPublicContract } from '@Domains/poems-management/public/Index
 import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 
 import type { EventBus } from '@SharedKernel/events/EventBus';
-import {
-	ForbiddenError,
-	UnknownError,
-} from '@DomainError';
+import { ForbiddenError, UnknownError } from '@DomainError';
 
 export interface CommentPoemDependencies {
 	commandsRepository: CommandsRepository;
@@ -116,4 +113,3 @@ export function commentPoemFactory({
 		return comment;
 	};
 }
-

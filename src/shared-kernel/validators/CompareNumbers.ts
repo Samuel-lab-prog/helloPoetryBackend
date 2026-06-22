@@ -1,4 +1,4 @@
-import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError } from '@DomainError';
 
 export function compareIds(id1: number, id2: number) {
 	return {

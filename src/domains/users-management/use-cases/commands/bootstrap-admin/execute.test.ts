@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test';
-import { ConflictError } from '@GenericSubdomains/utils/domainError';
+﻿import { beforeEach, describe, expect, it, mock } from 'bun:test';
+import { ConflictError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 const prismaUserFindFirstMock = mock<(...args: any[]) => Promise<any>>(() =>

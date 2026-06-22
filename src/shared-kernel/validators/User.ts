@@ -1,9 +1,6 @@
 import type { UserBasicInfo } from '@Domains/users-management/public/Index';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 export function user(user: Omit<UserBasicInfo, 'nickname'>) {
 	if (!user.exists)

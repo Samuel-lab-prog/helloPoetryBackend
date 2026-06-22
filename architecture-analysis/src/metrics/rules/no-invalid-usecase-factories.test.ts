@@ -75,9 +75,9 @@ describe('checkInvalidUseCaseFactories', () => {
 
 		const violations = checkInvalidUseCaseFactories(makeCloc(relativeFile));
 
-		expect(violations.some((violation) => violation.rule === 'default export')).toBe(
-			true,
-		);
+		expect(
+			violations.some((violation) => violation.rule === 'default export'),
+		).toBe(true);
 	});
 
 	it('flags factories that do not end with Factory', () => {
@@ -107,9 +107,9 @@ describe('checkInvalidUseCaseFactories', () => {
 
 		const violations = checkInvalidUseCaseFactories(makeCloc(relativeFile));
 
-		expect(violations.some((violation) => violation.rule === 'factory name')).toBe(
-			true,
-		);
+		expect(
+			violations.some((violation) => violation.rule === 'factory name'),
+		).toBe(true);
 	});
 
 	it('allows current factory signatures', () => {

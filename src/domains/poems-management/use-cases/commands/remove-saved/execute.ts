@@ -30,4 +30,3 @@ export function removeSavedPoemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to remove saved poem');
 	};
 }
-

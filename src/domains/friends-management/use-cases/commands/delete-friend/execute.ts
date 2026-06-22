@@ -3,10 +3,7 @@
 	DeleteFriendParams,
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
-import {
-	ConflictError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError, NotFoundError } from '@DomainError';
 import type { RemovedFriendRecord } from '../../../ports/models';
 
 interface Dependencies {
@@ -43,4 +40,3 @@ export function deleteFriendFactory({
 		return result.data!;
 	};
 }
-

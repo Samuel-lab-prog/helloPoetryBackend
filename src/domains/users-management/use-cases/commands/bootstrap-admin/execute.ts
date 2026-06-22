@@ -95,4 +95,3 @@ export function bootstrapAdminFactory({ hashServices }: Dependencies) {
 		return { user: created, created: true };
 	};
 }
-

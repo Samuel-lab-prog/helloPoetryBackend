@@ -4,10 +4,7 @@
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
 import type { ModeratePoemResult } from '../../../ports/models';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import { type EventBus } from '@SharedKernel/events/EventBus';
 import type { PoemModerationStatus, PoemVisibility } from '@SharedKernel/Enums';
 
@@ -228,4 +225,3 @@ export function moderatePoemFactory({
 		return result.data;
 	};
 }
-

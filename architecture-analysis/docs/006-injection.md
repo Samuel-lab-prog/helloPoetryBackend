@@ -68,8 +68,8 @@ This keeps use-cases:
 - framework-agnostic,
 - isolated from infrastructure concerns.
 
-Use-case factories are expected to be named exports ending with `Factory` and
-to accept a single dependency contract parameter. See ADR-04.006.
+Use-case factories are expected to be named exports ending with `Factory` and to
+accept a single dependency contract parameter. See ADR-04.006.
 
 ---
 

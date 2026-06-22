@@ -3,11 +3,7 @@
 	DeletePoemParams,
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
-import {
-	ForbiddenError,
-	NotFoundError,
-	UnknownError,
-} from '@DomainError';
+import { ForbiddenError, NotFoundError, UnknownError } from '@DomainError';
 
 interface Dependencies {
 	commandsRepository: CommandsRepository;
@@ -31,4 +27,3 @@ export function deletePoemFactory(deps: Dependencies) {
 		if (result.ok === false) throw new UnknownError('Failed to delete poem');
 	};
 }
-

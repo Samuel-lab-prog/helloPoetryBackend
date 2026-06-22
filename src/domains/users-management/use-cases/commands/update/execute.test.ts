@@ -1,9 +1,5 @@
-import { describe, expect, it } from 'bun:test';
-import {
-	ConflictError,
-	ForbiddenError,
-	UnknownError,
-} from '@GenericSubdomains/utils/domainError';
+﻿import { describe, expect, it } from 'bun:test';
+import { ConflictError, ForbiddenError, UnknownError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import {
 	DEFAULT_TARGET_ID,

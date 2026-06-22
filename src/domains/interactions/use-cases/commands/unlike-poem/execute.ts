@@ -46,4 +46,3 @@ export function unlikePoemFactory({
 		await commandsRepository.deletePoemLike({ userId, poemId });
 	};
 }
-

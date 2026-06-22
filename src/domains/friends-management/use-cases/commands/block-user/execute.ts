@@ -4,11 +4,7 @@
 } from '../../../ports/commands';
 import type { QueriesRepository } from '../../../ports/queries';
 import type { BlockedUserRecord } from '../../../ports/models';
-import {
-	ConflictError,
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import { isBannedUser } from '@SharedKernel/policies/BannedUserVisibility';
 
@@ -81,4 +77,3 @@ export function blockUserFactory({
 		return blockResult.data!;
 	};
 }
-

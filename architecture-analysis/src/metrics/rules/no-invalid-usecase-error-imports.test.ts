@@ -112,4 +112,32 @@ describe('checkInvalidUseCaseErrorImports', () => {
 
 		expect(violations).toHaveLength(0);
 	});
+
+	it('flags policy files that import from the internal domain error module', () => {
+		const relativeFile = path.join(
+			'src',
+			'domains',
+			'__tmp-usecase-error-import-rule__',
+			'use-cases',
+			'policies',
+			'Policies.ts',
+		);
+		const file = path.join(process.cwd(), relativeFile);
+		mkdirSync(path.dirname(file), { recursive: true });
+		writeFileSync(
+			file,
+			[
+				"import { ForbiddenError } from '@GenericSubdomains/utils/domainError';",
+				'',
+				'export function canDoThing(): void {',
+				'\tthrow new ForbiddenError();',
+				'}',
+			].join('\n'),
+		);
+
+		const violations = checkInvalidUseCaseErrorImports(makeCloc(relativeFile));
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0]?.errorName).toBe('ForbiddenError');
+	});
 });

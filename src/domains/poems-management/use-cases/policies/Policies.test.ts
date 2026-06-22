@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'bun:test';
+﻿import { describe, it, expect } from 'bun:test';
 import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { validateUsers } from './Policies';
 import { makePoemsScenario } from '../test-helpers/Helper';

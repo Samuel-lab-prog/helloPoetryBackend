@@ -10,7 +10,7 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import {
 	canViewBannedUserHistory,
 	isBannedUser,

@@ -1,9 +1,5 @@
 ﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
-import {
-	NotFoundError,
-	ForbiddenError,
-	UnknownError,
-} from '@DomainError';
+import { NotFoundError, ForbiddenError, UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
 
 interface Dependencies {
@@ -44,4 +40,3 @@ export function removeCollectionItemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to remove item from collection');
 	};
 }
-

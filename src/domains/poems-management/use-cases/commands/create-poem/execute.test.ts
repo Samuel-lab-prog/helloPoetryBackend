@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'bun:test';
+﻿import { describe, it, expect } from 'bun:test';
 import {
 	ConflictError,
 	ForbiddenError,
 	UnprocessableEntityError,
-} from '@GenericSubdomains/utils/domainError';
+} from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makePoemsScenario } from '../../test-helpers/Helper';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

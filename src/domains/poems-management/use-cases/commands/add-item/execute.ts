@@ -47,4 +47,3 @@ export function addCollectionItemFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to add item to collection');
 	};
 }
-

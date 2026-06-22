@@ -1,9 +1,5 @@
-import { describe, it, expect } from 'bun:test';
-import {
-	ConflictError,
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domain-error/domainError';
+﻿import { describe, it, expect } from 'bun:test';
+import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import type { SuspendedUserResponse } from '../../../ports/models';
 import { makeModerationScenario } from '../../test-helpers/Helper';

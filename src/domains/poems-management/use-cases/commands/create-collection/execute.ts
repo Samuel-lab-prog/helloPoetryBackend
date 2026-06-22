@@ -1,8 +1,5 @@
 ﻿import type { CommandsRepository, UserMetaData } from '../../../ports/commands';
-import {
-	ConflictError,
-	UnknownError,
-} from '@DomainError';
+import { ConflictError, UnknownError } from '@DomainError';
 import { validator } from 'GlobalValidator';
 import type { CreateCollection } from '@Domains/poems-management/ports/models';
 import type { QueriesRepository } from '@Domains/poems-management/ports/queries';
@@ -39,4 +36,3 @@ export function createCollectionFactory(deps: Dependencies) {
 		throw new UnknownError('Failed to create collection');
 	};
 }
-

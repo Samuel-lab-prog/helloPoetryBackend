@@ -1,6 +1,6 @@
-import { describe, expect, it, mock } from 'bun:test';
+﻿import { describe, expect, it, mock } from 'bun:test';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { ForbiddenError } from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError } from '@DomainError';
 import { getSavedPoemsFactory } from './execute';
 
 describe.concurrent('USE-CASE - Poems Management - GetSavedPoems', () => {

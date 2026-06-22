@@ -78,7 +78,11 @@ function getFactoryViolations(file: string): Violation[] {
 
 	const violations: Violation[] = [];
 	const pushViolation = (rule: string, details: string): void => {
-		if (violations.some((violation) => violation.rule === rule && violation.details === details)) {
+		if (
+			violations.some(
+				(violation) => violation.rule === rule && violation.details === details,
+			)
+		) {
 			return;
 		}
 

@@ -1,10 +1,7 @@
 ﻿import type { QueriesRepository, GetPoemParams } from '../../../ports/queries';
 import { canViewPoem } from '../../policies/Policies';
 import type { AuthorPoem } from '../../../ports/models';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@DomainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 
 interface Dependencies {
 	poemQueriesRepository: QueriesRepository;
@@ -41,4 +38,3 @@ export function getPoemFactory({ poemQueriesRepository }: Dependencies) {
 		return poem;
 	};
 }
-

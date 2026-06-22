@@ -1,8 +1,5 @@
 import type { PoemBasicInfo } from '@Domains/poems-management/public/Index';
-import {
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+import { ForbiddenError, NotFoundError } from '@DomainError';
 import type {
 	PoemStatus,
 	PoemModerationStatus,

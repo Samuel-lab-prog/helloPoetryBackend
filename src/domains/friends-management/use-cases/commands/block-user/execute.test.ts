@@ -1,9 +1,5 @@
-import { describe, it, expect } from 'bun:test';
-import {
-	ConflictError,
-	ForbiddenError,
-	NotFoundError,
-} from '@GenericSubdomains/utils/domainError';
+﻿import { describe, it, expect } from 'bun:test';
+import { ConflictError, ForbiddenError, NotFoundError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 

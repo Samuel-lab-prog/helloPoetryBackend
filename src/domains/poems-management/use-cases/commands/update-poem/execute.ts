@@ -10,10 +10,7 @@ import type {
 } from '../../../ports/models';
 import { canUpdatePoem } from '../../policies/Policies';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import {
-	ConflictError,
-	NotFoundError,
-} from '@DomainError';
+import { ConflictError, NotFoundError } from '@DomainError';
 interface Dependencies {
 	commandsRepository: CommandsRepository;
 	queriesRepository: QueriesRepository;
@@ -85,4 +82,3 @@ export function updatePoemFactory(deps: Dependencies) {
 		throw result.error;
 	};
 }
-

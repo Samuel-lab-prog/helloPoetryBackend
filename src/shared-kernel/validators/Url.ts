@@ -1,4 +1,4 @@
-import { UnprocessableEntityError } from '@GenericSubdomains/utils/domainError';
+import { UnprocessableEntityError } from '@DomainError';
 
 const CDN_URL_ALLOWLIST = (process.env.CDN_URL_ALLOWLIST ?? '')
 	.split(',')
