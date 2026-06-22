@@ -186,6 +186,7 @@ See:
 - ADR-04.005 – Use-case dependency contracts stay private
 - ADR-04.006 – Use-case factories use a single explicit signature
 - ADR-04.007 – Use-case errors must flow through the domain error alias
+- ADR-04.008 – Use-case folders use kebab-case action names
 
 ---
 

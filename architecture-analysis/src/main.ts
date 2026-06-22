@@ -21,6 +21,7 @@ import {
 	printNoInvalidInfraDirectory,
 	printNoInvalidRepositoryFiles,
 	printNoInvalidUseCaseFolders,
+	printNoInvalidUseCaseFolderNames,
 	printNoMissingUseCaseBarrels,
 	printNoInvalidPortsContent,
 	printNoMissingSchemaBarrels,
@@ -55,6 +56,7 @@ function metrics(): void {
 	printNoInvalidInfraDirectory(cloc);
 	printNoInvalidRepositoryFiles(cloc);
 	printNoInvalidUseCaseFolders(cloc);
+	printNoInvalidUseCaseFolderNames(cloc);
 	printNoMissingUseCaseBarrels(cloc);
 	printNoExportedUseCaseDependencies(cloc);
 	printNoInvalidUseCaseFactories(cloc);

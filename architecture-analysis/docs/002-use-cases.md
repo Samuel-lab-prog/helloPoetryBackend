@@ -3,12 +3,13 @@
 This document describes how use-cases are structured, implemented, and tested in
 this codebase.
 
-Use-cases are the core of the application. They define what the system does in
-response to a request, independent of delivery mechanisms, frameworks, and
+Use-cases are the core application boundary. They define what the system does
+in response to a request, independent of delivery mechanisms, frameworks, and
 infrastructure.
 
 Normative constraints are defined in ADRs. This document explains how to apply
-them in practice.
+them in practice and summarizes the conventions that make those rules easier to
+follow.
 
 ---
 
@@ -139,9 +140,8 @@ This example demonstrates:
 - domain-level error signaling,
 - no framework, adapter, or infrastructure leakage.
 
-This rule is enforced in `metrics:analysis` and documented in ADR-04.005.
-Factory signatures are also checked in `metrics:analysis` and documented in
-ADR-04.006.
+This pattern is enforced in `metrics:analysis` and documented in ADR-04.005,
+ADR-04.006, and ADR-04.007.
 
 ---
 
@@ -174,6 +174,9 @@ Guidelines:
 
 - one use-case per file,
 - one exported factory per use-case,
+- factory names must end with `Factory`,
+- use-case implementation files should keep a local `interface Dependencies`,
+- use-case folders must use kebab-case names such as `create-poem`,
 - names must describe an action,
 - prefer verb-based names,
 - avoid "manager", "service", or "handler" suffixes.
@@ -227,8 +230,8 @@ Violations are detected and enforced through CI.
 
 ## Conventions
 
-- Use-cases live in the `use-cases` directory.
-- Each use-case is a folder containing:
+- Use-cases live under the `use-cases/` directory.
+- Each use-case folder contains:
   - `execute.ts` with the factory function,
   - `execute.test.ts` with tests.
 - CQRS folders are used by default:
@@ -240,10 +243,11 @@ Violations are detected and enforced through CI.
   - `policies/`,
   - `test-helpers/`.
 - Any other folder or file at the `use-cases/` root is a violation.
-- Errors are centralized in `@GenericSubdomains/utils`.
+- Use-case action folders under `commands/` and `queries/` must use kebab-case.
 - Models and DTOs are defined in `ports/` and imported from there.
 - Use-cases should not import models from other domains directly; use public
   contracts or ports.
+- Error imports in use-case code, policies, and tests must use `@DomainError`.
 
 ---
 

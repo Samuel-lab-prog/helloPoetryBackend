@@ -66,8 +66,8 @@ When unit tests exist, they must live **next to the module they test**.
 
 Examples:
 
-- `use-cases/commands/create-user/execute.ts` →
-  `use-cases/commands/create-user/execute.test.ts`
+- `use-cases/commands/create-poem/execute.ts` →
+  `use-cases/commands/create-poem/execute.test.ts`
 - `infra/queries-repository/Repository.ts` →
   `infra/queries-repository/Repository.test.ts`
 
@@ -75,6 +75,7 @@ Rules:
 
 - no central `__tests__` folders for unit tests,
 - test location must reflect ownership.
+- use-case folders should be kebab-case action names such as `create-poem`.
 
 ---
 

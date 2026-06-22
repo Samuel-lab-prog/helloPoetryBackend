@@ -18,6 +18,7 @@
 	useCaseDependenciesPrivate: 'ADR-04.005',
 	useCaseFactorySignature: 'ADR-04.006',
 	useCaseDomainErrorAlias: 'ADR-04.007',
+	useCaseFolderNames: 'ADR-04.008',
 	architecturalMetrics: 'ADR-05.001',
 } as const;
 

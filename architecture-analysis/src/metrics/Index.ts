@@ -22,6 +22,7 @@ export * from './rules/no-invalid-infra-directory';
 export * from './rules/no-invalid-namespaces';
 export * from './rules/no-invalid-ports-content';
 export * from './rules/no-invalid-repository-files';
+export * from './rules/no-invalid-usecase-folder-names';
 export * from './rules/no-invalid-usecase-error-imports';
 export * from './rules/no-invalid-usecase-factories';
 export * from './rules/no-invalid-usecase-folders';
