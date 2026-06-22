@@ -55,7 +55,9 @@ export function isTestFile(path: string): boolean {
 	if (testHelpersPattern.test(normalizedPath)) return true;
 	if (integrationTestsPattern.test(normalizedPath)) return true;
 
-	return normalizedPath.endsWith('.test.ts') || normalizedPath.endsWith('.spec.ts');
+	return (
+		normalizedPath.endsWith('.test.ts') || normalizedPath.endsWith('.spec.ts')
+	);
 }
 
 export type DomainKind = 'CORE' | 'UTILITY' | 'INFRA_SHARED';

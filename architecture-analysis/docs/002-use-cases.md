@@ -3,8 +3,8 @@
 This document describes how use-cases are structured, implemented, and tested in
 this codebase.
 
-Use-cases are the core application boundary. They define what the system does
-in response to a request, independent of delivery mechanisms, frameworks, and
+Use-cases are the core application boundary. They define what the system does in
+response to a request, independent of delivery mechanisms, frameworks, and
 infrastructure.
 
 Normative constraints are defined in ADRs. This document explains how to apply
