@@ -127,6 +127,7 @@ Key properties of this pattern:
 - dependencies are injected once,
 - the returned function is pure application logic,
 - infrastructure is bound at the edge through `Composition.ts`.
+- the internal `Dependencies` type stays local to the file and is not exported.
 
 This example demonstrates:
 
@@ -135,6 +136,8 @@ This example demonstrates:
 - business rule enforcement,
 - domain-level error signaling,
 - no framework, adapter, or infrastructure leakage.
+
+This rule is enforced in `metrics:analysis` and documented in ADR-04.005.
 
 ---
 

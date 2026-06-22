@@ -24,5 +24,6 @@ export * from './rules/no-invalid-repository-files';
 export * from './rules/no-invalid-usecase-folders';
 export * from './rules/no-missing-schema-barrels';
 export * from './rules/no-missing-usecase-barrels';
+export * from './rules/no-exported-usecase-dependencies';
 export * from './rules/no-root-src-code';
 export * from './rules/no-untested-usecase';

@@ -15,6 +15,7 @@
 	mandatoryDomainFolders: 'ADR-01.006',
 	circularDependencies: 'ADR-02.007',
 	linting: 'ADR-04.001',
+	useCaseDependenciesPrivate: 'ADR-04.005',
 	architecturalMetrics: 'ADR-05.001',
 } as const;
 

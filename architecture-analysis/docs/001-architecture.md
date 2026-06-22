@@ -183,6 +183,7 @@ See:
 - ADR-04.002 – Mandatory code formatting
 - ADR-04.003 – Reproducible and deterministic builds
 - ADR-04.004 – CI as a gatekeeper
+- ADR-04.005 – Use-case dependency contracts stay private
 
 ---
 
