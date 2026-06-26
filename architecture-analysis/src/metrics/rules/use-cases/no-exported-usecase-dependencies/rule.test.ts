@@ -1,53 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { describe, expect, it } from 'bun:test';
 import path from 'node:path';
-import type { ClocResult } from '../../../../Types';
+import { makeClocResult } from '../../test-helpers/fixtures';
+import { withTemporaryDomainFile } from '../../test-helpers/filesystem';
 import { checkExportedUseCaseDependencies } from './rule';
 
-const TEST_ROOT = path.join(
-	process.cwd(),
-	'src',
-	'domains',
-	'__tmp-usecase-deps-rule__',
-);
-
-function makeCloc(file: string): ClocResult {
-	return {
-		header: {
-			cloc_url: '',
-			cloc_version: '',
-			elapsed_seconds: 0,
-			n_files: 1,
-			n_lines: 1,
-			files_per_second: 0,
-			lines_per_second: 0,
-			report_file: '',
-		},
-		SUM: {
-			blank: 0,
-			comment: 0,
-			code: 1,
-			nFiles: 1,
-		},
-		[file]: {
-			blank: 0,
-			comment: 0,
-			code: 1,
-			language: 'TypeScript',
-		},
-	} as ClocResult;
-}
-
-beforeEach(() => {
-	rmSync(TEST_ROOT, { recursive: true, force: true });
-	mkdirSync(TEST_ROOT, { recursive: true });
-});
-
-afterEach(() => {
-	rmSync(TEST_ROOT, { recursive: true, force: true });
-});
-
-describe('ARCHITECTURE-RULE-no-exported-usecase-dependencies', () => {
+describe('ARCHITECTURE-RULE - No Exported Usecase Dependencies', () => {
 	it('ARCHITECTURE-RULE flags exported Dependencies interfaces', () => {
 		const relativeFile = path.join(
 			'src',
@@ -58,10 +15,9 @@ describe('ARCHITECTURE-RULE-no-exported-usecase-dependencies', () => {
 			'publish-poem',
 			'execute.ts',
 		);
-		const file = path.join(process.cwd(), relativeFile);
-		mkdirSync(path.dirname(file), { recursive: true });
-		writeFileSync(
-			file,
+		withTemporaryDomainFile(
+			'__tmp-usecase-deps-rule__',
+			relativeFile,
 			[
 				'export interface Dependencies {',
 				'\tservice: unknown;',
@@ -73,12 +29,19 @@ describe('ARCHITECTURE-RULE-no-exported-usecase-dependencies', () => {
 				'\t};',
 				'}',
 			].join('\n'),
+			() => {
+				const violations = checkExportedUseCaseDependencies(
+					makeClocResult({
+						[relativeFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toHaveLength(1);
+				expect(violations[0]?.declaration).toBe(
+					'export interface Dependencies',
+				);
+			},
 		);
-
-		const violations = checkExportedUseCaseDependencies(makeCloc(relativeFile));
-
-		expect(violations).toHaveLength(1);
-		expect(violations[0]?.declaration).toBe('export interface Dependencies');
 	});
 
 	it('ARCHITECTURE-RULE allows local Dependencies types', () => {
@@ -91,10 +54,9 @@ describe('ARCHITECTURE-RULE-no-exported-usecase-dependencies', () => {
 			'get-feed',
 			'execute.ts',
 		);
-		const file = path.join(process.cwd(), relativeFile);
-		mkdirSync(path.dirname(file), { recursive: true });
-		writeFileSync(
-			file,
+		withTemporaryDomainFile(
+			'__tmp-usecase-deps-rule__',
+			relativeFile,
 			[
 				'interface Dependencies {',
 				'\tservice: unknown;',
@@ -106,10 +68,15 @@ describe('ARCHITECTURE-RULE-no-exported-usecase-dependencies', () => {
 				'\t};',
 				'}',
 			].join('\n'),
+			() => {
+				const violations = checkExportedUseCaseDependencies(
+					makeClocResult({
+						[relativeFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toHaveLength(0);
+			},
 		);
-
-		const violations = checkExportedUseCaseDependencies(makeCloc(relativeFile));
-
-		expect(violations).toHaveLength(0);
 	});
 });

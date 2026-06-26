@@ -79,7 +79,7 @@ function addCycleViolation(
 	});
 }
 
-function checkCircularDependencies(
+export function checkCircularDependencies(
 	cruiseResult: DepcruiseResult,
 ): CycleViolation[] {
 	const violations: CycleViolation[] = [];

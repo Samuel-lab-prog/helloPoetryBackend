@@ -28,7 +28,7 @@ function isAllowedInfraFolder(folder: string): boolean {
 	return folder.endsWith('-service');
 }
 
-function checkInvalidInfraDirectory(cloc: ClocResult): Violation[] {
+export function checkInvalidInfraDirectory(cloc: ClocResult): Violation[] {
 	const violations: Violation[] = [];
 	const seen = new Set<string>();
 

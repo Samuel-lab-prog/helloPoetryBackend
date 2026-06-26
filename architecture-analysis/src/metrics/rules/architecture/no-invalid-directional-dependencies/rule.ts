@@ -26,7 +26,7 @@ type DirectionViolation = {
 	toLayer: Layer;
 };
 
-function checkInvalidDirectionalDependencies(
+export function checkInvalidDirectionalDependencies(
 	cruiseResult: DepcruiseResult,
 ): DirectionViolation[] {
 	const violations: DirectionViolation[] = [];

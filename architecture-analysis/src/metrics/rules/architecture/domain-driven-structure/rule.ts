@@ -35,7 +35,7 @@ function isDomainNamespace(path: string): boolean {
 	return /^src\/(domains|generic-subdomains)\/[^/]+\/.+/.test(path);
 }
 
-function checkDomainDrivenStructure(cloc: ClocResult): Violation[] {
+export function checkDomainDrivenStructure(cloc: ClocResult): Violation[] {
 	const violations: Violation[] = [];
 
 	for (const [rawPath, info] of Object.entries(cloc)) {

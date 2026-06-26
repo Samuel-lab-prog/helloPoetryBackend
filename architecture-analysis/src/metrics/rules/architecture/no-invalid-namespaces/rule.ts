@@ -18,7 +18,7 @@ const ALLOWED_ROOT_NAMESPACES = new Set([
 	'tests',
 ]);
 
-function checkInvalidRootNamespaces(
+export function checkInvalidRootNamespaces(
 	cruiseResult: DepcruiseResult,
 ): Violation[] {
 	const violations: Violation[] = [];

@@ -24,7 +24,7 @@ function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-function checkInvalidPortsContent(cloc: ClocResult): Violation[] {
+export function checkInvalidPortsContent(cloc: ClocResult): Violation[] {
 	const violations: Violation[] = [];
 	const seen = new Set<string>();
 

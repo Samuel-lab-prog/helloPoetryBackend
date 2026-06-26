@@ -17,7 +17,7 @@ function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-function checkMissingSchemaBarrels(cloc: ClocResult): Violation[] {
+export function checkMissingSchemaBarrels(cloc: ClocResult): Violation[] {
 	const folders = new Map<
 		string,
 		{ domain: string; path: string; hasIndex: boolean }

@@ -1,53 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { describe, expect, it } from 'bun:test';
 import path from 'node:path';
-import type { ClocResult } from '../../../../Types';
+import { makeClocResult } from '../../test-helpers/fixtures';
+import { withTemporaryDomainFile } from '../../test-helpers/filesystem';
 import { checkInvalidUseCaseErrorImports } from './rule';
 
-const TEST_ROOT = path.join(
-	process.cwd(),
-	'src',
-	'domains',
-	'__tmp-usecase-error-import-rule__',
-);
-
-function makeCloc(file: string): ClocResult {
-	return {
-		header: {
-			cloc_url: '',
-			cloc_version: '',
-			elapsed_seconds: 0,
-			n_files: 1,
-			n_lines: 1,
-			files_per_second: 0,
-			lines_per_second: 0,
-			report_file: '',
-		},
-		SUM: {
-			blank: 0,
-			comment: 0,
-			code: 1,
-			nFiles: 1,
-		},
-		[file]: {
-			blank: 0,
-			comment: 0,
-			code: 1,
-			language: 'TypeScript',
-		},
-	} as ClocResult;
-}
-
-beforeEach(() => {
-	rmSync(TEST_ROOT, { recursive: true, force: true });
-	mkdirSync(TEST_ROOT, { recursive: true });
-});
-
-afterEach(() => {
-	rmSync(TEST_ROOT, { recursive: true, force: true });
-});
-
-describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
+describe('ARCHITECTURE-RULE - No Invalid Usecase Error Imports', () => {
 	it('ARCHITECTURE-RULE flags direct imports from the internal domain error module', () => {
 		const relativeFile = path.join(
 			'src',
@@ -58,10 +15,9 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 			'publish-poem',
 			'execute.ts',
 		);
-		const file = path.join(process.cwd(), relativeFile);
-		mkdirSync(path.dirname(file), { recursive: true });
-		writeFileSync(
-			file,
+		withTemporaryDomainFile(
+			'__tmp-usecase-error-import-rule__',
+			relativeFile,
 			[
 				"import { ForbiddenError } from '@GenericSubdomains/utils/domainError';",
 				'',
@@ -73,12 +29,17 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 				'\tthrow new ForbiddenError();',
 				'}',
 			].join('\n'),
+			() => {
+				const violations = checkInvalidUseCaseErrorImports(
+					makeClocResult({
+						[relativeFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toHaveLength(1);
+				expect(violations[0]?.errorName).toBe('ForbiddenError');
+			},
 		);
-
-		const violations = checkInvalidUseCaseErrorImports(makeCloc(relativeFile));
-
-		expect(violations).toHaveLength(1);
-		expect(violations[0]?.errorName).toBe('ForbiddenError');
 	});
 
 	it('ARCHITECTURE-RULE allows the canonical domain error alias', () => {
@@ -91,10 +52,9 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 			'get-feed',
 			'execute.ts',
 		);
-		const file = path.join(process.cwd(), relativeFile);
-		mkdirSync(path.dirname(file), { recursive: true });
-		writeFileSync(
-			file,
+		withTemporaryDomainFile(
+			'__tmp-usecase-error-import-rule__',
+			relativeFile,
 			[
 				"import { ForbiddenError } from '@DomainError';",
 				'',
@@ -106,11 +66,16 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 				'\tthrow new ForbiddenError();',
 				'}',
 			].join('\n'),
+			() => {
+				const violations = checkInvalidUseCaseErrorImports(
+					makeClocResult({
+						[relativeFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toHaveLength(0);
+			},
 		);
-
-		const violations = checkInvalidUseCaseErrorImports(makeCloc(relativeFile));
-
-		expect(violations).toHaveLength(0);
 	});
 
 	it('ARCHITECTURE-RULE flags policy files that import from the internal domain error module', () => {
@@ -122,10 +87,9 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 			'policies',
 			'Policies.ts',
 		);
-		const file = path.join(process.cwd(), relativeFile);
-		mkdirSync(path.dirname(file), { recursive: true });
-		writeFileSync(
-			file,
+		withTemporaryDomainFile(
+			'__tmp-usecase-error-import-rule__',
+			relativeFile,
 			[
 				"import { ForbiddenError } from '@GenericSubdomains/utils/domainError';",
 				'',
@@ -133,11 +97,16 @@ describe('ARCHITECTURE-RULE-no-invalid-usecase-error-imports', () => {
 				'\tthrow new ForbiddenError();',
 				'}',
 			].join('\n'),
+			() => {
+				const violations = checkInvalidUseCaseErrorImports(
+					makeClocResult({
+						[relativeFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toHaveLength(1);
+				expect(violations[0]?.errorName).toBe('ForbiddenError');
+			},
 		);
-
-		const violations = checkInvalidUseCaseErrorImports(makeCloc(relativeFile));
-
-		expect(violations).toHaveLength(1);
-		expect(violations[0]?.errorName).toBe('ForbiddenError');
 	});
 });

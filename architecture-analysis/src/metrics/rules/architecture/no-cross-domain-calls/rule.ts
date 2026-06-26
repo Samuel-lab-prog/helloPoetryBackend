@@ -17,7 +17,7 @@ type Violation = {
 
 const ALLOWED_CROSS_DOMAIN_REGEX = /\/public\//;
 
-function checkDomainNamespaceIntegrity(
+export function checkDomainNamespaceIntegrity(
 	cruiseResult: DepcruiseResult,
 ): Violation[] {
 	const violations: Violation[] = [];

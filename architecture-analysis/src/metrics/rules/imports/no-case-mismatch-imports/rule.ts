@@ -83,7 +83,7 @@ function resolveImport(
 	return null;
 }
 
-function checkCaseMismatchImports(cloc: ClocResult): Violation[] {
+export function checkCaseMismatchImports(cloc: ClocResult): Violation[] {
 	const fileMap = buildFileMap(cloc);
 	const violations: Violation[] = [];
 

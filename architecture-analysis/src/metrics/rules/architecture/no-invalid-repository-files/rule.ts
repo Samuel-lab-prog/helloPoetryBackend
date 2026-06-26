@@ -31,7 +31,7 @@ function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-function checkInvalidRepositoryFiles(cloc: ClocResult): Violation[] {
+export function checkInvalidRepositoryFiles(cloc: ClocResult): Violation[] {
 	const repos = new Map<string, RepoInfo>();
 	const violations: Violation[] = [];
 	const seen = new Set<string>();

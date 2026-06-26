@@ -12,13 +12,13 @@ type Violation = {
 
 const REQUIRED_FOLDERS = ['use-cases', 'ports', 'adapters'];
 
-const DOMAIN_REGEX = /^src\/(domains|generic-subdomains)\/([^/]+)\/(.+)/;
+const DOMAIN_REGEX = /^src\/domains\/([^/]+)(?:\/(.+))?/;
 
 function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-function checkMissingDirectories(cloc: ClocResult): Violation[] {
+export function checkMissingDirectories(cloc: ClocResult): Violation[] {
 	const domains = new Map<
 		string,
 		{
@@ -36,11 +36,10 @@ function checkMissingDirectories(cloc: ClocResult): Violation[] {
 		const match = path.match(DOMAIN_REGEX);
 		if (!match) continue;
 
-		const [, , domainName, rest] = match;
+		const [, domainName, rest] = match;
+		if (!domainName) continue;
 		const domainPath = `src/domains/${domainName}`;
-
-		if (!rest) continue;
-		const firstFolder = rest.split('/')[0];
+		const firstFolder = rest?.split('/')[0];
 
 		const entry = domains.get(domainPath) ?? {
 			domain: domainName,
@@ -49,8 +48,7 @@ function checkMissingDirectories(cloc: ClocResult): Violation[] {
 		};
 
 		if (firstFolder) entry.folders.add(firstFolder);
-
-		if (!entry) domains.set(domainPath, entry);
+		domains.set(domainPath, entry);
 	}
 
 	const violations: Violation[] = [];
@@ -67,7 +65,7 @@ function checkMissingDirectories(cloc: ClocResult): Violation[] {
 		}
 	}
 
-	return violations;
+	return violations.sort((a, b) => a.path.localeCompare(b.path));
 }
 
 export function printNoMissingDirectories(cloc: ClocResult): void {
