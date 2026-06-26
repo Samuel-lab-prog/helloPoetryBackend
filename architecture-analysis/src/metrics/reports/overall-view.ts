@@ -1,6 +1,5 @@
-import type { ClocResult } from '../../Types';
-import { printTable, type TableColumn } from '../../PrintTable';
-import { classifyTestsPercent } from '../../Classify';
+import type { ClocResult } from '../Types';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
 import { green, red, yellow } from 'kleur/colors';
 import {
 	extractDomainFromPath,
@@ -69,7 +68,10 @@ export function calculateDomainCodeStats(cloc: ClocResult): DomainCodeStats[] {
 }
 
 function classifyTestCoverage(testsPercent: number) {
-	const label = classifyTestsPercent(testsPercent);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (testsPercent >= 40) label = 'GOOD';
+	else if (testsPercent >= 20) label = 'OK';
+	else label = 'FAIL';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };

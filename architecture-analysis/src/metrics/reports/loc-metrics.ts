@@ -1,4 +1,5 @@
-import type { ClocResult, FanMetric } from '../../Types';
+import type { ClocResult } from '../Types';
+import type { FanMetric } from './dependency-metrics';
 
 export function buildLocMap(cloc: ClocResult): Map<string, number> {
 	const map = new Map<string, number>();

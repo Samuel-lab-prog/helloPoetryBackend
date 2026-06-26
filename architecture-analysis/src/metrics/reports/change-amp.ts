@@ -1,7 +1,6 @@
 import { red, green, yellow } from 'kleur/colors';
 import { execSync } from 'child_process';
-import { printTable, type TableColumn } from '../../PrintTable';
-import { classifyChangeAmplification } from '../../Classify';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
 import { extractDomainFromPath } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
@@ -69,7 +68,10 @@ export function calculateChangeAmplification(
 }
 
 function classifyMetric(avg: number, max: number) {
-	const label = classifyChangeAmplification(avg, max);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (avg > 25 || max > 35) label = 'FAIL';
+	else if (avg > 18 || max > 25) label = 'OK';
+	else label = 'GOOD';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };

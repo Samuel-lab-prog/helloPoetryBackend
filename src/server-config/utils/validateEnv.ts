@@ -2,7 +2,7 @@ import kleur from 'kleur';
 import { MissingEnvVarError } from '@AppError';
 import { parseBoolean } from './envParsers';
 import { getDatabaseSafetyError } from './databaseSafety';
-import { printTable } from '../../../architecture-analysis/src/PrintTable';
+import { printTable } from '../../../architecture-analysis/src/utils/PrintTable';
 
 type EnvName = Parameters<typeof MissingEnvVarError>[0];
 

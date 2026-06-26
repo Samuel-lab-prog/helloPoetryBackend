@@ -28,12 +28,6 @@ export type ClocResult = {
 	};
 } & Record<string, ClocFileData>;
 
-export type FanMetric = {
-	module: string;
-	dependencies: number;
-	loc?: number;
-};
-
 export type DomainMetric = {
 	domain: string;
 	loc: number;

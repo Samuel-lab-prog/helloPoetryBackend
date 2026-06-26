@@ -1,9 +1,11 @@
 import { red } from 'kleur/colors';
-import type { ClocResult } from '../../../../Types';
-import { printTable, type TableColumn } from '../../../../PrintTable';
-import { extractDomainFromPath } from '../../../../utils/Utils';
+import type { ClocResult } from '../../../Types';
+import { printTable, type TableColumn } from '../../../../utils/PrintTable';
+import {
+	extractDomainFromPath,
+	formatRuleSuccess,
+} from '../../../../utils/Utils';
 import { ADR, withAdr } from '../../../adr-labels';
-import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	domain: string;

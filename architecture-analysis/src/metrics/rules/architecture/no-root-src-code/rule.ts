@@ -1,9 +1,13 @@
 import { red } from 'kleur/colors';
-import type { DepcruiseResult } from '../../../../Types';
-import { padRight, divider } from '../../../../ConsoleFormatUtils';
-import { isRootLevelSourceFile } from '../../../../utils/Utils';
+import type { DepcruiseResult } from '../../../Types';
+import {
+	divider,
+	formatRuleSuccess,
+	formatRuleViolation,
+	isRootLevelSourceFile,
+	padRight,
+} from '../../../../utils/Utils';
 import { ADR } from '../../../adr-labels';
-import { formatRuleSuccess, formatRuleViolation } from '../../../rule-messages';
 
 type Violation = {
 	module: string;

@@ -1,4 +1,4 @@
-import { loadClocData, loadDepcruiseData } from './Loaders';
+import { loadClocData, loadDepcruiseData } from './utils/Utils';
 
 import {
 	printChangeAmplification,

@@ -1,5 +1,4 @@
-import type { ClocResult, DomainMetric, DomainAggregate } from '../../Types';
-import { classifyDomainSize } from '../../Classify';
+import type { ClocResult, DomainMetric, DomainAggregate } from '../Types';
 
 const IGNORED_DOMAINS: string[] = [];
 
@@ -56,7 +55,7 @@ export function calculateDomainStatistics(
 }
 
 import { red, yellow, green } from 'kleur/colors';
-import { printTable, type TableColumn } from '../../PrintTable';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
 import { ADR, withAdr } from '../adr-labels';
 
 function classifySizeResult(percent: number): {
@@ -64,7 +63,10 @@ function classifySizeResult(percent: number): {
 	color: (text: string) => string;
 } {
 	const abs = Math.abs(percent);
-	const label = classifyDomainSize(abs);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (abs <= 0.3) label = 'GOOD';
+	else if (abs <= 0.5) label = 'OK';
+	else label = 'FAIL';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };

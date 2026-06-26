@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { red, yellow } from 'kleur/colors';
-import type { ClocResult } from '../../../../Types';
-import { printTable, type TableColumn } from '../../../../PrintTable';
+import type { ClocResult } from '../../../Types';
+import { printTable, type TableColumn } from '../../../../utils/PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
-import { formatRuleSuccess } from '../../../rule-messages';
+import { formatRuleSuccess } from '../../../../utils/Utils';
 
 type Violation = {
 	file: string;

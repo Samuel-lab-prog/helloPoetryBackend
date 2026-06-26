@@ -1,8 +1,8 @@
 import { red, yellow } from 'kleur/colors';
-import type { DepcruiseResult } from '../../../../Types';
-import { printTable, type TableColumn } from '../../../../PrintTable';
+import type { DepcruiseResult } from '../../../Types';
+import { printTable, type TableColumn } from '../../../../utils/PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
-import { formatRuleSuccess } from '../../../rule-messages';
+import { formatRuleSuccess } from '../../../../utils/Utils';
 
 type CycleViolation = {
 	from: string;

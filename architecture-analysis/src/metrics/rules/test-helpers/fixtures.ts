@@ -1,4 +1,4 @@
-import type { ClocResult, DepcruiseResult } from '../../../Types';
+import type { ClocResult, DepcruiseResult } from '../../Types';
 
 type ClocEntry = {
 	code: number;

@@ -1,7 +1,6 @@
 import { red, green, yellow } from 'kleur/colors';
-import { printTable, type TableColumn } from '../../PrintTable';
-import type { DepcruiseResult } from '../../Types';
-import { classifyIsolation } from '../../Classify';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
+import type { DepcruiseResult } from '../Types';
 import { extractDomainFromPath } from '../../utils/Utils';
 import { ADR, withAdr } from '../adr-labels';
 
@@ -55,7 +54,10 @@ export function calculateDomainIsolation(
 }
 
 function classifyMetric(externalPercent: number) {
-	const label = classifyIsolation(externalPercent);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (externalPercent <= 0.2) label = 'GOOD';
+	else if (externalPercent <= 0.5) label = 'OK';
+	else label = 'FAIL';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };

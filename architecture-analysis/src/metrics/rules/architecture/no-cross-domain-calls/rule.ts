@@ -1,12 +1,12 @@
 import { red, yellow } from 'kleur/colors';
-import type { DepcruiseResult } from '../../../../Types';
-import { printTable, type TableColumn } from '../../../../PrintTable';
+import type { DepcruiseResult } from '../../../Types';
+import { printTable, type TableColumn } from '../../../../utils/PrintTable';
 import {
 	extractDomainFromPath,
 	isGenericSubdomain,
+	formatRuleSuccess,
 } from '../../../../utils/Utils';
 import { ADR, withAdr } from '../../../adr-labels';
-import { formatRuleSuccess } from '../../../rule-messages';
 
 type Violation = {
 	from: string;

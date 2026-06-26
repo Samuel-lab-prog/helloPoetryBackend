@@ -1,7 +1,6 @@
-import type { ClocResult, DepcruiseResult } from '../../Types';
+import type { ClocResult, DepcruiseResult } from '../Types';
 import { red, yellow, green } from 'kleur/colors';
-import { printTable, type TableColumn } from '../../PrintTable';
-import { classifyFanOut, classifyFanIn } from '../../Classify';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
 import { attachLocToFanOut, buildLocMap } from '../Index';
 import { ADR, withAdr } from '../adr-labels';
 
@@ -79,14 +78,20 @@ export function calculateFanIn(
 }
 
 function classifyFanInMetric(count: number) {
-	const label = classifyFanIn(count);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (count <= 15) label = 'GOOD';
+	else if (count <= 30) label = 'OK';
+	else label = 'FAIL';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };
 }
 
 function classifyFanOutMetric(count: number) {
-	const label = classifyFanOut(count);
+	let label: 'GOOD' | 'OK' | 'FAIL';
+	if (count <= 10) label = 'GOOD';
+	else if (count <= 20) label = 'OK';
+	else label = 'FAIL';
 	if (label === 'GOOD') return { label, color: green };
 	if (label === 'OK') return { label, color: yellow };
 	return { label, color: red };

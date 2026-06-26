@@ -1,5 +1,35 @@
+import { green, red } from 'kleur/colors';
+import fs from 'fs';
+import { type Adr, withAdr } from '../metrics/adr-labels';
+import type { ClocResult, DepcruiseResult } from '../metrics/Types';
+
 function normalizePath(path: string): string {
 	return path.replace(/\\/g, '/');
+}
+
+const TERMINAL_WIDTH = 120;
+
+export function center(text: string, width = TERMINAL_WIDTH): string {
+	const pad = Math.max(0, Math.floor((width - text.length) / 2));
+	return ' '.repeat(pad) + text;
+}
+
+export function divider(char = '─', width = TERMINAL_WIDTH): string {
+	return char.repeat(width);
+}
+
+export function padRight(text: string, width: number): string {
+	return text.padEnd(width, ' ');
+}
+
+export function padLeft(text: string, width: number): string {
+	return text.padStart(width, ' ');
+}
+
+export function section(title: string): void {
+	console.log('\n' + divider());
+	console.log(center(title.toUpperCase()));
+	console.log(divider());
 }
 
 /**
@@ -100,4 +130,48 @@ export function extractRootNamespace(path: string): string | null {
  */
 export function isRootLevelSourceFile(path: string): boolean {
 	return /^src\/[^/]+\.(ts|js)$/.test(normalizePath(path));
+}
+
+export type RuleStatus = 'OK' | 'VIOLATION';
+
+export function formatRuleStatus(
+	status: RuleStatus,
+	label: string,
+	...adrs: Adr[]
+): string {
+	return `${status} ${withAdr(label, ...adrs)}`;
+}
+
+export function formatRuleSuccess(label: string, ...adrs: Adr[]): string {
+	return green(formatRuleStatus('OK', label, ...adrs));
+}
+
+export function formatRuleViolation(label: string, ...adrs: Adr[]): string {
+	return red(formatRuleStatus('VIOLATION', label, ...adrs));
+}
+
+export function formatRuleTitle(
+	label: string,
+	count: number | undefined,
+	...adrs: Adr[]
+): string {
+	return withAdr(count === undefined ? label : `${label} (${count})`, ...adrs);
+}
+
+/**
+ * Loads and parses the dependency cruise result from a JSON file.
+ * @param path The path to the depcruise JSON output (default: 'depcruise.json')
+ * @returns The parsed DepcruiseResult object
+ */
+export function loadDepcruiseData(path = 'depcruise.json'): DepcruiseResult {
+	return JSON.parse(fs.readFileSync(path, 'utf-8'));
+}
+
+/**
+ * Loads and parses the cloc result from a JSON file.
+ * @param path The path to the cloc JSON output (default: 'cloc.json')
+ * @returns The parsed ClocResult object
+ */
+export function loadClocData(path = 'cloc.json'): ClocResult {
+	return JSON.parse(fs.readFileSync(path, 'utf-8'));
 }

@@ -1,7 +1,6 @@
-import type { ClocResult, DepcruiseResult } from '../../Types';
+import type { ClocResult, DepcruiseResult } from '../Types';
 import { green, yellow, red, magenta } from 'kleur/colors';
-import { printTable, type TableColumn } from '../../PrintTable';
-import { classifyDistanceFromMain } from '../../Classify';
+import { printTable, type TableColumn } from '../../utils/PrintTable';
 import {
 	extractDomainFromPath,
 	isAbstractFile,
@@ -139,10 +138,8 @@ function classifyDistance(
 	if (kind === 'UTILITY') return { label: 'UTILITY', color: magenta };
 	if (kind === 'INFRA_SHARED') return { label: 'INFRA', color: magenta };
 
-	const classification = classifyDistanceFromMain(distance);
-
-	if (classification === 'GOOD') return { label: 'GOOD', color: green };
-	if (classification === 'OK') return { label: 'OK', color: yellow };
+	if (distance <= 0.25) return { label: 'GOOD', color: green };
+	if (distance <= 0.5) return { label: 'OK', color: yellow };
 	return { label: 'FAIL', color: red };
 }
 
