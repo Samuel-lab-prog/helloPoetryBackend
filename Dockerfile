@@ -7,10 +7,12 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 # Default URL only for build-time prisma generate (no real connection is made).
-ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres?schema=public
+# Use a dev-like database name so Prisma config safety checks pass during build.
+ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/hello_poetry_dev?schema=public
 ENV DATABASE_URL=$DATABASE_URL
 ARG PRISMA_SCHEMA=src/generic-subdomains/persistance/prisma/schema.prisma
 RUN bunx prisma generate --schema $PRISMA_SCHEMA
+ENV NODE_ENV=production
 RUN bun run build
 
 FROM oven/bun:1 AS runtime
