@@ -12,9 +12,6 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-    defaults:
-      run:
-        working-directory: backend
     env:
       NODE_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hello_poetry_test
