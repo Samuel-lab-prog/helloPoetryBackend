@@ -107,6 +107,15 @@ export function checkCaseMismatchImports(cloc: ClocResult): Violation[] {
 			const resolved = resolveImport(filePath, importPath, fileMap);
 			if (!resolved) continue;
 
+			const resolvedBaseName = path.posix
+				.parse(resolved.actual)
+				.name.toLowerCase();
+			const expectedBaseName = path.posix
+				.parse(resolved.expected)
+				.name.toLowerCase();
+			if (resolvedBaseName === 'index' && expectedBaseName === 'index')
+				continue;
+
 			if (resolved.expected !== resolved.actual) {
 				violations.push({
 					file: filePath,

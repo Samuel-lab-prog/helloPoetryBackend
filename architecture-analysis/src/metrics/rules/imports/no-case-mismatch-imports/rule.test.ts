@@ -45,4 +45,38 @@ describe('ARCHITECTURE-RULE - No Case Mismatch Imports', () => {
 			},
 		);
 	});
+
+	it('ARCHITECTURE-RULE ignores barrel imports that resolve to Index files', () => {
+		const actualIndexFile =
+			'src/domains/__tmp-case-mismatch-rule__/use-cases/commands/create-poem/Index.ts';
+		const entryFile =
+			'src/domains/__tmp-case-mismatch-rule__/use-cases/commands/create-poem/entry.ts';
+
+		withTemporaryDomainFile(
+			'__tmp-case-mismatch-rule__',
+			actualIndexFile,
+			'export const createPoem = 1;',
+			() => {
+				const absoluteEntry = path.join(process.cwd(), entryFile);
+				mkdirSync(path.dirname(absoluteEntry), { recursive: true });
+				writeFileSync(
+					absoluteEntry,
+					[
+						"import { createPoem } from './Index';",
+						'',
+						'export const createPoemFactory = () => createPoem;',
+					].join('\n'),
+				);
+
+				const violations = checkCaseMismatchImports(
+					makeClocResult({
+						[actualIndexFile]: { code: 1 },
+						[entryFile]: { code: 1 },
+					}),
+				);
+
+				expect(violations).toEqual([]);
+			},
+		);
+	});
 });
