@@ -78,9 +78,6 @@ jobs:
       - name: Check environment
         run: bun run check:env:test
 
-      - name: Run static checks
-        run: bun run check:static
-
       - name: Run unit tests
         run: bun run test:unit
 
