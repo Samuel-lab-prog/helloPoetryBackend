@@ -24,7 +24,9 @@ export function getFeedFactory({
 
 		const blockedSet = new Set(blockedIds);
 
-		const feedAuthorIds = friendsIds.filter((id) => !blockedSet.has(id));
+		const feedAuthorIds = friendsIds
+			.filter((id) => !blockedSet.has(id))
+			.sort((a, b) => a - b);
 
 		const [friendPoems, ownPoems] = await Promise.all([
 			poemsServices.getFeedPoemsByAuthorIds({
@@ -60,8 +62,8 @@ export function getFeedFactory({
 
 			const publicPoems = await poemsServices.getPublicFeedPoems({
 				limit: remaining,
-				excludeAuthorIds: [...blockedSet],
-				excludePoemIds: selected.map((p) => p.id),
+				excludeAuthorIds: [...blockedSet].sort((a, b) => a - b),
+				excludePoemIds: selected.map((p) => p.id).sort((a, b) => a - b),
 			});
 
 			pushUnique(publicPoems);
