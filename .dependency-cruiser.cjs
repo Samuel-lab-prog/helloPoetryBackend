@@ -185,14 +185,19 @@ module.exports = {
 		/* Which modules not to follow further when encountered */
 		doNotFollow: {
 			/* path: an array of regular expressions in strings to match against */
-			path: ['node_modules'],
+			path: [
+				'node_modules',
+				'^src/generic-subdomains/persistance/prisma/generated',
+			],
 		},
 
 		/* Which modules to exclude */
-		// exclude : {
-		//   /* path: an array of regular expressions in strings to match against */
-		//   path: '',
-		// },
+		exclude: {
+			path: [
+				'node_modules',
+				'^src/generic-subdomains/persistance/prisma/generated',
+			],
+		},
 
 		/* Which modules to exclusively include (array of regular expressions in strings)
        dependency-cruiser will skip everything not matching this pattern
