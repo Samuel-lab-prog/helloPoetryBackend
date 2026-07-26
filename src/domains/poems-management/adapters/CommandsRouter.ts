@@ -1,19 +1,19 @@
-﻿import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import {
 	appErrorSchema,
 	makeValidationError,
 } from '@GenericSubdomains/utils/AppError';
 import { idSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
 
 import {
-	CreatePoemResultSchema,
+	CreateCollectionSchema,
 	CreatePoemBodySchema,
+	CreatePoemResultSchema,
+	PoemAudioUpdateBodySchema,
+	PoemAudioUploadUrlSchema,
 	UpdatePoemBodySchema,
 	UpdatePoemResultSchema,
-	PoemAudioUploadUrlSchema,
-	PoemAudioUpdateBodySchema,
-	CreateCollectionSchema,
 } from '../ports/schemas/Index';
 
 import { type CommandsRouterServices } from '../ports/commands';
@@ -23,7 +23,7 @@ export function createPoemsCommandsRouter(services: CommandsRouterServices) {
 		process.env.MAX_POEM_AUDIO_UPLOAD_BYTES ?? 20_000_000,
 	);
 	return new Elysia({ prefix: '/poems' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.post(
 			'/',
 			async ({ auth, body, set }) => {

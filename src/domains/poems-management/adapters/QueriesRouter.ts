@@ -1,17 +1,17 @@
-﻿import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import {
 	appErrorSchema,
 	makeValidationError,
 } from '@GenericSubdomains/utils/AppError';
 import { idSchema, paginationLimitSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
 
 import {
-	MyPoemReadSchema,
 	AuthorPoemReadSchema,
+	MyPoemReadSchema,
+	PoemCollectionSchema,
 	PoemPreviewPageSchema,
 	SavedPoemSchema,
-	PoemCollectionSchema,
 } from '../ports/schemas/Index';
 import { TagNameSchema } from '../ports/schemas/PoemFieldsSchemas';
 
@@ -81,7 +81,7 @@ export function createPoemsQueriesRouter(services: QueriesRouterServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.get(
 			'/me',
 			({ auth }) => {

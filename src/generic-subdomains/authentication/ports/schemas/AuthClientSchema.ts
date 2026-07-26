@@ -1,12 +1,12 @@
 import { t } from 'elysia';
 import {
 	idSchema,
-	UserRoleSchema,
-	UserStatusSchema,
+	userRoleSchema,
+	userStatusSchema,
 } from '@SharedKernel/Schemas';
 
-export const AuthClientSchema = t.Object({
+export const authClientSchema = t.Object({
 	id: idSchema,
-	role: UserRoleSchema,
-	status: UserStatusSchema,
+	role: userRoleSchema,
+	status: userStatusSchema,
 });

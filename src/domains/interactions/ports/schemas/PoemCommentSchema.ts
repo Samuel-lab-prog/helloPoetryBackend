@@ -1,10 +1,10 @@
-import { t } from 'elysia';
 import {
 	DateSchema,
 	idSchema,
 	NonNegativeIntegerSchema,
-	UserStatusSchema,
+	userStatusSchema,
 } from '@SharedKernel/Schemas';
+import { t } from 'elysia';
 import { CommentContentSchema, CommentStatusSchema } from './Fields';
 
 export const PoemCommentSchema = t.Object({
@@ -21,7 +21,7 @@ export const PoemCommentSchema = t.Object({
 		id: idSchema,
 		nickname: t.String(),
 		avatarUrl: t.Nullable(t.String()),
-		status: t.Optional(UserStatusSchema),
+		status: t.Optional(userStatusSchema),
 		isUnavailable: t.Optional(t.Boolean()),
 	}),
 });

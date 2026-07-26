@@ -1,17 +1,17 @@
-﻿import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { Elysia, t } from 'elysia';
 
 import { idSchema } from '@SharedKernel/Schemas';
 
-import { type CommandsRouterServices } from '../ports/commands';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { type CommandsRouterServices } from '../ports/commands';
 import { CommentContentSchema } from '../ports/schemas/Index';
 
 export function createInteractionsCommandsRouter(
 	services: CommandsRouterServices,
 ) {
 	return new Elysia({ prefix: '/interactions' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.post(
 			'/poems/:id/like',
 			async ({ auth, params, set }) => {

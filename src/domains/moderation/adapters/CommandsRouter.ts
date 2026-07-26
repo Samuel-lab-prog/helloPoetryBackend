@@ -1,22 +1,22 @@
-import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { idSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
+import { type CommandsRouterServices } from '../ports/commands';
 import {
-	suspendedUserResponseSchema,
 	bannedUserResponseSchema,
-	sanctionReasonSchema,
-	suspensionDurationDaysSchema,
 	ModeratePoemBodySchema,
 	ModeratePoemResultSchema,
+	sanctionReasonSchema,
+	suspendedUserResponseSchema,
+	suspensionDurationDaysSchema,
 } from '../ports/schemas/Index';
-import { type CommandsRouterServices } from '../ports/commands';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 
 export function createModerationCommandsRouter(
 	services: CommandsRouterServices,
 ) {
 	return new Elysia({ prefix: '/moderation' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.post(
 			'/ban/:id',
 			({ auth, params, body }) => {

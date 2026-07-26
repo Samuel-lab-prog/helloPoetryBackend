@@ -1,7 +1,7 @@
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
-import { AuthClientSchema } from './schemas/Index';
+import { authClientSchema } from './schemas';
 
-export type AuthClient = (typeof AuthClientSchema)['static'];
+export type AuthClient = (typeof authClientSchema)['static'];
 
 export type LoginResponse = {
 	accessToken: string;

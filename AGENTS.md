@@ -293,7 +293,7 @@ Adapters should not:
 - coordinate multiple use-cases for business reasons,
 - duplicate use-case authorization logic.
 
-Use `AuthPlugin` when a route requires authentication. Public routes should be
+Use `authPlugin` when a route requires authentication. Public routes should be
 intentional.
 
 ## Composition and Dependency Injection
@@ -575,7 +575,7 @@ Use existing aliases from `tsconfig.json` when appropriate:
 - `@AppError`
 - `@DomainError`
 - `@DatabaseError`
-- `@AuthPlugin`
+- `@authPlugin`
 - `tests/*`
 
 Relative imports are fine inside a tightly scoped folder when that is the local

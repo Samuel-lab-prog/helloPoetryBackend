@@ -2,33 +2,19 @@ import { Elysia } from 'elysia';
 // Plugins
 import cors from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
-import { rateLimit } from 'elysia-rate-limit';
+import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
 import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
 import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
-import { SetupPlugin } from '@SetupPlugin';
-import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
-import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
 import { RequestCachePlugin } from '@GenericSubdomains/utils/plugins/requestCachePlugin';
+import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
+import { SetupPlugin } from '@SetupPlugin';
+import { rateLimit } from 'elysia-rate-limit';
 
 // Necessary to register notification event listeners.
 import '@Domains/notifications/EventListeners.ts';
 
 // Routers
-import {
-	userQueriesRouter,
-	userCommandsRouter,
-	userCommandsRouterWithFakeHash,
-	userInternalRouter,
-	userInternalRouterWithFakeHash,
-} from '@Domains/users-management/Composition';
-import {
-	authRouter,
-	authRouterWithFakeHash,
-} from '@GenericSubdomains/authentication/Composition';
-import {
-	poemsCommandsRouter,
-	poemsQueriesRouter,
-} from '@Domains/poems-management/Composition';
+import { feedQueriesRouter } from '@Domains/feed-engine/Composition';
 import {
 	friendsCommandsRouter,
 	friendsQueriesRouter,
@@ -41,11 +27,25 @@ import {
 	moderationCommandsRouter,
 	moderationQueriesRouter,
 } from '@Domains/moderation/Composition';
-import { feedQueriesRouter } from '@Domains/feed-engine/Composition';
 import {
 	notificationsCommandsRouter,
 	notificationsQueriesRouter,
 } from '@Domains/notifications/Composition';
+import {
+	poemsCommandsRouter,
+	poemsQueriesRouter,
+} from '@Domains/poems-management/Composition';
+import {
+	userCommandsRouter,
+	userCommandsRouterWithFakeHash,
+	userInternalRouter,
+	userInternalRouterWithFakeHash,
+	userQueriesRouter,
+} from '@Domains/users-management/Composition';
+import {
+	authRouter,
+	authRouterWithFakeHash,
+} from '@GenericSubdomains/authentication/composition';
 import {
 	ELYSIA_SERVER_SETTINGS,
 	OPEN_API_SETTINGS,

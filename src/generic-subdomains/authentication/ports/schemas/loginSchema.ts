@@ -1,20 +1,20 @@
-import { t } from 'elysia';
 import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { t } from 'elysia';
 
-export const EmailSchema = t.String({
+export const emailSchema = t.String({
 	format: 'email',
-	example: 'ana@gmail.com',
+	example: 'normaluser@gmail.com',
 	...makeValidationError('Email must be a valid email address'),
 });
 
-export const PasswordSchema = t.String({
+export const passwordSchema = t.String({
 	minLength: 8,
 	maxLength: 30,
-	example: 'ana12345',
+	example: 'normaluserpassword',
 	...makeValidationError('Password must be between 8 and 30 characters'),
 });
 
-export const LoginSchema = t.Object({
-	email: EmailSchema,
-	password: PasswordSchema,
+export const loginSchema = t.Object({
+	email: emailSchema,
+	password: passwordSchema,
 });

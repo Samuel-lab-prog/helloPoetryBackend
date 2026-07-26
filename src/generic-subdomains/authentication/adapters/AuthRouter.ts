@@ -1,16 +1,18 @@
-import { Elysia } from 'elysia';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { AuthClientSchema } from '../ports/schemas/AuthClientSchema';
-import { RefreshCookieTokenSchema } from '../ports/schemas/RefreshCookieTokenSchema';
-import { SetupPlugin } from '../../utils/plugins/setupPlugin';
-import { LoginSchema } from '../ports/schemas/loginSchema';
-import type { AuthControllerServices } from '../ports/externalServices';
+import { Elysia } from 'elysia';
 import {
 	CSRF_COOKIE_NAME,
-	setUpRefreshCookieOptions,
 	setUpCookieTokenOptions,
 	setUpCsrfCookieOptions,
+	setUpRefreshCookieOptions,
 } from 'server-config/config';
+import { SetupPlugin } from '../../utils/plugins/setupPlugin';
+import type { AuthControllerServices } from '../ports/externalServices';
+import {
+	authClientSchema,
+	loginSchema,
+	refreshCookieTokenSchema,
+} from '../ports/schemas';
 
 export function createAuthRouter(services: AuthControllerServices) {
 	const { login, refreshSession } = services;
@@ -19,7 +21,7 @@ export function createAuthRouter(services: AuthControllerServices) {
 		.use(SetupPlugin)
 		.post(
 			'/login',
-			async ({ body, cookie, auth, set }) => {
+			async ({ body, cookie, auth }) => {
 				const result = await login({
 					email: body.email,
 					password: body.password,
@@ -38,15 +40,13 @@ export function createAuthRouter(services: AuthControllerServices) {
 				auth.clientId = result.client.id;
 				auth.clientRole = result.client.role;
 				auth.clientStatus = result.client.status;
-				// Ensure a JSON response for the frontend to parse.
-				set.status = 200;
-				set.headers['content-type'] = 'application/json';
+
 				return result.client;
 			},
 			{
-				body: LoginSchema,
+				body: loginSchema,
 				response: {
-					200: AuthClientSchema,
+					200: authClientSchema,
 					400: appErrorSchema,
 					401: appErrorSchema,
 				},
@@ -60,7 +60,7 @@ export function createAuthRouter(services: AuthControllerServices) {
 		)
 		.post(
 			'/refresh',
-			async ({ cookie, auth, set }) => {
+			async ({ cookie, auth }) => {
 				const refreshToken = cookie.refreshToken!.value;
 				const result = await refreshSession(refreshToken);
 
@@ -74,14 +74,12 @@ export function createAuthRouter(services: AuthControllerServices) {
 				auth.clientRole = result.client.role;
 				auth.clientStatus = result.client.status;
 
-				set.status = 200;
-				set.headers['content-type'] = 'application/json';
 				return result.client;
 			},
 			{
-				cookie: RefreshCookieTokenSchema,
+				cookie: refreshCookieTokenSchema,
 				response: {
-					200: AuthClientSchema,
+					200: authClientSchema,
 					401: appErrorSchema,
 				},
 				detail: {

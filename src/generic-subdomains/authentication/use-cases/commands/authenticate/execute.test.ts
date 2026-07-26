@@ -1,7 +1,7 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { UnauthorizedError, UnprocessableEntityError } from '@DomainError';
-import { makeAuthScenario } from '../../test-helpers/Helper';
+﻿import { UnauthorizedError, UnprocessableEntityError } from '@DomainError';
 import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { describe, expect, it } from 'bun:test';
+import { makeAuthScenario } from '../../test-helpers/helper';
 
 describe.concurrent('USE-CASE - Authentication - AuthenticateClient', () => {
 	describe('Successful execution', () => {

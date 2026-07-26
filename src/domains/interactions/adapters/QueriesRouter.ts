@@ -1,16 +1,16 @@
-﻿import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { Elysia, t } from 'elysia';
 
 import { idSchema } from '@SharedKernel/Schemas';
 import { PoemCommentsPageSchema } from '../ports/schemas/PoemCommentsPageSchema';
 
-import { type QueriesRouterServices } from '../ports/queries';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { type QueriesRouterServices } from '../ports/queries';
 
 export function createInteractionsQueriesRouter(
 	services: QueriesRouterServices,
 ) {
-	return new Elysia({ prefix: '/interactions' }).use(AuthPlugin).get(
+	return new Elysia({ prefix: '/interactions' }).use(authPlugin).get(
 		'/poems/:id/comments',
 		({ params, auth, query }) => {
 			return services.getPoemComments({

@@ -40,6 +40,7 @@ function getLockoutEntry(key: string) {
 	const entry = lockoutState.get(key);
 
 	if (!entry) return undefined;
+
 	if (entry.lockedUntil && entry.lockedUntil > now) return entry;
 
 	if (now - entry.firstFailedAt > LOCKOUT_WINDOW_MS) {
@@ -89,9 +90,8 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 
 		const lockoutEntry = getLockoutEntry(lockoutKey);
 
-		if (lockoutEntry?.lockedUntil && lockoutEntry.lockedUntil > Date.now()) {
+		if (lockoutEntry?.lockedUntil && lockoutEntry.lockedUntil > Date.now())
 			throw new UnauthorizedError('Too many login attempts. Try again later.');
-		}
 
 		if (!client) {
 			registerFailedAttempt(lockoutKey);

@@ -1,15 +1,15 @@
-﻿import { Elysia, t } from 'elysia';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
-import { NotificationSchema } from '../ports/schemas/Notification';
+import { Elysia, t } from 'elysia';
 import type { NotificationsCommandsServices } from '../ports/commands';
+import { NotificationSchema } from '../ports/schemas/Notification';
 
 export function createNotificationsCommandsRouter(
 	services: NotificationsCommandsServices,
 ) {
 	return new Elysia({ prefix: '/notifications' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.delete(
 			'/all',
 			({ auth }) => {

@@ -1,17 +1,11 @@
-import { AppError } from '@GenericSubdomains/utils/AppError';
+import { makeUnauthorizedError } from '@GenericSubdomains/utils/AppError';
 import { t } from 'elysia';
 
-export const CookieTokenSchema = t.Cookie(
+export const cookieTokenSchema = t.Cookie(
 	{
 		token: t.String(),
 	},
 	{
-		error: () => {
-			throw new AppError({
-				statusCode: 401,
-				message: 'Authentication cookie is missing or invalid',
-				code: 'UNAUTHORIZED',
-			});
-		},
+		...makeUnauthorizedError('Missing or invalid authentication token'),
 	},
 );

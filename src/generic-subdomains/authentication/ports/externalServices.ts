@@ -1,5 +1,5 @@
-﻿import type { AuthClient, LoginResponse } from './models';
-import type { UserRole } from '@SharedKernel/Enums';
+﻿import type { UserRole } from '@SharedKernel/Enums';
+import type { AuthClient, LoginResponse } from './models';
 
 export type LoginClientParams = {
 	email: string;
@@ -10,7 +10,7 @@ export interface AuthControllerServices {
 	refreshSession: (refreshToken: string) => Promise<LoginResponse>;
 }
 
-export interface AuthPluginServices {
+export interface authPluginServices {
 	authenticate: (token: string) => Promise<AuthClient>;
 }
 

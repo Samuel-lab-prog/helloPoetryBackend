@@ -1,16 +1,16 @@
-﻿import { Elysia, t } from 'elysia';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import {
 	appErrorSchema,
 	makeValidationError,
 } from '@GenericSubdomains/utils/AppError';
-import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
 
 import {
-	CreateUserSchema,
-	UpdateUserBodySchema,
-	FullUserSchema,
 	AvatarUploadUrlSchema,
+	CreateUserSchema,
+	FullUserSchema,
+	UpdateUserBodySchema,
 } from '../ports/schemas/Index';
 
 import { type UsersCommandsServices } from '../ports/commands';
@@ -73,7 +73,7 @@ export function createUsersCommandsRouter(services: UsersCommandsServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.patch(
 			'/:id',
 			({ params, body, auth }) => {

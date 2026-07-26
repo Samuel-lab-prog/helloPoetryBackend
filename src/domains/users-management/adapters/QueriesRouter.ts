@@ -1,10 +1,10 @@
-﻿import { Elysia, t } from 'elysia';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import {
 	appErrorSchema,
 	makeValidationError,
 } from '@GenericSubdomains/utils/AppError';
-import { AuthPlugin } from '@AuthPlugin';
 import { idSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
 import {
 	EmailSchema,
 	NicknameSchema,
@@ -104,7 +104,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 				},
 			},
 		)
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.get(
 			'/preview',
 			({ query, auth }) => {

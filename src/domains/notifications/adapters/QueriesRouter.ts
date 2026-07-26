@@ -1,19 +1,19 @@
-﻿import { Elysia, t } from 'elysia';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { AuthPlugin } from '@AuthPlugin';
 import { idSchema, NonNegativeIntegerSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
 
+import { type NotificationsQueriesServices } from '../ports/queries';
 import {
 	NotificationSchema,
 	NotificationsPageSchema,
 } from '../ports/schemas//Notification';
-import { type NotificationsQueriesServices } from '../ports/queries';
 
 export function createNotificationsQueriesRouter(
 	services: NotificationsQueriesServices,
 ) {
 	return new Elysia({ prefix: '/notifications' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.get(
 			'/',
 			({ query, auth }) => {

@@ -1,16 +1,16 @@
-import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { idSchema } from '@SharedKernel/Schemas';
+import { Elysia, t } from 'elysia';
+import type { QueriesRouterServices } from '../ports/queries';
 import {
 	userSanctionStatusResponseSchema,
 	userSanctionsResponseSchema,
 } from '../ports/schemas/Index';
-import type { QueriesRouterServices } from '../ports/queries';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 
 export function createModerationQueriesRouter(services: QueriesRouterServices) {
 	return new Elysia({ prefix: '/moderation' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.get(
 			'/users/:id/sanctions',
 			({ auth, params }) => {

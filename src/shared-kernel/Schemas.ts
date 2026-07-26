@@ -1,5 +1,5 @@
-import { t } from 'elysia';
 import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { t } from 'elysia';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const URL_SCHEME_PATTERN =
@@ -64,14 +64,14 @@ export const AudioUrlSchema = t.String({
 	...makeValidationError('Audio URL must be a valid http(s) URL'),
 });
 
-export const UserStatusSchema = t.UnionEnum(['active', 'suspended', 'banned']);
-export const UserRoleSchema = t.UnionEnum(['moderator', 'admin', 'author']);
+export const userStatusSchema = t.UnionEnum(['active', 'suspended', 'banned']);
+export const userRoleSchema = t.UnionEnum(['moderator', 'admin', 'author']);
 
 export const UserPreviewSchema = t.Object({
 	id: idSchema,
 	name: t.String(),
 	nickname: t.String(),
 	avatarUrl: t.Nullable(t.String()),
-	status: t.Optional(UserStatusSchema),
+	status: t.Optional(userStatusSchema),
 	friendIds: t.Array(idSchema),
 });

@@ -22,7 +22,7 @@
 			"@SetupPlugin": ["./src/generic-subdomains/utils/plugins/setupPlugin.ts"],
 			"@GenericSubdomains/*": ["./src/generic-subdomains/*"],
 			"@SharedKernel/*": ["./src/shared-kernel/*"],
-			"@AuthPlugin": ["./src/generic-subdomains/authentication/Composition.ts"],
+			"@authPlugin": ["./src/generic-subdomains/authentication/composition.ts"],
 			"@ClearDatabase": [
 				"./src/generic-subdomains/persistance/prisma/ClearDatabase.ts"
 			],

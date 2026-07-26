@@ -193,6 +193,8 @@ export function ServerError(
 	return createAppError(500, 'Server error', message, code, originalError);
 }
 
+// These functions are used to help create validation error for Elysia schemas.
+
 export function makeValidationError(message: string) {
 	return {
 		error() {
@@ -205,6 +207,14 @@ export function makeBadRequestError(message: string) {
 	return {
 		error() {
 			throw BadRequestError(message, 'BAD_REQUEST');
+		},
+	};
+}
+
+export function makeUnauthorizedError(message: string) {
+	return {
+		error() {
+			throw UnauthorizedError(message, 'UNAUTHORIZED');
 		},
 	};
 }

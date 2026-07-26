@@ -1,22 +1,22 @@
-﻿import { Elysia, t } from 'elysia';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { AuthPlugin } from '@AuthPlugin';
+import { Elysia, t } from 'elysia';
 
-import { type CommandsRouterServices } from '../ports/commands';
 import { idSchema } from '@SharedKernel/Schemas';
+import { type CommandsRouterServices } from '../ports/commands';
 import {
-	FriendRequestSchema,
+	BlockedUserSchema,
+	CancelFriendRequestSchema,
 	FriendRecordSchema,
 	FriendRequestRejectionSchema,
-	CancelFriendRequestSchema,
+	FriendRequestSchema,
 	RemovedFriendSchema,
-	BlockedUserSchema,
 	UnblockUserSchema,
 } from '../ports/schemas/Index';
 
 export function createFriendsCommandsRouter(services: CommandsRouterServices) {
 	return new Elysia({ prefix: '/friends' })
-		.use(AuthPlugin)
+		.use(authPlugin)
 		.post(
 			'/:id',
 			async ({ auth, params, set }) => {

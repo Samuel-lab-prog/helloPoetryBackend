@@ -1,5 +1,5 @@
 ﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnauthorizedError } from '@DomainError';
+import { UnauthorizedError } from '@GenericSubdomains/utils/domain-error/domainError';
 import type {
 	TokenPayload,
 	TokenService,
@@ -25,12 +25,12 @@ export function refreshSessionFactory(
 	): Promise<LoginResponse> {
 		const payload = tokenService.verifyToken(refreshToken);
 
-		if (!payload || payload.tokenType !== 'refresh') {
+		if (!payload || payload.tokenType !== 'refresh')
 			throw new UnauthorizedError('Invalid refresh token');
-		}
 
 		const client = await usersContract.selectAuthUserByEmail(payload.email);
 		if (!client) throw new UnauthorizedError('Client not found');
+
 		if (client.status === 'banned')
 			throw new UnauthorizedError('Client is banned');
 

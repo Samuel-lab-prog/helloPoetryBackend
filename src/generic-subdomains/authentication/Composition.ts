@@ -1,14 +1,16 @@
-import { createAuthRouter } from './adapters/AuthRouter';
-import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
-import { authenticateClientFactory } from './use-cases/commands/authenticate/execute';
-import { loginClientFactory } from './use-cases/commands/login/execute';
-import { refreshSessionFactory } from './use-cases/commands/refresh/execute';
-import {
-	JwtTokenService,
-	FakeJwtTokenService,
-} from './infra/jwt-token-service/JwtTokenService';
-import { createAuthPlugin } from './adapters/AuthPlugin';
 import { usersPublicContract } from '@Domains/users-management/public/Index';
+import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
+import { createAuthPlugin } from './adapters/authPlugin';
+import { createAuthRouter } from './adapters/authRouter';
+import {
+	FakeJwtTokenService,
+	JwtTokenService,
+} from './infra/jwt-token-service/jwtTokenService';
+import {
+	refreshSessionFactory,
+	loginClientFactory,
+	authenticateClientFactory,
+} from './use-cases/commands';
 
 const login = loginClientFactory({
 	usersContract: usersPublicContract,
@@ -38,7 +40,7 @@ const authenticateWithFakeTokenService = authenticateClientFactory({
 });
 
 export const authRouter = createAuthRouter({ login, refreshSession });
-export const AuthPlugin = createAuthPlugin({ authenticate });
+export const authPlugin = createAuthPlugin({ authenticate });
 export const authRouterWithFakeHash = createAuthRouter({
 	login: loginWithFakeHash,
 	refreshSession,

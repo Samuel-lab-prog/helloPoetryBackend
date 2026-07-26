@@ -1,11 +1,11 @@
 import { mock } from 'bun:test';
 
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type {
-	TokenService,
-	LoginClientParams,
-} from '../../ports/externalServices';
 import type { HashServices } from '@SharedKernel/ports/HashServices';
+import type {
+	LoginClientParams,
+	TokenService,
+} from '../../ports/externalServices';
 
 import {
 	createMockedContract,
@@ -18,22 +18,23 @@ import {
 	givenAuthUserNotFound,
 	givenPasswordValid,
 	givenTokenGenerated,
-	givenTokenValid,
 	givenTokenInvalid,
+	givenTokenValid,
 	type AuthUserOverride,
-} from './Givens';
-
-import { loginClientFactory } from '../commands/login/execute';
+} from './givens';
 
 import {
 	DEFAULT_CLIENT_EMAIL,
 	DEFAULT_PASSWORD,
 	DEFAULT_TOKEN,
-} from './Constants';
+} from './constants';
 
-import type { AuthSutMocks } from './SutMocks';
-import { authenticateClientFactory } from '../commands/authenticate/execute';
-import { refreshSessionFactory } from '../commands/refresh/execute';
+import {
+	authenticateClientFactory,
+	loginClientFactory,
+	refreshSessionFactory,
+} from '../commands';
+import type { AuthSutMocks } from './sutMocks';
 
 function makeAuthMockFactories() {
 	return {

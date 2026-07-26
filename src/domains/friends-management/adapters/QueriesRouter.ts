@@ -1,10 +1,10 @@
-﻿import { Elysia } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
-import { FriendRequestsByUserSchema } from '../ports/schemas/Index';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { Elysia } from 'elysia';
 import { type QueriesRouterServices } from '../ports/queries';
+import { FriendRequestsByUserSchema } from '../ports/schemas/Index';
 
 export function createFriendsQueriesRouter(services: QueriesRouterServices) {
-	return new Elysia({ prefix: '/friends' }).use(AuthPlugin).get(
+	return new Elysia({ prefix: '/friends' }).use(authPlugin).get(
 		'/requests',
 		({ auth }) => {
 			return services.getMyFriendRequests({

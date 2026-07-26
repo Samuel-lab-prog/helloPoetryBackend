@@ -1,17 +1,11 @@
-import { AppError } from '@GenericSubdomains/utils/AppError';
+import { makeUnauthorizedError } from '@GenericSubdomains/utils/AppError';
 import { t } from 'elysia';
 
-export const RefreshCookieTokenSchema = t.Cookie(
+export const refreshCookieTokenSchema = t.Cookie(
 	{
 		refreshToken: t.String(),
 	},
 	{
-		error: () => {
-			throw new AppError({
-				statusCode: 401,
-				message: 'Refresh token cookie is missing or invalid',
-				code: 'UNAUTHORIZED',
-			});
-		},
+		...makeUnauthorizedError('Missing or invalid refresh token'),
 	},
 );

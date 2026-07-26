@@ -1,10 +1,10 @@
-import { Elysia } from 'elysia';
-import { SetupPlugin } from '@SetupPlugin';
 import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
-import { CookieTokenSchema } from '../ports/schemas/CookieTokenSchema';
-import type { AuthPluginServices } from '../ports/externalServices';
+import { SetupPlugin } from '@SetupPlugin';
+import { Elysia } from 'elysia';
+import type { authPluginServices } from '../ports/externalServices';
+import { cookieTokenSchema } from '../ports/schemas';
 
-export function createAuthPlugin({ authenticate }: AuthPluginServices) {
+export function createAuthPlugin({ authenticate }: authPluginServices) {
 	return new Elysia().use(SetupPlugin).guard({
 		as: 'scoped',
 		beforeHandle: async ({ cookie, store, auth }) => {
@@ -24,6 +24,6 @@ export function createAuthPlugin({ authenticate }: AuthPluginServices) {
 		response: {
 			401: appErrorSchema,
 		},
-		cookie: CookieTokenSchema,
+		cookie: cookieTokenSchema,
 	});
 }

@@ -1,12 +1,12 @@
-﻿import { Elysia, t } from 'elysia';
-import { AuthPlugin } from '@AuthPlugin';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { Elysia, t } from 'elysia';
 
+import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { type QueriesRouterServices } from '../ports/queries';
 import { FeedPoemSchema } from '../ports/schemas/Index';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 
 export function createFeedQueriesRouter(services: QueriesRouterServices) {
-	return new Elysia({ prefix: '/feed' }).use(AuthPlugin).get(
+	return new Elysia({ prefix: '/feed' }).use(authPlugin).get(
 		'/',
 		({ auth }) => {
 			console.log('Received request for feed with auth:', auth);
