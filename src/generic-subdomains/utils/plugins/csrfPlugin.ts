@@ -6,6 +6,7 @@ import {
 	API_URL_PREFIX,
 	isCsrfEnabled,
 } from 'server-config/config';
+import { originMatchesAllowlist } from 'server-config/utils/origin';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const DEFAULT_SKIP_PATHS = [`${API_URL_PREFIX}/auth/login`];
@@ -45,7 +46,7 @@ function getClientIp(request: Request): string {
 function isOriginAllowed(origin: string): boolean {
 	if (!origin) return false;
 	if (CSRF_ORIGIN_ALLOWLIST.length === 0) return true;
-	return CSRF_ORIGIN_ALLOWLIST.includes(origin);
+	return originMatchesAllowlist(origin, CSRF_ORIGIN_ALLOWLIST);
 }
 
 function shouldSkip(pathname: string): boolean {

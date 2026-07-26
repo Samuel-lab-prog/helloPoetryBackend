@@ -240,6 +240,8 @@ bun run db:drop:dev
 bun run db:drop:test
 ```
 
+The curated local seed uses `password123` for all seeded users.
+
 Admin and data helpers:
 
 ```bash

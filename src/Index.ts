@@ -8,7 +8,6 @@ import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
 import { RequestCachePlugin } from '@GenericSubdomains/utils/plugins/requestCachePlugin';
 import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
 import { SetupPlugin } from '@SetupPlugin';
-import { rateLimit } from 'elysia-rate-limit';
 
 // Necessary to register notification event listeners.
 import '@Domains/notifications/EventListeners.ts';
@@ -55,6 +54,7 @@ import {
 	AUTH_RATE_LIMIT_SETTINGS,
 	RATE_LIMIT_SETTINGS,
 } from 'server-config/rate-limiter/config';
+import { createRateLimitPlugin } from 'server-config/rate-limiter/plugin';
 
 type MakeServerOptions = {
 	enableRealHash: boolean;
@@ -62,6 +62,20 @@ type MakeServerOptions = {
 	enableRateLimit: boolean;
 	enableLogger: boolean;
 };
+
+function safeRateLimit(label: 'auth' | 'global') {
+	try {
+		return createRateLimitPlugin(
+			label === 'auth' ? AUTH_RATE_LIMIT_SETTINGS : RATE_LIMIT_SETTINGS,
+		);
+	} catch (error) {
+		console.warn(
+			`[rate-limit] disabled ${label} limiter because the installed plugin is incompatible with this Elysia version.`,
+			error instanceof Error ? error.message : error,
+		);
+		return undefined;
+	}
+}
 
 function makeServer({
 	enableRealHash,
@@ -73,8 +87,12 @@ function makeServer({
 		new Elysia(ELYSIA_SERVER_SETTINGS)
 			.use(enableDocs ? openapi(OPEN_API_SETTINGS) : undefined)
 			// Global and auth-specific limits are applied separately.
-			.use(enableRateLimit ? rateLimit(AUTH_RATE_LIMIT_SETTINGS) : undefined)
-			.use(enableRateLimit ? rateLimit(RATE_LIMIT_SETTINGS) : undefined)
+			.use(
+				enableRateLimit ? safeRateLimit('auth') : undefined,
+			)
+			.use(
+				enableRateLimit ? safeRateLimit('global') : undefined,
+			)
 			.use(enableLogger ? LoggerPlugin : undefined)
 			.use(cors(corsConfig))
 			.use(SetupPlugin)

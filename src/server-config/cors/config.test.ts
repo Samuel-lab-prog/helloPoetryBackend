@@ -56,6 +56,22 @@ describe('UNIT - Server Config', () => {
 			expect(corsConfig.origin(blocked)).toBe(false);
 		});
 
+		it('Treats localhost and 127.0.0.1 as equivalent loopback origins', async () => {
+			const { corsConfig } = await loadCorsConfig({
+				variables: {
+					CORS_ORIGINS: ['http://localhost:4173'],
+					HAS_CROSS_SITE_CORS: true,
+				},
+				nodeEnv: 'production',
+			});
+
+			const request = new Request('http://localhost/test', {
+				headers: { origin: 'http://127.0.0.1:4173' },
+			});
+
+			expect(corsConfig.origin(request)).toBe(true);
+		});
+
 		it('Blocks cross-site when no allowlist is configured in production', async () => {
 			const { corsConfig } = await loadCorsConfig({
 				variables: { CORS_ORIGINS: [], HAS_CROSS_SITE_CORS: false },

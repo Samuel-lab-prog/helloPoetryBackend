@@ -1,4 +1,5 @@
 import { CORS_ORIGINS, HAS_CROSS_SITE_CORS } from './variables';
+import { originMatchesAllowlist } from '../utils/origin';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -15,7 +16,7 @@ export const corsConfig = {
 		const origin = request.headers.get('origin') ?? '';
 		if (!origin) return true;
 		if (CORS_ORIGINS.length === 0) return NODE_ENV !== 'production';
-		return CORS_ORIGINS.includes(origin);
+		return originMatchesAllowlist(origin, CORS_ORIGINS);
 	},
 };
 

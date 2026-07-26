@@ -1,4 +1,3 @@
-import { fromTypes } from '@elysiajs/openapi';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { sanitize } from '@GenericSubdomains/utils/xssClean';
 import { MissingEnvVarError } from '@AppError';
@@ -29,7 +28,6 @@ export const OPEN_API_SETTINGS = {
 			version: '1.0.0',
 		},
 	},
-	references: fromTypes(),
 };
 
 /** Elysia server configuration settings. */

@@ -1,4 +1,3 @@
-import { DefaultContext } from 'elysia-rate-limit';
 import type { Server } from 'bun';
 import { AppError } from '@AppError';
 import {
@@ -15,6 +14,17 @@ import {
 } from './variables';
 
 const NODE_ENV = process.env.NODE_ENV ?? 'development';
+
+export type RateLimitSettings = {
+	max: number;
+	duration: number;
+	headers: boolean;
+	contextSize: number;
+	countFailedRequest: boolean;
+	generator: (request: Request, server: Server<null> | null) => string;
+	errorResponse: Response | string;
+	skip: (request: Request, clientKey?: string) => boolean;
+};
 
 /** Builds a rate-limit key using client IP (proxy-aware). */
 function getRateLimitKey(
@@ -73,11 +83,12 @@ export const RATE_LIMIT_SETTINGS = {
 	max: RATE_LIMIT_MAX,
 	duration: RATE_LIMIT_DURATION_MS,
 	headers: RATE_LIMIT_HEADERS,
-	context: new DefaultContext(RATE_LIMIT_CONTEXT_SIZE),
+	contextSize: RATE_LIMIT_CONTEXT_SIZE,
+	countFailedRequest: false,
 	generator: getRateLimitKey,
 	errorResponse: buildRateLimitErrorResponse(),
 	skip: (request: Request) => skipRateLimit(request),
-};
+} satisfies RateLimitSettings;
 
 /** Auth-specific rate limit settings. */
 export const AUTH_RATE_LIMIT_SETTINGS = {
@@ -85,8 +96,8 @@ export const AUTH_RATE_LIMIT_SETTINGS = {
 	duration: AUTH_RATE_LIMIT_DURATION_MS,
 	headers: RATE_LIMIT_HEADERS,
 	countFailedRequest: true,
-	context: new DefaultContext(RATE_LIMIT_CONTEXT_SIZE),
+	contextSize: RATE_LIMIT_CONTEXT_SIZE,
 	generator: getRateLimitKey,
 	errorResponse: buildRateLimitErrorResponse(),
 	skip: (request: Request) => skipRateLimit(request),
-};
+} satisfies RateLimitSettings;

@@ -30,6 +30,14 @@ const LOCKOUT_WINDOW_MS = Number(
 const LOCKOUT_DURATION_MS = Number(
 	process.env.AUTH_LOCKOUT_DURATION_MS ?? 15 * 60 * 1000,
 );
+const DEBUG_AUTH_LOGIN =
+	process.env.DEBUG_AUTH_LOGIN === 'true' || process.env.NODE_ENV === 'development';
+
+function debugLogin(message: string, details?: Record<string, unknown>) {
+	if (!DEBUG_AUTH_LOGIN) return;
+
+	console.log('[auth.login]', message, details ?? '');
+}
 
 function normalizeKey(email: string) {
 	return email.trim().toLowerCase();
@@ -81,19 +89,41 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 	): Promise<LoginResponse> {
 		const { tokenService, hashService, usersContract } = dependencies;
 		const lockoutKey = normalizeKey(params.email);
+		debugLogin('attempt started', {
+			email: lockoutKey,
+		});
+
 		const client = await usersContract.selectAuthUserByEmail(lockoutKey);
+		debugLogin('lookup finished', {
+			email: lockoutKey,
+			found: !!client,
+			clientId: client?.id ?? null,
+			status: client?.status ?? null,
+		});
 
 		if (client?.status === 'banned') {
+			debugLogin('blocked because client is banned', {
+				email: lockoutKey,
+				clientId: client.id,
+			});
 			registerFailedAttempt(lockoutKey);
 			throw new UnauthorizedError('Client is banned');
 		}
 
 		const lockoutEntry = getLockoutEntry(lockoutKey);
 
-		if (lockoutEntry?.lockedUntil && lockoutEntry.lockedUntil > Date.now())
+		if (lockoutEntry?.lockedUntil && lockoutEntry.lockedUntil > Date.now()) {
+			debugLogin('blocked because lockout is active', {
+				email: lockoutKey,
+				lockedUntil: lockoutEntry.lockedUntil,
+			});
 			throw new UnauthorizedError('Too many login attempts. Try again later.');
+		}
 
 		if (!client) {
+			debugLogin('blocked because client was not found', {
+				email: lockoutKey,
+			});
 			registerFailedAttempt(lockoutKey);
 			throw new UnauthorizedError('Invalid credentials');
 		}
@@ -102,13 +132,26 @@ export function loginClientFactory(dependencies: LoginClientDependencies) {
 			params.password,
 			client.passwordHash,
 		);
+		debugLogin('password comparison finished', {
+			email: lockoutKey,
+			clientId: client.id,
+			passwordValid: isPasswordValid,
+		});
 
 		if (!isPasswordValid) {
+			debugLogin('blocked because password did not match', {
+				email: lockoutKey,
+				clientId: client.id,
+			});
 			registerFailedAttempt(lockoutKey);
 			throw new UnauthorizedError('Invalid credentials');
 		}
 
 		clearLockout(lockoutKey);
+		debugLogin('login succeeded', {
+			email: lockoutKey,
+			clientId: client.id,
+		});
 
 		const accessTokenPayload: TokenPayload = {
 			clientId: client.id,

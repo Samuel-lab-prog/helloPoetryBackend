@@ -23,17 +23,17 @@ import type {
 	UserNickname,
 } from './data/types';
 
-const DEFAULT_PASSWORD = 'defaultpassword';
+const DEFAULT_PASSWORD = 'password123';
 
 function assertSafeEnvironment() {
 	const nodeEnv = process.env.NODE_ENV ?? 'development';
 	const allowProductionSeed = process.env.ALLOW_PROD_SEED === 'true';
 
-	if (nodeEnv === 'production' && !allowProductionSeed) {
+	if (nodeEnv === 'production' && !allowProductionSeed)
 		throw new Error(
 			'Refusing to seed production database. Set ALLOW_PROD_SEED=true to override.',
 		);
-	}
+
 }
 
 function asDate(value: string): Date {
@@ -209,12 +209,11 @@ async function seedCommentLikes(
 		})),
 	);
 
-	if (data.length > 0) {
+	if (data.length > 0)
 		await prisma.commentLike.createMany({
 			data,
 			skipDuplicates: true,
 		});
-	}
 }
 
 async function seedSavedPoems(
