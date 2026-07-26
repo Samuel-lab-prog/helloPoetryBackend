@@ -10,6 +10,6 @@ export * from './delete-poem/execute';
 export * from './remove-item/execute';
 export * from './remove-saved/execute';
 export * from './request-poem-audio-upload-url/execute';
-export * from './save-poem/executet';
+export * from './save-poem/execute';
 export * from './update-poem/execute';
 export * from './update-poem-audio/execute';

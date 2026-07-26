@@ -11,6 +11,7 @@ export * from './parameters/OrderBySchema';
 export * from './parameters/OrderDirectionSchema';
 export * from './parameters/PaginationLimitSchema';
 export * from './queries/FullUser';
+export * from './queries/UserProfile';
 export * from './queries/UserPreview';
 export * from './queries/UserPrivateProfile';
 export * from './queries/UserPublicProfile';

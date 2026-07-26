@@ -35,9 +35,9 @@ export const NonNegativeIntegerSchema = t.Numeric({
 export const NicknameSchema = t.String({
 	minLength: 3,
 	example: 'poetrylover',
-	pattern: '^[a-zA-Z0-9_]+$',
+	pattern: '^[a-zA-Z0-9_.]+$',
 	...makeValidationError(
-		'Nickname must be at least 3 characters long and contain only letters, numbers, and underscores',
+		'Nickname must be at least 3 characters long and contain only letters, numbers, underscores, and dots',
 	),
 });
 

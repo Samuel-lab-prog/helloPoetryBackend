@@ -11,12 +11,11 @@ import {
 } from '../ports/schemas/UserFieldsSchemas';
 
 import {
-	UserPublicProfileSchema,
+	UserProfileSchema,
 	UsersPageSchema,
 	orderDirectionSchema,
 	orderUsersBySchema,
 	paginationLimitSchema,
-	UserPrivateProfileSchema,
 } from '../ports/schemas/Index';
 
 import { type UsersQueriesRouterServices } from '../ports/queries';
@@ -191,7 +190,7 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 			},
 			{
 				response: {
-					200: t.Union([UserPublicProfileSchema, UserPrivateProfileSchema]),
+					200: UserProfileSchema,
 					404: appErrorSchema,
 					422: appErrorSchema,
 				},

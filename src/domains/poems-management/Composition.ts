@@ -22,7 +22,7 @@ import {
 import type { CommandsRouterServices } from './ports/commands';
 import { createPoemsCommandsRouter } from './adapters/CommandsRouter';
 import { deletePoemFactory } from './use-cases/commands/delete-poem/execute';
-import { savePoemFactory } from './use-cases/commands/save-poem/executet';
+import { savePoemFactory } from './use-cases/commands/save-poem/execute';
 import { removeSavedPoemFactory } from './use-cases/commands/remove-saved/execute';
 import { getSavedPoemsFactory } from './use-cases/queries/get-saved-poems/execute';
 import { addCollectionItemFactory } from './use-cases/commands/add-item/execute';
