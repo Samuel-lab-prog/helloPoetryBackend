@@ -1,12 +1,12 @@
-﻿import {
+﻿import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
+import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
+} from '@GenericSubdomains/utils/testing/utils';
+import type { HashServices } from '@SharedKernel/ports/HashServices';
 import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import type { HashServices } from '@SharedKernel/ports/HashServices';
-import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
 import { createUserFactory } from '../commands/create/execute';
 import { updateUserFactory } from '../commands/update/execute';
 import { checkEmailAvailabilityFactory } from '../queries/check-email/execute';

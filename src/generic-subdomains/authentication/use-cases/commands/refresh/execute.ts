@@ -1,14 +1,14 @@
 ﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { UnauthorizedError } from '@GenericSubdomains/utils/domain-error/domainError';
+import { UnauthorizedError } from '@GenericSubdomains/utils/error-handling/domain-error/util';
+import {
+	ACCESS_TOKEN_EXPIRATION_TIME,
+	REFRESH_TOKEN_EXPIRATION_TIME,
+} from 'server-config/config';
 import type {
 	TokenPayload,
 	TokenService,
 } from '../../../ports/externalServices';
 import type { LoginResponse } from '../../../ports/models';
-import {
-	ACCESS_TOKEN_EXPIRATION_TIME,
-	REFRESH_TOKEN_EXPIRATION_TIME,
-} from 'server-config/config';
 
 export interface RefreshSessionDependencies {
 	tokenService: TokenService;

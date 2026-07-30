@@ -1,8 +1,8 @@
 ﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
+import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
 import type { AuthorPoem, MyPoem } from '../../ports/models';
-import type { PoemsSutMocks } from './SutMocks';
 import {
 	DEFAULT_AUTHOR_ID,
 	DEFAULT_POEM_CONTENT,
@@ -19,7 +19,7 @@ import {
 	DEFAULT_USER_ROLE,
 	DEFAULT_USER_STATUS,
 } from './Constants';
-import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
+import type { PoemsSutMocks } from './SutMocks';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>
@@ -99,14 +99,14 @@ export function givenUser(
 	overrides: UserBasicInfoOverride = {},
 ) {
 	const user: Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>> =
-		{
-			exists: true,
-			id: DEFAULT_REQUESTER_ID,
-			status: DEFAULT_USER_STATUS,
-			role: DEFAULT_USER_ROLE,
-			nickname: DEFAULT_USER_NICKNAME,
-			...overrides,
-		};
+	{
+		exists: true,
+		id: DEFAULT_REQUESTER_ID,
+		status: DEFAULT_USER_STATUS,
+		role: DEFAULT_USER_ROLE,
+		nickname: DEFAULT_USER_NICKNAME,
+		...overrides,
+	};
 	givenResolved(usersContract, 'selectUserBasicInfo', user);
 	givenResolved(usersContract, 'selectUsersBasicInfo', [user]);
 }

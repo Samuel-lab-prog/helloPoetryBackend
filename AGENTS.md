@@ -375,7 +375,7 @@ When touching visibility, search for all affected code paths:
 Central error modules:
 
 - `@GenericSubdomains/utils/domainError`
-- `@GenericSubdomains/utils/AppError`
+- `@AppError;`
 - `@DatabaseError`
 
 Use-case errors usually come from `domainError`:

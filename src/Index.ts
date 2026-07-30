@@ -2,12 +2,12 @@ import { Elysia } from 'elysia';
 // Plugins
 import cors from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
-import { CsrfPlugin } from '@GenericSubdomains/utils/plugins/csrfPlugin';
-import { ErrorPlugin } from '@GenericSubdomains/utils/plugins/errorPlugin';
-import { LoggerPlugin } from '@GenericSubdomains/utils/plugins/loggerPlugin';
-import { RequestCachePlugin } from '@GenericSubdomains/utils/plugins/requestCachePlugin';
-import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/plugins/securityHeadersPlugin';
-import { SetupPlugin } from '@SetupPlugin';
+import { ErrorPlugin } from '@GenericSubdomains/utils/error-handling/error-plugin/util';
+import { LoggerPlugin } from '@GenericSubdomains/utils/logging/loggerPlugin';
+import { RequestCachePlugin } from '@GenericSubdomains/utils/requests-handling/request-caching/requestCachePlugin';
+import { CsrfPlugin } from '@GenericSubdomains/utils/security/csrfPlugin';
+import { SecurityHeadersPlugin } from '@GenericSubdomains/utils/security/securityHeadersPlugin';
+import { SetupPlugin } from '@GenericSubdomains/utils/security/setupPlugin';
 
 // Necessary to register notification event listeners.
 import '@Domains/notifications/EventListeners.ts';

@@ -1,4 +1,4 @@
-import { makeUnauthorizedError } from '@GenericSubdomains/utils/AppError';
+import { makeUnauthorizedError } from '@AppError';
 import { t } from 'elysia';
 
 export const cookieTokenSchema = t.Cookie(

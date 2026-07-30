@@ -1,11 +1,11 @@
-import { mock } from 'bun:test';
 import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
+} from '@GenericSubdomains/utils/testing/utils';
+import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/commands';
-import type { QueriesRepository } from '../../ports/queries';
 import type { UsersServicesForModeration } from '../../ports/externalServices';
+import type { QueriesRepository } from '../../ports/queries';
 import {
 	banUserFactory,
 	suspendUserFactory,

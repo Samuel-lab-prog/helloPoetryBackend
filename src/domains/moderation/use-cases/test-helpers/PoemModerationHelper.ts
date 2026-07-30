@@ -1,21 +1,21 @@
-import { mock } from 'bun:test';
 import {
 	type MockedContract,
 	createMockedContract,
 	makeParams,
 	makeSut,
-} from '@GenericSubdomains/utils/TestUtils';
+} from '@GenericSubdomains/utils/testing/utils';
+import type { EventBus } from '@SharedKernel/events/EventBus';
+import { mock } from 'bun:test';
 import type {
 	CommandsRepository,
 	ModeratePoemParams,
 } from '../../ports/commands';
-import type { QueriesRepository } from '../../ports/queries';
 import type {
 	ModeratePoemResult,
 	PoemModerationRead,
 } from '../../ports/models';
+import type { QueriesRepository } from '../../ports/queries';
 import { moderatePoemFactory } from '../commands/moderate-poem/execute';
-import type { EventBus } from '@SharedKernel/events/EventBus';
 
 const DEFAULT_POEM_ID = 1;
 const DEFAULT_POEM_TITLE = 'Test Poem';
@@ -93,8 +93,8 @@ function moderationPoemMockFactories(): ModerationPoemSutMocks {
 		}),
 		eventBus: createMockedContract<EventBus>({
 			publish: mock(),
-			subscribe: mock(() => () => {}),
-			once: mock(() => () => {}),
+			subscribe: mock(() => () => { }),
+			once: mock(() => () => { }),
 		}),
 	};
 }

@@ -50,7 +50,7 @@ export const ${s(input)}QueriesRouter = create${p(input)}QueriesRouter(
 
 export function commandsRouterTemplate(input: DomainTemplateInput) {
 	return `import { Elysia } from 'elysia';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { ${p(input)}CreatedSchema } from '../ports/schemas/Index';
 import type { CommandsRouterServices } from '../ports/commands';
 
@@ -72,7 +72,7 @@ export function create${p(input)}CommandsRouter(services: CommandsRouterServices
 
 export function queriesRouterTemplate(input: DomainTemplateInput) {
 	return `import { Elysia } from 'elysia';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { ${p(input)}HealthSchema } from '../ports/schemas/Index';
 import type { QueriesRouterServices } from '../ports/queries';
 

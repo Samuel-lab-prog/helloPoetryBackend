@@ -1,8 +1,8 @@
-import type { StorageService } from '@SharedKernel/ports/Storage';
-import { S3Client } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
-import { InternalServerError } from '@GenericSubdomains/utils/domainError';
-import { log } from '@GenericSubdomains/utils/logger';
+import { S3Client } from '@aws-sdk/s3-presigned-post/node_modules/@aws-sdk/client-s3';
+import { InternalServerError } from '@DomainError';
+import { log } from '@GenericSubdomains/utils/logging/logger';
+import type { StorageService } from '@SharedKernel/ports/Storage';
 
 const allowedImageTypes = new Set([
 	'image/jpeg',
@@ -65,13 +65,13 @@ const sessionToken = process.env.AWS_SESSION_TOKEN;
 const s3Client =
 	accessKeyId && secretAccessKey
 		? new S3Client({
-				region,
-				credentials: {
-					accessKeyId,
-					secretAccessKey,
-					sessionToken,
-				},
-			})
+			region,
+			credentials: {
+				accessKeyId,
+				secretAccessKey,
+				sessionToken,
+			},
+		})
 		: new S3Client({ region });
 
 export const storageService: StorageService = {

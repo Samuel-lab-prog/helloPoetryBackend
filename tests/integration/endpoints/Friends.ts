@@ -1,20 +1,20 @@
-﻿import { prisma } from '@Prisma/PrismaClient';
-import {
-	jsonRequest,
-	API_INSTANCE,
-	API_PREFIX,
-	handleResponse,
-} from '@GenericSubdomains/utils/TestUtils';
+﻿import type { AppError } from '@AppError';
 import type {
+	BlockedUserRecord,
+	CancelFriendRequestRecord,
 	FriendRequestRecord,
 	FriendRequestRejectionRecord,
 	FriendshipRecord,
-	UnblockUserRecord,
-	CancelFriendRequestRecord,
 	RemovedFriendRecord,
-	BlockedUserRecord,
+	UnblockUserRecord,
 } from '@Domains/friends-management/ports/models.ts';
-import type { AppError } from '@GenericSubdomains/utils/AppError';
+import {
+	API_INSTANCE,
+	API_PREFIX,
+	handleResponse,
+	jsonRequest,
+} from '@GenericSubdomains/utils/testing/utils';
+import { prisma } from '@Prisma/PrismaClient';
 
 export async function sendFriendRequest(
 	cookie: string,

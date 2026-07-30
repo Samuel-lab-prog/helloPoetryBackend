@@ -1,24 +1,10 @@
 import { t } from 'elysia';
-
-export const ERROR_CODES = [
-	'BAD_REQUEST',
-	'UNAUTHORIZED',
-	'FORBIDDEN',
-	'NOT_FOUND',
-	'CONFLICT',
-	'GONE',
-	'VALIDATION',
-	'INTERNAL_SERVER_ERROR',
-	'UNKNOWN',
-	'UNPROCESSABLE_ENTITY',
-	'RATE_LIMIT_EXCEEDED',
-] as const;
-export type AppErrorCode = (typeof ERROR_CODES)[number];
+import { ERROR_CODES, type ErrorCode } from '../errorCodes';
 
 export interface AppErrorType {
 	statusCode: number;
 	message: string;
-	code: AppErrorCode;
+	code: ErrorCode;
 	originalError?: Error;
 }
 
@@ -34,7 +20,7 @@ export const appErrorSchema = t.Object({
 
 export class AppError extends Error {
 	public readonly statusCode: number;
-	public readonly code: AppErrorCode;
+	public readonly code: ErrorCode;
 	public readonly originalError?: Error;
 
 	constructor({ statusCode, message, code, originalError }: AppErrorType) {
@@ -53,7 +39,7 @@ export function createAppError(
 	statusCode: number,
 	prefix: string,
 	message: string,
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return new AppError({
@@ -66,7 +52,7 @@ export function createAppError(
 
 export function BadRequestError(
 	message: string = 'Bad request',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(400, 'Bad Request', message, code, originalError);
@@ -74,7 +60,7 @@ export function BadRequestError(
 
 export function UnauthorizedError(
 	message: string = 'Unauthorized access',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(401, 'Unauthorized', message, code, originalError);
@@ -82,7 +68,7 @@ export function UnauthorizedError(
 
 export function ForbiddenError(
 	message: string = 'Access is forbidden',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(403, 'Forbidden', message, code, originalError);
@@ -90,7 +76,7 @@ export function ForbiddenError(
 
 export function NotFoundError(
 	message: string = 'The resource was not found',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(404, 'Not found', message, code, originalError);
@@ -98,7 +84,7 @@ export function NotFoundError(
 
 export function ConflictError(
 	message: string = 'The resource already exists',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(409, 'Conflict', message, code, originalError);
@@ -106,7 +92,7 @@ export function ConflictError(
 
 export function GoneError(
 	message: string = 'The resource has been deleted',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(410, 'Resource deleted', message, code, originalError);
@@ -114,7 +100,7 @@ export function GoneError(
 
 export function UnprocessableEntityError(
 	message: string = 'Unprocessable entity',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(
@@ -179,7 +165,7 @@ export function MissingEnvVarError(
 
 export function DatabaseError(
 	message: string = 'A database error occurred',
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ): AppError {
 	return createAppError(500, 'Database error', message, code, originalError);
@@ -187,7 +173,7 @@ export function DatabaseError(
 
 export function ServerError(
 	message: string = 'An unexpected error occurred',
-	code: AppErrorCode = 'INTERNAL_SERVER_ERROR',
+	code: ErrorCode = 'INTERNAL_SERVER_ERROR',
 	originalError?: Error,
 ): AppError {
 	return createAppError(500, 'Server error', message, code, originalError);

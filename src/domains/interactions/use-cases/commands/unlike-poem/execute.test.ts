@@ -1,6 +1,6 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { NotFoundError, ForbiddenError } from '@DomainError';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import { makeInteractionsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Interactions - UnlikePoem', () => {

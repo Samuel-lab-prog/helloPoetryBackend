@@ -1,8 +1,8 @@
-﻿import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { ForbiddenError, NotFoundError } from '@DomainError';
-import { updatePoemAudioFactory } from './execute';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import { makeAuthorPoem } from '../../test-helpers/Givens';
+import { updatePoemAudioFactory } from './execute';
 
 describe('USE-CASE - Poems Management - UpdatePoemAudio', () => {
 	let commandsRepository: any;

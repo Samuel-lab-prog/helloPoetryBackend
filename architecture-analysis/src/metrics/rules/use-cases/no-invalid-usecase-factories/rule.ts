@@ -21,20 +21,22 @@ function normalizePath(file: string): string {
 	return file.replace(/\\/g, '/');
 }
 
+function getModifiers(node: ts.Node): readonly ts.Node[] | undefined {
+	return 'modifiers' in node
+		? ((node as { modifiers?: readonly ts.Node[] }).modifiers)
+		: undefined;
+}
+
 function isExported(node: ts.Node): boolean {
-	return ts.canHaveModifiers(node)
-		? (ts.getModifiers(node) ?? []).some(
-				(modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-			)
-		: false;
+	return (getModifiers(node) ?? []).some(
+		(modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+	);
 }
 
 function hasDefaultExport(node: ts.Node): boolean {
-	return ts.canHaveModifiers(node)
-		? (ts.getModifiers(node) ?? []).some(
-				(modifier) => modifier.kind === ts.SyntaxKind.DefaultKeyword,
-			)
-		: false;
+	return (getModifiers(node) ?? []).some(
+		(modifier) => modifier.kind === ts.SyntaxKind.DefaultKeyword,
+	);
 }
 
 function getFunctionLikeParameters(

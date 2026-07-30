@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { DatabaseError } from '../database-error/util.ts';
 import Elysia from 'elysia';
-import { AppError, type AppErrorCode } from '../AppError.ts';
-import { DomainError } from '../domainError.ts';
-import { DatabaseError } from '@GenericSubdomains/utils/databaseError.ts';
-import { log } from '../logger.ts';
-import { SetupPlugin, type SetupPluginContext } from './setupPlugin.ts';
+import { log } from '../../logging/logger.ts';
+import { SetupPlugin, type SetupPluginContext } from '../../security/setupPlugin.ts';
+import { DomainError } from '../domain-error/util.ts';
+import { AppError } from '../app-error/util.ts';
+import type { ErrorCode } from '../errorCodes.ts';
 
 function normalizeError(code: unknown, error: unknown): AppError {
 	if (error instanceof AppError) return error;
@@ -115,12 +116,12 @@ function convertDomainError(
 	return new AppError({
 		message: error.message,
 		statusCode: domainStatusMap[error.type] ?? 400,
-		code: error.type as AppErrorCode,
+		code: error.type as ErrorCode,
 		originalError: originalError ?? error,
 	});
 }
 
-const domainStatusMap: Record<AppErrorCode, number> = {
+const domainStatusMap: Record<ErrorCode, number> = {
 	UNPROCESSABLE_ENTITY: 422,
 	NOT_FOUND: 404,
 	CONFLICT: 409,
@@ -138,7 +139,7 @@ function logError(
 	context: ReturnType<typeof buildErrorContext>,
 	status: number,
 	message: string,
-	code: AppErrorCode,
+	code: ErrorCode,
 	originalError?: Error,
 ) {
 	log.error(
@@ -151,10 +152,10 @@ function logError(
 			},
 			originalError: originalError
 				? {
-						name: originalError.name,
-						message: originalError.message,
-						stack: originalError.stack,
-					}
+					name: originalError.name,
+					message: originalError.message,
+					stack: originalError.stack,
+				}
 				: undefined,
 		},
 		'An error occurred while processing the request',

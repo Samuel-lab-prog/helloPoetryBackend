@@ -1,20 +1,20 @@
-﻿import { mock } from 'bun:test';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+} from '@GenericSubdomains/utils/testing/utils';
+import { mock } from 'bun:test';
 
 import type { CommandsRepository } from '../../ports/commands';
-import type { QueriesRepository } from '../../ports/queries';
 import type { SlugService } from '../../ports/externalServices';
+import type { QueriesRepository } from '../../ports/queries';
 import { createPoemFactory } from '../commands/create-poem/execute';
+import { deletePoemFactory } from '../commands/delete-poem/execute';
 import { updatePoemFactory } from '../commands/update-poem/execute';
 import { getAuthorPoemsFactory } from '../queries/get-author-poems/execute';
 import { getMyPoemsFactory } from '../queries/get-my-poems/execute';
-import { getPoemFactory } from '../queries/get-poem-by-id/execute';
-import { deletePoemFactory } from '../commands/delete-poem/execute';
 import { getPendingPoemsFactory } from '../queries/get-pending-poems/execute';
+import { getPoemFactory } from '../queries/get-poem-by-id/execute';
 import { getPoemsFactory } from '../queries/index';
 
 export type PoemsSutMocks = {

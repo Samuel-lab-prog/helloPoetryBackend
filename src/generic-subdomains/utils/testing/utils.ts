@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AppError } from '@GenericSubdomains/utils/AppError';
 import type { HeadersInit } from 'bun';
 import { expect, mock } from 'bun:test';
-import { testServer } from '../../Index';
+import { testServer } from '../../../Index';
+import type { AppError } from '../error-handling/app-error/util';
 
 type JsonRequestOptions<TBody = unknown> = Omit<
 	RequestInit,

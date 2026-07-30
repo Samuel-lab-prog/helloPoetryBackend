@@ -1,6 +1,6 @@
-﻿import { describe, expect, it } from 'bun:test';
-import { ConflictError, UnknownError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
+﻿import { ConflictError, UnknownError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import { DEFAULT_CREATE_USER_DATA } from '../../test-helpers/Constants';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 

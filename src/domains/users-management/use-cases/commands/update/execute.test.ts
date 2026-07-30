@@ -1,6 +1,6 @@
-﻿import { describe, expect, it } from 'bun:test';
-import { ConflictError, ForbiddenError, UnknownError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
+﻿import { ConflictError, ForbiddenError, UnknownError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import {
 	DEFAULT_TARGET_ID,
 	DEFAULT_UPDATE_USER_DATA,

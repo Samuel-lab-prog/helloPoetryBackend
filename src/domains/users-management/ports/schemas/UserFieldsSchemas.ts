@@ -1,11 +1,10 @@
-import { t } from 'elysia';
-import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { makeValidationError } from '@AppError';
 import { AvatarUrlSchema } from '@SharedKernel/Schemas';
+import { t } from 'elysia';
 
 export {
-	NameSchema,
-	NicknameSchema,
-	AvatarUrlSchema,
+	AvatarUrlSchema, NameSchema,
+	NicknameSchema
 } from '@SharedKernel/Schemas';
 
 export const NullableAvatarUrlSchema = t.Nullable(AvatarUrlSchema);

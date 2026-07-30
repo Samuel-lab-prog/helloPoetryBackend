@@ -1,6 +1,6 @@
-﻿import { describe, expect, it, mock } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { ForbiddenError, NotFoundError, UnknownError } from '@DomainError';
+﻿import { ForbiddenError, NotFoundError, UnknownError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it, mock } from 'bun:test';
 import { removeCollectionItemFactory } from './execute';
 
 describe.concurrent(

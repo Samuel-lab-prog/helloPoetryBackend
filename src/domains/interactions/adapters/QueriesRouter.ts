@@ -4,7 +4,7 @@ import { Elysia, t } from 'elysia';
 import { idSchema } from '@SharedKernel/Schemas';
 import { PoemCommentsPageSchema } from '../ports/schemas/PoemCommentsPageSchema';
 
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { type QueriesRouterServices } from '../ports/queries';
 
 export function createInteractionsQueriesRouter(

@@ -6,46 +6,46 @@ import type {
 	MarkNotificationAsReadParams,
 } from '../../ports/commands';
 
-import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testing/utils';
 
 import {
-	givenUser,
-	givenNotificationInserted,
-	givenNotificationInsertFailure,
-	type UserBasicInfoOverride,
+	type DeleteNotificationOverride,
 	type InsertNotificationOverride,
+	type MarkNotificationAsReadOverride,
+	type NotificationOverride,
+	type UserBasicInfoOverride,
+	givenAllNotificationsDeleted,
+	givenAllNotificationsMarkedAsRead,
+	givenMarkNotificationAsReadFailure,
 	givenNotificationDeleteFailure,
 	givenNotificationDeleted,
-	type DeleteNotificationOverride,
-	givenNotificationMarkedAsRead,
-	type MarkNotificationAsReadOverride,
-	givenMarkNotificationAsReadFailure,
-	givenNotificationNotFound,
 	givenNotificationFound,
-	type NotificationOverride,
+	givenNotificationInsertFailure,
+	givenNotificationInserted,
+	givenNotificationMarkedAsRead,
+	givenNotificationNotFound,
+	givenUser,
 	givenUserNotifications,
-	givenAllNotificationsMarkedAsRead,
-	givenAllNotificationsDeleted,
 } from './Givens';
 
 import {
-	DEFAULT_USER_ID,
 	DEFAULT_NOTIFICATION_ID,
 	DEFAULT_PAGE,
+	DEFAULT_USER_ID,
 } from './Constants';
 
+import type {
+	GetNotificationByIdParams,
+	GetUserNotificationsParams,
+} from '../../ports/queries';
 import {
 	type NotificationsSutMocks,
 	notificationsFactory,
 	notificationsMockFactory,
 } from './SutMocks';
-import type {
-	GetNotificationByIdParams,
-	GetUserNotificationsParams,
-} from '../../ports/queries';
 
 import type { NotificationPage } from '@Domains/notifications/ports/models';
-import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
+import type { ErrorCode } from '@GenericSubdomains/utils/error-handling/errorCodes';
 
 export function makeNotificationsScenario() {
 	const { sut, mocks } = makeSut(
@@ -64,7 +64,7 @@ export function makeNotificationsScenario() {
 			return this;
 		},
 
-		withNotificationInsertFailure(code?: AppErrorCode, message?: string) {
+		withNotificationInsertFailure(code?: ErrorCode, message?: string) {
 			givenNotificationInsertFailure(mocks.commandsRepository, code, message);
 			return this;
 		},
@@ -74,7 +74,7 @@ export function makeNotificationsScenario() {
 			return this;
 		},
 
-		withNotificationDeleteFailure(code?: AppErrorCode, message?: string) {
+		withNotificationDeleteFailure(code?: ErrorCode, message?: string) {
 			givenNotificationDeleteFailure(mocks.commandsRepository, code, message);
 			return this;
 		},
@@ -94,7 +94,7 @@ export function makeNotificationsScenario() {
 			return this;
 		},
 
-		withMarkNotificationAsReadFailure(code?: AppErrorCode, message?: string) {
+		withMarkNotificationAsReadFailure(code?: ErrorCode, message?: string) {
 			givenMarkNotificationAsReadFailure(
 				mocks.commandsRepository,
 				code,

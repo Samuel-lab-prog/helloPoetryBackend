@@ -1,5 +1,7 @@
 ﻿/* eslint-disable max-lines */
 /* eslint-disable max-lines-per-function */
+import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testing/utils';
 import type {
 	CreatePoemParams,
 	DeletePoemParams,
@@ -12,7 +14,24 @@ import type {
 	GetPoemParams,
 	SearchPoemsParams,
 } from '../../ports/queries';
-import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
+import {
+	canCreatePoem,
+	canUpdatePoem,
+	canViewPoem,
+} from '../policies/Policies';
+import {
+	DEFAULT_AUTHOR_ID,
+	DEFAULT_POEM_CONTENT,
+	DEFAULT_POEM_EXCERPT,
+	DEFAULT_POEM_ID,
+	DEFAULT_POEM_STATUS,
+	DEFAULT_POEM_TAGS,
+	DEFAULT_POEM_TITLE,
+	DEFAULT_POEM_VISIBILITY,
+	DEFAULT_REQUESTER_ID,
+	DEFAULT_USER_ROLE,
+	DEFAULT_USER_STATUS,
+} from './Constants';
 import {
 	type AuthorPoemOverride,
 	type MyPoemOverride,
@@ -33,29 +52,10 @@ import {
 	makeMyPoem,
 } from './Givens';
 import {
-	DEFAULT_AUTHOR_ID,
-	DEFAULT_POEM_CONTENT,
-	DEFAULT_POEM_EXCERPT,
-	DEFAULT_POEM_ID,
-	DEFAULT_POEM_STATUS,
-	DEFAULT_POEM_TAGS,
-	DEFAULT_POEM_TITLE,
-	DEFAULT_POEM_VISIBILITY,
-	DEFAULT_REQUESTER_ID,
-	DEFAULT_USER_ROLE,
-	DEFAULT_USER_STATUS,
-} from './Constants';
-import {
-	canCreatePoem,
-	canUpdatePoem,
-	canViewPoem,
-} from '../policies/Policies';
-import {
 	type PoemsSutMocks,
 	poemsFactory,
 	poemsMockFactories,
 } from './SutMocks';
-import type { PoemPreviewPage } from '@Domains/poems-management/ports/models';
 
 type CreatePoemScenarioParams = {
 	data?: Partial<CreatePoemParams['data']>;

@@ -1,6 +1,6 @@
+import { withRequestCache } from '@GenericSubdomains/utils/requests-handling/request-caching/requestCache';
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
 import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
 
 export type UsersRelationBasicInfo = {

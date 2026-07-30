@@ -1,5 +1,5 @@
+import { appErrorSchema } from '@AppError';
 import { authPlugin } from '@GenericSubdomains/authentication/composition';
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
 import { idSchema } from '@SharedKernel/Schemas';
 import { Elysia, t } from 'elysia';
 import { type CommandsRouterServices } from '../ports/commands';

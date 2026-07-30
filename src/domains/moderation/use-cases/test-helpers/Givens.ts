@@ -1,11 +1,10 @@
+import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 import type { UsersServicesForModeration } from '../../ports/externalServices';
-import type { QueriesRepository } from '../../ports/queries';
 import type {
 	BannedUserResponse,
 	SuspendedUserResponse,
 } from '../../ports/models';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
-import type { ModerationSutMocks } from './SutMocks';
+import type { QueriesRepository } from '../../ports/queries';
 import {
 	DEFAULT_BAN_ID,
 	DEFAULT_REASON,
@@ -13,6 +12,7 @@ import {
 	DEFAULT_SUSPENSION_ID,
 	DEFAULT_USER_ID,
 } from './Constants';
+import type { ModerationSutMocks } from './SutMocks';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersServicesForModeration['selectUserBasicInfo']>>

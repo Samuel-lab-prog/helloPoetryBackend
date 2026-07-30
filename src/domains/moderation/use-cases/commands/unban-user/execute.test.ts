@@ -1,8 +1,8 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { ForbiddenError, NotFoundError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { makeModerationScenario } from '../../test-helpers/Helper';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import { givenBanEnded, givenUserActivated } from '../../test-helpers/Givens';
+import { makeModerationScenario } from '../../test-helpers/Helper';
 
 describe('USE-CASE - Moderation', () => {
 	describe('Unban User', () => {

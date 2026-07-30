@@ -1,6 +1,6 @@
-import { describe, expect, it, mock } from 'bun:test';
 import { ConflictError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it, mock } from 'bun:test';
 import { savePoemFactory } from './execute';
 
 describe.concurrent('USE-CASE - Poems Management - SavePoem', () => {

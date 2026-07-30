@@ -1,11 +1,11 @@
-﻿import {
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+} from '@GenericSubdomains/utils/testing/utils';
+import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import { mock } from 'bun:test';
 
 export type NotificationsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -15,16 +15,16 @@ export type NotificationsSutMocks = {
 
 import {
 	createNotificationFactory,
-	deleteNotificationFactory,
 	deleteAllNotificationsFactory,
+	deleteNotificationFactory,
 	markNotificationAsReadFactory,
 } from '../commands/Index';
 
+import { markAllNotificationsAsReadFactory } from '../commands/mark-all/execute';
 import {
 	getNotificationByIdFactory,
 	getUserNotificationsFactory,
 } from '../queries/Index';
-import { markAllNotificationsAsReadFactory } from '../commands/mark-all/execute';
 
 export function notificationsMockFactory() {
 	return {

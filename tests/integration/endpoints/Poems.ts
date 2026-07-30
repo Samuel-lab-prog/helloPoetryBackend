@@ -1,23 +1,23 @@
-﻿import type {
-	UpdatePoem,
+﻿import type { AppError } from '@AppError';
+import type {
+	AuthorPoem,
 	CreatePoem,
 	CreatePoemResult,
+	MyPoem,
+	PoemModerationStatus,
 	PoemStatus,
 	PoemVisibility,
-	PoemModerationStatus,
-	MyPoem,
-	AuthorPoem,
+	UpdatePoem,
 	UpdatePoemResult,
 } from '@Domains/poems-management/ports/models.ts';
 import {
-	jsonRequest,
-	handleResponse,
 	API_INSTANCE,
 	API_PREFIX,
-} from '@GenericSubdomains/utils/TestUtils';
-import { poemsData, poemsForUpdate } from '../data/Index.ts';
+	handleResponse,
+	jsonRequest,
+} from '@GenericSubdomains/utils/testing/utils.ts';
 import { prisma } from '@Prisma/PrismaClient.ts';
-import type { AppError } from '@GenericSubdomains/utils/AppError.ts';
+import { poemsData, poemsForUpdate } from '../data/Index.ts';
 import { type AuthUser } from './Auth.ts';
 
 export async function createPoem(

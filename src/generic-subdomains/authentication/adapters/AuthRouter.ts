@@ -1,4 +1,4 @@
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { Elysia } from 'elysia';
 import {
 	CSRF_COOKIE_NAME,
@@ -6,7 +6,7 @@ import {
 	setUpCsrfCookieOptions,
 	setUpRefreshCookieOptions,
 } from 'server-config/config';
-import { SetupPlugin } from '../../utils/plugins/setupPlugin';
+import { SetupPlugin } from '../../utils/security/setupPlugin';
 import type { AuthControllerServices } from '../ports/externalServices';
 import {
 	authClientSchema,

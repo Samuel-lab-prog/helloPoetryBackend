@@ -1,5 +1,5 @@
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
 import { describe, expect, it } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
 import { makeUsersManagementScenario } from '../../test-helpers/Helper';
 
 describe.concurrent(

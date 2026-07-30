@@ -1,6 +1,6 @@
-import { t } from 'elysia';
-import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { makeValidationError } from '@AppError';
 import { idSchema } from '@SharedKernel/Schemas';
+import { t } from 'elysia';
 
 export const CreateCollectionSchema = t.Object({
 	userId: idSchema,

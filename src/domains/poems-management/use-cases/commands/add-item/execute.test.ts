@@ -1,11 +1,11 @@
-﻿import { describe, expect, it, mock } from 'bun:test';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import {
+﻿import {
 	ConflictError,
 	ForbiddenError,
 	NotFoundError,
 	UnknownError,
 } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it, mock } from 'bun:test';
 import { addCollectionItemFactory } from './execute';
 
 describe.concurrent('USE-CASE - Poems Management - AddCollectionItem', () => {

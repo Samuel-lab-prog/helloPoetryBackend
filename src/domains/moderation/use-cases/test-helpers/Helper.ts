@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testing/utils';
 import type {
 	BanUserParams,
 	SuspendUserParams,
@@ -9,7 +10,12 @@ import type {
 	GetUserSanctionStatusParams,
 	GetUserSanctionsParams,
 } from '../../ports/queries';
-import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
+import {
+	DEFAULT_REASON,
+	DEFAULT_REQUESTER_ID,
+	DEFAULT_SUSPENSION_DURATION_DAYS,
+	DEFAULT_USER_ID,
+} from './Constants';
 import {
 	givenActiveBan,
 	givenActiveSuspension,
@@ -27,12 +33,6 @@ import {
 	moderationMockFactories,
 	type ModerationSutMocks,
 } from './SutMocks';
-import {
-	DEFAULT_REASON,
-	DEFAULT_REQUESTER_ID,
-	DEFAULT_SUSPENSION_DURATION_DAYS,
-	DEFAULT_USER_ID,
-} from './Constants';
 
 export function makeModerationScenario() {
 	const { sut: sutFactory, mocks } = makeSut(

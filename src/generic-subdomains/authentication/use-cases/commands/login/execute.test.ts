@@ -1,7 +1,7 @@
 ﻿import { UnauthorizedError } from '@DomainError';
 import { describe, expect, it } from 'bun:test';
 
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
 import { makeAuthScenario } from '../../test-helpers/helper';
 
 describe.concurrent('USE-CASE - Authentication - LoginClient', () => {

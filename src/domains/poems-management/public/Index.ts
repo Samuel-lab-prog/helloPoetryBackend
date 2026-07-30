@@ -1,15 +1,15 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { withRequestCache } from '@GenericSubdomains/utils/requests-handling/request-caching/requestCache';
 import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
 import type { PoemSelect, PoemWhereInput } from '@PrismaGenerated/models';
+import type { UserStatus } from '@SharedKernel/Enums';
+import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
 import type {
 	PoemModerationStatus,
 	PoemStatus,
 	PoemVisibility,
 } from '../ports/models';
-import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
-import { publicUserRelationFilter } from '@SharedKernel/policies/BannedUserVisibility';
-import type { UserStatus } from '@SharedKernel/Enums';
 
 export type PoemBasicInfo = {
 	exists: boolean;
@@ -255,3 +255,4 @@ export const poemsFeedContract: PoemsFeedContract = {
 };
 
 export * from './UserProfiles';
+

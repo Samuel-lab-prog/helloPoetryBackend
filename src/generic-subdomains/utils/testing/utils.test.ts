@@ -9,7 +9,7 @@ import {
 	jsonRequest,
 	makeParams,
 	makeSut,
-} from './TestUtils';
+} from './utils';
 
 describe('TestUtils', () => {
 	it('jsonRequest applies json content-type and serializes body', async () => {

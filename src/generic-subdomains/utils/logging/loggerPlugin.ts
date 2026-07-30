@@ -1,6 +1,6 @@
 import Elysia from 'elysia';
-import { log } from '../logger';
-import { SetupPlugin } from './setupPlugin';
+import { SetupPlugin } from '../security/setupPlugin';
+import { log } from './logger';
 
 /* ---------------------------------- */
 /* Logger Plugin */

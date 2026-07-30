@@ -1,12 +1,12 @@
-﻿import { describe, it, expect } from 'bun:test';
-import {
+﻿import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
 } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { validateUsers } from './Policies';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import { makePoemsScenario } from '../test-helpers/Helper';
+import { validateUsers } from './Policies';
 
 describe.concurrent('POLICY - Poems Management', () => {
 	describe('validateUsers', () => {
@@ -38,8 +38,8 @@ describe.concurrent('POLICY - Poems Management', () => {
 	});
 
 	/* -------------------------------------------------
-     canCreatePoem
-  ------------------------------------------------- */
+		 canCreatePoem
+	------------------------------------------------- */
 	describe('canCreatePoem', () => {
 		it('should allow active author with valid dedicated users', async () => {
 			const scenario = makePoemsScenario().withUser();
@@ -63,8 +63,8 @@ describe.concurrent('POLICY - Poems Management', () => {
 	});
 
 	/* -------------------------------------------------
-     canUpdatePoem
-  ------------------------------------------------- */
+		 canUpdatePoem
+	------------------------------------------------- */
 	describe('canUpdatePoem', () => {
 		it('should allow update when author is active and poem is editable', async () => {
 			const scenario = makePoemsScenario()
@@ -136,8 +136,8 @@ describe.concurrent('POLICY - Poems Management', () => {
 	});
 
 	/* -------------------------------------------------
-     canViewPoem
-  ------------------------------------------------- */
+		 canViewPoem
+	------------------------------------------------- */
 	describe('canViewPoem', () => {
 		it('should allow author to view their own poem', () => {
 			const scenario = makePoemsScenario();

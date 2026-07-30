@@ -1,8 +1,8 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { ForbiddenError, NotFoundError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { makeModerationPoemScenario } from '../../test-helpers/PoemModerationHelper';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
 import type { EventName } from '@SharedKernel/events/EventBus';
+import { describe, expect, it } from 'bun:test';
+import { makeModerationPoemScenario } from '../../test-helpers/PoemModerationHelper';
 
 describe.concurrent('USE-CASE - Moderation - ModeratePoem', () => {
 	describe('Successful execution', () => {

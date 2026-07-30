@@ -1,5 +1,5 @@
+import { log } from '@GenericSubdomains/utils/logging/logger';
 import { eventBus } from '@SharedKernel/events/EventBus';
-import { log } from '@GenericSubdomains/utils/logger';
 import { notificationsCommandsServices } from './Composition';
 import { registerPoemApprovedNotification } from './handlers/poemApproved';
 import { registerPoemRejectedNotification } from './handlers/poemRejected';

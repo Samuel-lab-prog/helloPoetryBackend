@@ -2,26 +2,26 @@
 import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 
+import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import type { InteractionsSutMocks } from './SutMocks';
 import {
-	DEFAULT_PERFORMER_USER_ID,
-	DEFAULT_USER_ROLE,
-	DEFAULT_USER_STATUS,
-	DEFAULT_POEM_ID,
-	DEFAULT_POEM_OWNER_USER_ID,
-	DEFAULT_POEM_VISIBILITY,
-	DEFAULT_POEM_MODERATION_STATUS,
-	DEFAULT_POEM_STATUS,
 	DEFAULT_COMMENT_CONTENT,
 	DEFAULT_COMMENT_ID,
-	DEFAULT_USER_NICKNAME,
-	DEFAULT_POEM_TITLE,
-	DEFAULT_COMMENT_STATUS,
 	DEFAULT_COMMENT_PARENT_ID,
+	DEFAULT_COMMENT_STATUS,
+	DEFAULT_PERFORMER_USER_ID,
+	DEFAULT_POEM_ID,
+	DEFAULT_POEM_MODERATION_STATUS,
+	DEFAULT_POEM_OWNER_USER_ID,
+	DEFAULT_POEM_STATUS,
+	DEFAULT_POEM_TITLE,
+	DEFAULT_POEM_VISIBILITY,
+	DEFAULT_USER_NICKNAME,
+	DEFAULT_USER_ROLE,
+	DEFAULT_USER_STATUS,
 } from './Constants';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
+import type { InteractionsSutMocks } from './SutMocks';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

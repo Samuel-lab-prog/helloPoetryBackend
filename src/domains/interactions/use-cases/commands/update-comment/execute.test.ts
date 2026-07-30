@@ -1,11 +1,11 @@
-﻿import { describe, it, expect } from 'bun:test';
-import {
+﻿import {
 	ForbiddenError,
 	NotFoundError,
 	UnprocessableEntityError,
 } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import { makeInteractionsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Interactions - UpdateComment', () => {
 	describe('Successful execution', () => {

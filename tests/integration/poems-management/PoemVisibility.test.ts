@@ -1,25 +1,25 @@
-﻿import { describe, it, beforeEach, expect } from 'bun:test';
-import { clearDatabase } from '@ClearDatabase';
+﻿import { clearDatabase } from '@ClearDatabase';
+import { beforeEach, describe, expect, it } from 'bun:test';
 
 import {
-	createPoem,
 	createAndApprovePoem,
+	createFriendshipRaw,
+	createPoem,
 	getAuthorPoems,
 	getMyPoems,
 	getPoemById,
 	makePoem,
-	createFriendshipRaw,
 	updatePoemRaw,
 	updateUserStatsRaw,
 	type AuthUser,
 } from '../endpoints/Index';
 
 import type {
-	CreatePoemResult,
 	AuthorPoem,
+	CreatePoemResult,
 } from '@Domains/poems-management/ports/models';
 
-import { expectAppError } from '@GenericSubdomains/utils/TestUtils';
+import { expectAppError } from '@GenericSubdomains/utils/testing/utils';
 import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 
 let author: AuthUser;

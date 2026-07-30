@@ -1,6 +1,14 @@
-﻿import type { CreateUserParams, UpdateUserParams } from '../../ports/commands';
+﻿import { makeParams, makeSut } from '@GenericSubdomains/utils/testing/utils';
+import type { CreateUserParams, UpdateUserParams } from '../../ports/commands';
 import type { GetProfileParams, GetUsersParams } from '../../ports/queries';
-import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
+import {
+	DEFAULT_CREATE_USER_DATA,
+	DEFAULT_PUBLIC_PROFILE_ID,
+	DEFAULT_REQUESTER_ID,
+	DEFAULT_REQUESTER_STATUS,
+	DEFAULT_TARGET_ID,
+	DEFAULT_UPDATE_USER_DATA,
+} from './Constants';
 import {
 	givenCreateUserConflict,
 	givenCreateUserFailure,
@@ -20,17 +28,9 @@ import {
 	type UsersPageOverride,
 } from './Givens';
 import {
-	DEFAULT_CREATE_USER_DATA,
-	DEFAULT_PUBLIC_PROFILE_ID,
-	DEFAULT_REQUESTER_ID,
-	DEFAULT_REQUESTER_STATUS,
-	DEFAULT_TARGET_ID,
-	DEFAULT_UPDATE_USER_DATA,
-} from './Constants';
-import {
-	type UsersManagementSutMocks,
 	usersManagementFactory,
 	usersManagementMockFactories,
+	type UsersManagementSutMocks,
 } from './SutMocks';
 
 type GetUsersParamsOverride = Partial<

@@ -1,4 +1,4 @@
-import { makeValidationError } from '@GenericSubdomains/utils/AppError';
+import { makeValidationError } from '@AppError';
 import { t } from 'elysia';
 
 const NODE_ENV = process.env.NODE_ENV || 'development';

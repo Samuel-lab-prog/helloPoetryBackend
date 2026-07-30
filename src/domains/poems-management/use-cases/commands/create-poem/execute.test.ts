@@ -1,12 +1,12 @@
-﻿import { describe, it, expect } from 'bun:test';
-import {
+﻿import {
 	ConflictError,
 	ForbiddenError,
 	UnprocessableEntityError,
 } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { makePoemsScenario } from '../../test-helpers/Helper';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
+import { makePoemsScenario } from '../../test-helpers/Helper';
 
 describe.concurrent('USE-CASE - Poems Management - CreatePoem', () => {
 	describe('Successful execution', () => {

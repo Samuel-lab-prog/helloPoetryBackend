@@ -2,7 +2,7 @@
 import {
 	appErrorSchema,
 	makeValidationError,
-} from '@GenericSubdomains/utils/AppError';
+} from '@AppError';
 import { idSchema } from '@SharedKernel/Schemas';
 import { Elysia, t } from 'elysia';
 

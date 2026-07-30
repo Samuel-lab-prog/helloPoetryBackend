@@ -1,10 +1,10 @@
-﻿import type {
+﻿import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
+import type {
 	FullUser,
 	UserPrivateProfile,
 	UserPublicProfile,
 	UsersPage,
 } from '../../ports/models';
-import type { UsersManagementSutMocks } from './SutMocks';
 import {
 	DEFAULT_FULL_USER,
 	DEFAULT_HASHED_PASSWORD,
@@ -12,7 +12,7 @@ import {
 	DEFAULT_PUBLIC_PROFILE,
 	DEFAULT_USERS_PAGE,
 } from './Constants';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
+import type { UsersManagementSutMocks } from './SutMocks';
 
 export type FullUserOverride = Partial<FullUser>;
 export type PrivateProfileOverride = Partial<UserPrivateProfile>;

@@ -1,7 +1,7 @@
-import Elysia from 'elysia';
-import { appErrorSchema } from '../AppError';
-import { log } from '../logger';
 import type { UserRole, UserStatus } from '@SharedKernel/Enums';
+import Elysia from 'elysia';
+import { appErrorSchema } from '../error-handling/app-error/util.ts';
+import { log } from '../logging/logger';
 
 type AuthType = {
 	clientId: number;

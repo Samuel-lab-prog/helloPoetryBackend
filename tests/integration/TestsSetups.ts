@@ -1,7 +1,7 @@
+import { isAppError } from '@GenericSubdomains/utils/testing/utils.ts';
 import { usersData } from './data/Users.ts';
 import { loginUser, type AuthUser } from './endpoints/Auth.ts';
 import { createUser } from './endpoints/Users.ts';
-import { isAppError } from '@GenericSubdomains/utils/TestUtils';
 
 /**
  * Sets up test users by creating and logging them in.

@@ -1,8 +1,8 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { ForbiddenError, NotFoundError } from '@DomainError';
+﻿import { ForbiddenError, NotFoundError } from '@DomainError';
+import { describe, expect, it } from 'bun:test';
 
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
 import { makeNotificationsScenario } from '../../test-helpers/Helper';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
 
 describe.concurrent('USE-CASE - Notifications - DeleteNotification', () => {
 	describe('Successful execution', () => {

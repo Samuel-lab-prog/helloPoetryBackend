@@ -1,11 +1,11 @@
-﻿import { describe, it, expect } from 'bun:test';
-import { ConflictError, NotFoundError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
-import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
+﻿import { ConflictError, NotFoundError } from '@DomainError';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { describe, expect, it } from 'bun:test';
 import {
 	DEFAULT_ADDRESSEE_ID,
 	DEFAULT_REQUESTER_ID,
 } from '../../test-helpers/Constants';
+import { makeFriendsManagementScenario } from '../../test-helpers/Helper';
 
 describe.concurrent(
 	'USE-CASE - Friends Management - AcceptFriendRequest',

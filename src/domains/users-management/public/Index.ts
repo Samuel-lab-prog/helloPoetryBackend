@@ -1,7 +1,7 @@
-﻿import { prisma } from '@Prisma/PrismaClient';
+﻿import { withRequestCache } from '@GenericSubdomains/utils/requests-handling/request-caching/requestCache';
+import { prisma } from '@Prisma/PrismaClient';
 import { withPrismaErrorHandling } from '@Prisma/PrismaErrorHandler';
-import type { UserStatus, UserRole } from '../ports/models';
-import { withRequestCache } from '@GenericSubdomains/utils/requestCache';
+import type { UserRole, UserStatus } from '../ports/models';
 
 export type UserBasicInfo = {
 	exists: boolean;

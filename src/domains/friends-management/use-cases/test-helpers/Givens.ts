@@ -1,16 +1,16 @@
 ﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { QueriesRepository } from '../../ports/queries';
-import type { FriendsManagementSutMocks } from './SutMocks';
+import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 import type { FriendRequestsByUser } from '../../ports/models';
+import type { QueriesRepository } from '../../ports/queries';
 import {
-	DEFAULT_REQUESTER_ID,
 	DEFAULT_ADDRESSEE_ID,
+	DEFAULT_BLOCKED_RELATIONSHIP_ID,
 	DEFAULT_FRIEND_REQUEST_ID,
 	DEFAULT_FRIENDSHIP_ID,
-	DEFAULT_BLOCKED_RELATIONSHIP_ID,
 	DEFAULT_NICKNAME,
+	DEFAULT_REQUESTER_ID,
 } from './Constants';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
+import type { FriendsManagementSutMocks } from './SutMocks';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>

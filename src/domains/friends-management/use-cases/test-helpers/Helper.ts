@@ -1,4 +1,5 @@
 ﻿/* eslint-disable max-lines-per-function */
+import { makeParams, makeSut } from '@GenericSubdomains/utils/testing/utils';
 import type {
 	AcceptFriendRequestParams,
 	BlockUserParams,
@@ -8,37 +9,36 @@ import type {
 	SendFriendRequestParams,
 	UnblockUserParams,
 } from '../../ports/commands';
-import { makeParams, makeSut } from '@GenericSubdomains/utils/TestUtils';
+import { DEFAULT_ADDRESSEE_ID, DEFAULT_REQUESTER_ID } from './Constants';
 import {
+	givenAcceptedFriendRequest,
 	givenAddressee,
-	givenNoFriendship,
-	givenFriendship,
-	givenNoBlockedRelationship,
 	givenBlockedRelationship,
-	givenNoFriendRequest,
+	givenBlockedUser,
+	givenCancelledFriendRequest,
+	givenCreatedFriendRequest,
+	givenDeletedFriend,
+	givenDeletedFriendRequestIfExists,
 	givenFriendRequest,
 	givenFriendRequestLookup,
-	givenCreatedFriendRequest,
-	givenAcceptedFriendRequest,
-	givenRejectedFriendRequest,
-	givenCancelledFriendRequest,
-	givenDeletedFriend,
-	givenBlockedUser,
-	givenUnblockedUser,
-	givenDeletedFriendRequestIfExists,
 	givenFriendRequestsByUser,
-	type UserBasicInfoOverride,
-	type FriendRequestOverride,
-	type FriendshipOverride,
+	givenFriendship,
+	givenNoBlockedRelationship,
+	givenNoFriendRequest,
+	givenNoFriendship,
+	givenRejectedFriendRequest,
+	givenUnblockedUser,
 	type BlockedRelationshipOverride,
+	type FriendRequestOverride,
 	type FriendRequestsByUserOverride,
+	type FriendshipOverride,
+	type UserBasicInfoOverride,
 } from './Givens';
 import {
-	type FriendsManagementSutMocks,
 	friendsManagementFactory,
 	friendsManagementMockFactories,
+	type FriendsManagementSutMocks,
 } from './SutMocks';
-import { DEFAULT_REQUESTER_ID, DEFAULT_ADDRESSEE_ID } from './Constants';
 
 export function makeFriendsManagementScenario() {
 	const { sut: sutFactory, mocks } = makeSut(

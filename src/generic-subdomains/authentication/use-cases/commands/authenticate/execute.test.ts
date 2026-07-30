@@ -1,5 +1,5 @@
 ﻿import { UnauthorizedError, UnprocessableEntityError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/TestUtils';
+import { expectError } from '@GenericSubdomains/utils/testing/utils';
 import { describe, expect, it } from 'bun:test';
 import { makeAuthScenario } from '../../test-helpers/helper';
 

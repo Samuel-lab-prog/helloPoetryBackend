@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia';
 
 import { idSchema } from '@SharedKernel/Schemas';
 
-import { appErrorSchema } from '@GenericSubdomains/utils/AppError';
+import { appErrorSchema } from '@AppError';
 import { type CommandsRouterServices } from '../ports/commands';
 import { CommentContentSchema } from '../ports/schemas/Index';
 

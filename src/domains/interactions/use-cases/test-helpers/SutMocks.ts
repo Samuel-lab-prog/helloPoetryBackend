@@ -1,20 +1,20 @@
-﻿import {
+﻿import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
+import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
+import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
-import { mock } from 'bun:test';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { FriendsPublicContract } from '@Domains/friends-management/public/Index';
-import type { PoemsPublicContract } from '@Domains/poems-management/public/Index';
+} from '@GenericSubdomains/utils/testing/utils';
 import {
 	type EventBus,
 	createInMemoryEventBus,
 } from '@SharedKernel/events/EventBus';
+import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
 import { likeCommentFactory } from '../commands/like-comment/execute';
 import { unlikeCommentFactory } from '../commands/unlike-comment/execute';
+import { getPoemCommentsFactory } from '../queries/get-poem-comments/execute';
 
 export type InteractionsSutMocks = {
 	commandsRepository: MockedContract<CommandsRepository>;
@@ -27,8 +27,8 @@ export type InteractionsSutMocks = {
 
 import {
 	commentPoemFactory,
-	likePoemFactory,
 	deleteCommentFactory,
+	likePoemFactory,
 	unlikePoemFactory,
 } from '../commands/Index';
 import { updateCommentFactory } from '../commands/update-comment/execute';

@@ -1,20 +1,20 @@
 ﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 import type { CommandsRepository } from '../../ports/commands';
 import type { NotificationsSutMocks } from './SutMocks';
-import { givenResolved } from '@GenericSubdomains/utils/TestUtils';
 
+import type { ErrorCode } from '@GenericSubdomains/utils/error-handling/errorCodes';
+import type { Notification, NotificationPage } from '../../ports/models';
 import {
+	DEFAULT_NOTIFICATION_ID,
+	DEFAULT_NOTIFICATION_TYPE,
+	DEFAULT_PAGE,
+	DEFAULT_PERFORMER_USER_ID,
 	DEFAULT_USER_ID,
+	DEFAULT_USER_NICKNAME,
 	DEFAULT_USER_ROLE,
 	DEFAULT_USER_STATUS,
-	DEFAULT_NOTIFICATION_ID,
-	DEFAULT_PAGE,
-	DEFAULT_USER_NICKNAME,
-	DEFAULT_NOTIFICATION_TYPE,
-	DEFAULT_PERFORMER_USER_ID,
 } from './Constants';
-import type { Notification, NotificationPage } from '../../ports/models';
-import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
 
 export type UserBasicInfoOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectUserBasicInfo']>>
@@ -68,7 +68,7 @@ export function givenNotificationInserted(
 
 export function givenNotificationInsertFailure(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
-	code: AppErrorCode = 'UNKNOWN',
+	code: ErrorCode = 'UNKNOWN',
 	message = 'Failed to create notification',
 ) {
 	givenResolved(commandsRepository, 'insertNotification', {
@@ -108,7 +108,7 @@ export function givenNotificationDeleted(
 
 export function givenNotificationDeleteFailure(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
-	code: AppErrorCode = 'UNKNOWN',
+	code: ErrorCode = 'UNKNOWN',
 	message = 'Failed to delete notification',
 ) {
 	givenResolved(commandsRepository, 'deleteNotification', {
@@ -148,7 +148,7 @@ export function givenNotificationMarkedAsRead(
 
 export function givenMarkNotificationAsReadFailure(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
-	code: AppErrorCode = 'UNKNOWN',
+	code: ErrorCode = 'UNKNOWN',
 	message = 'Failed to mark notification as read',
 ) {
 	givenResolved(commandsRepository, 'markNotificationAsRead', {
@@ -213,7 +213,7 @@ export function givenAllNotificationsDeleted(
 // now failure case
 export function givenMarkAllAsReadFailure(
 	commandsRepository: NotificationsSutMocks['commandsRepository'],
-	code: AppErrorCode = 'UNKNOWN',
+	code: ErrorCode = 'UNKNOWN',
 	message = 'Failed to mark all notifications as read',
 ) {
 	givenResolved(commandsRepository, 'markAllAsRead', {

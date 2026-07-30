@@ -1,8 +1,8 @@
+import { log } from '@GenericSubdomains/utils/logging/logger';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from './generated/client';
-import 'server-config/utils/envBootstrap';
-import { log } from '@GenericSubdomains/utils/logger';
 import { getDatabaseUrl } from 'server-config/config';
+import 'server-config/utils/envBootstrap';
+import { PrismaClient } from './generated/client';
 
 const connectionString = getDatabaseUrl();
 

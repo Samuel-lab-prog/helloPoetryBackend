@@ -1,14 +1,14 @@
-import { describe, it, beforeEach, expect } from 'bun:test';
 import { clearDatabase } from '@ClearDatabase';
+import { MAX_QUERY_TIME_LIMIT } from '@GenericSubdomains/utils/testing/utils';
+import { beforeEach, describe, expect, it } from 'bun:test';
 import { setupHttpUsers } from 'tests/integration/TestsSetups.ts';
 import {
-	sendFriendRequest,
 	acceptFriendRequest,
-	deleteFriend,
 	blockUser,
+	deleteFriend,
+	sendFriendRequest,
 	unblockUser,
 } from '../endpoints/Index';
-import { MAX_QUERY_TIME_LIMIT } from '@GenericSubdomains/utils/TestUtils';
 
 let user1: any;
 let user2: any;

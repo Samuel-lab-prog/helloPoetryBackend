@@ -1,5 +1,5 @@
 import Elysia from 'elysia';
-import { AppError } from '../AppError';
+import { AppError } from '@AppError';
 import {
 	CSRF_COOKIE_NAME,
 	CSRF_HEADER_NAME,

@@ -1,5 +1,5 @@
+import { log } from '@GenericSubdomains/utils/logging/logger';
 import type { EventBus } from '@SharedKernel/events/EventBus';
-import { log } from '@GenericSubdomains/utils/logger';
 import { notificationsCommandsServices } from '../Composition';
 
 export function registerPoemApprovedNotification(eventBus: EventBus) {

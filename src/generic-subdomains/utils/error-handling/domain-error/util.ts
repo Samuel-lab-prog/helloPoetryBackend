@@ -1,10 +1,10 @@
-import type { AppErrorCode } from '@GenericSubdomains/utils/AppError';
+import type { ErrorCode } from '../errorCodes';
 
 export class DomainError extends Error {
-	type: AppErrorCode;
+	type: ErrorCode;
 	override message: string;
 
-	constructor(type: AppErrorCode, message: string) {
+	constructor(type: ErrorCode, message: string) {
 		super(message);
 		this.name = 'DomainError';
 		this.type = type;

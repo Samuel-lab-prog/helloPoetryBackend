@@ -1,19 +1,19 @@
-﻿import { mock } from 'bun:test';
+﻿import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import {
 	type MockedContract,
 	createMockedContract,
-} from '@GenericSubdomains/utils/TestUtils';
-import type { UsersPublicContract } from '@Domains/users-management/public/Index';
+} from '@GenericSubdomains/utils/testing/utils';
+import type { EventBus } from '@SharedKernel/events/EventBus';
+import { mock } from 'bun:test';
 import type { CommandsRepository } from '../../ports/commands';
 import type { QueriesRepository } from '../../ports/queries';
-import type { EventBus } from '@SharedKernel/events/EventBus';
 import {
-	sendFriendRequestFactory,
 	acceptFriendRequestFactory,
-	rejectFriendRequestFactory,
+	blockUserFactory,
 	cancelFriendRequestFactory,
 	deleteFriendFactory,
-	blockUserFactory,
+	rejectFriendRequestFactory,
+	sendFriendRequestFactory,
 	unblockUserFactory,
 } from '../commands/Index';
 import { getMyFriendRequestsFactory } from '../queries/Index';
@@ -28,8 +28,8 @@ export type FriendsManagementSutMocks = {
 export function friendsManagementMockFactories(): FriendsManagementSutMocks {
 	const eventBus = createMockedContract<EventBus>({
 		publish: mock(),
-		subscribe: mock().mockReturnValue(() => {}),
-		once: mock().mockReturnValue(() => {}),
+		subscribe: mock().mockReturnValue(() => { }),
+		once: mock().mockReturnValue(() => { }),
 	});
 
 	return {

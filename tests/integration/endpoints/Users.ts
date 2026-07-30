@@ -1,4 +1,5 @@
-﻿import type {
+﻿import type { AppError } from '@AppError';
+import type {
 	CreateUser,
 	CreateUserResult,
 	UpdateUserData,
@@ -8,13 +9,12 @@
 	UserStatus,
 } from '@Domains/users-management/ports/models.ts';
 import {
-	jsonRequest,
 	API_INSTANCE,
 	API_PREFIX,
 	handleResponse,
-} from '@GenericSubdomains/utils/TestUtils';
+	jsonRequest,
+} from '@GenericSubdomains/utils/testing/utils';
 import { prisma } from '@Prisma/PrismaClient';
-import type { AppError } from '@GenericSubdomains/utils/AppError';
 
 export async function getUserProfile(
 	cookie: string,
