@@ -24,8 +24,8 @@ COPY package.json bun.lock ./
 RUN bun install --production --frozen-lockfile
 
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/src/generic-subdomains/persistance/prisma/generated ./src/generic-subdomains/persistance/prisma/generated
+COPY --from=build /app/src/generic-subdomains/persistance/prisma ./src/generic-subdomains/persistance/prisma
 
 EXPOSE 5000
 
-CMD ["bun", "run", "start"]
+CMD ["sh", "-c", "bunx prisma migrate deploy --schema src/generic-subdomains/persistance/prisma/schema.prisma && exec bun dist/Server.js"]
