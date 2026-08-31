@@ -28,4 +28,4 @@ COPY --from=build /app/src/generic-subdomains/persistance/prisma ./src/generic-s
 
 EXPOSE 5000
 
-CMD ["sh", "-c", "bunx prisma migrate deploy --schema src/generic-subdomains/persistance/prisma/schema.prisma && exec bun dist/Server.js"]
+CMD ["sh", "-c", "if [ -z \"$DATABASE_URL\" ]; then echo 'DATABASE_URL AUSENTE'; exit 1; fi; echo 'DATABASE_URL DEFINIDA'; bunx prisma migrate deploy --schema src/generic-subdomains/persistance/prisma/schema.prisma && exec bun dist/Server.js"]
