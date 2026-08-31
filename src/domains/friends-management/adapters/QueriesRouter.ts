@@ -1,4 +1,4 @@
-﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/Composition';
 import { Elysia } from 'elysia';
 import { type QueriesRouterServices } from '../ports/queries';
 import { FriendRequestsByUserSchema } from '../ports/schemas/Index';

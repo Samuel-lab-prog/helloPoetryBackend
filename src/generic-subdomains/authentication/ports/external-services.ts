@@ -1,4 +1,4 @@
-﻿import type { UserRole } from '@SharedKernel/Enums';
+import type { UserRole } from '@SharedKernel/Enums';
 import type { AuthClient, LoginResponse } from './models';
 
 export type LoginClientParams = {

@@ -1,8 +1,8 @@
-﻿import type {
+import type {
 	TokenService,
 	TokenPayload,
 	LoginClientParams,
-} from '../../../ports/externalServices';
+} from '../../../ports/external-services';
 import type { LoginResponse } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
 import type { HashServices } from '@SharedKernel/ports/HashServices';

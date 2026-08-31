@@ -1,8 +1,8 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { TokenService } from '../../ports/externalServices';
+import type { TokenService } from '../../ports/external-services';
 
 import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
-import type { AuthSutMocks } from './sutMocks';
+import type { AuthSutMocks } from './sut-mocks';
 
 import {
 	DEFAULT_CLIENT_EMAIL,

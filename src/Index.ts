@@ -44,7 +44,7 @@ import {
 import {
 	authRouter,
 	authRouterWithFakeHash,
-} from '@GenericSubdomains/authentication/composition';
+} from '@GenericSubdomains/authentication/Composition';
 import {
 	ELYSIA_SERVER_SETTINGS,
 	OPEN_API_SETTINGS,

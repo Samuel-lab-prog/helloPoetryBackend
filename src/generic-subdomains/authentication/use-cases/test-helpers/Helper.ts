@@ -5,7 +5,7 @@ import type { HashServices } from '@SharedKernel/ports/HashServices';
 import type {
 	LoginClientParams,
 	TokenService,
-} from '../../ports/externalServices';
+} from '../../ports/external-services';
 
 import {
 	createMockedContract,
@@ -34,7 +34,7 @@ import {
 	loginClientFactory,
 	refreshSessionFactory,
 } from '../commands';
-import type { AuthSutMocks } from './sutMocks';
+import type { AuthSutMocks } from './sut-mocks';
 
 function makeAuthMockFactories() {
 	return {

@@ -2,7 +2,7 @@
 	appErrorSchema,
 	makeValidationError,
 } from '@AppError';
-import { authPlugin } from '@GenericSubdomains/authentication/composition';
+import { authPlugin } from '@GenericSubdomains/authentication/Composition';
 import { idSchema, paginationLimitSchema } from '@SharedKernel/Schemas';
 import { Elysia, t } from 'elysia';
 

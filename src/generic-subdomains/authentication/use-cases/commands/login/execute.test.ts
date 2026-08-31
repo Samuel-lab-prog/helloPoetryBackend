@@ -1,4 +1,4 @@
-﻿import { UnauthorizedError } from '@DomainError';
+import { UnauthorizedError } from '@DomainError';
 import { describe, expect, it } from 'bun:test';
 
 import { expectError } from '@GenericSubdomains/utils/testing/utils';

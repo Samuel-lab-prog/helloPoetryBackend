@@ -1,4 +1,4 @@
-﻿import { authPlugin } from '@GenericSubdomains/authentication/composition';
+﻿import { authPlugin } from '@GenericSubdomains/authentication/Composition';
 import { Elysia, t } from 'elysia';
 
 import { idSchema } from '@SharedKernel/Schemas';
