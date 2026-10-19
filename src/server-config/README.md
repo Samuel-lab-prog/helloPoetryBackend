@@ -161,11 +161,16 @@ happens when environment variables are missing or invalid.
   - HTTP-only cookies are used.
   - `SameSite` and `Secure` are set based on environment and cross-site
     configuration.
+  - `POST /auth/logout` expires the access, refresh, and CSRF cookies for the
+    browser after CSRF validation. It does not revoke copied JWTs server-side;
+    refresh-token revocation requires persistent session state.
 - CSRF protection:
   - A CSRF cookie is set at login.
   - Unsafe methods require `x-csrf-token` to match the cookie value.
   - Enabled by `CSRF_ENABLED=true` or when cross-site cookies are used.
-  - Optional Origin/Referer allowlist (`CSRF_ORIGIN_ALLOWLIST`).
+  - Origin/Referer must match the CORS origin allowlist. `CSRF_ORIGIN_ALLOWLIST`
+    can narrow that list; it cannot expand it. If neither list has a trusted
+    origin, unsafe requests are rejected.
 - Security headers:
   - HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
     Permissions-Policy.

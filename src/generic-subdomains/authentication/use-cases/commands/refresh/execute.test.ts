@@ -25,6 +25,26 @@ describe.concurrent('USE-CASE - Authentication - RefreshSession', () => {
 			});
 		});
 
+		it('accepts a previously issued refresh token again because revocation is not persisted', async () => {
+			const scenario = makeAuthScenario()
+				.withTokenValid({ tokenType: 'refresh' })
+				.withAuthUser()
+				.withTokenGenerated();
+
+			await scenario.executeRefresh('previous-refresh-token');
+			await scenario.executeRefresh('previous-refresh-token');
+
+			expect(scenario.mocks.tokenService.verifyToken).toHaveBeenCalledTimes(2);
+			expect(scenario.mocks.tokenService.verifyToken).toHaveBeenNthCalledWith(
+				1,
+				'previous-refresh-token',
+			);
+			expect(scenario.mocks.tokenService.verifyToken).toHaveBeenNthCalledWith(
+				2,
+				'previous-refresh-token',
+			);
+		});
+
 		it('should return correct client data', async () => {
 			const scenario = makeAuthScenario()
 				.withTokenValid({ email: 'admin@mail.com', tokenType: 'refresh' })

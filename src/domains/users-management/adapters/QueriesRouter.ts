@@ -29,9 +29,8 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 	return new Elysia({ prefix: '/users' })
 		.get(
 			'/check-nickname',
-			({ query }) => {
-				return services.checkNickanmeAvailability(query.nickname);
-			},
+			async ({ query }) =>
+				Response.json(await services.checkNickanmeAvailability(query.nickname)),
 			{
 				response: {
 					200: t.Boolean(),
@@ -84,9 +83,8 @@ export function createUsersReadRouter(services: UsersQueriesRouterServices) {
 		)
 		.get(
 			'/check-email',
-			({ query }) => {
-				return services.checkEmailAvailability(query.email);
-			},
+			async ({ query }) =>
+				Response.json(await services.checkEmailAvailability(query.email)),
 			{
 				response: {
 					200: t.Boolean(),
