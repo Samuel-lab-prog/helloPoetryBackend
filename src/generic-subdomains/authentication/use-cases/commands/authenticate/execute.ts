@@ -1,4 +1,4 @@
-import type { TokenService } from '../../../ports/external-services';
+import type { TokenService } from '../../../ports/externalServices';
 import { UnprocessableEntityError, UnauthorizedError } from '@DomainError';
 import type { AuthClient } from '../../../ports/models';
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';

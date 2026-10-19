@@ -123,5 +123,6 @@ export function printNoMissingDirectories(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-domain-directories' },
 	);
 }

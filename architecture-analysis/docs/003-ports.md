@@ -1,4 +1,4 @@
-﻿# Ports
+# Ports
 
 This document describes how ports are defined, used, and implemented in this
 codebase.
@@ -90,7 +90,13 @@ This separation:
 
 ---
 
-## Example Query Port
+The users-management domain also declares AdminBootstrapRepository
+in\r\nports/commands.ts. It provides only the persistence operations needed by
+the\r bootstrap use-case; conflict policy and password hashing remain in the
+use-case.\r\nIts Prisma implementation is part of the
+existing\r\ninfra/commands-repository/repository.ts, so it does not add a
+one-off\r\nrepository module or expose database selection types to application
+code.\r\n\r\n## Example Query Port
 
 ```ts
 import type {

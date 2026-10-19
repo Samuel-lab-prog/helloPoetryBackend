@@ -1,36 +1,37 @@
-﻿import { ConflictError } from '@DomainError';
-import { expectError } from '@GenericSubdomains/utils/testing/utils';
+import { ConflictError } from '@DomainError';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
+import type { AdminBootstrapRepository } from '../../../ports/commands';
+import type { FullUser } from '../../../ports/models';
+import { bootstrapAdminFactory } from './execute';
 
-const prismaUserFindFirstMock = mock<(...args: any[]) => Promise<any>>(() =>
+const findExistingAdmin = mock<AdminBootstrapRepository['findExistingAdmin']>(
+	() => Promise.resolve(false),
+);
+const findUserByEmail = mock<AdminBootstrapRepository['findUserByEmail']>(() =>
 	Promise.resolve(null),
 );
-const prismaUserFindUniqueMock = mock<(...args: any[]) => Promise<any>>(() =>
-	Promise.resolve(null),
+const findUserByNickname = mock<AdminBootstrapRepository['findUserByNickname']>(
+	() => Promise.resolve(null),
 );
-const prismaUserUpdateMock = mock<(...args: any[]) => Promise<any>>(() =>
-	Promise.resolve({
-		id: 1,
-	}),
+const updateUserAsAdmin = mock<AdminBootstrapRepository['updateUserAsAdmin']>(
+	() => Promise.resolve({ id: 1 } as FullUser),
 );
-const prismaUserCreateMock = mock<(...args: any[]) => Promise<any>>(() =>
-	Promise.resolve({
-		id: 2,
-	}),
+const createAdmin = mock<AdminBootstrapRepository['createAdmin']>(() =>
+	Promise.resolve({ id: 2 } as FullUser),
 );
 
-mock.module('@Prisma/PrismaClient', () => ({
-	prisma: {
-		user: {
-			findFirst: prismaUserFindFirstMock,
-			findUnique: prismaUserFindUniqueMock,
-			update: prismaUserUpdateMock,
-			create: prismaUserCreateMock,
-		},
-	},
-}));
+const adminBootstrapRepository: AdminBootstrapRepository = {
+	findExistingAdmin,
+	findUserByEmail,
+	findUserByNickname,
+	updateUserAsAdmin,
+	createAdmin,
+};
 
-const { bootstrapAdminFactory } = await import('./execute');
+const hashServices = {
+	hash: mock(() => Promise.resolve('hashed_password')),
+	compare: mock(() => Promise.resolve(true)),
+};
 
 const DEFAULT_PARAMS = {
 	email: 'admin@olapoesia.dev',
@@ -41,82 +42,70 @@ const DEFAULT_PARAMS = {
 	avatarUrl: null,
 };
 
-describe.concurrent('USE-CASE - Users Management - BootstrapAdmin', () => {
-	const hashServices = {
-		hash: mock<(...args: any[]) => Promise<string>>(() =>
-			Promise.resolve('hashed_password'),
-		),
-		compare: mock<(...args: any[]) => Promise<boolean>>(() =>
-			Promise.resolve(true),
-		),
-	};
+const execute = () =>
+	bootstrapAdminFactory({ hashServices, adminBootstrapRepository });
 
+describe('USE-CASE - Users Management - BootstrapAdmin', () => {
 	beforeEach(() => {
-		prismaUserFindFirstMock.mockReset();
-		prismaUserFindUniqueMock.mockReset();
-		prismaUserUpdateMock.mockReset();
-		prismaUserCreateMock.mockReset();
+		findExistingAdmin.mockReset();
+		findUserByEmail.mockReset();
+		findUserByNickname.mockReset();
+		updateUserAsAdmin.mockReset();
+		createAdmin.mockReset();
 		hashServices.hash.mockReset();
-		hashServices.compare.mockReset();
-
-		prismaUserFindFirstMock.mockResolvedValue(null);
-		prismaUserFindUniqueMock.mockResolvedValue(null);
-		prismaUserUpdateMock.mockResolvedValue({ id: 1 });
-		prismaUserCreateMock.mockResolvedValue({ id: 2 });
 		hashServices.hash.mockResolvedValue('hashed_password');
-		hashServices.compare.mockResolvedValue(true);
+		findExistingAdmin.mockResolvedValue(false);
+		findUserByEmail.mockResolvedValue(null);
+		findUserByNickname.mockResolvedValue(null);
+		updateUserAsAdmin.mockResolvedValue({ id: 1 } as FullUser);
+		createAdmin.mockResolvedValue({ id: 2 } as FullUser);
 	});
 
-	it('should throw ConflictError when admin already exists', async () => {
-		prismaUserFindFirstMock.mockResolvedValue({ id: 99 });
+	it('throws ConflictError when admin bootstrap already completed', async () => {
+		findExistingAdmin.mockResolvedValue(true);
 
-		const execute = bootstrapAdminFactory({ hashServices });
-
-		await expectError(execute(DEFAULT_PARAMS), ConflictError);
-		expect(prismaUserFindUniqueMock).not.toHaveBeenCalled();
+		await expect(execute()(DEFAULT_PARAMS)).rejects.toBeInstanceOf(
+			ConflictError,
+		);
+		expect(findUserByEmail).not.toHaveBeenCalled();
 	});
 
-	it('should update existing user by email and return created=false', async () => {
-		prismaUserFindUniqueMock.mockImplementation((args: any) => {
-			if ('email' in args.where)
-				return Promise.resolve({ id: 10, nickname: 'admin' });
-			return Promise.resolve(null);
-		});
+	it('updates an existing user by email and returns created=false', async () => {
+		findUserByEmail.mockResolvedValue({ id: 10, nickname: 'admin' });
 
-		const execute = bootstrapAdminFactory({ hashServices });
-
-		const result = await execute(DEFAULT_PARAMS);
+		const result = await execute()(DEFAULT_PARAMS);
 
 		expect(result.created).toBe(false);
-		expect(prismaUserUpdateMock).toHaveBeenCalledTimes(1);
+		expect(updateUserAsAdmin).toHaveBeenCalledWith(10, {
+			passwordHash: 'hashed_password',
+			name: 'Admin',
+			nickname: 'admin',
+			bio: 'Admin bio',
+			avatarUrl: null,
+		});
 	});
 
-	it('should throw ConflictError when nickname is already in use', async () => {
-		prismaUserFindUniqueMock.mockImplementation((args: any) => {
-			if ('email' in args.where)
-				return Promise.resolve({ id: 10, nickname: 'someone-else' });
-			if ('nickname' in args.where) return Promise.resolve({ id: 20 });
-			return Promise.resolve(null);
-		});
+	it('throws ConflictError when the requested nickname is already in use', async () => {
+		findUserByEmail.mockResolvedValue({ id: 10, nickname: 'someone-else' });
+		findUserByNickname.mockResolvedValue({ id: 20 });
 
-		const execute = bootstrapAdminFactory({ hashServices });
-
-		await expectError(execute(DEFAULT_PARAMS), ConflictError);
-		expect(prismaUserUpdateMock).not.toHaveBeenCalled();
+		await expect(execute()(DEFAULT_PARAMS)).rejects.toBeInstanceOf(
+			ConflictError,
+		);
+		expect(updateUserAsAdmin).not.toHaveBeenCalled();
 	});
 
-	it('should create a new admin when email and nickname are free', async () => {
-		prismaUserFindUniqueMock.mockImplementation((args: any) => {
-			if ('email' in args.where) return Promise.resolve(null);
-			if ('nickname' in args.where) return Promise.resolve(null);
-			return Promise.resolve(null);
-		});
-
-		const execute = bootstrapAdminFactory({ hashServices });
-
-		const result = await execute(DEFAULT_PARAMS);
+	it('creates an admin when email and nickname are free', async () => {
+		const result = await execute()(DEFAULT_PARAMS);
 
 		expect(result.created).toBe(true);
-		expect(prismaUserCreateMock).toHaveBeenCalledTimes(1);
+		expect(createAdmin).toHaveBeenCalledWith({
+			email: 'admin@olapoesia.dev',
+			passwordHash: 'hashed_password',
+			name: 'Admin',
+			nickname: 'admin',
+			bio: 'Admin bio',
+			avatarUrl: null,
+		});
 	});
 });

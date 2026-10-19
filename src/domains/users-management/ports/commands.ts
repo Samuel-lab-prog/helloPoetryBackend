@@ -41,3 +41,25 @@ export interface CommandsRepository {
 	): Promise<CommandResult<FullUser>>;
 	softDeleteUser(id: number): Promise<CommandResult<FullUser>>;
 }
+
+export type AdminBootstrapProfile = {
+	email: string;
+	passwordHash: string;
+	name: string;
+	nickname: string;
+	bio: string;
+	avatarUrl?: string | null;
+};
+
+export type ExistingAdminBootstrapUser = Pick<FullUser, 'id' | 'nickname'>;
+
+export interface AdminBootstrapRepository {
+	findExistingAdmin(): Promise<boolean>;
+	findUserByEmail(email: string): Promise<ExistingAdminBootstrapUser | null>;
+	findUserByNickname(nickname: string): Promise<Pick<FullUser, 'id'> | null>;
+	updateUserAsAdmin(
+		userId: number,
+		profile: Omit<AdminBootstrapProfile, 'email'>,
+	): Promise<FullUser>;
+	createAdmin(profile: AdminBootstrapProfile): Promise<FullUser>;
+}

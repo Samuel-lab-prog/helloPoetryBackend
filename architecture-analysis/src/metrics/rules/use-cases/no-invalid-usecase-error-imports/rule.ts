@@ -133,5 +133,6 @@ export function printNoInvalidUseCaseErrorImports(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-usecase-error-imports' },
 	);
 }

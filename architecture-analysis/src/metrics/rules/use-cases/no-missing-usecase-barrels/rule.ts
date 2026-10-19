@@ -126,5 +126,6 @@ export function printNoMissingUseCaseBarrels(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-missing-usecase-barrels' },
 	);
 }

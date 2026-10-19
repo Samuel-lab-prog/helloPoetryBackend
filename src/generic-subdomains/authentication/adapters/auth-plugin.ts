@@ -1,7 +1,7 @@
 import { appErrorSchema } from '@AppError';
 import { SetupPlugin } from '@GenericSubdomains/utils/security/setupPlugin';
 import { Elysia } from 'elysia';
-import type { authPluginServices } from '../ports/external-services';
+import type { authPluginServices } from '../ports/externalServices';
 import { cookieTokenSchema } from '../ports/schemas';
 
 export function createAuthPlugin({ authenticate }: authPluginServices) {

@@ -1,5 +1,5 @@
 import type { UsersPublicContract } from '@Domains/users-management/public/Index';
-import type { TokenService } from '../../ports/external-services';
+import type { TokenService } from '../../ports/externalServices';
 
 import { givenResolved } from '@GenericSubdomains/utils/testing/utils';
 import type { AuthSutMocks } from './sut-mocks';
@@ -11,7 +11,7 @@ import {
 	DEFAULT_CLIENT_STATUS,
 	DEFAULT_PASSWORD_HASH,
 	DEFAULT_TOKEN,
-} from './constants';
+} from './Constants';
 
 export type AuthUserOverride = Partial<
 	Awaited<ReturnType<UsersPublicContract['selectAuthUserByEmail']>>

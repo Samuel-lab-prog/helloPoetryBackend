@@ -111,5 +111,6 @@ export function printNoUntestedUsecase(cloc: ClocResult): void {
 		withAdr(`Missing execute.test.ts (${violations.length})`, ADR.useCaseTests),
 		columns,
 		violations,
+		{ ruleId: 'no-untested-usecase' },
 	);
 }

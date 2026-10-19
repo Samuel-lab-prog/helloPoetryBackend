@@ -5,7 +5,7 @@ import type { HashServices } from '@SharedKernel/ports/HashServices';
 import type {
 	LoginClientParams,
 	TokenService,
-} from '../../ports/external-services';
+} from '../../ports/externalServices';
 
 import {
 	createMockedContract,
@@ -21,13 +21,13 @@ import {
 	givenTokenInvalid,
 	givenTokenValid,
 	type AuthUserOverride,
-} from './givens';
+} from './Givens';
 
 import {
 	DEFAULT_CLIENT_EMAIL,
 	DEFAULT_PASSWORD,
 	DEFAULT_TOKEN,
-} from './constants';
+} from './Constants';
 
 import {
 	authenticateClientFactory,

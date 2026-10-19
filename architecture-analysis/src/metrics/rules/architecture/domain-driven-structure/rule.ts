@@ -131,5 +131,6 @@ export function printDomainDrivenStructure(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'domain-driven-structure' },
 	);
 }

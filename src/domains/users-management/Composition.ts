@@ -1,4 +1,7 @@
-﻿import { commandsRepository } from './infra/commands-repository/repository';
+import {
+	adminBootstrapRepository,
+	commandsRepository,
+} from './infra/commands-repository/repository';
 import { BcryptHashService, FakeHashService } from '@SharedKernel/infra/Bcrypt';
 import type { UsersCommandsServices } from './ports/commands';
 import { createUsersCommandsRouter } from './adapters/CommandsRouter';
@@ -37,6 +40,7 @@ const commandsServices: UsersCommandsServices = {
 const internalServices = {
 	bootstrapAdmin: bootstrapAdminFactory({
 		hashServices: BcryptHashService,
+		adminBootstrapRepository,
 	}),
 };
 
@@ -56,6 +60,7 @@ const commandsServicesWithFakeHash: UsersCommandsServices = {
 const internalServicesWithFakeHash = {
 	bootstrapAdmin: bootstrapAdminFactory({
 		hashServices: FakeHashService,
+		adminBootstrapRepository,
 	}),
 };
 

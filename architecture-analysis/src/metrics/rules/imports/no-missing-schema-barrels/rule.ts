@@ -115,5 +115,6 @@ export function printNoMissingSchemaBarrels(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-missing-schema-barrels' },
 	);
 }

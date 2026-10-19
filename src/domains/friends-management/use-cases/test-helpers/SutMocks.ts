@@ -28,8 +28,8 @@ export type FriendsManagementSutMocks = {
 export function friendsManagementMockFactories(): FriendsManagementSutMocks {
 	const eventBus = createMockedContract<EventBus>({
 		publish: mock(),
-		subscribe: mock().mockReturnValue(() => { }),
-		once: mock().mockReturnValue(() => { }),
+		subscribe: mock().mockReturnValue(() => {}),
+		once: mock().mockReturnValue(() => {}),
 	});
 
 	return {

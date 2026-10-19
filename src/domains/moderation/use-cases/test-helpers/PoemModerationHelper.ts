@@ -93,8 +93,8 @@ function moderationPoemMockFactories(): ModerationPoemSutMocks {
 		}),
 		eventBus: createMockedContract<EventBus>({
 			publish: mock(),
-			subscribe: mock(() => () => { }),
-			once: mock(() => () => { }),
+			subscribe: mock(() => () => {}),
+			once: mock(() => () => {}),
 		}),
 	};
 }

@@ -4,17 +4,21 @@ import { printTable, type TableColumn } from '../../../../utils/PrintTable';
 import { ADR, withAdr } from '../../../adr-labels';
 import { formatRuleSuccess } from '../../../../utils/Utils';
 
-type Layer = 'adapters' | 'use-cases' | 'domain';
+type Layer = 'adapters' | 'use-cases' | 'ports' | 'infra' | 'domain';
 
-const LAYER_ORDER: Record<Layer, number> = {
-	adapters: 0,
-	'use-cases': 1,
-	domain: 2,
+const ALLOWED_DEPENDENCIES: Record<Layer, ReadonlySet<Layer>> = {
+	adapters: new Set(['adapters', 'use-cases', 'ports', 'domain']),
+	'use-cases': new Set(['use-cases', 'ports', 'domain']),
+	ports: new Set(['ports', 'domain']),
+	infra: new Set(['infra', 'ports', 'domain']),
+	domain: new Set(['domain']),
 };
 
 function extractLayer(path: string): Layer | null {
 	if (path.includes('/adapters/')) return 'adapters';
 	if (path.includes('/use-cases/')) return 'use-cases';
+	if (path.includes('/ports/')) return 'ports';
+	if (path.includes('/infra/')) return 'infra';
 	if (path.includes('/domain/') || path.includes('/entities/')) return 'domain';
 	return null;
 }
@@ -39,7 +43,7 @@ export function checkInvalidDirectionalDependencies(
 			const toLayer = extractLayer(d.resolved);
 			if (!toLayer) return;
 
-			if (LAYER_ORDER[fromLayer] > LAYER_ORDER[toLayer]) {
+			if (!ALLOWED_DEPENDENCIES[fromLayer].has(toLayer)) {
 				violations.push({
 					from: m.source,
 					to: d.resolved,
@@ -104,5 +108,6 @@ export function printNoInvalidDirectionalDependencies(
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-directional-dependencies' },
 	);
 }

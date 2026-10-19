@@ -1,8 +1,5 @@
 ﻿import { authPlugin } from '@GenericSubdomains/authentication/Composition';
-import {
-	appErrorSchema,
-	makeValidationError,
-} from '@AppError';
+import { appErrorSchema, makeValidationError } from '@AppError';
 import { idSchema } from '@SharedKernel/Schemas';
 import { Elysia, t } from 'elysia';
 

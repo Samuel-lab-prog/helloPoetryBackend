@@ -96,5 +96,6 @@ export function printNoCrossDomainCalls(cruiseResult: DepcruiseResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-cross-domain-calls' },
 	);
 }

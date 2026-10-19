@@ -7,7 +7,7 @@ import {
 	setUpRefreshCookieOptions,
 } from 'server-config/config';
 import { SetupPlugin } from '../../utils/security/setupPlugin';
-import type { AuthControllerServices } from '../ports/external-services';
+import type { AuthControllerServices } from '../ports/externalServices';
 import {
 	authClientSchema,
 	loginSchema,

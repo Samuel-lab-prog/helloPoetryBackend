@@ -181,5 +181,6 @@ export function printNoCaseMismatchImports(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-case-mismatch-imports' },
 	);
 }

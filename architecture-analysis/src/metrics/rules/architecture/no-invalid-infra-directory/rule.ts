@@ -140,5 +140,6 @@ export function printNoInvalidInfraDirectory(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-infra-directory' },
 	);
 }

@@ -81,5 +81,6 @@ export function printNoInvalidRootNamespaces(
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-namespaces' },
 	);
 }

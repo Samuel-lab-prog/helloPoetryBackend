@@ -7,6 +7,7 @@ import {
 	isRootLevelSourceFile,
 	padRight,
 } from '../../../../utils/Utils';
+import { recordArchitectureFindings } from '../../../../utils/ArchitectureFindings';
 import { ADR } from '../../../adr-labels';
 
 type Violation = {
@@ -49,6 +50,7 @@ export function printNoRootSourceCode(cruiseResult: DepcruiseResult): void {
 			ADR.noRootSourceCode,
 		),
 	);
+	recordArchitectureFindings('no-root-src-code', violations);
 
 	console.log(padRight('MODULE', 60));
 	console.log(divider('·'));

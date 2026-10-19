@@ -60,6 +60,8 @@ Testing:
 - `bun run test:unit` runs use-case and policy tests.
 - `bun run test:use-case` runs tests tagged with `USE-CASE`.
 - `bun run test:policy` runs tests tagged with `POLICY`.
+- `bun test src/server-config/rate-limiter/plugin.test.ts` runs the isolated
+  rate-limit behavior tests without a database.
 - `bun run test:integration` prepares the test DB and runs integration tests.
 - `bun run test:e2e` prepares the test DB and runs Playwright E2E tests with
   `NODE_ENV=test`.
@@ -73,6 +75,8 @@ Quality checks:
 - `bun run format:fix`
 - `bun run typecheck`
 - `bun run depcruise`
+- `bun run test:architecture`
+- `bun run check:architecture`
 - `bun run metrics`
 - `bun run check:static`
 - `bun run check`
@@ -82,6 +86,16 @@ Quality checks:
 
 `bun run check:all` is the backend-only confidence gate. It validates test env,
 runs static checks, builds, runs the full Bun test suite, and runs backend E2E.
+
+`bun run check:static` runs non-mutating lint, formatting validation,
+architecture analysis, and `tsc --noEmit`. It does not generate Prisma/barrel
+files, build, run migrations, seed data, or access the database.
+`bun run check:architecture` creates fresh cloc and dependency-cruiser reports
+in a temporary directory, verifies nonempty analysis inputs, runs dependency-
+cruiser and custom rules, and removes its reports. Exact baseline findings are
+tracked in `architecture-analysis/src/governance/legacy-findings.json`; new
+findings and stale entries fail the gate. `bun run metrics` is exploratory and
+writes `cloc.json` and `depcruise.json` into the repository root.
 
 Database and maintenance:
 
@@ -168,8 +182,10 @@ Practical rules:
 - Prefer small duplication over introducing hidden cross-domain coupling.
 - Case-sensitive import paths matter. Match filesystem casing exactly.
 
-Architecture is enforced. If dependency-cruiser or architecture metrics fail,
-treat it as a design problem first, not only a tooling problem.
+Configured dependency-cruiser rules and rules included in
+`bun run check:architecture` are enforced. Other architecture metrics are
+informational. If an enforced check fails, investigate the design before
+considering a policy or tooling change.
 
 ## Domain Folder Contract
 
@@ -472,8 +488,8 @@ first, then a broader command based on risk:
 - `format:fix` may rewrite files. Check the diff after running broad checks.
 - `typecheck` is `tsc --noEmit`.
 - `build` outputs to `dist/`.
-- `check:static` runs barrels, lint fix, format fix, metrics, depcruise, and
-  typecheck.
+- `check:static` runs non-mutating lint, Prettier validation, architecture
+  analysis, and `tsc --noEmit` as separate checks. It never runs generators.
 
 ## Generated and Tooling Files
 

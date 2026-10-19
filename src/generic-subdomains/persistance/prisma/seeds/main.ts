@@ -33,7 +33,6 @@ function assertSafeEnvironment() {
 		throw new Error(
 			'Refusing to seed production database. Set ALLOW_PROD_SEED=true to override.',
 		);
-
 }
 
 function asDate(value: string): Date {

@@ -163,5 +163,6 @@ export function printNoCircularDependencies(
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-circular-dependencies' },
 	);
 }

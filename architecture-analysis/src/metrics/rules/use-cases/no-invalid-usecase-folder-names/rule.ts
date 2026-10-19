@@ -107,5 +107,6 @@ export function printNoInvalidUseCaseFolderNames(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-usecase-folder-names' },
 	);
 }

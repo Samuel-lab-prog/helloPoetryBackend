@@ -138,5 +138,6 @@ export function printNoInvalidPortsContent(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-ports-content' },
 	);
 }

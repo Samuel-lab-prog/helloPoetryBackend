@@ -166,5 +166,6 @@ export function printNoInvalidRepositoryFiles(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-invalid-repository-files' },
 	);
 }

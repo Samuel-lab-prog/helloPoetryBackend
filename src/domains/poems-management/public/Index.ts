@@ -255,4 +255,3 @@ export const poemsFeedContract: PoemsFeedContract = {
 };
 
 export * from './UserProfiles';
-

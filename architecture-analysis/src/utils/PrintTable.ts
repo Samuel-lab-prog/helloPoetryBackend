@@ -1,4 +1,8 @@
 import { bold } from 'kleur/colors';
+import {
+	recordArchitectureFindings,
+	type ArchitectureSeverity,
+} from './ArchitectureFindings';
 import { divider, section, padLeft, padRight } from './Utils';
 
 export type TableColumn<Row> = {
@@ -68,7 +72,15 @@ export function printTable<Row>(
 	title: string,
 	columns: TableColumn<Row>[],
 	rows: Row[],
+	governance?: { ruleId: string; severity?: ArchitectureSeverity },
 ): void {
+	if (governance && rows.length > 0)
+		recordArchitectureFindings(
+			governance.ruleId,
+			rows,
+			governance.severity ?? 'error',
+		);
+
 	const totalWidth =
 		columns.reduce((sum, c) => sum + c.width, 0) +
 		SEP.length * (columns.length - 1);

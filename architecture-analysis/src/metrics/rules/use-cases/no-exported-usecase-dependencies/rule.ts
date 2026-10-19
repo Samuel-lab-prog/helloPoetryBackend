@@ -139,5 +139,6 @@ export function printNoExportedUseCaseDependencies(cloc: ClocResult): void {
 		),
 		columns,
 		violations,
+		{ ruleId: 'no-exported-usecase-dependencies' },
 	);
 }

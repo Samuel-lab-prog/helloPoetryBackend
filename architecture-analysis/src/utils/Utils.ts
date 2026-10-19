@@ -163,7 +163,9 @@ export function formatRuleTitle(
  * @param path The path to the depcruise JSON output (default: 'depcruise.json')
  * @returns The parsed DepcruiseResult object
  */
-export function loadDepcruiseData(path = 'depcruise.json'): DepcruiseResult {
+export function loadDepcruiseData(
+	path = process.env.DEPCRUISE_REPORT ?? 'depcruise.json',
+): DepcruiseResult {
 	return JSON.parse(fs.readFileSync(path, 'utf-8'));
 }
 
@@ -172,6 +174,8 @@ export function loadDepcruiseData(path = 'depcruise.json'): DepcruiseResult {
  * @param path The path to the cloc JSON output (default: 'cloc.json')
  * @returns The parsed ClocResult object
  */
-export function loadClocData(path = 'cloc.json'): ClocResult {
+export function loadClocData(
+	path = process.env.CLOC_REPORT ?? 'cloc.json',
+): ClocResult {
 	return JSON.parse(fs.readFileSync(path, 'utf-8'));
 }

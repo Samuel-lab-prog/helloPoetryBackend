@@ -3,8 +3,9 @@ import { AvatarUrlSchema } from '@SharedKernel/Schemas';
 import { t } from 'elysia';
 
 export {
-	AvatarUrlSchema, NameSchema,
-	NicknameSchema
+	AvatarUrlSchema,
+	NameSchema,
+	NicknameSchema,
 } from '@SharedKernel/Schemas';
 
 export const NullableAvatarUrlSchema = t.Nullable(AvatarUrlSchema);

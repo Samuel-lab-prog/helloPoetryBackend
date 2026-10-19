@@ -80,6 +80,13 @@ See:
 - ADR-02.006 – Directional dependencies
 - ADR-02.007 – Prohibition of circular dependencies
 
+The runnable dependency matrix, including same-layer dependencies and the
+recognized `domain`/`entities` paths, is maintained in
+[008-governance.md](008-governance.md). Use `bun run check:architecture` to
+evaluate current source and fail on unrecorded custom-rule violations. Metrics
+printed by the analyzer are informational unless a blocking rule explicitly
+checks them.
+
 ---
 
 ## Domain Boundaries
@@ -163,9 +170,15 @@ See:
 
 ## Automation and Enforcement
 
-Architectural rules in this system are **not advisory**.
+Architectural rules included in the automated gate are **not advisory**.
 
-Wherever possible, they are:
+The `check:architecture` command runs dependency-cruiser and the custom
+structural rules against fresh temporary reports. Exact pre-existing findings
+are listed in a tracked legacy register; new findings and stale exceptions fail
+the command. Rules not included in this command, and metric-only signals, are
+not thereby CI gates.
+
+Wherever possible, enforced rules are:
 
 - measurable,
 - automated,
