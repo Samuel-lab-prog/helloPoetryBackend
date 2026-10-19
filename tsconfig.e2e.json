@@ -1,0 +1,4 @@
+{
+	"extends": "./tsconfig.json",
+	"include": ["scripts/e2e/prepare-accounts.ts"]
+}

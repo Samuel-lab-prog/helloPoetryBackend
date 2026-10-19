@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: hello_poetry_e2e_test
+      POSTGRES_USER: hello_poetry_e2e
+      POSTGRES_PASSWORD: hello_poetry_e2e_only
+    ports:
+      - '127.0.0.1:55432:5432'
+    # PostgreSQL's image declares VOLUME at this path. The tmpfs mount keeps
+    # database contents ephemeral; the runner also removes/verifies any volume
+    # Docker associates with that image declaration using scoped `down --volumes`.
+    tmpfs:
+      - /var/lib/postgresql/data:rw,noexec,nosuid,size=512m
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U hello_poetry_e2e -d hello_poetry_e2e_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 2s
