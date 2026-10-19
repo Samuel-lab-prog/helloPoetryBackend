@@ -34,7 +34,7 @@
 		"test:use-case": "cross-env NODE_ENV=test bun test ./src -t USE-CASE",
 		"test:policy": "cross-env NODE_ENV=test bun test ./src -t POLICY --concurrent",
 		"test:unit": "bun run test:use-case && bun run test:policy && bun run test:unit:additional",
-		"test:unit:additional": "cross-env NODE_ENV=test bun test ./src -t UNIT && cross-env NODE_ENV=test bun test ./src/shared-kernel/infra/Bcrypt.test.ts ./src/server-config/utils/databaseSafety.test.ts ./src/generic-subdomains/utils/testing/utils.test.ts ./src/generic-subdomains/utils/requests-handling/xss-clean/xssClean.test.ts ./src/domains/poems-management/infra/queries-repository/helpers.test.ts ./src/generic-subdomains/persistance/prisma/ClearDatabase.test.ts",
+		"test:unit:additional": "cross-env NODE_ENV=test bun test ./src -t UNIT && cross-env NODE_ENV=test bun test ./src/shared-kernel/infra/Bcrypt.test.ts ./src/server-config/utils/databaseSafety.test.ts ./src/generic-subdomains/utils/testing/utils.test.ts ./src/generic-subdomains/utils/requests-handling/xss-clean/xssClean.test.ts ./src/domains/poems-management/infra/queries-repository/helpers.test.ts ./src/domains/interactions/infra/queries-repository/helpers.test.ts ./src/generic-subdomains/persistance/prisma/ClearDatabase.test.ts",
 		"test:integration": "bun run test:prepare && cross-env NODE_ENV=test bun test -t INTEGRATION",
 		"test:e2e": "bun run test:prepare && cross-env NODE_ENV=test playwright test",
 		"typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",

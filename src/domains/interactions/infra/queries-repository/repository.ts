@@ -64,7 +64,10 @@ export function selectCommentById(params: {
 		});
 
 		const likesCount = await prisma.commentLike.count({
-			where: { commentId: comment.id },
+			where: {
+				commentId: comment.id,
+				user: publicUserRelationFilter,
+			},
 		});
 
 		const liked = currentUserId
