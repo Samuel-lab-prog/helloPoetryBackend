@@ -119,6 +119,7 @@ export function selectPoems(params: {
 		const where = {
 			deletedAt: null,
 			status: 'published' as const,
+			visibility: 'public' as const,
 			moderationStatus: 'approved' as const,
 			author: publicUserRelationFilter,
 			...(filterOptions.searchTitle && {

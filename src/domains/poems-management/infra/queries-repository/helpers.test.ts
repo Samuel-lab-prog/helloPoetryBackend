@@ -1,5 +1,20 @@
-import { describe, expect, it } from 'bun:test';
+import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import { mapPoem } from './helpers';
+
+type FindManyArgs = { where: Record<string, unknown>; [key: string]: unknown };
+const findManyPoems = mock((_args: FindManyArgs) =>
+	Promise.resolve([] as unknown[]),
+);
+
+mock.module('@Prisma/PrismaClient', () => ({
+	prisma: { poem: { findMany: findManyPoems } },
+}));
+
+mock.module('@Prisma/PrismaErrorHandler', () => ({
+	withPrismaErrorHandling: (callback: () => Promise<unknown>) => callback(),
+}));
+
+const { selectPoems } = await import('./repository');
 
 describe('mapPoem', () => {
 	it('maps dedications to users with friendIds and stats', () => {
@@ -44,5 +59,43 @@ describe('mapPoem', () => {
 
 		expect(mapped.author?.id).toBe(99);
 		expect(mapped.author?.friendIds).toEqual([7, 8]);
+	});
+});
+
+describe('selectPoems public search', () => {
+	beforeEach(() => {
+		findManyPoems.mockReset();
+		findManyPoems.mockResolvedValue([]);
+	});
+
+	it('returns only published, approved, public poems from available authors', async () => {
+		await selectPoems({
+			navigationOptions: {},
+			sortOptions: { orderBy: 'createdAt', orderDirection: 'desc' },
+			filterOptions: {},
+		});
+
+		const where = findManyPoems.mock.calls[0]?.[0]?.where;
+		expect(where).toMatchObject({
+			deletedAt: null,
+			status: 'published',
+			visibility: 'public',
+			moderationStatus: 'approved',
+			author: { status: { not: 'banned' } },
+		});
+	});
+
+	it('combines title search with a match on any selected tag', async () => {
+		await selectPoems({
+			navigationOptions: {},
+			sortOptions: { orderBy: 'title', orderDirection: 'asc' },
+			filterOptions: { searchTitle: 'river', tags: ['nature', 'water'] },
+		});
+
+		const where = findManyPoems.mock.calls[0]?.[0]?.where;
+		expect(where).toMatchObject({
+			title: { contains: 'river', mode: 'insensitive' },
+			tags: { some: { name: { in: ['nature', 'water'] } } },
+		});
 	});
 });
